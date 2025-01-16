@@ -1,27 +1,45 @@
-import { CanvasSide, ICueVirtualCanvas, Id, Link } from "./types.js";
-import { MouseLeftButtonDownEvent, MouseMoveEvent, Position } from "../input/types.js";
-import { VirtualCanvasBase } from "./base.js";
-import { DotVirtualCanvas } from "./dot.js";
+import { CanvasSide, ICueVirtualCanvas, Id, Link } from "../types.js";
+import { IInputCanvas, MouseLeftButtonDownEvent, MouseMoveEvent, Position } from "../../input/types.js";
+import { DotVirtualCanvas } from "../dot/dot.js";
+import { CueVirtualCanvasBase } from "./base.js";
 
-export class CueVirtualCanvas extends VirtualCanvasBase implements ICueVirtualCanvas {
+export class CueVirtualCanvas extends CueVirtualCanvasBase implements ICueVirtualCanvas {
     private readonly dotVirtualCanvas: DotVirtualCanvas;
+    private readonly inputCanvas: IInputCanvas;
 
     private clicked?: Id;
     private hovered?: Id;
     private link?: Link;
     private side: CanvasSide;
 
-    constructor(dotVirtualCanvas: DotVirtualCanvas) {
+    constructor(dotVirtualCanvas: DotVirtualCanvas, inputCanvas: IInputCanvas) {
         super();
-        this.side = CanvasSide.Default;
         this.dotVirtualCanvas = dotVirtualCanvas;
+        this.inputCanvas = inputCanvas;
+        this.side = CanvasSide.Default;
+    }
+
+    protected override initializeCore(): void {
+        super.initializeCore();
+
+        const zoomInUn = this.inputCanvas.onZoomIn(this.handleZoomIn.bind(this));
+        super.registerUn(zoomInUn);
+
+        const zoomOutUn = this.inputCanvas.onZoomOut(this.handleZoomOut.bind(this));
+        super.registerUn(zoomOutUn);
+
+        const mouseMoveUn = this.inputCanvas.onMouseMove(this.handleMouseMove.bind(this));
+        super.registerUn(mouseMoveUn);
+
+        const mouseLeftButtonDownUn = this.inputCanvas.onMouseLeftButtonDown(this.handleMouseLeftButtonDown.bind(this));
+        super.registerUn(mouseLeftButtonDownUn);
     }
 
     public draw(): void {
         // TODO: 
     }
 
-    public invokeZoomIn(): void {
+    public handleZoomIn(): void {
         if (this.hovered) {
             this.handleUnhoverDot();
         }
@@ -31,7 +49,7 @@ export class CueVirtualCanvas extends VirtualCanvasBase implements ICueVirtualCa
         }
     }
 
-    public invokeZoomOut(): void {
+    public handleZoomOut(): void {
         if (this.hovered) {
             this.handleUnhoverDot();
         }
@@ -41,13 +59,13 @@ export class CueVirtualCanvas extends VirtualCanvasBase implements ICueVirtualCa
         }
     }
 
-    public invokeMouseMove(event: MouseMoveEvent): void {
+    public handleMouseMove(event: MouseMoveEvent): void {
         const position = event.position;
         this.handleHoverDot(position);
         this.handleDrawLink(position);
     }
 
-    public invokeMouseLeftButtonDown(event: MouseLeftButtonDownEvent): void {
+    public handleMouseLeftButtonDown(event: MouseLeftButtonDownEvent): void {
         const position = event.position;
         this.handleDotClick(position);
     }
@@ -74,13 +92,12 @@ export class CueVirtualCanvas extends VirtualCanvasBase implements ICueVirtualCa
             const from = clicked;
             const to = { ...position, id: "111", radius: clicked.radius };
             this.link = { id: "111", from, to, side: this.side };
-            const drawLinkEvent = { link: this.link };
-            super.invokeDrawLink(drawLinkEvent);
+            super.invokeDrawLink(this.link);
         }
     }
 
     private handleRemoveLink(link: Link) {
-        super.invokeRemoveLink({ link });
+        super.invokeRemoveLink(link);
         this.link = undefined;
     }
 
@@ -89,8 +106,8 @@ export class CueVirtualCanvas extends VirtualCanvasBase implements ICueVirtualCa
         if (hovered) {
             if (hovered.id !== this.hovered) {
                 this.hovered = hovered.id;
-                const hoverEvent = { dot: { id: hovered.id, radius: hovered.radius + 2, x: hovered.x, y: hovered.y } };
-                super.invokeHoverDot(hoverEvent);
+                const hoveredDot = { id: hovered.id, radius: hovered.radius + 2, x: hovered.x, y: hovered.y };
+                super.invokeHoverDot(hoveredDot);
             }
         } else if (this.hovered) {
             this.handleUnhoverDot();
@@ -99,8 +116,7 @@ export class CueVirtualCanvas extends VirtualCanvasBase implements ICueVirtualCa
 
     private handleUnhoverDot(): void {
         const hovered = this.dotVirtualCanvas.getDotById(this.hovered!)!;
-        const unhoverEvent = { dot: hovered };
-        super.invokeUnhoverDot(unhoverEvent);
+        super.invokeUnhoverDot(hovered);
         this.hovered = undefined;
     }
 }

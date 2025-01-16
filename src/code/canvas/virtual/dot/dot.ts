@@ -1,11 +1,13 @@
-import { Size } from "../types.js";
-import { IdGenerator } from "../../utilities/generator.js";
-import { Dot, DotsConfig, Id, IDotVirtualCanvas } from "./types.js";
-import { VirtualCanvasBase } from "./base.js";
+import { Size } from "../../types.js";
+import { IdGenerator } from "../../../utilities/generator.js";
+import { Dot, DotsConfig, Id, IDotVirtualCanvas } from "../types.js";
+import { DotVirtualCanvasBase } from "./base.js";
+import { IInputCanvas } from "../../input/types.js";
 
-export class DotVirtualCanvas extends VirtualCanvasBase implements IDotVirtualCanvas {
+export class DotVirtualCanvas extends DotVirtualCanvasBase implements IDotVirtualCanvas {
     private readonly config: DotsConfig;
     private readonly ids: IdGenerator;
+    private readonly inputCanvas: IInputCanvas;
 
     private dots: Map<Id, Dot>;
 
@@ -14,10 +16,11 @@ export class DotVirtualCanvas extends VirtualCanvasBase implements IDotVirtualCa
     private radius: number;
     private spacing: number;
 
-    constructor(config: DotsConfig) {
+    constructor(config: DotsConfig, inputCanvas: IInputCanvas) {
         super();
 
         this.config = config;
+        this.inputCanvas = inputCanvas;
         this.dotsX = this.config.x;
         this.dotsY = this.config.y;
         this.radius = this.config.radius.value;
@@ -27,13 +30,23 @@ export class DotVirtualCanvas extends VirtualCanvasBase implements IDotVirtualCa
         this.ids = new IdGenerator();
     }
 
-    public invokeZoomIn(): void {
+    protected override initializeCore(): void {
+        super.initializeCore();
+
+        const zoomInUn = this.inputCanvas.onZoomIn(this.handleZoomIn.bind(this));
+        super.registerUn(zoomInUn);
+
+        const zoomOutUn = this.inputCanvas.onZoomOut(this.handleZoomOut.bind(this));
+        super.registerUn(zoomOutUn);
+    }
+
+    private handleZoomIn(): void {
         this.radius += this.config.radius.step;
         this.spacing += this.config.spacing.step;
         this.draw();
     }
 
-    public invokeZoomOut(): void {
+    private handleZoomOut(): void {
         this.radius -= this.config.radius.step;
         this.spacing -= this.config.spacing.step;
         this.draw();
@@ -43,7 +56,7 @@ export class DotVirtualCanvas extends VirtualCanvasBase implements IDotVirtualCa
         this.dots = this.createDots();
         const newSize = this.calculateSize();
         this.size = newSize;
-        this.dots.forEach((dot) => super.invokeDrawDot({ dot }));
+        this.dots.forEach((dot) => super.invokeDrawDot(dot));
     }
 
     // TODO: try to find a better algorithm

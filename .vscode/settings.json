@@ -3,6 +3,7 @@
         "copyfiles",
         "knittyly",
         "textyly",
+        "Unhover",
         "Unhovered"
     ],
     "files.exclude": {

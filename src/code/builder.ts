@@ -6,8 +6,9 @@ import { DynamicCanvas } from "./canvas/drawing/dynamic/dynamic.js";
 import { IVirtualCanvas } from "./canvas/virtual/types.js";
 import { TransparentCanvas } from "./canvas/input/transparent.js";
 import { RasterCanvas } from "./canvas/drawing/raster/raster.js";
-import { FrontStaticCanvas } from "./canvas/drawing/static/front.js";
+import { FrontHybridCanvas } from "./canvas/drawing/hybrid/front.js";
 import { SvgCanvas } from "./canvas/drawing/svg/svg.js";
+import { StaticCanvas } from "./canvas/drawing/static/static.js";
 
 export class CanvasBuilder {
     public build(): IVirtualCanvas {
@@ -15,8 +16,8 @@ export class CanvasBuilder {
         const userInputCanvasThrottler = this.buildUserInputCanvasThrottler(userInputCanvas);
         const virtualCanvas = this.buildVirtualCanvas(userInputCanvasThrottler);
 
-        this.buildDotCanvas(virtualCanvas);
-        this.buildUnknownCanvas(virtualCanvas);
+        this.buildStaticCanvas(virtualCanvas);
+        this.buildDynamicCanvas(virtualCanvas);
 
         return virtualCanvas;
     }
@@ -45,21 +46,25 @@ export class CanvasBuilder {
         return virtualCanvas;
     }
 
-    private buildDotCanvas(virtualCanvas: IVirtualCanvas): void {
+    private buildStaticCanvas(virtualCanvas: IVirtualCanvas): void {
         const htmlCanvas = document.getElementById("canvas") as HTMLCanvasElement;
-        const wrapper = new RasterCanvas(htmlCanvas);
-        wrapper.initialize();
+        const rasterCanvas = new RasterCanvas(htmlCanvas);
+        rasterCanvas.initialize();
 
-        const gridCanvas = new FrontStaticCanvas(wrapper, virtualCanvas);
-        gridCanvas.initialize();
+        const staticCanvas = new StaticCanvas(rasterCanvas, virtualCanvas);
+        staticCanvas.initialize();
+
+        //TODO: new line related raster canvas
+        const frontHybridCanvas = new FrontHybridCanvas(rasterCanvas, virtualCanvas);
+        frontHybridCanvas.initialize();
     }
 
-    private buildUnknownCanvas(virtualCanvas: IVirtualCanvas): void {
-        const svgCanvas = document.getElementById("svg") as HTMLElement;
-        const wrapper = new SvgCanvas(svgCanvas);
-        wrapper.initialize();
+    private buildDynamicCanvas(virtualCanvas: IVirtualCanvas): void {
+        const svgHtmlCanvas = document.getElementById("svg") as HTMLElement;
+        const svgCanvas = new SvgCanvas(svgHtmlCanvas);
+        svgCanvas.initialize();
 
-        const cueCanvas = new DynamicCanvas(wrapper, virtualCanvas);
-        cueCanvas.initialize();
+        const dynamicCanvas = new DynamicCanvas(svgCanvas, virtualCanvas);
+        dynamicCanvas.initialize();
     }
 }

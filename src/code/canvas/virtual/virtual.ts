@@ -1,9 +1,9 @@
 import { Size } from "../types.js";
-import { DotVirtualCanvas } from "./dot.js";
-import { CueVirtualCanvas } from "./cue.js";
-import { LineVirtualCanvas } from "./line.js";
+import { DotVirtualCanvas } from "./dot/dot.js";
+import { CueVirtualCanvas } from "./cue/cue.js";
+import { LineVirtualCanvas } from "./line/line.js";
+import { IInputCanvas } from "../input/types.js";
 import { VirtualCanvasBase } from "./base.js";
-import { IInputCanvas, MouseMoveEvent } from "../input/types.js";
 import {
     DotsConfig,
     DrawDotEvent,
@@ -17,27 +17,24 @@ import {
 export class VirtualCanvas extends VirtualCanvasBase {
     // #region fields 
 
-    private input: IInputCanvas
+    private inputCanvas: IInputCanvas
     private dotVirtualCanvas: DotVirtualCanvas;
     private lineVirtualCanvas: LineVirtualCanvas;
     private cueVirtualCanvas: CueVirtualCanvas;
 
     //#endregion
 
-    constructor(config: DotsConfig, input: IInputCanvas) {
+    constructor(config: DotsConfig, inputCanvas: IInputCanvas) {
         super();
-
-        this.input = input;
-
-        this.dotVirtualCanvas = new DotVirtualCanvas(config);
-        this.lineVirtualCanvas = new LineVirtualCanvas(this.dotVirtualCanvas);
-        this.cueVirtualCanvas = new CueVirtualCanvas(this.dotVirtualCanvas);
+        this.inputCanvas = inputCanvas;
+        this.dotVirtualCanvas = new DotVirtualCanvas(config, this.inputCanvas);
+        this.lineVirtualCanvas = new LineVirtualCanvas(this.dotVirtualCanvas, this.inputCanvas);
+        this.cueVirtualCanvas = new CueVirtualCanvas(this.dotVirtualCanvas, this.inputCanvas);
     }
 
     // #region interface
 
     public draw(): void {
-        super.invokeRedraw();
         this.dotVirtualCanvas.draw();
         this.lineVirtualCanvas.draw();
         this.cueVirtualCanvas.draw();
@@ -56,7 +53,7 @@ export class VirtualCanvas extends VirtualCanvasBase {
 
     protected override sizeChangeCore(): void {
         const size = super.size;
-        this.input.size = size;
+        this.inputCanvas.size = size;
         this.dotVirtualCanvas.size = size;
         this.lineVirtualCanvas.size = size;
         this.cueVirtualCanvas.size = size;
@@ -72,29 +69,6 @@ export class VirtualCanvas extends VirtualCanvasBase {
     // #endregion
 
     // #region events
-
-    private handleZoomIn(): void {
-        super.invokeRedraw();
-        this.dotVirtualCanvas.invokeZoomIn();
-        this.lineVirtualCanvas.invokeZoomIn();
-        this.cueVirtualCanvas.invokeZoomIn();
-    }
-
-    private handleZoomOut(): void {
-        super.invokeRedraw();
-        this.dotVirtualCanvas.invokeZoomOut();
-        this.lineVirtualCanvas.invokeZoomOut();
-        this.cueVirtualCanvas.invokeZoomOut();
-    }
-
-    private handleMouseMove(event: MouseMoveEvent): void {
-        this.cueVirtualCanvas.invokeMouseMove(event);
-    }
-
-    private handleMouseLeftButtonDown(event: MouseMoveEvent): void {
-        this.lineVirtualCanvas.invokeMouseLeftButtonDown(event);
-        this.cueVirtualCanvas.invokeMouseLeftButtonDown(event);
-    }
 
     private handleDrawDot(event: DrawDotEvent): void {
         const dot = event.dot;
@@ -135,20 +109,12 @@ export class VirtualCanvas extends VirtualCanvasBase {
     // #region methods
 
     private subscribe(): void {
-        const zoomInUn = this.input.onZoomIn(this.handleZoomIn.bind(this));
-        super.registerUn(zoomInUn);
-
-        const zoomOutUn = this.input.onZoomOut(this.handleZoomOut.bind(this));
-        super.registerUn(zoomOutUn);
-
-        const mouseMoveUn = this.input.onMouseMove(this.handleMouseMove.bind(this));
-        super.registerUn(mouseMoveUn);
-
-        const mouseLeftButtonDownUn = this.input.onMouseLeftButtonDown(this.handleMouseLeftButtonDown.bind(this));
-        super.registerUn(mouseLeftButtonDownUn);
 
         const drawDotUn = this.dotVirtualCanvas.onDrawDot(this.handleDrawDot.bind(this));
         super.registerUn(drawDotUn);
+
+        const dotCanvasSizeChangedUn = this.dotVirtualCanvas.onSizeChange(this.handleSizeChange.bind(this));
+        super.registerUn(dotCanvasSizeChangedUn);
 
         const drawLineUn = this.lineVirtualCanvas.onDrawLine(this.handleDrawLine.bind(this));
         super.registerUn(drawLineUn);
@@ -164,9 +130,6 @@ export class VirtualCanvas extends VirtualCanvasBase {
 
         const unhoverDotUn = this.cueVirtualCanvas.onUnhoverDot(this.handleUnhoverDot.bind(this));
         super.registerUn(unhoverDotUn);
-
-        const dotCanvasSizeChangedUn = this.dotVirtualCanvas.onSizeChange(this.handleSizeChange.bind(this));
-        super.registerUn(dotCanvasSizeChangedUn);
     }
 
     private unsubscribe(): void {

@@ -50,7 +50,6 @@ export interface ICueVirtualCanvas extends ICanvas {
 }
 
 export interface IVirtualCanvas extends IDotVirtualCanvas, ILineVirtualCanvas, ICueVirtualCanvas, ICanvas {
-    onRedraw(listener: VoidListener): VoidUnsubscribe;
     draw(): void;
 }
 

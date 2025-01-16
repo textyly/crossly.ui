@@ -3,33 +3,25 @@ import { CanvasBase } from "../../base.js";
 import { RasterCanvas } from "../raster/raster.js";
 import {
     Line,
-    DrawDotEvent,
     DrawLineEvent,
-    IVirtualCanvas
+    ILineVirtualCanvas
 } from "../../virtual/types.js";
 
-export abstract class StaticCanvasBase extends CanvasBase {
+export abstract class HybridCanvasBase extends CanvasBase {
     protected readonly rasterCanvas: RasterCanvas;
-    protected readonly virtualCanvas: IVirtualCanvas;
+    protected readonly lineVirtualCanvas: ILineVirtualCanvas;
 
-    constructor(rasterCanvas: RasterCanvas, virtualCanvas: IVirtualCanvas) {
+    constructor(rasterCanvas: RasterCanvas, lineVirtualCanvas: ILineVirtualCanvas) {
         super();
 
         this.rasterCanvas = rasterCanvas;
-        this.virtualCanvas = virtualCanvas;
+        this.lineVirtualCanvas = lineVirtualCanvas;
     }
 
     protected override initializeCore(): void {
-        const redrawUn = this.virtualCanvas.onRedraw(this.handleRedraw.bind(this));
-        super.registerUn(redrawUn);
-
-        const drawGridUn = this.virtualCanvas.onDrawDot(this.handleDrawDot.bind(this));
-        super.registerUn(drawGridUn);
-
-        const drawLineUn = this.virtualCanvas.onDrawLine(this.handleDrawLine.bind(this));
+        const drawLineUn = this.lineVirtualCanvas.onDrawLine(this.handleDrawLine.bind(this));
         super.registerUn(drawLineUn);
-
-        const sizeChangedUn = this.virtualCanvas.onSizeChange(this.handleSizeChange.bind(this));
+        const sizeChangedUn = this.lineVirtualCanvas.onSizeChange(this.handleSizeChange.bind(this));
         super.registerUn(sizeChangedUn);
     }
 
@@ -42,15 +34,6 @@ export abstract class StaticCanvasBase extends CanvasBase {
     }
 
     abstract drawLine(line: Line): void;
-
-    private handleRedraw(): void {
-        this.rasterCanvas.clear();
-    }
-
-    private handleDrawDot(event: DrawDotEvent): void {
-        const dot = event.dot;
-        this.rasterCanvas.drawDot(dot);
-    }
 
     private handleDrawLine(event: DrawLineEvent): void {
         const line = event.line;

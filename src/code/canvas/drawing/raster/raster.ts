@@ -18,11 +18,12 @@ export class RasterCanvas extends CanvasBase {
         this.context.fillStyle = "gray";
 
         this.context.beginPath();
-        this.context.arc(dot.x, dot.y, dot.radius, 0, Math.PI * 2);
+        this.context.arc(dot.x, dot.y, dot.radius, 0, Math.PI * 2); // TODO: 2 ???
         this.context.fill();
         this.context.closePath();
     }
 
+    // TODO: lines must be in different raster canvas so that undo operation is more efficient
     public drawLine(line: Line): void {
         this.context.beginPath();
 

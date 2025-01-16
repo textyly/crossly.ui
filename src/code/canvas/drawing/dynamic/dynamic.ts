@@ -8,41 +8,41 @@ import {
     HoverDotEvent,
     UnhoverDotEvent,
     DrawLinkEvent,
-    IVirtualCanvas,
-    RemoveLinkEvent
+    RemoveLinkEvent,
+    ICueVirtualCanvas
 } from "../../virtual/types.js";
 
 export class DynamicCanvas extends CanvasBase {
     protected readonly svgCanvas: SvgCanvas;
-    protected readonly virtualCanvas: IVirtualCanvas;
+    protected readonly cueVirtualCanvas: ICueVirtualCanvas;
 
     private readonly dots: Map<Id, SvgDot>;
     private readonly lines: Map<Id, SvgLine>;
 
-    constructor(svgCanvas: SvgCanvas, virtualCanvas: IVirtualCanvas) {
+    constructor(svgCanvas: SvgCanvas, cueVirtualCanvas: ICueVirtualCanvas) {
         super();
 
         this.svgCanvas = svgCanvas;
-        this.virtualCanvas = virtualCanvas;
+        this.cueVirtualCanvas = cueVirtualCanvas;
 
         this.dots = new Map<Id, SvgDot>();
         this.lines = new Map<Id, SvgLine>();
     }
 
     protected override initializeCore(): void {
-        const drawLinkUn = this.virtualCanvas.onDrawLink(this.handleDrawLink.bind(this));
+        const drawLinkUn = this.cueVirtualCanvas.onDrawLink(this.handleDrawLink.bind(this));
         super.registerUn(drawLinkUn);
 
-        const removeLinkUn = this.virtualCanvas.onRemoveLink(this.handleRemoveLink.bind(this));
+        const removeLinkUn = this.cueVirtualCanvas.onRemoveLink(this.handleRemoveLink.bind(this));
         super.registerUn(removeLinkUn);
 
-        const dotHoveredUn = this.virtualCanvas.onHoverDot(this.handleDotHovered.bind(this));
+        const dotHoveredUn = this.cueVirtualCanvas.onHoverDot(this.handleDotHovered.bind(this));
         super.registerUn(dotHoveredUn);
 
-        const dotUnhoveredUn = this.virtualCanvas.onUnhoverDot(this.handleDotUnhovered.bind(this));
+        const dotUnhoveredUn = this.cueVirtualCanvas.onUnhoverDot(this.handleDotUnhovered.bind(this));
         super.registerUn(dotUnhoveredUn);
 
-        const sizeChangedUn = this.virtualCanvas.onSizeChange(this.handleSizeChange.bind(this));
+        const sizeChangedUn = this.cueVirtualCanvas.onSizeChange(this.handleSizeChange.bind(this));
         super.registerUn(sizeChangedUn);
     }
 
