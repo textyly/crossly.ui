@@ -3,7 +3,7 @@ import { InputCanvas } from "./canvas/input/input.js";
 import { IInputCanvas } from "./canvas/input/types.js";
 import { VirtualCanvas } from "./canvas/virtual/virtual.js";
 import { DynamicCanvas } from "./canvas/drawing/dynamic/dynamic.js";
-import { IVirtualCanvas } from "./canvas/virtual/types.js";
+import { ICueVirtualCanvas, IDotVirtualCanvas, ILineVirtualCanvas, IVirtualCanvas } from "./canvas/virtual/types.js";
 import { TransparentCanvas } from "./canvas/input/transparent.js";
 import { RasterCanvas } from "./canvas/drawing/raster/raster.js";
 import { FrontHybridCanvas } from "./canvas/drawing/hybrid/front.js";
@@ -12,17 +12,28 @@ import { StaticCanvas } from "./canvas/drawing/static/static.js";
 
 export class CanvasBuilder {
     public build(): IVirtualCanvas {
-        const userInputCanvas = this.buildUserInputCanvas();
-        const userInputCanvasThrottler = this.buildUserInputCanvasThrottler(userInputCanvas);
+        // real canvas
+        const userInputCanvas = this.buildInputCanvas();
+
+        // throttler
+        const userInputCanvasThrottler = this.buildInputCanvasThrottler(userInputCanvas);
+
+        // virtual canvas
         const virtualCanvas = this.buildVirtualCanvas(userInputCanvasThrottler);
 
+        // real canvas
         this.buildStaticCanvas(virtualCanvas);
+
+        // real canvas
+        this.buildHybridCanvas(virtualCanvas);
+
+        // real canvas
         this.buildDynamicCanvas(virtualCanvas);
 
         return virtualCanvas;
     }
 
-    private buildUserInputCanvas(): IInputCanvas {
+    private buildInputCanvas(): IInputCanvas {
         const svgCanvas = document.getElementById("input") as HTMLElement;
         const wrapper = new TransparentCanvas(svgCanvas);
         wrapper.initialize();
@@ -33,7 +44,7 @@ export class CanvasBuilder {
         return canvas;
     }
 
-    private buildUserInputCanvasThrottler(userInputCanvasCapturer: IInputCanvas): IInputCanvas {
+    private buildInputCanvasThrottler(userInputCanvasCapturer: IInputCanvas): IInputCanvas {
         const headlessCanvas = new InputCanvasThrottler(userInputCanvasCapturer);
         headlessCanvas.initialize();
         return headlessCanvas;
@@ -46,30 +57,30 @@ export class CanvasBuilder {
         return virtualCanvas;
     }
 
-    private buildStaticCanvas(virtualCanvas: IVirtualCanvas): void {
+    private buildStaticCanvas(dotVirtualCanvas: IDotVirtualCanvas): void {
         const htmlCanvas = document.getElementById("static") as HTMLCanvasElement;
         const rasterStaticCanvas = new RasterCanvas(htmlCanvas);
         rasterStaticCanvas.initialize();
 
-        const staticCanvas = new StaticCanvas(rasterStaticCanvas, virtualCanvas);
+        const staticCanvas = new StaticCanvas(rasterStaticCanvas, dotVirtualCanvas);
         staticCanvas.initialize();
+    }
 
-        // ---------------------------
-
+    private buildHybridCanvas(lineVirtualCanvas: ILineVirtualCanvas): void {
         const hybridCanvas = document.getElementById("hybrid") as HTMLCanvasElement;
         const hybridStaticCanvas = new RasterCanvas(hybridCanvas);
         hybridStaticCanvas.initialize();
 
-        const frontHybridCanvas = new FrontHybridCanvas(hybridStaticCanvas, virtualCanvas);
+        const frontHybridCanvas = new FrontHybridCanvas(hybridStaticCanvas, lineVirtualCanvas);
         frontHybridCanvas.initialize();
     }
 
-    private buildDynamicCanvas(virtualCanvas: IVirtualCanvas): void {
+    private buildDynamicCanvas(cueVirtualCanvas: ICueVirtualCanvas): void {
         const svgHtmlCanvas = document.getElementById("dynamic") as HTMLElement;
         const svgCanvas = new SvgCanvas(svgHtmlCanvas);
         svgCanvas.initialize();
 
-        const dynamicCanvas = new DynamicCanvas(svgCanvas, virtualCanvas);
+        const dynamicCanvas = new DynamicCanvas(svgCanvas, cueVirtualCanvas);
         dynamicCanvas.initialize();
     }
 }

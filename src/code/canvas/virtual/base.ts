@@ -80,6 +80,7 @@ export abstract class VirtualCanvasBase extends CanvasBase implements IVirtualCa
     }
 
     protected override disposeCore(): void {
+        this.messaging.stop();
     }
 
     // #endregion 

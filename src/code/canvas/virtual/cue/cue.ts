@@ -2,6 +2,7 @@ import { CanvasSide, ICueVirtualCanvas, Id, Link } from "../types.js";
 import { IInputCanvas, MouseLeftButtonDownEvent, MouseMoveEvent, Position } from "../../input/types.js";
 import { DotVirtualCanvas } from "../dot/dot.js";
 import { CueVirtualCanvasBase } from "./base.js";
+import { Size } from "../../types.js";
 
 export class CueVirtualCanvas extends CueVirtualCanvasBase implements ICueVirtualCanvas {
     private readonly dotVirtualCanvas: DotVirtualCanvas;
@@ -22,6 +23,9 @@ export class CueVirtualCanvas extends CueVirtualCanvasBase implements ICueVirtua
     protected override initializeCore(): void {
         super.initializeCore();
 
+        const sizeChangeUn = this.dotVirtualCanvas.onSizeChange(this.handleDotVirtualCanvasSizeChange.bind(this));
+        super.registerUn(sizeChangeUn);
+
         const zoomInUn = this.inputCanvas.onZoomIn(this.handleZoomIn.bind(this));
         super.registerUn(zoomInUn);
 
@@ -39,7 +43,11 @@ export class CueVirtualCanvas extends CueVirtualCanvasBase implements ICueVirtua
         // TODO: 
     }
 
-    public handleZoomIn(): void {
+    private handleDotVirtualCanvasSizeChange(size: Size): void {
+        super.size = size;
+    }
+
+    private handleZoomIn(): void {
         if (this.hovered) {
             this.handleUnhoverDot();
         }
@@ -49,7 +57,7 @@ export class CueVirtualCanvas extends CueVirtualCanvasBase implements ICueVirtua
         }
     }
 
-    public handleZoomOut(): void {
+    private handleZoomOut(): void {
         if (this.hovered) {
             this.handleUnhoverDot();
         }
@@ -59,13 +67,13 @@ export class CueVirtualCanvas extends CueVirtualCanvasBase implements ICueVirtua
         }
     }
 
-    public handleMouseMove(event: MouseMoveEvent): void {
+    private handleMouseMove(event: MouseMoveEvent): void {
         const position = event.position;
         this.handleHoverDot(position);
         this.handleDrawLink(position);
     }
 
-    public handleMouseLeftButtonDown(event: MouseLeftButtonDownEvent): void {
+    private handleMouseLeftButtonDown(event: MouseLeftButtonDownEvent): void {
         const position = event.position;
         this.handleDotClick(position);
     }

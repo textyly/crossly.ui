@@ -45,6 +45,7 @@ export class VirtualCanvas extends VirtualCanvasBase {
     // #region overrides
 
     protected override initializeCore(): void {
+        super.initializeCore();
         this.dotVirtualCanvas.initialize();
         this.lineVirtualCanvas.initialize();
         this.cueVirtualCanvas.initialize();
@@ -52,11 +53,9 @@ export class VirtualCanvas extends VirtualCanvasBase {
     }
 
     protected override sizeChangeCore(): void {
+        super.sizeChangeCore();
         const size = super.size;
         this.inputCanvas.size = size;
-        this.dotVirtualCanvas.size = size;
-        this.lineVirtualCanvas.size = size;
-        this.cueVirtualCanvas.size = size;
     }
 
     protected override disposeCore(): void {
@@ -64,6 +63,7 @@ export class VirtualCanvas extends VirtualCanvasBase {
         this.cueVirtualCanvas.dispose();
         this.lineVirtualCanvas.dispose();
         this.dotVirtualCanvas.dispose();
+        super.disposeCore();
     }
 
     // #endregion

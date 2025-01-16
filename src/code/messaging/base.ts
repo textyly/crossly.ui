@@ -125,7 +125,7 @@ export abstract class Messaging implements IMessaging {
             try {
                 listener(error);
             } catch {
-                // ignore
+                // error listener has thrown error, we can only remain silent 
             }
         });
     }

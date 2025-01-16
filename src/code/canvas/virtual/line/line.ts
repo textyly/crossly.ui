@@ -2,6 +2,7 @@ import { CanvasSide, Id, ILineVirtualCanvas, Line } from "../types.js";
 import { IInputCanvas, MouseLeftButtonDownEvent, Position } from "../../input/types.js";
 import { DotVirtualCanvas } from "../dot/dot.js";
 import { LineVirtualCanvasBase } from "./base.js";
+import { Size } from "../../types.js";
 
 export class LineVirtualCanvas extends LineVirtualCanvasBase implements ILineVirtualCanvas {
     private readonly dotVirtualCanvas: DotVirtualCanvas;
@@ -23,6 +24,9 @@ export class LineVirtualCanvas extends LineVirtualCanvasBase implements ILineVir
     protected override initializeCore(): void {
         super.initializeCore();
 
+        const sizeChangeUn = this.dotVirtualCanvas.onSizeChange(this.handleDotVirtualCanvasSizeChange.bind(this));
+        super.registerUn(sizeChangeUn);
+
         const zoomInUn = this.inputCanvas.onZoomIn(this.handleZoomIn.bind(this));
         super.registerUn(zoomInUn);
 
@@ -41,15 +45,19 @@ export class LineVirtualCanvas extends LineVirtualCanvasBase implements ILineVir
         });
     }
 
-    public handleZoomIn(): void {
+    private handleDotVirtualCanvasSizeChange(size: Size): void {
+        super.size = size;
+    }
+
+    private handleZoomIn(): void {
         this.draw();
     }
 
-    public handleZoomOut(): void {
+    private handleZoomOut(): void {
         this.draw();
     }
 
-    public handleMouseLeftButtonDown(event: MouseLeftButtonDownEvent): void {
+    private handleMouseLeftButtonDown(event: MouseLeftButtonDownEvent): void {
         const position = event.position;
         this.handleDotClick(position);
     }
