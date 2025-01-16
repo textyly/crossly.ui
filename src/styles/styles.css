@@ -15,11 +15,18 @@ body {
   z-index: 1;
 }
 
-#dynamic {
+#hybrid {
   position: absolute;
   top: 0;
   left: 0;
   z-index: 2;
+}
+
+#dynamic {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 3;
 
 }
 
@@ -27,5 +34,5 @@ body {
   position: absolute;
   top: 0;
   left: 0;
-  z-index: 3;
+  z-index: 4;
 }

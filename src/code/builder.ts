@@ -48,14 +48,19 @@ export class CanvasBuilder {
 
     private buildStaticCanvas(virtualCanvas: IVirtualCanvas): void {
         const htmlCanvas = document.getElementById("static") as HTMLCanvasElement;
-        const rasterCanvas = new RasterCanvas(htmlCanvas);
-        rasterCanvas.initialize();
+        const rasterStaticCanvas = new RasterCanvas(htmlCanvas);
+        rasterStaticCanvas.initialize();
 
-        const staticCanvas = new StaticCanvas(rasterCanvas, virtualCanvas);
+        const staticCanvas = new StaticCanvas(rasterStaticCanvas, virtualCanvas);
         staticCanvas.initialize();
 
-        //TODO: new line related raster canvas
-        const frontHybridCanvas = new FrontHybridCanvas(rasterCanvas, virtualCanvas);
+        // ---------------------------
+
+        const hybridCanvas = document.getElementById("hybrid") as HTMLCanvasElement;
+        const hybridStaticCanvas = new RasterCanvas(hybridCanvas);
+        hybridStaticCanvas.initialize();
+
+        const frontHybridCanvas = new FrontHybridCanvas(hybridStaticCanvas, virtualCanvas);
         frontHybridCanvas.initialize();
     }
 
