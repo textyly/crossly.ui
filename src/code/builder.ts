@@ -23,7 +23,7 @@ export class CanvasBuilder {
     }
 
     private buildUserInputCanvas(): IInputCanvas {
-        const svgCanvas = document.getElementById("plot") as HTMLElement;
+        const svgCanvas = document.getElementById("input") as HTMLElement;
         const wrapper = new TransparentCanvas(svgCanvas);
         wrapper.initialize();
 
@@ -47,7 +47,7 @@ export class CanvasBuilder {
     }
 
     private buildStaticCanvas(virtualCanvas: IVirtualCanvas): void {
-        const htmlCanvas = document.getElementById("canvas") as HTMLCanvasElement;
+        const htmlCanvas = document.getElementById("static") as HTMLCanvasElement;
         const rasterCanvas = new RasterCanvas(htmlCanvas);
         rasterCanvas.initialize();
 
@@ -60,7 +60,7 @@ export class CanvasBuilder {
     }
 
     private buildDynamicCanvas(virtualCanvas: IVirtualCanvas): void {
-        const svgHtmlCanvas = document.getElementById("svg") as HTMLElement;
+        const svgHtmlCanvas = document.getElementById("dynamic") as HTMLElement;
         const svgCanvas = new SvgCanvas(svgHtmlCanvas);
         svgCanvas.initialize();
 
