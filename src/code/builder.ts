@@ -1,71 +1,49 @@
-import { InputCanvasThrottler } from "./canvas/input/throttler.js";
-import { InputCanvas } from "./canvas/input/input.js";
-import { IInputCanvas } from "./canvas/input/types.js";
-import { VirtualCanvas } from "./canvas/virtual/virtual.js";
-import { CueCanvas } from "./canvas/drawing/cue/cue.js";
-import { ICueVirtualCanvas, IDotVirtualCanvas, ILineVirtualCanvas, IVirtualCanvas } from "./canvas/virtual/types.js";
-import { TransparentCanvas } from "./canvas/input/transparent.js";
-import { RasterCanvas } from "./canvas/drawing/raster/raster.js";
-import { FrontLineCanvas } from "./canvas/drawing/line/front.js";
-import { SvgCanvas } from "./canvas/drawing/svg/svg.js";
-import { DotCanvas } from "./canvas/drawing/dot/dot.js";
+import { IVirtualCanvas } from "./canvas/virtual/types.js";
+import { CrosslyCanvasBuilder } from "./canvas/builder.js";
 
 export class CanvasBuilder {
+    private crosslyCanvasBuilder: CrosslyCanvasBuilder;
+
+    constructor() {
+        this.crosslyCanvasBuilder = new CrosslyCanvasBuilder();
+    }
+
+
     public build(): IVirtualCanvas {
-        // real canvas
         const inputCanvas = this.buildInputCanvas();
+        this.crosslyCanvasBuilder.withInputCanvas(inputCanvas);
 
-        // throttler
-        const inputCanvasThrottler = this.buildInputCanvasThrottler(inputCanvas);
+        const dotCanvas = this.buildDotCanvas();
+        this.crosslyCanvasBuilder.withDotCanvas(dotCanvas);
 
-        // virtual canvas
-        const virtualCanvas = this.buildVirtualCanvas(inputCanvasThrottler);
+        const frontLineCanvas = this.buildFrontLineCanvas();
+        this.crosslyCanvasBuilder.withLineCanvas(frontLineCanvas);
 
-        // real canvas
-        this.buildDotCanvas(virtualCanvas);
+        const cueCanvas = this.buildCueCanvas();
+        this.crosslyCanvasBuilder.withCueCanvas(cueCanvas);
 
-        // real canvas
-        this.buildFrontLineCanvas(virtualCanvas);
-
-        // real canvas
-        this.buildCueCanvas(virtualCanvas);
+        const virtualCanvas = this.crosslyCanvasBuilder.build();
 
         return virtualCanvas;
     }
 
-    private buildInputCanvas(): IInputCanvas {
-        const htmSvgCanvas = document.getElementById("input") as HTMLElement;
-        const transparentCanvas = new TransparentCanvas(htmSvgCanvas);
-        const inputCanvas = new InputCanvas(transparentCanvas);
-        return inputCanvas;
+    private buildInputCanvas(): HTMLElement {
+        const htmlSvgCanvas = document.getElementById("input") as HTMLElement;
+        return htmlSvgCanvas;
     }
 
-    private buildInputCanvasThrottler(inputCanvas: IInputCanvas): IInputCanvas {
-        const inputCanvasThrottler = new InputCanvasThrottler(inputCanvas);
-        return inputCanvasThrottler;
-    }
-
-    private buildVirtualCanvas(inputCanvas: IInputCanvas): IVirtualCanvas {
-        const dotsConfig = { x: 30, y: 20, radius: { value: 2, step: 0.2 }, spacing: { value: 20, step: 2 } };
-        const virtualCanvas = new VirtualCanvas(dotsConfig, inputCanvas);
-        return virtualCanvas;
-    }
-
-    private buildDotCanvas(dotVirtualCanvas: IDotVirtualCanvas): void {
+    private buildDotCanvas(): HTMLCanvasElement {
         const htmlCanvasElement = document.getElementById("dot") as HTMLCanvasElement;
-        const rasterCanvas = new RasterCanvas(htmlCanvasElement);
-        const dotCanvas = new DotCanvas(rasterCanvas, dotVirtualCanvas);
+        return htmlCanvasElement;
     }
 
-    private buildFrontLineCanvas(lineVirtualCanvas: ILineVirtualCanvas): void {
+    private buildFrontLineCanvas(): HTMLCanvasElement {
         const htmlCanvasElement = document.getElementById("line") as HTMLCanvasElement;
-        const rasterCanvas = new RasterCanvas(htmlCanvasElement);
-        const lineCanvas = new FrontLineCanvas(rasterCanvas, lineVirtualCanvas);
+        return htmlCanvasElement;
     }
 
-    private buildCueCanvas(cueVirtualCanvas: ICueVirtualCanvas): void {
+    private buildCueCanvas(): HTMLElement {
         const htmSvgCanvas = document.getElementById("cue") as HTMLElement;
-        const svgCanvas = new SvgCanvas(htmSvgCanvas);
-        const dynamicCanvas = new CueCanvas(svgCanvas, cueVirtualCanvas);
+        return htmSvgCanvas;
     }
 }
