@@ -14,9 +14,7 @@ export class StaticCanvas extends CanvasBase {
         this.dotVirtualCanvas = dotVirtualCanvas;
     }
 
-    public override initialize(): void {
-        super.initialize();
-
+    public initialize(): void {
         const drawDotUn = this.dotVirtualCanvas.onDrawDot(this.handleDrawDot.bind(this));
         super.registerUn(drawDotUn);
 

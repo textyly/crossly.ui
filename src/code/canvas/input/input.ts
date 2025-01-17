@@ -17,9 +17,7 @@ export class InputCanvas extends InputCanvasBase {
 
     // #region abstract overrides
 
-    public override initialize(): void {
-        super.initialize();
-
+    public initialize(): void {
         const wheelChangeUn = this.transparentCanvas.onWheelChange(this.handleWheelChange.bind(this));
         super.registerUn(wheelChangeUn);
 

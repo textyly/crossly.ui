@@ -30,9 +30,7 @@ export class DotVirtualCanvas extends DotVirtualCanvasBase implements IDotVirtua
         this.ids = new IdGenerator();
     }
 
-    public override initialize(): void {
-        super.initialize();
-
+    public initialize(): void {
         const zoomInUn = this.inputCanvas.onZoomIn(this.handleZoomIn.bind(this));
         super.registerUn(zoomInUn);
 

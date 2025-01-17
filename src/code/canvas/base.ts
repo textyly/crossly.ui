@@ -12,16 +12,12 @@ export abstract class CanvasBase implements ICanvas {
     private readonly msg: IMessaging1<SizeChangeEvent>;
     private readonly unFuncs: Array<VoidUnsubscribe>;
 
-    private initialized: boolean;
-
     private width: number;
     private height: number;
 
     //#endregion
 
     constructor() {
-        this.initialized = false;
-
         this.width = 0;
         this.height = 0;
 
@@ -56,19 +52,9 @@ export abstract class CanvasBase implements ICanvas {
         }
     }
 
-    public initialize(): void {
-        if (!this.initialized) {
-            this.initialized = true;
-        }
-    }
-
     public dispose(): void {
-        // TODO: dispose must never throw exceptions !!!
-        if (this.initialized) {
-            this.unFuncs.forEach((un) => un()); // TODO: handle exceptions
-            this.msg.stop();
-            this.initialized = false;
-        }
+        this.unFuncs.forEach((un) => un()); // TODO: handle exceptions
+        this.msg.stop();
     }
 
     // #region interface

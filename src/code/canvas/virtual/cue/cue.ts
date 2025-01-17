@@ -20,9 +20,7 @@ export class CueVirtualCanvas extends CueVirtualCanvasBase implements ICueVirtua
         this.side = CanvasSide.Default;
     }
 
-    public override initialize(): void {
-        super.initialize();
-
+    public initialize(): void {
         const sizeChangeUn = this.dotVirtualCanvas.onSizeChange(this.handleDotVirtualCanvasSizeChange.bind(this));
         super.registerUn(sizeChangeUn);
 
@@ -40,7 +38,6 @@ export class CueVirtualCanvas extends CueVirtualCanvasBase implements ICueVirtua
     }
 
     public draw(): void {
-        // TODO: 
     }
 
     private handleDotVirtualCanvasSizeChange(size: Size): void {

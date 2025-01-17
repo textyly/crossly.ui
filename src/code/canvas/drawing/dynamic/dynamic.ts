@@ -29,9 +29,7 @@ export class DynamicCanvas extends CanvasBase {
         this.lines = new Map<Id, SvgLine>();
     }
 
-    public override initialize(): void {
-        super.initialize();
-
+    public initialize(): void {
         const drawLinkUn = this.cueVirtualCanvas.onDrawLink(this.handleDrawLink.bind(this));
         super.registerUn(drawLinkUn);
 

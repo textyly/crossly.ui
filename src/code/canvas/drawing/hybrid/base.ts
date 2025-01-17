@@ -18,14 +18,13 @@ export abstract class HybridCanvasBase extends CanvasBase {
         this.lineVirtualCanvas = lineVirtualCanvas;
     }
 
-    public override initialize(): void {
-        super.initialize();
+    public initialize(): void {
         const drawLineUn = this.lineVirtualCanvas.onDrawLine(this.handleDrawLine.bind(this));
         super.registerUn(drawLineUn);
         const sizeChangedUn = this.lineVirtualCanvas.onSizeChange(this.handleSizeChange.bind(this));
         super.registerUn(sizeChangedUn);
     }
-    
+
     abstract drawLine(line: Line): void;
 
     private handleDrawLine(event: DrawLineEvent): void {

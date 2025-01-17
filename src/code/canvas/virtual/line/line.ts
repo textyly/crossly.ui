@@ -21,9 +21,7 @@ export class LineVirtualCanvas extends LineVirtualCanvasBase implements ILineVir
         this.lines = [];
     }
 
-    public override initialize(): void {
-        super.initialize();
-
+    public initialize(): void {
         const sizeChangeUn = this.dotVirtualCanvas.onSizeChange(this.handleDotVirtualCanvasSizeChange.bind(this));
         super.registerUn(sizeChangeUn);
 

@@ -37,9 +37,7 @@ export class InputCanvasThrottler extends InputCanvasBase {
 
     // #region abstract overrides 
 
-    public override initialize(): void {
-        super.initialize();
-
+    public initialize(): void {
         const zoomInUn = this.inputCanvas.onZoomIn(this.handleZoomIn.bind(this));
         super.registerUn(zoomInUn);
 

@@ -8,7 +8,4 @@ export interface ICanvas {
     set size(value: Size);
 
     onSizeChange(listener: SizeChangeListener): VoidUnsubscribe;
-
-    initialize(): void;
-    dispose(): void;
 }

@@ -44,12 +44,11 @@ export class VirtualCanvas extends VirtualCanvasBase {
 
     // #region overrides
 
-    public override initialize(): void {
-        super.initialize();
+    public initialize(): void {
+        this.subscribe();
         this.dotVirtualCanvas.initialize();
         this.lineVirtualCanvas.initialize();
         this.cueVirtualCanvas.initialize();
-        this.subscribe();
     }
 
     public override dispose(): void {
