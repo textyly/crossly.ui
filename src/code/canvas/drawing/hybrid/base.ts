@@ -25,7 +25,7 @@ export abstract class HybridCanvasBase extends CanvasBase {
         super.registerUn(sizeChangedUn);
     }
 
-    abstract drawLine(line: Line): void;
+    protected abstract drawLine(line: Line): void;
 
     private handleDrawLine(event: DrawLineEvent): void {
         const line = event.line;

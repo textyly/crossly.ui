@@ -7,7 +7,7 @@ export class BackHybridCanvas extends HybridCanvasBase {
         super(rasterCanvas, lineVirtualCanvas);
     }
 
-    override drawLine(line: Line): void {
+    protected override drawLine(line: Line): void {
         if (line.side === CanvasSide.Front) {
             return; // ignore front lines
         }
