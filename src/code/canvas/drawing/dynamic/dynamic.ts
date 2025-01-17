@@ -29,7 +29,9 @@ export class DynamicCanvas extends CanvasBase {
         this.lines = new Map<Id, SvgLine>();
     }
 
-    protected override initializeCore(): void {
+    public override initialize(): void {
+        super.initialize();
+
         const drawLinkUn = this.cueVirtualCanvas.onDrawLink(this.handleDrawLink.bind(this));
         super.registerUn(drawLinkUn);
 
@@ -46,15 +48,10 @@ export class DynamicCanvas extends CanvasBase {
         super.registerUn(sizeChangedUn);
     }
 
-    protected override sizeChangeCore(): void {
-        this.svgCanvas.size = super.size;
-    }
-
-    protected override disposeCore(): void {
+    public override dispose(): void {
         this.dots.clear();
         this.lines.clear();
-
-        // base class will unsubscribe handleDrawLink, handleRemoveLink, handleDotHovered and handleDotUnhovered
+        super.dispose();
     }
 
     private handleDotHovered(event: HoverDotEvent): void {
@@ -98,5 +95,6 @@ export class DynamicCanvas extends CanvasBase {
 
     private handleSizeChange(size: Size): void {
         super.size = size;
+        this.svgCanvas.size = size;
     }
 }

@@ -1,4 +1,5 @@
 import { CanvasBase } from "../../base.js";
+import { Size } from "../../types.js";
 import { Dot, Line } from "../../virtual/types.js";
 
 export class RasterCanvas extends CanvasBase {
@@ -38,17 +39,9 @@ export class RasterCanvas extends CanvasBase {
         this.context.stroke();
     }
 
-    protected override initializeCore(): void {
-        // do nothing 
-    }
-
-    protected override sizeChangeCore(): void {
-        const size = super.size;
-        this.htmlCanvas.width = size.width;
-        this.htmlCanvas.height = size.height;
-    }
-
-    protected override disposeCore(): void {
-        // do nothing 
+    public override set size(value: Size) {
+        super.size = value;
+        this.htmlCanvas.width = value.width;
+        this.htmlCanvas.height = value.height;
     }
 }

@@ -1,8 +1,8 @@
 import { CanvasSide, ICueVirtualCanvas, Id, Link } from "../types.js";
 import { IInputCanvas, MouseLeftButtonDownEvent, MouseMoveEvent, Position } from "../../input/types.js";
-import { DotVirtualCanvas } from "../dot/dot.js";
 import { CueVirtualCanvasBase } from "./base.js";
 import { Size } from "../../types.js";
+import { DotVirtualCanvas } from "../dot/dot.js";
 
 export class CueVirtualCanvas extends CueVirtualCanvasBase implements ICueVirtualCanvas {
     private readonly dotVirtualCanvas: DotVirtualCanvas;
@@ -20,8 +20,8 @@ export class CueVirtualCanvas extends CueVirtualCanvasBase implements ICueVirtua
         this.side = CanvasSide.Default;
     }
 
-    protected override initializeCore(): void {
-        super.initializeCore();
+    public override initialize(): void {
+        super.initialize();
 
         const sizeChangeUn = this.dotVirtualCanvas.onSizeChange(this.handleDotVirtualCanvasSizeChange.bind(this));
         super.registerUn(sizeChangeUn);

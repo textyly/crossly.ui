@@ -1,3 +1,4 @@
+import { Size } from "../types.js";
 import { InputCanvasBase } from "./base.js";
 import { ITransparentCanvas, MouseButtonDownEvent, MouseMoveEvent, WheelEvent } from "./types.js";
 
@@ -16,7 +17,9 @@ export class InputCanvas extends InputCanvasBase {
 
     // #region abstract overrides
 
-    protected override initializeCore(): void {
+    public override initialize(): void {
+        super.initialize();
+
         const wheelChangeUn = this.transparentCanvas.onWheelChange(this.handleWheelChange.bind(this));
         super.registerUn(wheelChangeUn);
 
@@ -27,12 +30,9 @@ export class InputCanvas extends InputCanvasBase {
         super.registerUn(mouseButtonDownUn);
     }
 
-    protected override sizeChangeCore(): void {
-        this.transparentCanvas.size = super.size;
-    }
-
-    protected override disposeCore(): void {
-        // baseclass will dispose the event listeners
+    public override set size(value: Size) {
+        super.size = value;
+        this.transparentCanvas.size = value;
     }
 
     // #endregion

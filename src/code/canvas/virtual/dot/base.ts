@@ -32,13 +32,8 @@ export abstract class DotVirtualCanvasBase extends CanvasBase {
         this.messaging.sendToChannel1(drawDotEvent);
     }
 
-    protected override initializeCore(): void {
-    }
-
-    protected override sizeChangeCore(): void {
-    }
-
-    protected override disposeCore(): void {
+    public override dispose(): void {
         this.messaging.stop();
+        super.dispose();
     }
 } 

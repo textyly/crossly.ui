@@ -44,26 +44,19 @@ export class VirtualCanvas extends VirtualCanvasBase {
 
     // #region overrides
 
-    protected override initializeCore(): void {
-        super.initializeCore();
+    public override initialize(): void {
+        super.initialize();
         this.dotVirtualCanvas.initialize();
         this.lineVirtualCanvas.initialize();
         this.cueVirtualCanvas.initialize();
         this.subscribe();
     }
 
-    protected override sizeChangeCore(): void {
-        super.sizeChangeCore();
-        const size = super.size;
-        this.inputCanvas.size = size;
-    }
-
-    protected override disposeCore(): void {
-        this.unsubscribe();
+    public override dispose(): void {
         this.cueVirtualCanvas.dispose();
         this.lineVirtualCanvas.dispose();
         this.dotVirtualCanvas.dispose();
-        super.disposeCore();
+        super.dispose();
     }
 
     // #endregion
@@ -102,6 +95,7 @@ export class VirtualCanvas extends VirtualCanvasBase {
 
     private handleSizeChange(size: Size): void {
         super.size = size;
+        this.inputCanvas.size = size;
     }
 
     // #endregion
@@ -109,7 +103,6 @@ export class VirtualCanvas extends VirtualCanvasBase {
     // #region methods
 
     private subscribe(): void {
-
         const drawDotUn = this.dotVirtualCanvas.onDrawDot(this.handleDrawDot.bind(this));
         super.registerUn(drawDotUn);
 
@@ -130,10 +123,6 @@ export class VirtualCanvas extends VirtualCanvasBase {
 
         const unhoverDotUn = this.cueVirtualCanvas.onUnhoverDot(this.handleUnhoverDot.bind(this));
         super.registerUn(unhoverDotUn);
-    }
-
-    private unsubscribe(): void {
-        // base class will unsubscribe
     }
 
     // #endregion

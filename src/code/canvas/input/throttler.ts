@@ -7,6 +7,7 @@ import {
     MouseMoveEvent,
     Position
 } from "./types.js";
+import { Size } from "../types.js";
 
 export class InputCanvasThrottler extends InputCanvasBase {
 
@@ -36,7 +37,9 @@ export class InputCanvasThrottler extends InputCanvasBase {
 
     // #region abstract overrides 
 
-    protected override initializeCore(): void {
+    public override initialize(): void {
+        super.initialize();
+
         const zoomInUn = this.inputCanvas.onZoomIn(this.handleZoomIn.bind(this));
         super.registerUn(zoomInUn);
 
@@ -52,13 +55,15 @@ export class InputCanvasThrottler extends InputCanvasBase {
         this.timerId = setInterval(this.handleTimer.bind(this), this.timerInterval);
     }
 
-    protected override sizeChangeCore(): void {
-        this.inputCanvas.size = super.size;
+    public override set size(value: Size) {
+        super.size = value;
+        this.inputCanvas.size = value;
     }
 
-    protected override disposeCore(): void {
+    public override dispose(): void {
         clearInterval(this.timerId);
         this.handleEvents();
+        super.dispose();
     }
 
     // #endregion

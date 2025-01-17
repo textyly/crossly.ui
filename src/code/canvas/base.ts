@@ -8,14 +8,14 @@ import { SizeChangeEvent, SizeChangeListener } from "./input/types.js";
 export abstract class CanvasBase implements ICanvas {
     // #region fields
 
+    private readonly sizeValidator: SizeValidator;
+    private readonly msg: IMessaging1<SizeChangeEvent>;
+    private readonly unFuncs: Array<VoidUnsubscribe>;
+
     private initialized: boolean;
 
     private width: number;
     private height: number;
-
-    private readonly sizeValidator: SizeValidator;
-    private readonly msg: IMessaging1<SizeChangeEvent>;
-    private readonly unFuncs: Array<VoidUnsubscribe>;
 
     //#endregion
 
@@ -44,8 +44,8 @@ export abstract class CanvasBase implements ICanvas {
     public set size(value: Size) {
         this.sizeValidator.validateSize(value);
 
-        const currentWidth = this.size.width;
-        const currentHeight = this.size.height;
+        const currentWidth = this.width;
+        const currentHeight = this.height;
         const newWidth = value.width;
         const newHeight = value.height;
 
@@ -58,7 +58,6 @@ export abstract class CanvasBase implements ICanvas {
 
     public initialize(): void {
         if (!this.initialized) {
-            this.initializeCore();
             this.initialized = true;
         }
     }
@@ -66,7 +65,6 @@ export abstract class CanvasBase implements ICanvas {
     public dispose(): void {
         // TODO: dispose must never throw exceptions !!!
         if (this.initialized) {
-            this.disposeCore();
             this.unFuncs.forEach((un) => un()); // TODO: handle exceptions
             this.msg.stop();
             this.initialized = false;
@@ -75,14 +73,6 @@ export abstract class CanvasBase implements ICanvas {
 
     // #region interface
 
-    // #region abstract
-
-    protected abstract initializeCore(): void;
-    protected abstract sizeChangeCore(): void;
-    protected abstract disposeCore(): void;
-
-    // #endregion
-
     // #region events
 
     public onSizeChange(listener: SizeChangeListener): VoidUnsubscribe {
@@ -90,7 +80,6 @@ export abstract class CanvasBase implements ICanvas {
     }
 
     private invokeSizeChange(event: SizeChangeEvent): void {
-        this.sizeChangeCore();
         this.msg.sendToChannel1(event);
     }
 

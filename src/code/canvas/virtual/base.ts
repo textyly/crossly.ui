@@ -73,14 +73,9 @@ export abstract class VirtualCanvasBase extends CanvasBase implements IVirtualCa
 
     // #region overrides
 
-    protected override initializeCore(): void {
-    }
-
-    protected override sizeChangeCore(): void {
-    }
-
-    protected override disposeCore(): void {
+    public override dispose(): void {
         this.messaging.stop();
+        super.dispose();
     }
 
     // #endregion 

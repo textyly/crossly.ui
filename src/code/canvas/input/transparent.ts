@@ -43,18 +43,18 @@ export class TransparentCanvas extends SvgCanvasBase implements ITransparentCanv
         return this.messaging.listenOnChannel3(listener);
     }
 
-    protected override initializeCore(): void {
-        super.initializeCore();
+    public override initialize(): void {
+        super.initialize();
         this.svgCanvas.addEventListener(HtmlCanvasEvents.WheelChange, this.wheelChangeHandler);
         this.svgCanvas.addEventListener(HtmlCanvasEvents.MouseMove, this.mouseMoveHandler);
         this.svgCanvas.addEventListener(HtmlCanvasEvents.MouseDown, this.mouseButtonDownHandler);
     }
 
-    protected override disposeCore(): void {
+    public override dispose(): void {
         this.svgCanvas.removeEventListener(HtmlCanvasEvents.WheelChange, this.wheelChangeHandler);
         this.svgCanvas.removeEventListener(HtmlCanvasEvents.MouseMove, this.mouseMoveHandler);
         this.svgCanvas.removeEventListener(HtmlCanvasEvents.MouseDown, this.mouseButtonDownHandler);
-        super.disposeCore();
+        super.dispose();
     }
 
     private handleWheelChange(event: WheelEvent): void {

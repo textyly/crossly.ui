@@ -50,13 +50,6 @@ export abstract class InputCanvasBase extends CanvasBase implements IInputCanvas
 
     // #endregion
 
-    // #region abstract
-
-    protected abstract initializeCore(): void;
-    protected abstract disposeCore(): void;
-
-    // #endregion
-
     // #region events
 
     protected invokeZoomIn(): void {

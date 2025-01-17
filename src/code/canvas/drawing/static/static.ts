@@ -14,20 +14,14 @@ export class StaticCanvas extends CanvasBase {
         this.dotVirtualCanvas = dotVirtualCanvas;
     }
 
-    protected override initializeCore(): void {
+    public override initialize(): void {
+        super.initialize();
+
         const drawDotUn = this.dotVirtualCanvas.onDrawDot(this.handleDrawDot.bind(this));
         super.registerUn(drawDotUn);
 
         const sizeChangedUn = this.dotVirtualCanvas.onSizeChange(this.handleSizeChange.bind(this));
         super.registerUn(sizeChangedUn);
-    }
-
-    protected override sizeChangeCore(): void {
-        this.rasterCanvas.size = super.size;
-    }
-
-    protected override disposeCore(): void {
-        // base class will unsubscribe handleDrawGrid and handleDrawLine
     }
 
     private handleDrawDot(event: DrawDotEvent): void {
@@ -37,5 +31,6 @@ export class StaticCanvas extends CanvasBase {
 
     private handleSizeChange(size: Size): void {
         super.size = size;
+        this.rasterCanvas.size = size;
     }
 }

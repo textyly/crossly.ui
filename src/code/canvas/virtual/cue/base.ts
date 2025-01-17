@@ -70,13 +70,8 @@ export abstract class CueVirtualCanvasBase extends CanvasBase {
         this.messaging.sendToChannel4(removeLinkEvent);
     }
 
-    protected override initializeCore(): void {
-    }
-
-    protected override sizeChangeCore(): void {
-    }
-
-    protected override disposeCore(): void {
+    public override dispose(): void {
         this.messaging.stop();
+        super.dispose();
     }
 }

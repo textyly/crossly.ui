@@ -18,21 +18,14 @@ export abstract class HybridCanvasBase extends CanvasBase {
         this.lineVirtualCanvas = lineVirtualCanvas;
     }
 
-    protected override initializeCore(): void {
+    public override initialize(): void {
+        super.initialize();
         const drawLineUn = this.lineVirtualCanvas.onDrawLine(this.handleDrawLine.bind(this));
         super.registerUn(drawLineUn);
         const sizeChangedUn = this.lineVirtualCanvas.onSizeChange(this.handleSizeChange.bind(this));
         super.registerUn(sizeChangedUn);
     }
-
-    protected override sizeChangeCore(): void {
-        this.rasterCanvas.size = super.size;
-    }
-
-    protected override disposeCore(): void {
-        // base class will unsubscribe handleDrawGrid and handleDrawLine
-    }
-
+    
     abstract drawLine(line: Line): void;
 
     private handleDrawLine(event: DrawLineEvent): void {
@@ -42,5 +35,6 @@ export abstract class HybridCanvasBase extends CanvasBase {
 
     private handleSizeChange(size: Size): void {
         super.size = size;
+        this.rasterCanvas.size = size;
     }
 }
