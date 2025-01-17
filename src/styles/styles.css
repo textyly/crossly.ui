@@ -8,21 +8,21 @@ body {
   height: 100vh;
 }
 
-#static {
+#dot {
   position: absolute;
   top: 0;
   left: 0;
   z-index: 1;
 }
 
-#hybrid {
+#line {
   position: absolute;
   top: 0;
   left: 0;
   z-index: 2;
 }
 
-#dynamic {
+#cue {
   position: absolute;
   top: 0;
   left: 0;

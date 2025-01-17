@@ -28,9 +28,11 @@ export class DotVirtualCanvas extends DotVirtualCanvasBase implements IDotVirtua
 
         this.dots = new Map();
         this.ids = new IdGenerator();
+
+        this.subscribe();
     }
 
-    public initialize(): void {
+    private subscribe(): void {
         const zoomInUn = this.inputCanvas.onZoomIn(this.handleZoomIn.bind(this));
         super.registerUn(zoomInUn);
 

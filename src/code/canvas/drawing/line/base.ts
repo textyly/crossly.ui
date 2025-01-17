@@ -7,7 +7,7 @@ import {
     ILineVirtualCanvas
 } from "../../virtual/types.js";
 
-export abstract class HybridCanvasBase extends CanvasBase {
+export abstract class LineCanvasBase extends CanvasBase {
     protected readonly rasterCanvas: RasterCanvas;
     protected readonly lineVirtualCanvas: ILineVirtualCanvas;
 
@@ -16,9 +16,11 @@ export abstract class HybridCanvasBase extends CanvasBase {
 
         this.rasterCanvas = rasterCanvas;
         this.lineVirtualCanvas = lineVirtualCanvas;
+
+        this.subscribe();
     }
 
-    public initialize(): void {
+    private subscribe(): void {
         const drawLineUn = this.lineVirtualCanvas.onDrawLine(this.handleDrawLine.bind(this));
         super.registerUn(drawLineUn);
         const sizeChangedUn = this.lineVirtualCanvas.onSizeChange(this.handleSizeChange.bind(this));

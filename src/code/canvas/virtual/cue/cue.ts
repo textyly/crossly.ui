@@ -18,9 +18,10 @@ export class CueVirtualCanvas extends CueVirtualCanvasBase implements ICueVirtua
         this.dotVirtualCanvas = dotVirtualCanvas;
         this.inputCanvas = inputCanvas;
         this.side = CanvasSide.Default;
+        this.subscribe();
     }
 
-    public initialize(): void {
+    private subscribe(): void {
         const sizeChangeUn = this.dotVirtualCanvas.onSizeChange(this.handleDotVirtualCanvasSizeChange.bind(this));
         super.registerUn(sizeChangeUn);
 

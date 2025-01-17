@@ -13,11 +13,12 @@ export class InputCanvas extends InputCanvasBase {
     constructor(transparentCanvas: ITransparentCanvas) {
         super();
         this.transparentCanvas = transparentCanvas;
+        this.subscribe();
     }
 
     // #region abstract overrides
 
-    public initialize(): void {
+    private subscribe(): void {
         const wheelChangeUn = this.transparentCanvas.onWheelChange(this.handleWheelChange.bind(this));
         super.registerUn(wheelChangeUn);
 

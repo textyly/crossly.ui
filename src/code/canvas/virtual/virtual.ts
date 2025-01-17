@@ -30,6 +30,7 @@ export class VirtualCanvas extends VirtualCanvasBase {
         this.dotVirtualCanvas = new DotVirtualCanvas(config, this.inputCanvas);
         this.lineVirtualCanvas = new LineVirtualCanvas(this.dotVirtualCanvas, this.inputCanvas);
         this.cueVirtualCanvas = new CueVirtualCanvas(this.dotVirtualCanvas, this.inputCanvas);
+        this.subscribe();
     }
 
     // #region interface
@@ -44,11 +45,27 @@ export class VirtualCanvas extends VirtualCanvasBase {
 
     // #region overrides
 
-    public initialize(): void {
-        this.subscribe();
-        this.dotVirtualCanvas.initialize();
-        this.lineVirtualCanvas.initialize();
-        this.cueVirtualCanvas.initialize();
+    private subscribe(): void {
+        const drawDotUn = this.dotVirtualCanvas.onDrawDot(this.handleDrawDot.bind(this));
+        super.registerUn(drawDotUn);
+
+        const dotCanvasSizeChangedUn = this.dotVirtualCanvas.onSizeChange(this.handleSizeChange.bind(this));
+        super.registerUn(dotCanvasSizeChangedUn);
+
+        const drawLineUn = this.lineVirtualCanvas.onDrawLine(this.handleDrawLine.bind(this));
+        super.registerUn(drawLineUn);
+
+        const drawLinkUn = this.cueVirtualCanvas.onDrawLink(this.handleDrawLink.bind(this));
+        super.registerUn(drawLinkUn);
+
+        const removeLinkUn = this.cueVirtualCanvas.onRemoveLink(this.handleRemoveLink.bind(this));
+        super.registerUn(removeLinkUn);
+
+        const hoverDotUn = this.cueVirtualCanvas.onHoverDot(this.handleHoverDot.bind(this));
+        super.registerUn(hoverDotUn);
+
+        const unhoverDotUn = this.cueVirtualCanvas.onUnhoverDot(this.handleUnhoverDot.bind(this));
+        super.registerUn(unhoverDotUn);
     }
 
     public override dispose(): void {
@@ -100,29 +117,5 @@ export class VirtualCanvas extends VirtualCanvasBase {
     // #endregion
 
     // #region methods
-
-    private subscribe(): void {
-        const drawDotUn = this.dotVirtualCanvas.onDrawDot(this.handleDrawDot.bind(this));
-        super.registerUn(drawDotUn);
-
-        const dotCanvasSizeChangedUn = this.dotVirtualCanvas.onSizeChange(this.handleSizeChange.bind(this));
-        super.registerUn(dotCanvasSizeChangedUn);
-
-        const drawLineUn = this.lineVirtualCanvas.onDrawLine(this.handleDrawLine.bind(this));
-        super.registerUn(drawLineUn);
-
-        const drawLinkUn = this.cueVirtualCanvas.onDrawLink(this.handleDrawLink.bind(this));
-        super.registerUn(drawLinkUn);
-
-        const removeLinkUn = this.cueVirtualCanvas.onRemoveLink(this.handleRemoveLink.bind(this));
-        super.registerUn(removeLinkUn);
-
-        const hoverDotUn = this.cueVirtualCanvas.onHoverDot(this.handleHoverDot.bind(this));
-        super.registerUn(hoverDotUn);
-
-        const unhoverDotUn = this.cueVirtualCanvas.onUnhoverDot(this.handleUnhoverDot.bind(this));
-        super.registerUn(unhoverDotUn);
-    }
-
     // #endregion
 }

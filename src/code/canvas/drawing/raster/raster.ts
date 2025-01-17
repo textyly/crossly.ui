@@ -11,10 +11,6 @@ export class RasterCanvas extends CanvasBase {
         this.context = htmlCanvas.getContext("2d")!;
     }
 
-    public initialize(): void {
-
-    }
-
     public clear(): void {
         this.context.clearRect(0, 0, this.htmlCanvas.clientWidth, this.htmlCanvas.clientWidth);
     }

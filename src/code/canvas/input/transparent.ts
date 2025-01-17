@@ -28,7 +28,9 @@ export class TransparentCanvas extends SvgCanvasBase implements ITransparentCanv
 
         this.wheelChangeHandler = this.handleWheelChange.bind(this);
         this.mouseMoveHandler = this.handleMouseMove.bind(this);
-        this.mouseButtonDownHandler = this.handleMouseButtonDown.bind(this);
+        this.mouseButtonDownHandler = this.handleMouseButtonDown.bind(this)
+
+        this.subscribe();
     }
 
     public onWheelChange(listener: WheelListener): VoidUnsubscribe {
@@ -43,7 +45,7 @@ export class TransparentCanvas extends SvgCanvasBase implements ITransparentCanv
         return this.messaging.listenOnChannel3(listener);
     }
 
-    public initialize(): void {
+    private subscribe(): void {
         this.svgCanvas.addEventListener(HtmlCanvasEvents.WheelChange, this.wheelChangeHandler);
         this.svgCanvas.addEventListener(HtmlCanvasEvents.MouseMove, this.mouseMoveHandler);
         this.svgCanvas.addEventListener(HtmlCanvasEvents.MouseDown, this.mouseButtonDownHandler);

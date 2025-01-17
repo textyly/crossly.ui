@@ -7,10 +7,6 @@ export class SvgCanvas extends SvgCanvasBase {
         super(svgCanvas);
     }
 
-    public initialize(): void {
-
-    }
-
     public drawDot(dot: Dot): SvgDot {
         const d = document.createElementNS("http://www.w3.org/2000/svg", "circle");
         const x = dot.x.toString();

@@ -33,11 +33,13 @@ export class InputCanvasThrottler extends InputCanvasBase {
 
         const className = InputCanvasThrottler.name;
         this.validator = new InputCanvasThrottlerValidator(className);
+
+        this.subscribe();
     }
 
     // #region abstract overrides 
 
-    public initialize(): void {
+    private subscribe(): void {
         const zoomInUn = this.inputCanvas.onZoomIn(this.handleZoomIn.bind(this));
         super.registerUn(zoomInUn);
 

@@ -3,7 +3,7 @@ import { CanvasBase } from "../../base.js";
 import { RasterCanvas } from "../raster/raster.js";
 import { DrawDotEvent, IDotVirtualCanvas } from "../../virtual/types.js";
 
-export class StaticCanvas extends CanvasBase {
+export class DotCanvas extends CanvasBase {
     protected readonly rasterCanvas: RasterCanvas;
     protected readonly dotVirtualCanvas: IDotVirtualCanvas;
 
@@ -12,9 +12,11 @@ export class StaticCanvas extends CanvasBase {
 
         this.rasterCanvas = rasterCanvas;
         this.dotVirtualCanvas = dotVirtualCanvas;
+
+        this.subscribe();
     }
 
-    public initialize(): void {
+    private subscribe(): void {
         const drawDotUn = this.dotVirtualCanvas.onDrawDot(this.handleDrawDot.bind(this));
         super.registerUn(drawDotUn);
 

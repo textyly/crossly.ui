@@ -2,85 +2,70 @@ import { InputCanvasThrottler } from "./canvas/input/throttler.js";
 import { InputCanvas } from "./canvas/input/input.js";
 import { IInputCanvas } from "./canvas/input/types.js";
 import { VirtualCanvas } from "./canvas/virtual/virtual.js";
-import { DynamicCanvas } from "./canvas/drawing/dynamic/dynamic.js";
+import { CueCanvas } from "./canvas/drawing/cue/cue.js";
 import { ICueVirtualCanvas, IDotVirtualCanvas, ILineVirtualCanvas, IVirtualCanvas } from "./canvas/virtual/types.js";
 import { TransparentCanvas } from "./canvas/input/transparent.js";
 import { RasterCanvas } from "./canvas/drawing/raster/raster.js";
-import { FrontHybridCanvas } from "./canvas/drawing/hybrid/front.js";
+import { FrontLineCanvas } from "./canvas/drawing/line/front.js";
 import { SvgCanvas } from "./canvas/drawing/svg/svg.js";
-import { StaticCanvas } from "./canvas/drawing/static/static.js";
+import { DotCanvas } from "./canvas/drawing/dot/dot.js";
 
 export class CanvasBuilder {
     public build(): IVirtualCanvas {
         // real canvas
-        const userInputCanvas = this.buildInputCanvas();
+        const inputCanvas = this.buildInputCanvas();
 
         // throttler
-        const userInputCanvasThrottler = this.buildInputCanvasThrottler(userInputCanvas);
+        const inputCanvasThrottler = this.buildInputCanvasThrottler(inputCanvas);
 
         // virtual canvas
-        const virtualCanvas = this.buildVirtualCanvas(userInputCanvasThrottler);
+        const virtualCanvas = this.buildVirtualCanvas(inputCanvasThrottler);
 
         // real canvas
-        this.buildStaticCanvas(virtualCanvas);
+        this.buildDotCanvas(virtualCanvas);
 
         // real canvas
-        this.buildHybridCanvas(virtualCanvas);
+        this.buildFrontLineCanvas(virtualCanvas);
 
         // real canvas
-        this.buildDynamicCanvas(virtualCanvas);
+        this.buildCueCanvas(virtualCanvas);
 
         return virtualCanvas;
     }
 
     private buildInputCanvas(): IInputCanvas {
-        const svgCanvas = document.getElementById("input") as HTMLElement;
-        const wrapper = new TransparentCanvas(svgCanvas);
-        wrapper.initialize();
-
-        const canvas = new InputCanvas(wrapper);
-        canvas.initialize();
-
-        return canvas;
+        const htmSvgCanvas = document.getElementById("input") as HTMLElement;
+        const transparentCanvas = new TransparentCanvas(htmSvgCanvas);
+        const inputCanvas = new InputCanvas(transparentCanvas);
+        return inputCanvas;
     }
 
-    private buildInputCanvasThrottler(userInputCanvasCapturer: IInputCanvas): IInputCanvas {
-        const headlessCanvas = new InputCanvasThrottler(userInputCanvasCapturer);
-        headlessCanvas.initialize();
-        return headlessCanvas;
+    private buildInputCanvasThrottler(inputCanvas: IInputCanvas): IInputCanvas {
+        const inputCanvasThrottler = new InputCanvasThrottler(inputCanvas);
+        return inputCanvasThrottler;
     }
 
-    private buildVirtualCanvas(userInputCanvasThrottler: IInputCanvas): IVirtualCanvas {
+    private buildVirtualCanvas(inputCanvas: IInputCanvas): IVirtualCanvas {
         const dotsConfig = { x: 30, y: 20, radius: { value: 2, step: 0.2 }, spacing: { value: 20, step: 2 } };
-        const virtualCanvas = new VirtualCanvas(dotsConfig, userInputCanvasThrottler);
-        virtualCanvas.initialize();
+        const virtualCanvas = new VirtualCanvas(dotsConfig, inputCanvas);
         return virtualCanvas;
     }
 
-    private buildStaticCanvas(dotVirtualCanvas: IDotVirtualCanvas): void {
-        const htmlCanvas = document.getElementById("static") as HTMLCanvasElement;
-        const rasterStaticCanvas = new RasterCanvas(htmlCanvas);
-        rasterStaticCanvas.initialize();
-
-        const staticCanvas = new StaticCanvas(rasterStaticCanvas, dotVirtualCanvas);
-        staticCanvas.initialize();
+    private buildDotCanvas(dotVirtualCanvas: IDotVirtualCanvas): void {
+        const htmlCanvasElement = document.getElementById("dot") as HTMLCanvasElement;
+        const rasterCanvas = new RasterCanvas(htmlCanvasElement);
+        const dotCanvas = new DotCanvas(rasterCanvas, dotVirtualCanvas);
     }
 
-    private buildHybridCanvas(lineVirtualCanvas: ILineVirtualCanvas): void {
-        const hybridCanvas = document.getElementById("hybrid") as HTMLCanvasElement;
-        const hybridStaticCanvas = new RasterCanvas(hybridCanvas);
-        hybridStaticCanvas.initialize();
-
-        const frontHybridCanvas = new FrontHybridCanvas(hybridStaticCanvas, lineVirtualCanvas);
-        frontHybridCanvas.initialize();
+    private buildFrontLineCanvas(lineVirtualCanvas: ILineVirtualCanvas): void {
+        const htmlCanvasElement = document.getElementById("line") as HTMLCanvasElement;
+        const rasterCanvas = new RasterCanvas(htmlCanvasElement);
+        const lineCanvas = new FrontLineCanvas(rasterCanvas, lineVirtualCanvas);
     }
 
-    private buildDynamicCanvas(cueVirtualCanvas: ICueVirtualCanvas): void {
-        const svgHtmlCanvas = document.getElementById("dynamic") as HTMLElement;
-        const svgCanvas = new SvgCanvas(svgHtmlCanvas);
-        svgCanvas.initialize();
-
-        const dynamicCanvas = new DynamicCanvas(svgCanvas, cueVirtualCanvas);
-        dynamicCanvas.initialize();
+    private buildCueCanvas(cueVirtualCanvas: ICueVirtualCanvas): void {
+        const htmSvgCanvas = document.getElementById("cue") as HTMLElement;
+        const svgCanvas = new SvgCanvas(htmSvgCanvas);
+        const dynamicCanvas = new CueCanvas(svgCanvas, cueVirtualCanvas);
     }
 }

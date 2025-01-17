@@ -12,7 +12,7 @@ import {
     ICueVirtualCanvas
 } from "../../virtual/types.js";
 
-export class DynamicCanvas extends CanvasBase {
+export class CueCanvas extends CanvasBase {
     protected readonly svgCanvas: SvgCanvas;
     protected readonly cueVirtualCanvas: ICueVirtualCanvas;
 
@@ -24,12 +24,14 @@ export class DynamicCanvas extends CanvasBase {
 
         this.svgCanvas = svgCanvas;
         this.cueVirtualCanvas = cueVirtualCanvas;
-
+        
         this.dots = new Map<Id, SvgDot>();
         this.lines = new Map<Id, SvgLine>();
+
+        this.subscribe();
     }
 
-    public initialize(): void {
+    private subscribe(): void {
         const drawLinkUn = this.cueVirtualCanvas.onDrawLink(this.handleDrawLink.bind(this));
         super.registerUn(drawLinkUn);
 
