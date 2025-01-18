@@ -1,5 +1,5 @@
 import { ICanvas } from "../types.js";
-import { Listener, VoidListener, VoidUnsubscribe } from "../../types.js";
+import { Listener, VoidUnsubscribe } from "../../types.js";
 
 // #region types
 
@@ -63,6 +63,5 @@ export enum CanvasSide {
     Back,
     Default = Back,
 }
-
 
 // #endregion

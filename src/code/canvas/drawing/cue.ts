@@ -1,5 +1,5 @@
 import { CanvasBase } from "../base.js";
-import { IVectorDrawing, SvgDot, SvgLine } from "./types.js";
+import { IDrawingCanvas, IVectorDrawing, SvgDot, SvgLine } from "./types.js";
 import { Size } from "../types.js";
 import {
     Id,
@@ -11,17 +11,14 @@ import {
     ICueVirtualCanvas
 } from "../virtual/types.js";
 
-export class CueCanvas extends CanvasBase {
-    protected readonly vectorDrawing: IVectorDrawing;
-
+export class CueCanvas extends CanvasBase implements IDrawingCanvas<ICueVirtualCanvas> {
+    private readonly vectorDrawing: IVectorDrawing;
     private readonly svgDots: Map<Id, SvgDot>;
     private readonly svgLines: Map<Id, SvgLine>;
 
     constructor(vectorDrawing: IVectorDrawing) {
         super();
-
         this.vectorDrawing = vectorDrawing;
-
         this.svgDots = new Map<Id, SvgDot>();
         this.svgLines = new Map<Id, SvgLine>();
     }
@@ -50,10 +47,10 @@ export class CueCanvas extends CanvasBase {
     }
 
     private handleDotHovered(event: HoverDotEvent): void {
-        const virtualDot = event.dot;
-        const id = virtualDot.id;
+        const dot = event.dot;
+        const id = dot.id;
 
-        const svgDot = this.vectorDrawing.drawDot(virtualDot);
+        const svgDot = this.vectorDrawing.drawDot(dot);
         this.svgDots.set(id, svgDot);
     }
 
@@ -67,11 +64,11 @@ export class CueCanvas extends CanvasBase {
     }
 
     private handleDrawLink(event: DrawLinkEvent): void {
-        const virtualLink = event.link;
-        const id = virtualLink.id;
-        const from = virtualLink.from;
-        const to = virtualLink.to;
-        const side = virtualLink.side;
+        const link = event.link;
+        const id = link.id;
+        const from = link.from;
+        const to = link.to;
+        const side = link.side;
 
         const svgLine = side === CanvasSide.Front
             ? this.vectorDrawing.drawLine(from, to)
@@ -81,8 +78,8 @@ export class CueCanvas extends CanvasBase {
     }
 
     private handleRemoveLink(event: RemoveLinkEvent): void {
-        const virtualLink = event.link;
-        const id = virtualLink.id.toString();
+        const link = event.link;
+        const id = link.id.toString();
 
         if (this.svgLines.has(id)) {
             const svgLine = this.svgLines.get(id)!;

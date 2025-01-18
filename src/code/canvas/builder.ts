@@ -7,6 +7,7 @@ import { VectorDrawing } from "./drawing/vector.js";
 import { InputCanvas } from "./input/input.js";
 import { InputCanvasThrottler } from "./input/throttler.js";
 import { IInputCanvas } from "./input/types.js";
+import { ICrosslyCanvas } from "./types.js";
 
 export class CrosslyCanvasBuilder {
     private inputCanvas!: IInputCanvas;
@@ -14,9 +15,9 @@ export class CrosslyCanvasBuilder {
     private lineCanvas!: LineCanvas;
     private cueCanvas!: CueCanvas;
 
-    public build(): CrosslyCanvas {
-        const crosslyCanvas = new CrosslyCanvas(this.inputCanvas, this.dotCanvas, this.lineCanvas, this.cueCanvas);
-        crosslyCanvas.initialize();
+    public build(): ICrosslyCanvas {
+        const crosslyCanvas = new CrosslyCanvas();
+        crosslyCanvas.initialize(this.inputCanvas, this.dotCanvas, this.lineCanvas, this.cueCanvas);
         return crosslyCanvas;
     }
 

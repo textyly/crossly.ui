@@ -1,10 +1,10 @@
 import { Size } from "../types.js";
 import { CanvasBase } from "../base.js";
-import { IRasterDrawing } from "./types.js";
+import { IDrawingCanvas, IRasterDrawing } from "./types.js";
 import { DrawLineEvent, ILineVirtualCanvas } from "../virtual/types.js";
 
-export class LineCanvas extends CanvasBase {
-    protected readonly rasterDrawing: IRasterDrawing;
+export class LineCanvas extends CanvasBase implements IDrawingCanvas<ILineVirtualCanvas> {
+    private readonly rasterDrawing: IRasterDrawing;
 
     constructor(rasterDrawing: IRasterDrawing) {
         super();
@@ -20,8 +20,8 @@ export class LineCanvas extends CanvasBase {
     }
 
     private handleDrawLine(event: DrawLineEvent): void {
-        const virtualLine = event.line;
-        this.rasterDrawing.drawLine(virtualLine);
+        const line = event.line;
+        this.rasterDrawing.drawLine(line);
     }
 
     private handleSizeChange(size: Size): void {

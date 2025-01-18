@@ -1,10 +1,10 @@
 import { Size } from "../types.js";
 import { CanvasBase } from "../base.js";
 import { DrawDotEvent, IDotVirtualCanvas } from "../virtual/types.js";
-import { IRasterDrawing } from "./types.js";
+import { IDrawingCanvas, IRasterDrawing } from "./types.js";
 
-export class DotCanvas extends CanvasBase {
-    protected readonly rasterDrawing: IRasterDrawing;
+export class DotCanvas extends CanvasBase  implements IDrawingCanvas<IDotVirtualCanvas>{
+    private readonly rasterDrawing: IRasterDrawing;
 
     constructor(rasterDrawing: IRasterDrawing) {
         super();
@@ -20,8 +20,8 @@ export class DotCanvas extends CanvasBase {
     }
 
     private handleDrawDot(event: DrawDotEvent): void {
-        const virtualDot = event.dot;
-        this.rasterDrawing.drawDot(virtualDot);
+        const dot = event.dot;
+        this.rasterDrawing.drawDot(dot);
     }
 
     private handleSizeChange(size: Size): void {
