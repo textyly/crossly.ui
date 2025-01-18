@@ -108,26 +108,7 @@ export abstract class Messaging implements IMessaging {
         this.ensureChannelExists(channel, this.publicChannels);
 
         const listeners = this.publicChannels.get(channel)!;
-        listeners.forEach((l) => this.sendSafely(l, data));
-    }
-
-    private sendSafely(listener: ChannelListener, data: ChannelData): void {
-        try {
-            listener(data);
-        } catch (error: unknown) {
-            this.sendError(error);
-        }
-    }
-
-    private sendError(error: unknown): void {
-        const errorListeners = this.privateChannels.get(this.errorChannel);
-        errorListeners?.forEach((listener) => {
-            try {
-                listener(error);
-            } catch {
-                // error listener has thrown error, we can only remain silent 
-            }
-        });
+        listeners.forEach((listener) => listener(data));
     }
 
     private unsubscribe(channel: Channel, listener: ChannelListener): ChannelListener | undefined {

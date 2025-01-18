@@ -1,6 +1,5 @@
 // #region types 
 
-import { ITelemetryEmitter } from "../telemetry/types";
 import { Listener, VoidListener, VoidUnsubscribe } from "../types";
 
 /**
@@ -30,7 +29,7 @@ export type ChannelListeners = Array<ChannelListener>;
 /**
  * 
  */
-export interface IMessaging extends ITelemetryEmitter {
+export interface IMessaging {
     /**
      * 
      */

@@ -56,6 +56,7 @@ export class CueDrawingCanvas extends CanvasBase implements IDrawingCanvas<ICueV
 
     private handleDotUnhovered(event: UnhoverDotEvent): void {
         const id = event.dot.id;
+
         if (this.svgDots.has(id)) {
             const svgDot = this.svgDots.get(id)!;
             this.vectorDrawing.removeDot(svgDot)
