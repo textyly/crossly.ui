@@ -1,11 +1,11 @@
-import { CanvasSide, Id, ILineVirtualCanvas, Line } from "../types.js";
+import { CanvasSide, Id, IDotVirtualCanvas, ILineVirtualCanvas, Line } from "../types.js";
 import { IInputCanvas, MouseLeftButtonDownEvent, Position } from "../../input/types.js";
 import { DotVirtualCanvas } from "../dot/dot.js";
 import { LineVirtualCanvasBase } from "./base.js";
 import { Size } from "../../types.js";
 
 export class LineVirtualCanvas extends LineVirtualCanvasBase implements ILineVirtualCanvas {
-    private readonly dotVirtualCanvas: DotVirtualCanvas;
+    private readonly dotVirtualCanvas: IDotVirtualCanvas;
     private readonly inputCanvas: IInputCanvas;
 
     private lines: Array<Line>;
@@ -13,7 +13,7 @@ export class LineVirtualCanvas extends LineVirtualCanvasBase implements ILineVir
     private clicked?: Id;
     private side: CanvasSide;
 
-    constructor(dotVirtualCanvas: DotVirtualCanvas, inputCanvas: IInputCanvas) {
+    constructor(dotVirtualCanvas: IDotVirtualCanvas, inputCanvas: IInputCanvas) {
         super();
         this.dotVirtualCanvas = dotVirtualCanvas;
         this.inputCanvas = inputCanvas;

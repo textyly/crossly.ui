@@ -7,25 +7,16 @@ import { VectorDrawing } from "./drawing/vector.js";
 import { InputCanvas } from "./input/input.js";
 import { InputCanvasThrottler } from "./input/throttler.js";
 import { IInputCanvas } from "./input/types.js";
-import { IVirtualCanvas } from "./virtual/types.js";
-import { VirtualCanvas } from "./virtual/virtual.js";
 
 export class CrosslyCanvasBuilder {
     private inputCanvas!: IInputCanvas;
-    private virtualCanvas!: IVirtualCanvas;
     private dotCanvas!: DotCanvas;
     private lineCanvas!: LineCanvas;
     private cueCanvas!: CueCanvas;
 
     public build(): CrosslyCanvas {
-        const crosslyCanvas = new CrosslyCanvas(
-            this.inputCanvas,
-            this.virtualCanvas,
-            this.dotCanvas,
-            this.lineCanvas,
-            this.cueCanvas
-        );
-
+        const crosslyCanvas = new CrosslyCanvas(this.inputCanvas, this.dotCanvas, this.lineCanvas, this.cueCanvas);
+        crosslyCanvas.initialize();
         return crosslyCanvas;
     }
 
@@ -33,28 +24,24 @@ export class CrosslyCanvasBuilder {
         const inputCanvas = new InputCanvas(htmlSvgElement);
         const inputCanvasThrottler = new InputCanvasThrottler(inputCanvas);
         this.inputCanvas = inputCanvasThrottler;
-
-        const dotsConfig = { x: 30, y: 20, radius: { value: 2, step: 0.2 }, spacing: { value: 20, step: 2 } };
-        this.virtualCanvas = new VirtualCanvas(dotsConfig, inputCanvasThrottler);
-
         return this;
     }
 
     public withDotCanvas(htmlCanvasElement: HTMLCanvasElement): CrosslyCanvasBuilder {
         const rasterDrawing = new RasterDrawing(htmlCanvasElement);
-        this.dotCanvas = new DotCanvas(rasterDrawing, this.virtualCanvas);
+        this.dotCanvas = new DotCanvas(rasterDrawing);
         return this;
     }
 
     public withLineCanvas(htmlCanvasElement: HTMLCanvasElement): CrosslyCanvasBuilder {
         const rasterDrawing = new RasterDrawing(htmlCanvasElement);
-        this.lineCanvas = new LineCanvas(rasterDrawing, this.virtualCanvas);
+        this.lineCanvas = new LineCanvas(rasterDrawing);
         return this;
     }
 
     public withCueCanvas(htmlSvgElement: HTMLElement): CrosslyCanvasBuilder {
         const vectorDrawing = new VectorDrawing(htmlSvgElement);
-        this.cueCanvas = new CueCanvas(vectorDrawing, this.virtualCanvas);
+        this.cueCanvas = new CueCanvas(vectorDrawing);
         return this;
     }
 }

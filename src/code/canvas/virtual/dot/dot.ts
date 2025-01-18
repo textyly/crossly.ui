@@ -5,27 +5,24 @@ import { DotVirtualCanvasBase } from "./base.js";
 import { IInputCanvas } from "../../input/types.js";
 
 export class DotVirtualCanvas extends DotVirtualCanvasBase implements IDotVirtualCanvas {
-    private readonly config: DotsConfig;
     private readonly ids: IdGenerator;
     private readonly inputCanvas: IInputCanvas;
 
     private dots: Map<Id, Dot>;
 
-    private dotsX: number;
-    private dotsY: number;
-    private radius: number;
-    private spacing: number;
+    private dotsX!: number;
+    private dotsY!: number;
 
-    constructor(config: DotsConfig, inputCanvas: IInputCanvas) {
+    private radius!: number;
+    private radiusStep!: number;
+
+    private spacing!: number;
+    private spacingStep!: number;
+
+    constructor(inputCanvas: IInputCanvas) {
         super();
 
-        this.config = config;
         this.inputCanvas = inputCanvas;
-        this.dotsX = this.config.x;
-        this.dotsY = this.config.y;
-        this.radius = this.config.radius.value;
-        this.spacing = this.config.spacing.value;
-
         this.dots = new Map();
         this.ids = new IdGenerator();
 
@@ -41,18 +38,31 @@ export class DotVirtualCanvas extends DotVirtualCanvasBase implements IDotVirtua
     }
 
     private handleZoomIn(): void {
-        this.radius += this.config.radius.step;
-        this.spacing += this.config.spacing.step;
-        this.draw();
+        this.radius += this.radiusStep;
+        this.spacing += this.spacingStep;
+        this.drawDots();
     }
 
     private handleZoomOut(): void {
-        this.radius -= this.config.radius.step;
-        this.spacing -= this.config.spacing.step;
-        this.draw();
+        this.radius -= this.radiusStep;
+        this.spacing -= this.spacingStep;
+        this.drawDots();
     }
 
-    public draw(): void {
+    public draw(config: DotsConfig): void {
+        this.dotsX = config.x;
+        this.dotsY = config.y;
+
+        this.radius = config.radius.value;
+        this.radiusStep = config.radius.step;
+
+        this.spacing = config.spacing.value;
+        this.spacingStep = config.spacing.step;
+
+        this.drawDots();
+    }
+
+    private drawDots(): void {
         this.dots = this.createDots();
         const newSize = this.calculateSize();
         this.size = newSize;

@@ -5,19 +5,17 @@ import { DrawLineEvent, ILineVirtualCanvas } from "../virtual/types.js";
 
 export class LineCanvas extends CanvasBase {
     protected readonly rasterDrawing: IRasterDrawing;
-    protected readonly lineVirtualCanvas: ILineVirtualCanvas;
 
-    constructor(rasterDrawing: IRasterDrawing, lineVirtualCanvas: ILineVirtualCanvas) {
+    constructor(rasterDrawing: IRasterDrawing) {
         super();
         this.rasterDrawing = rasterDrawing;
-        this.lineVirtualCanvas = lineVirtualCanvas;
-        this.subscribe();
     }
 
-    private subscribe(): void {
-        const drawLineUn = this.lineVirtualCanvas.onDrawLine(this.handleDrawLine.bind(this));
+    public subscribe(lineVirtualCanvas: ILineVirtualCanvas): void {
+        const drawLineUn = lineVirtualCanvas.onDrawLine(this.handleDrawLine.bind(this));
         super.registerUn(drawLineUn);
-        const sizeChangedUn = this.lineVirtualCanvas.onSizeChange(this.handleSizeChange.bind(this));
+
+        const sizeChangedUn = lineVirtualCanvas.onSizeChange(this.handleSizeChange.bind(this));
         super.registerUn(sizeChangedUn);
     }
 

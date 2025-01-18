@@ -13,37 +13,33 @@ import {
 
 export class CueCanvas extends CanvasBase {
     protected readonly vectorDrawing: IVectorDrawing;
-    protected readonly cueVirtualCanvas: ICueVirtualCanvas;
 
     private readonly svgDots: Map<Id, SvgDot>;
     private readonly svgLines: Map<Id, SvgLine>;
 
-    constructor(vectorDrawing: IVectorDrawing, cueVirtualCanvas: ICueVirtualCanvas) {
+    constructor(vectorDrawing: IVectorDrawing) {
         super();
 
         this.vectorDrawing = vectorDrawing;
-        this.cueVirtualCanvas = cueVirtualCanvas;
 
         this.svgDots = new Map<Id, SvgDot>();
         this.svgLines = new Map<Id, SvgLine>();
-
-        this.subscribe();
     }
 
-    private subscribe(): void {
-        const drawLinkUn = this.cueVirtualCanvas.onDrawLink(this.handleDrawLink.bind(this));
+    public subscribe(cueVirtualCanvas: ICueVirtualCanvas): void {
+        const drawLinkUn = cueVirtualCanvas.onDrawLink(this.handleDrawLink.bind(this));
         super.registerUn(drawLinkUn);
 
-        const removeLinkUn = this.cueVirtualCanvas.onRemoveLink(this.handleRemoveLink.bind(this));
+        const removeLinkUn = cueVirtualCanvas.onRemoveLink(this.handleRemoveLink.bind(this));
         super.registerUn(removeLinkUn);
 
-        const dotHoveredUn = this.cueVirtualCanvas.onHoverDot(this.handleDotHovered.bind(this));
+        const dotHoveredUn = cueVirtualCanvas.onHoverDot(this.handleDotHovered.bind(this));
         super.registerUn(dotHoveredUn);
 
-        const dotUnhoveredUn = this.cueVirtualCanvas.onUnhoverDot(this.handleDotUnhovered.bind(this));
+        const dotUnhoveredUn = cueVirtualCanvas.onUnhoverDot(this.handleDotUnhovered.bind(this));
         super.registerUn(dotUnhoveredUn);
 
-        const sizeChangedUn = this.cueVirtualCanvas.onSizeChange(this.handleSizeChange.bind(this));
+        const sizeChangedUn = cueVirtualCanvas.onSizeChange(this.handleSizeChange.bind(this));
         super.registerUn(sizeChangedUn);
     }
 
@@ -87,7 +83,7 @@ export class CueCanvas extends CanvasBase {
     private handleRemoveLink(event: RemoveLinkEvent): void {
         const virtualLink = event.link;
         const id = virtualLink.id.toString();
-        
+
         if (this.svgLines.has(id)) {
             const svgLine = this.svgLines.get(id)!;
             this.vectorDrawing.removeLine(svgLine);

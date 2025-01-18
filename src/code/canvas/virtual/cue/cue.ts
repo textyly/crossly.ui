@@ -1,11 +1,11 @@
-import { CanvasSide, ICueVirtualCanvas, Id, Link } from "../types.js";
+import { CanvasSide, ICueVirtualCanvas, Id, IDotVirtualCanvas, Link } from "../types.js";
 import { IInputCanvas, MouseLeftButtonDownEvent, MouseMoveEvent, Position } from "../../input/types.js";
 import { CueVirtualCanvasBase } from "./base.js";
 import { Size } from "../../types.js";
 import { DotVirtualCanvas } from "../dot/dot.js";
 
 export class CueVirtualCanvas extends CueVirtualCanvasBase implements ICueVirtualCanvas {
-    private readonly dotVirtualCanvas: DotVirtualCanvas;
+    private readonly dotVirtualCanvas: IDotVirtualCanvas;
     private readonly inputCanvas: IInputCanvas;
 
     private clicked?: Id;
@@ -13,7 +13,7 @@ export class CueVirtualCanvas extends CueVirtualCanvasBase implements ICueVirtua
     private link?: Link;
     private side: CanvasSide;
 
-    constructor(dotVirtualCanvas: DotVirtualCanvas, inputCanvas: IInputCanvas) {
+    constructor(dotVirtualCanvas: IDotVirtualCanvas, inputCanvas: IInputCanvas) {
         super();
         this.dotVirtualCanvas = dotVirtualCanvas;
         this.inputCanvas = inputCanvas;
