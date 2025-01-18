@@ -12,19 +12,9 @@ export class VectorDrawing extends CanvasBase implements IVectorDrawing {
     }
 
     public drawDot(dot: Dot): SvgDot {
-        const d = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-        const x = dot.x.toString();
-        const y = dot.y.toString();
-        const radius = dot.radius.toString();
-
-        d.setAttribute("cx", x);
-        d.setAttribute("cy", y.toString());
-        d.setAttribute("r", radius);
-        d.setAttribute("fill", "gray");
-
-        this.svgCanvas.appendChild(d);
-
-        return d;
+        const circle = this.createCircle(dot);
+        this.svgCanvas.appendChild(circle);
+        return circle;
     }
 
     public removeDot(dot: SvgDot): void {
@@ -32,13 +22,13 @@ export class VectorDrawing extends CanvasBase implements IVectorDrawing {
     }
 
     public drawLine(from: Dot, to: Dot): SvgLine {
-        const line = this.drawLineCore(from, to);
+        const line = this.createLine(from, to);
         this.svgCanvas.appendChild(line);
         return line;
     }
 
     public drawDashLine(from: Dot, to: Dot): SvgLine {
-        const line = this.drawLineCore(from, to);
+        const line = this.createLine(from, to);
         line.setAttribute("stroke-dasharray", "5,2");
         this.svgCanvas.appendChild(line);
         return line;
@@ -57,8 +47,24 @@ export class VectorDrawing extends CanvasBase implements IVectorDrawing {
         this.svgCanvas.setAttribute("height", height);
     }
 
-    private drawLineCore(from: Dot, to: Dot): SvgLine {
+    private createCircle(dot: Dot): SVGCircleElement {
+        const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+
+        const cx = dot.x.toString();
+        const cy = dot.y.toString();
+        const r = dot.radius.toString();
+
+        circle.setAttribute("cx", cx);
+        circle.setAttribute("cy", cy);
+        circle.setAttribute("r", r);
+        circle.setAttribute("fill", "gray"); //TODO: line prop
+
+        return circle;
+    }
+
+    private createLine(from: Dot, to: Dot): SvgLine {
         const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+
         const x1 = from.x.toString();
         const y1 = from.y.toString();
         const x2 = to.x.toString();
@@ -70,8 +76,8 @@ export class VectorDrawing extends CanvasBase implements IVectorDrawing {
         line.setAttribute('x2', x2);
         line.setAttribute('y2', y2);
 
-        line.setAttribute('stroke', 'red');
-        line.setAttribute('stroke-width', "2");
+        line.setAttribute('stroke', 'red'); //TODO: dot prop
+        line.setAttribute('stroke-width', "2"); //TODO: dot prop
 
         return line;
     }

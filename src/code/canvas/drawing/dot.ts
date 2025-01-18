@@ -23,8 +23,8 @@ export class DotCanvas extends CanvasBase {
     }
 
     private handleDrawDot(event: DrawDotEvent): void {
-        const dot = event.dot;
-        this.rasterDrawing.drawDot(dot);
+        const virtualDot = event.dot;
+        this.rasterDrawing.drawDot(virtualDot);
     }
 
     private handleSizeChange(size: Size): void {

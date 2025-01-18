@@ -15,17 +15,17 @@ export class CueCanvas extends CanvasBase {
     protected readonly vectorDrawing: IVectorDrawing;
     protected readonly cueVirtualCanvas: ICueVirtualCanvas;
 
-    private readonly dots: Map<Id, SvgDot>;
-    private readonly lines: Map<Id, SvgLine>;
+    private readonly svgDots: Map<Id, SvgDot>;
+    private readonly svgLines: Map<Id, SvgLine>;
 
     constructor(vectorDrawing: IVectorDrawing, cueVirtualCanvas: ICueVirtualCanvas) {
         super();
 
         this.vectorDrawing = vectorDrawing;
         this.cueVirtualCanvas = cueVirtualCanvas;
-        
-        this.dots = new Map<Id, SvgDot>();
-        this.lines = new Map<Id, SvgLine>();
+
+        this.svgDots = new Map<Id, SvgDot>();
+        this.svgLines = new Map<Id, SvgLine>();
 
         this.subscribe();
     }
@@ -48,47 +48,50 @@ export class CueCanvas extends CanvasBase {
     }
 
     public override dispose(): void {
-        this.dots.clear();
-        this.lines.clear();
+        this.svgDots.clear();
+        this.svgLines.clear();
         super.dispose();
     }
 
     private handleDotHovered(event: HoverDotEvent): void {
-        const dot = event.dot;
-        const id = dot.id;
+        const virtualDot = event.dot;
+        const id = virtualDot.id;
 
-        const svgDot = this.vectorDrawing.drawDot(dot);
-        this.dots.set(id, svgDot);
+        const svgDot = this.vectorDrawing.drawDot(virtualDot);
+        this.svgDots.set(id, svgDot);
     }
 
     private handleDotUnhovered(event: UnhoverDotEvent): void {
-        const dotId = event.dot.id;
-        if (this.dots.has(dotId)) {
-            const dot = this.dots.get(dotId)!;
-            this.vectorDrawing.removeDot(dot)
-            this.dots.delete(dotId);
+        const id = event.dot.id;
+        if (this.svgDots.has(id)) {
+            const svgDot = this.svgDots.get(id)!;
+            this.vectorDrawing.removeDot(svgDot)
+            this.svgDots.delete(id);
         }
     }
 
     private handleDrawLink(event: DrawLinkEvent): void {
-        const id = event.link.id;
-        const from = event.link.from;
-        const to = event.link.to;
-        const side = event.link.side;
+        const virtualLink = event.link;
+        const id = virtualLink.id;
+        const from = virtualLink.from;
+        const to = virtualLink.to;
+        const side = virtualLink.side;
 
         const svgLine = side === CanvasSide.Front
             ? this.vectorDrawing.drawLine(from, to)
             : this.vectorDrawing.drawDashLine(from, to);
 
-        this.lines.set(id, svgLine);
+        this.svgLines.set(id, svgLine);
     }
 
-    private handleRemoveLink(even: RemoveLinkEvent): void {
-        const lineId = even.link.id.toString();
-        if (this.lines.has(lineId)) {
-            const line = this.lines.get(lineId)!;
-            this.vectorDrawing.removeLine(line);
-            this.lines.delete(lineId);
+    private handleRemoveLink(event: RemoveLinkEvent): void {
+        const virtualLink = event.link;
+        const id = virtualLink.id.toString();
+        
+        if (this.svgLines.has(id)) {
+            const svgLine = this.svgLines.get(id)!;
+            this.vectorDrawing.removeLine(svgLine);
+            this.svgLines.delete(id);
         }
     }
 

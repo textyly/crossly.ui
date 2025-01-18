@@ -40,12 +40,6 @@ export type MouseButtonDownListener = Listener<MouseButtonDownEvent>;
 
 // #region interfaces
 
-export interface ITransparentCanvas extends ICanvas {
-    onWheelChange(listener: WheelListener): VoidUnsubscribe;
-    onMouseMove(listener: MouseMoveListener): VoidUnsubscribe;
-    onMouseButtonDown(listener: MouseButtonDownListener): VoidUnsubscribe;
-}
-
 export interface IInputCanvas extends ICanvas {
     onZoomIn(listener: ZoomInListener): VoidUnsubscribe;
     onZoomOut(listener: ZoomOutListener): VoidUnsubscribe;
