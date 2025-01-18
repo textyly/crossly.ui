@@ -1,7 +1,7 @@
-import { CanvasBase } from "../../base.js";
-import { SvgCanvas } from "../svg/svg.js";
-import { SvgDot, SvgLine } from "../types.js";
-import { Size } from "../../types.js";
+import { CanvasBase } from "../base.js";
+import { SvgCanvas } from "./svg.js";
+import { SvgDot, SvgLine } from "./types.js";
+import { Size } from "../types.js";
 import {
     Id,
     CanvasSide,
@@ -10,7 +10,7 @@ import {
     DrawLinkEvent,
     RemoveLinkEvent,
     ICueVirtualCanvas
-} from "../../virtual/types.js";
+} from "../virtual/types.js";
 
 export class CueCanvas extends CanvasBase {
     protected readonly svgCanvas: SvgCanvas;

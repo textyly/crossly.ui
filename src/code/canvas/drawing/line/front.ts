@@ -1,5 +1,5 @@
 import { LineCanvasBase } from "./base.js";
-import { RasterCanvas } from "../raster/raster.js";
+import { RasterCanvas } from "../raster.js";
 import { CanvasSide, ILineVirtualCanvas, Line } from "../../virtual/types.js";
 
 export class FrontLineCanvas extends LineCanvasBase {

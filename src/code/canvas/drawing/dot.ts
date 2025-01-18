@@ -1,7 +1,7 @@
-import { Size } from "../../types.js";
-import { CanvasBase } from "../../base.js";
-import { RasterCanvas } from "../raster/raster.js";
-import { DrawDotEvent, IDotVirtualCanvas } from "../../virtual/types.js";
+import { Size } from "../types.js";
+import { CanvasBase } from "../base.js";
+import { RasterCanvas } from "./raster.js";
+import { DrawDotEvent, IDotVirtualCanvas } from "../virtual/types.js";
 
 export class DotCanvas extends CanvasBase {
     protected readonly rasterCanvas: RasterCanvas;

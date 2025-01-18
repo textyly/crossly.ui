@@ -1,6 +1,6 @@
-import { CanvasBase } from "../../base.js";
-import { Size } from "../../types.js";
-import { Dot, Line } from "../../virtual/types.js";
+import { CanvasBase } from "../base.js";
+import { Size } from "../types.js";
+import { Dot, Line } from "../virtual/types.js";
 
 export class RasterCanvas extends CanvasBase {
     private readonly context: CanvasRenderingContext2D;

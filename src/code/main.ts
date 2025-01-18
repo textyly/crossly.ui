@@ -4,3 +4,4 @@ const canvasBuilder = new CanvasBuilder();
 const canvas = canvasBuilder.build();
 
 canvas.draw();
+// canvas.draw(dotsConfig);

@@ -1,10 +1,14 @@
-import { SvgCanvasBase } from "./base.js";
-import { Dot } from "../../virtual/types.js";
-import { SvgDot, SvgLine } from "../types.js";
+import { Dot } from "../virtual/types.js";
+import { SvgDot, SvgLine } from "./types.js";
+import { CanvasBase } from "../base.js";
+import { Size } from "../types.js";
 
-export class SvgCanvas extends SvgCanvasBase {
+export class SvgCanvas extends CanvasBase {
+    private readonly svgCanvas: HTMLElement;
+
     constructor(svgCanvas: HTMLElement) {
-        super(svgCanvas);
+        super();
+        this.svgCanvas = svgCanvas;
     }
 
     public drawDot(dot: Dot): SvgDot {
@@ -42,6 +46,15 @@ export class SvgCanvas extends SvgCanvasBase {
 
     public removeLine(line: SvgLine): void {
         this.svgCanvas.removeChild(line);
+    }
+
+    public override set size(value: Size) {
+        super.size = value;
+        const width = value.width.toString();
+        const height = value.height.toString();
+
+        this.svgCanvas.setAttribute("width", width);
+        this.svgCanvas.setAttribute("height", height);
     }
 
     private drawLineCore(from: Dot, to: Dot): SvgLine {

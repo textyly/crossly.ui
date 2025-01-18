@@ -1,11 +1,10 @@
-import { CueCanvas } from "./drawing/cue/cue.js";
-import { DotCanvas } from "./drawing/dot/dot.js";
+import { CueCanvas } from "./drawing/cue.js";
+import { DotCanvas } from "./drawing/dot.js";
 import { FrontLineCanvas } from "./drawing/line/front.js";
-import { RasterCanvas } from "./drawing/raster/raster.js";
-import { SvgCanvas } from "./drawing/svg/svg.js";
+import { RasterCanvas } from "./drawing/raster.js";
+import { SvgCanvas } from "./drawing/svg.js";
 import { InputCanvas } from "./input/input.js";
 import { InputCanvasThrottler } from "./input/throttler.js";
-import { TransparentCanvas } from "./input/transparent.js";
 import { IVirtualCanvas } from "./virtual/types.js";
 import { VirtualCanvas } from "./virtual/virtual.js";
 
@@ -16,10 +15,7 @@ export class CrosslyCanvasBuilder {
     private cueCanvas?: HTMLElement;
 
     public build(): IVirtualCanvas {
-        const transparentCanvas = new TransparentCanvas(this.inputCanvas!);
-        // ???
-
-        const inputCanvas = new InputCanvas(transparentCanvas);
+        const inputCanvas = new InputCanvas(this.inputCanvas!);
         // ???
 
         const inputCanvasThrottler = new InputCanvasThrottler(inputCanvas);

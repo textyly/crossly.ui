@@ -16,8 +16,8 @@ export class CanvasBuilder {
         const dotCanvas = this.buildDotCanvas();
         this.crosslyCanvasBuilder.withDotCanvas(dotCanvas);
 
-        const frontLineCanvas = this.buildFrontLineCanvas();
-        this.crosslyCanvasBuilder.withLineCanvas(frontLineCanvas);
+        const lineCanvas = this.buildLineCanvas();
+        this.crosslyCanvasBuilder.withLineCanvas(lineCanvas);
 
         const cueCanvas = this.buildCueCanvas();
         this.crosslyCanvasBuilder.withCueCanvas(cueCanvas);
@@ -37,7 +37,7 @@ export class CanvasBuilder {
         return htmlCanvasElement;
     }
 
-    private buildFrontLineCanvas(): HTMLCanvasElement {
+    private buildLineCanvas(): HTMLCanvasElement {
         const htmlCanvasElement = document.getElementById("line") as HTMLCanvasElement;
         return htmlCanvasElement;
     }

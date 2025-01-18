@@ -1,6 +1,6 @@
 import { Size } from "../../types.js";
 import { CanvasBase } from "../../base.js";
-import { RasterCanvas } from "../raster/raster.js";
+import { RasterCanvas } from "../raster.js";
 import {
     Line,
     DrawLineEvent,
