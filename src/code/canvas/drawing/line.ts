@@ -1,22 +1,20 @@
-import { Size } from "../../types.js";
-import { CanvasBase } from "../../base.js";
-import { RasterCanvas } from "../raster.js";
+import { Size } from "../types.js";
+import { CanvasBase } from "../base.js";
+import { IRasterDrawing } from "./types.js";
 import {
     Line,
     DrawLineEvent,
     ILineVirtualCanvas
-} from "../../virtual/types.js";
+} from "../virtual/types.js";
 
-export abstract class LineCanvasBase extends CanvasBase {
-    protected readonly rasterCanvas: RasterCanvas;
+export class LineCanvas extends CanvasBase {
+    protected readonly rasterDrawing: IRasterDrawing;
     protected readonly lineVirtualCanvas: ILineVirtualCanvas;
 
-    constructor(rasterCanvas: RasterCanvas, lineVirtualCanvas: ILineVirtualCanvas) {
+    constructor(rasterDrawing: IRasterDrawing, lineVirtualCanvas: ILineVirtualCanvas) {
         super();
-
-        this.rasterCanvas = rasterCanvas;
+        this.rasterDrawing = rasterDrawing;
         this.lineVirtualCanvas = lineVirtualCanvas;
-
         this.subscribe();
     }
 
@@ -27,8 +25,6 @@ export abstract class LineCanvasBase extends CanvasBase {
         super.registerUn(sizeChangedUn);
     }
 
-    protected abstract drawLine(line: Line): void;
-
     private handleDrawLine(event: DrawLineEvent): void {
         const line = event.line;
         this.drawLine(line);
@@ -36,6 +32,10 @@ export abstract class LineCanvasBase extends CanvasBase {
 
     private handleSizeChange(size: Size): void {
         super.size = size;
-        this.rasterCanvas.size = size;
+        this.rasterDrawing.size = size;
+    }
+
+    private drawLine(line: Line): void {
+        this.rasterDrawing.drawLine(line);
     }
 }

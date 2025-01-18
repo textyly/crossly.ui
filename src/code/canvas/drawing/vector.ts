@@ -1,9 +1,9 @@
 import { Dot } from "../virtual/types.js";
-import { SvgDot, SvgLine } from "./types.js";
+import { IVectorDrawing, SvgDot, SvgLine } from "./types.js";
 import { CanvasBase } from "../base.js";
 import { Size } from "../types.js";
 
-export class SvgCanvas extends CanvasBase {
+export class VectorDrawing extends CanvasBase implements IVectorDrawing {
     private readonly svgCanvas: HTMLElement;
 
     constructor(svgCanvas: HTMLElement) {
@@ -63,7 +63,6 @@ export class SvgCanvas extends CanvasBase {
         const y1 = from.y.toString();
         const x2 = to.x.toString();
         const y2 = to.y.toString();
-
 
         line.setAttribute('x1', x1);
         line.setAttribute('y1', y1);

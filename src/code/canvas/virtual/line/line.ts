@@ -38,9 +38,8 @@ export class LineVirtualCanvas extends LineVirtualCanvasBase implements ILineVir
 
     public draw(): void {
         this.lines = this.createLines();
-
         this.lines.forEach((line) => {
-            super.invokeDrawLine(line);
+            this.drawLine(line);
         });
     }
 
@@ -78,7 +77,13 @@ export class LineVirtualCanvas extends LineVirtualCanvasBase implements ILineVir
 
     private handleDrawLine(line: Line): void {
         this.lines.push(line);
-        super.invokeDrawLine(line);
+        this.drawLine(line);
+    }
+
+    private drawLine(line: Line): void {
+        if (line.side === CanvasSide.Front) {
+            super.invokeDrawLine(line);
+        }
     }
 
     private createLines(): Array<Line> {

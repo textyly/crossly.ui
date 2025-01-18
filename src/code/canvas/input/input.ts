@@ -1,8 +1,6 @@
-import { Messaging3 } from "../../messaging/impl.js";
-import { IMessaging3 } from "../../messaging/types.js";
 import { Size } from "../types.js";
 import { InputCanvasBase } from "./base.js";
-import { HtmlCanvasEvents, ITransparentCanvas, MouseButtonDownEvent, MouseEventHandler, MouseMoveEvent, Position, WheelChangeHandler, WheelEvent } from "./types.js";
+import { HtmlCanvasEvents, MouseEventHandler, Position, WheelChangeHandler, WheelEvent } from "./types.js";
 
 export class InputCanvas extends InputCanvasBase {
 

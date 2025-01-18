@@ -1,6 +1,5 @@
 import { CanvasBase } from "../base.js";
-import { SvgCanvas } from "./svg.js";
-import { SvgDot, SvgLine } from "./types.js";
+import { IVectorDrawing, SvgDot, SvgLine } from "./types.js";
 import { Size } from "../types.js";
 import {
     Id,
@@ -13,16 +12,16 @@ import {
 } from "../virtual/types.js";
 
 export class CueCanvas extends CanvasBase {
-    protected readonly svgCanvas: SvgCanvas;
+    protected readonly vectorDrawing: IVectorDrawing;
     protected readonly cueVirtualCanvas: ICueVirtualCanvas;
 
     private readonly dots: Map<Id, SvgDot>;
     private readonly lines: Map<Id, SvgLine>;
 
-    constructor(svgCanvas: SvgCanvas, cueVirtualCanvas: ICueVirtualCanvas) {
+    constructor(vectorDrawing: IVectorDrawing, cueVirtualCanvas: ICueVirtualCanvas) {
         super();
 
-        this.svgCanvas = svgCanvas;
+        this.vectorDrawing = vectorDrawing;
         this.cueVirtualCanvas = cueVirtualCanvas;
         
         this.dots = new Map<Id, SvgDot>();
@@ -58,7 +57,7 @@ export class CueCanvas extends CanvasBase {
         const dot = event.dot;
         const id = dot.id;
 
-        const svgDot = this.svgCanvas.drawDot(dot);
+        const svgDot = this.vectorDrawing.drawDot(dot);
         this.dots.set(id, svgDot);
     }
 
@@ -66,7 +65,7 @@ export class CueCanvas extends CanvasBase {
         const dotId = event.dot.id;
         if (this.dots.has(dotId)) {
             const dot = this.dots.get(dotId)!;
-            this.svgCanvas.removeDot(dot)
+            this.vectorDrawing.removeDot(dot)
             this.dots.delete(dotId);
         }
     }
@@ -78,8 +77,8 @@ export class CueCanvas extends CanvasBase {
         const side = event.link.side;
 
         const svgLine = side === CanvasSide.Front
-            ? this.svgCanvas.drawLine(from, to)
-            : this.svgCanvas.drawDashLine(from, to);
+            ? this.vectorDrawing.drawLine(from, to)
+            : this.vectorDrawing.drawDashLine(from, to);
 
         this.lines.set(id, svgLine);
     }
@@ -88,13 +87,13 @@ export class CueCanvas extends CanvasBase {
         const lineId = even.link.id.toString();
         if (this.lines.has(lineId)) {
             const line = this.lines.get(lineId)!;
-            this.svgCanvas.removeLine(line);
+            this.vectorDrawing.removeLine(line);
             this.lines.delete(lineId);
         }
     }
 
     private handleSizeChange(size: Size): void {
         super.size = size;
-        this.svgCanvas.size = size;
+        this.vectorDrawing.size = size;
     }
 }

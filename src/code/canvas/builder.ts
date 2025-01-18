@@ -1,8 +1,8 @@
 import { CueCanvas } from "./drawing/cue.js";
 import { DotCanvas } from "./drawing/dot.js";
-import { FrontLineCanvas } from "./drawing/line/front.js";
-import { RasterCanvas } from "./drawing/raster.js";
-import { SvgCanvas } from "./drawing/svg.js";
+import { LineCanvas } from "./drawing/line.js";
+import { RasterDrawing } from "./drawing/raster.js";
+import { VectorDrawing } from "./drawing/vector.js";
 import { InputCanvas } from "./input/input.js";
 import { InputCanvasThrottler } from "./input/throttler.js";
 import { IVirtualCanvas } from "./virtual/types.js";
@@ -25,16 +25,16 @@ export class CrosslyCanvasBuilder {
         const virtualCanvas = new VirtualCanvas(dotsConfig, inputCanvasThrottler);
         // virtualCanvas.subscribe(inputCanvasThrottler);
 
-        const dotRasterCanvas = new RasterCanvas(this.dotCanvas!);
-        const dotCanvas = new DotCanvas(dotRasterCanvas, virtualCanvas);
+        const dotRasterDrawing = new RasterDrawing(this.dotCanvas!);
+        const dotCanvas = new DotCanvas(dotRasterDrawing, virtualCanvas);
         // dotCanvas.subscribe(virtualCanvas);
 
-        const lineRasterCanvas = new RasterCanvas(this.lineCanvas!);
-        const lineCanvas = new FrontLineCanvas(lineRasterCanvas, virtualCanvas);
+        const lineRasterDrawing = new RasterDrawing(this.lineCanvas!);
+        const lineCanvas = new LineCanvas(lineRasterDrawing, virtualCanvas);
         // lineCanvas.subscribe(virtualCanvas);
 
-        const cueSvgCanvas = new SvgCanvas(this.cueCanvas!);
-        const cueCanvas = new CueCanvas(cueSvgCanvas, virtualCanvas);
+        const cueVectorDrawing = new VectorDrawing(this.cueCanvas!);
+        const cueCanvas = new CueCanvas(cueVectorDrawing, virtualCanvas);
         // cueCanvas.subscribe(virtualCanvas);
 
         return virtualCanvas;
