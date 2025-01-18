@@ -1,5 +1,5 @@
-import { IVirtualCanvas } from "./canvas/virtual/types.js";
 import { CrosslyCanvasBuilder } from "./canvas/builder.js";
+import { CrosslyCanvas } from "./canvas/crossly.js";
 
 export class CanvasBuilder {
     private crosslyCanvasBuilder: CrosslyCanvasBuilder;
@@ -8,41 +8,39 @@ export class CanvasBuilder {
         this.crosslyCanvasBuilder = new CrosslyCanvasBuilder();
     }
 
+    public build(): CrosslyCanvas {
+        const inputHTMLElement = this.buildInputHTMLElement();
+        this.crosslyCanvasBuilder.withInputCanvas(inputHTMLElement);
 
-    public build(): IVirtualCanvas {
-        const inputCanvas = this.buildInputCanvas();
-        this.crosslyCanvasBuilder.withInputCanvas(inputCanvas);
+        const dotHTMLElement = this.buildDotHTMLElement();
+        this.crosslyCanvasBuilder.withDotCanvas(dotHTMLElement);
 
-        const dotCanvas = this.buildDotCanvas();
-        this.crosslyCanvasBuilder.withDotCanvas(dotCanvas);
+        const lineHTMLElement = this.buildLineHTMLElement();
+        this.crosslyCanvasBuilder.withLineCanvas(lineHTMLElement);
 
-        const lineCanvas = this.buildLineCanvas();
-        this.crosslyCanvasBuilder.withLineCanvas(lineCanvas);
-
-        const cueCanvas = this.buildCueCanvas();
-        this.crosslyCanvasBuilder.withCueCanvas(cueCanvas);
+        const cueHTMLElement = this.buildCueHTMLElement();
+        this.crosslyCanvasBuilder.withCueCanvas(cueHTMLElement);
 
         const virtualCanvas = this.crosslyCanvasBuilder.build();
-
         return virtualCanvas;
     }
 
-    private buildInputCanvas(): HTMLElement {
-        const htmlSvgCanvas = document.getElementById("input") as HTMLElement;
-        return htmlSvgCanvas;
+    private buildInputHTMLElement(): HTMLElement {
+        const htmlSvgElement = document.getElementById("input") as HTMLElement;
+        return htmlSvgElement;
     }
 
-    private buildDotCanvas(): HTMLCanvasElement {
+    private buildDotHTMLElement(): HTMLCanvasElement {
         const htmlCanvasElement = document.getElementById("dot") as HTMLCanvasElement;
         return htmlCanvasElement;
     }
 
-    private buildLineCanvas(): HTMLCanvasElement {
+    private buildLineHTMLElement(): HTMLCanvasElement {
         const htmlCanvasElement = document.getElementById("line") as HTMLCanvasElement;
         return htmlCanvasElement;
     }
 
-    private buildCueCanvas(): HTMLElement {
+    private buildCueHTMLElement(): HTMLElement {
         const htmSvgCanvas = document.getElementById("cue") as HTMLElement;
         return htmSvgCanvas;
     }
