@@ -1,5 +1,6 @@
 // #region types 
 
+import { IDisposable } from "../canvas/types.js";
 import { Listener, VoidListener, VoidUnsubscribe } from "../types";
 
 /**
@@ -26,27 +27,7 @@ export type ChannelListeners = Array<ChannelListener>;
 
 // #region interfaces 
 
-/**
- * 
- */
-export interface IMessaging {
-    /**
-     * 
-     */
-    get started(): boolean;
-
-    /**
-     * 
-     */
-    start(): void;
-
-    /**
-     * 
-     */
-    stop(): void;
-}
-
-export interface IVoidMessaging extends IMessaging {
+export interface IVoidMessaging extends IDisposable {
 
     /**
      * 

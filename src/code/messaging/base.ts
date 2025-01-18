@@ -1,7 +1,7 @@
+import { IDisposable } from "../canvas/types.js";
 import { ErrorListener, Unsubscribe } from "../types.js";
 import { MessagingBaseValidator } from "../validators/messaging/base.js";
 import {
-    IMessaging,
     ChannelListeners,
     Channel,
     ChannelListener,
@@ -9,7 +9,7 @@ import {
     PrivateChannels
 } from "./types.js";
 
-export abstract class Messaging implements IMessaging {
+export abstract class Messaging implements IDisposable {
     // #region fields
 
     private readonly name: string;
@@ -19,8 +19,6 @@ export abstract class Messaging implements IMessaging {
 
     private readonly privateChannels: Map<Channel, ChannelListeners>;
     private readonly publicChannels: Map<Channel, ChannelListeners>;
-
-    private _started: boolean;
 
     // #endregion
 
@@ -32,39 +30,20 @@ export abstract class Messaging implements IMessaging {
 
         this.privateChannels = new Map<Channel, ChannelListeners>;
         this.publicChannels = new Map<Channel, ChannelListeners>;
-
-        this._started = false;
     }
 
     // #region interface
 
-    public get started(): boolean {
-        return this._started;
-    }
-
     public onError(listener: ErrorListener): Unsubscribe<ChannelListener> {
-        this.ensureStarted();
-
         this.validator.validateRef(listener, "listener");
 
         const un = this.onCore(this.errorChannel, listener, this.privateChannels);
         return un;
     }
 
-    public start(): void {
-        if (this._started) {
-            return;
-        }
-        this._started = true;
-    }
-
-    public stop(): void {
-        if (!this._started) {
-            return;
-        }
+    public dispose(): void {
         this.privateChannels.clear();
         this.publicChannels.clear();
-        this._started = false;
     }
 
     // #endregion
@@ -72,8 +51,6 @@ export abstract class Messaging implements IMessaging {
     // #region events
 
     protected on(channel: Channel, listener: ChannelListener): Unsubscribe<ChannelListener> {
-        this.ensureStarted();
-
         this.validator.validateOn(channel, listener);
         this.ensureChannelExists(channel, this.publicChannels);
 
@@ -102,8 +79,6 @@ export abstract class Messaging implements IMessaging {
     }
 
     protected send(channel: Channel, data: ChannelData): void {
-        this.ensureStarted();
-
         this.validator.validateSend(channel, data);
         this.ensureChannelExists(channel, this.publicChannels);
 
@@ -120,12 +95,6 @@ export abstract class Messaging implements IMessaging {
                 const l = listeners.splice(index, 1);
                 return l[0];
             }
-        }
-    }
-
-    private ensureStarted(): void {
-        if (!this.start) {
-            throw new Error(`${this.name} messaging is not started.`);
         }
     }
 

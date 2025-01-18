@@ -12,7 +12,6 @@ export abstract class DotVirtualCanvasBase extends CanvasBase {
 
         const className = DotVirtualCanvasBase.name;
         this.messaging = new Messaging1(className);
-        this.messaging.start();
     }
 
     public onRedraw(listener: VoidListener): VoidUnsubscribe {
@@ -33,7 +32,7 @@ export abstract class DotVirtualCanvasBase extends CanvasBase {
     }
 
     public override dispose(): void {
-        this.messaging.stop();
+        this.messaging.dispose();
         super.dispose();
     }
 } 

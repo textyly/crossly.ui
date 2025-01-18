@@ -25,7 +25,6 @@ export abstract class CanvasBase implements ICanvas {
 
         const className = CanvasBase.name;
         this.msg = new Messaging1(className);
-        this.msg.start();
 
         this.unFuncs = new Array<VoidUnsubscribe>;
     }
@@ -54,7 +53,7 @@ export abstract class CanvasBase implements ICanvas {
 
     public dispose(): void {
         this.unFuncs.forEach((un) => un()); // TODO: handle exceptions
-        this.msg.stop();
+        this.msg.dispose();
     }
 
     // #region interface

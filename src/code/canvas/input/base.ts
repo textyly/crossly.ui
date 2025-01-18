@@ -27,7 +27,6 @@ export abstract class InputCanvasBase extends CanvasBase implements IInputCanvas
 
         const className = InputCanvasBase.name;
         this.messaging = new Messaging4(className);
-        this.messaging.start();
     }
 
     // #region interface
@@ -71,5 +70,9 @@ export abstract class InputCanvasBase extends CanvasBase implements IInputCanvas
     // #endregion
 
     // #region methods
+    public override dispose(): void {
+        this.messaging.dispose();
+        super.dispose();
+    }
     // #endregion 
 }

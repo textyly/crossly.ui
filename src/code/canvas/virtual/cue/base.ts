@@ -23,7 +23,6 @@ export abstract class CueVirtualCanvasBase extends CanvasBase {
 
         const className = CueVirtualCanvasBase.name;
         this.messaging = new Messaging4(className);
-        this.messaging.start();
     }
 
     public onRedraw(listener: VoidListener): VoidUnsubscribe {
@@ -71,7 +70,7 @@ export abstract class CueVirtualCanvasBase extends CanvasBase {
     }
 
     public override dispose(): void {
-        this.messaging.stop();
+        this.messaging.dispose();
         super.dispose();
     }
 }
