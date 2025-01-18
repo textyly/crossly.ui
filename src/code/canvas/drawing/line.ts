@@ -3,7 +3,7 @@ import { CanvasBase } from "../base.js";
 import { IDrawingCanvas, IRasterDrawing } from "./types.js";
 import { DrawLineEvent, ILineVirtualCanvas } from "../virtual/types.js";
 
-export class LineCanvas extends CanvasBase implements IDrawingCanvas<ILineVirtualCanvas> {
+export class LineDrawingCanvas extends CanvasBase implements IDrawingCanvas<ILineVirtualCanvas> {
     private readonly rasterDrawing: IRasterDrawing;
 
     constructor(rasterDrawing: IRasterDrawing) {

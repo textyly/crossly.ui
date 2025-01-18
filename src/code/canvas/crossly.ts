@@ -11,13 +11,13 @@ export class CrosslyCanvas extends CanvasBase implements ICrosslyCanvas {
     private inputCanvas!: IInputCanvas;
 
     private dotVirtualCanvas!: IDotVirtualCanvas;
-    private dotCanvas!: IDrawingCanvas<IDotVirtualCanvas>;
+    private dotDrawingCanvas!: IDrawingCanvas<IDotVirtualCanvas>;
 
     private lineVirtualCanvas!: ILineVirtualCanvas;
-    private lineCanvas!: IDrawingCanvas<ILineVirtualCanvas>;
+    private lineDrawingCanvas!: IDrawingCanvas<ILineVirtualCanvas>;
 
-    private cueCanvas!: IDrawingCanvas<ICueVirtualCanvas>;
     private cueVirtualCanvas!: ICueVirtualCanvas;
+    private cueDrawingCanvas!: IDrawingCanvas<ICueVirtualCanvas>;
 
     constructor() {
         super();
@@ -25,24 +25,24 @@ export class CrosslyCanvas extends CanvasBase implements ICrosslyCanvas {
 
     public initialize(
         inputCanvas: IInputCanvas,
-        dotCanvas: IDrawingCanvas<IDotVirtualCanvas>,
-        lineCanvas: IDrawingCanvas<ILineVirtualCanvas>,
-        cueCanvas: IDrawingCanvas<ICueVirtualCanvas>
+        dotDrawingCanvas: IDrawingCanvas<IDotVirtualCanvas>,
+        lineDrawingCanvas: IDrawingCanvas<ILineVirtualCanvas>,
+        cueDrawingCanvas: IDrawingCanvas<ICueVirtualCanvas>
     ): void {
 
         this.inputCanvas = inputCanvas;
 
-        this.dotCanvas = dotCanvas;
         this.dotVirtualCanvas = new DotVirtualCanvas(this.inputCanvas);
-        this.dotCanvas.subscribe(this.dotVirtualCanvas);
+        this.dotDrawingCanvas = dotDrawingCanvas;
+        this.dotDrawingCanvas.subscribe(this.dotVirtualCanvas);
 
-        this.lineCanvas = lineCanvas;
         this.lineVirtualCanvas = new LineVirtualCanvas(this.dotVirtualCanvas, this.inputCanvas);
-        this.lineCanvas.subscribe(this.lineVirtualCanvas);
+        this.lineDrawingCanvas = lineDrawingCanvas;
+        this.lineDrawingCanvas.subscribe(this.lineVirtualCanvas);
 
-        this.cueCanvas = cueCanvas;
         this.cueVirtualCanvas = new CueVirtualCanvas(this.dotVirtualCanvas, this.inputCanvas);
-        this.cueCanvas.subscribe(this.cueVirtualCanvas);
+        this.cueDrawingCanvas = cueDrawingCanvas;
+        this.cueDrawingCanvas.subscribe(this.cueVirtualCanvas);
 
         const sizeChangedUn = this.dotVirtualCanvas.onSizeChange(this.handleDotVirtualCanvasSizeChange.bind(this));
         super.registerUn(sizeChangedUn);
@@ -64,9 +64,9 @@ export class CrosslyCanvas extends CanvasBase implements ICrosslyCanvas {
         this.lineVirtualCanvas?.dispose();
         this.cueVirtualCanvas?.dispose();
 
-        this.dotCanvas?.dispose();
-        this.lineCanvas?.dispose();
-        this.cueCanvas?.dispose();
+        this.dotDrawingCanvas?.dispose();
+        this.lineDrawingCanvas?.dispose();
+        this.cueDrawingCanvas?.dispose();
 
         super.dispose();
     }

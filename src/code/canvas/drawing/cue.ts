@@ -11,7 +11,7 @@ import {
     ICueVirtualCanvas
 } from "../virtual/types.js";
 
-export class CueCanvas extends CanvasBase implements IDrawingCanvas<ICueVirtualCanvas> {
+export class CueDrawingCanvas extends CanvasBase implements IDrawingCanvas<ICueVirtualCanvas> {
     private readonly vectorDrawing: IVectorDrawing;
     private readonly svgDots: Map<Id, SvgDot>;
     private readonly svgLines: Map<Id, SvgLine>;
