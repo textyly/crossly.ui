@@ -1,16 +1,18 @@
 import { SizeChangeEvent } from "../../types.js";
 import { CueVirtualCanvasBase } from "./base.js";
-import { CanvasSide, ICueVirtualCanvas, Id, IDotVirtualCanvas, Link } from "../types.js";
+import { IdGenerator } from "../../../utilities/generator.js";
+import { CanvasSide, Dot, ICueVirtualCanvas, Id, IDotVirtualCanvas, Link } from "../types.js";
 import { IInputCanvas, MouseLeftButtonDownEvent, MouseMoveEvent, Position } from "../../input/types.js";
 
 export class CueVirtualCanvas extends CueVirtualCanvasBase implements ICueVirtualCanvas {
     private readonly inputCanvas: IInputCanvas;
     private readonly dotVirtualCanvas: IDotVirtualCanvas;
+    private readonly ids: IdGenerator;
 
-    private link?: Link;
-    private clicked?: Id;
-    private hovered?: Id;
-    private side: CanvasSide;
+    private currentLink?: Link;
+    private currentSide: CanvasSide;
+    private previousClickedDotId?: Id;
+    private previousHoveredDotId?: Id;
 
     constructor(inputCanvas: IInputCanvas, dotVirtualCanvas: IDotVirtualCanvas) {
         super();
@@ -18,12 +20,23 @@ export class CueVirtualCanvas extends CueVirtualCanvasBase implements ICueVirtua
         this.inputCanvas = inputCanvas;
         this.dotVirtualCanvas = dotVirtualCanvas;
 
-        this.side = CanvasSide.Default;
+        this.ids = new IdGenerator();
+        this.currentSide = CanvasSide.Default;
 
         this.subscribe();
     }
 
     public draw(): void {
+        this.ids.reset();
+
+        if (this.previousHoveredDotId) {
+            this.handleUnhoverDot(this.previousHoveredDotId);
+        }
+
+        if (this.currentLink) {
+            const position = this.currentLink.to;
+            this.handleLinkChange(position);
+        }
     }
 
     private subscribe(): void {
@@ -44,86 +57,78 @@ export class CueVirtualCanvas extends CueVirtualCanvasBase implements ICueVirtua
     }
 
     private handleZoomIn(): void {
-        if (this.hovered) {
-            this.handleUnhoverDot();
-        }
-        if (this.link) {
-            const position = this.link.to;
-            this.handleDrawLink(position);
-        }
         this.draw();
     }
 
     private handleZoomOut(): void {
-        if (this.hovered) {
-            this.handleUnhoverDot();
-        }
-        if (this.link) {
-            const position = this.link.to;
-            this.handleDrawLink(position);
-        }
         this.draw();
     }
 
     private handleMouseMove(event: MouseMoveEvent): void {
         const position = event.position;
-        this.handleHoverDot(position);
-        this.handleDrawLink(position);
+        this.handleDotChange(position);
+        this.handleLinkChange(position);
     }
 
     private handleMouseLeftButtonDown(event: MouseLeftButtonDownEvent): void {
         const position = event.position;
-        this.handleDotClick(position);
-    }
 
-    private handleDotClick(position: Position): void {
-        const clicked = this.dotVirtualCanvas.getDotByCoordinates(position.x, position.y);
-        if (clicked) {
-            if (!this.clicked) {
-                this.side = CanvasSide.Front;
-            } else {
-                this.side = this.side === CanvasSide.Front ? CanvasSide.Back : CanvasSide.Front;
-            }
-            this.clicked = clicked.id;
+        const previousClickedDot = this.dotVirtualCanvas.getDotByCoordinates(position.x, position.y);
+        if (previousClickedDot) {
+            this.changeSide();
+            this.previousClickedDotId = previousClickedDot.id;
         }
     }
 
-    private handleDrawLink(position: Position): void {
-        if (this.clicked) {
-            if (this.link) {
-                this.handleRemoveLink(this.link);
-            }
-
-            const clicked = this.dotVirtualCanvas.getDotById(this.clicked!)!;
-            const from = clicked;
-            const to = { ...position, id: "111", radius: clicked.radius };
-            this.link = { id: "111", from, to, side: this.side };
-            super.invokeDrawLink(this.link);
-        }
-    }
-
-    private handleRemoveLink(link: Link) {
-        super.invokeRemoveLink(link);
-        this.link = undefined;
-    }
-
-    private handleHoverDot(position: Position): void {
+    private handleDotChange(position: Position): void {
         const hovered = this.dotVirtualCanvas.getDotByCoordinates(position.x, position.y);
         if (hovered) {
-            if (hovered.id !== this.hovered) {
-                this.hovered = hovered.id;
-                const hoveredDot = { id: hovered.id, radius: hovered.radius + 2, x: hovered.x, y: hovered.y };
+            if (hovered.id !== this.previousHoveredDotId) {
+                this.previousHoveredDotId = hovered.id;
+                const hoveredDot = { id: hovered.id, radius: hovered.radius + 2, x: hovered.x, y: hovered.y }; // TODO: +2 must go outside
                 super.invokeHoverDot(hoveredDot);
             }
-        } else if (this.hovered) {
-            this.handleUnhoverDot();
+        } else if (this.previousHoveredDotId) {
+            this.handleUnhoverDot(this.previousHoveredDotId);
         }
     }
 
-    private handleUnhoverDot(): void {
-        const hovered = this.dotVirtualCanvas.getDotById(this.hovered!)!;
-        super.invokeUnhoverDot(hovered);
-        this.hovered = undefined;
+    private handleUnhoverDot(previousHoveredDotId: string): void {
+        const previousHoveredDot = this.dotVirtualCanvas.getDotById(previousHoveredDotId);
+        if (previousHoveredDot) {
+            super.invokeUnhoverDot(previousHoveredDot);
+        }
+        this.previousHoveredDotId = undefined;
+    }
+
+    private handleLinkChange(position: Position): void {
+        const previousClickedDot = this.dotVirtualCanvas.getDotById(this.previousClickedDotId!)!;
+
+        if (previousClickedDot) {
+            if (this.currentLink) {
+                this.removeLink(this.currentLink);
+            }
+            this.drawLink(previousClickedDot, position);
+        }
+    }
+
+    private drawLink(previousClickedDot: Dot, currentMousePosition: Position): void {
+        const toDotId = this.ids.next();
+        const toDot = { ...currentMousePosition, id: toDotId, radius: previousClickedDot.radius };
+
+        const linkId = this.ids.next();
+        this.currentLink = { id: linkId, from: previousClickedDot, to: toDot, side: this.currentSide };
+
+        super.invokeDrawLink(this.currentLink);
+    }
+
+    private removeLink(link: Link) {
+        super.invokeRemoveLink(link);
+        this.currentLink = undefined;
+    }
+
+    private changeSide(): void {
+        this.currentSide = this.currentSide === CanvasSide.Front ? CanvasSide.Back : CanvasSide.Front;
     }
 
     private handleSizeChange(event: SizeChangeEvent): void {

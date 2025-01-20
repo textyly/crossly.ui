@@ -8,9 +8,8 @@ export class LineVirtualCanvas extends LineVirtualCanvasBase implements ILineVir
     private readonly dotVirtualCanvas: IDotVirtualCanvas;
 
     private lines: Array<Line>;
-
+    private currentSide: CanvasSide;
     private previousClickedDotId?: Id;
-    private side: CanvasSide;
 
     constructor(inputCanvas: IInputCanvas, dotVirtualCanvas: IDotVirtualCanvas) {
         super();
@@ -18,7 +17,7 @@ export class LineVirtualCanvas extends LineVirtualCanvasBase implements ILineVir
         this.inputCanvas = inputCanvas;
         this.dotVirtualCanvas = dotVirtualCanvas;
 
-        this.side = CanvasSide.Default;
+        this.currentSide = CanvasSide.Default;
         this.lines = [];
 
         this.subscribe();
@@ -107,7 +106,7 @@ export class LineVirtualCanvas extends LineVirtualCanvasBase implements ILineVir
         if (currentlyClickedDot) {
 
             if (this.previousClickedDotId) {
-                this.drawLine(this.previousClickedDotId, currentlyClickedDot.id, this.side);
+                this.drawLine(this.previousClickedDotId, currentlyClickedDot.id, this.currentSide);
             }
 
             this.previousClickedDotId = currentlyClickedDot.id;
@@ -116,7 +115,7 @@ export class LineVirtualCanvas extends LineVirtualCanvasBase implements ILineVir
     }
 
     private changeSide(): void {
-        this.side = this.side === CanvasSide.Front ? CanvasSide.Back : CanvasSide.Front;
+        this.currentSide = this.currentSide === CanvasSide.Front ? CanvasSide.Back : CanvasSide.Front;
     }
 
     private handleSizeChange(event: SizeChangeEvent): void {
