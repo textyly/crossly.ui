@@ -1,35 +1,23 @@
 import { ICanvas, Size } from "./types.js";
+import { VoidUnsubscribe } from "../types.js";
 import { Messaging1 } from "../messaging/impl.js";
 import { IMessaging1 } from "../messaging/types.js";
-import { VoidUnsubscribe } from "../types.js";
-import { SizeValidator } from "../validators/canvas/size.js";
 import { SizeChangeEvent, SizeChangeListener } from "./input/types.js";
 
 export abstract class CanvasBase implements ICanvas {
-    // #region fields
-
-    private readonly sizeValidator: SizeValidator;
+    private readonly uns: Array<VoidUnsubscribe>;
     private readonly msg: IMessaging1<SizeChangeEvent>;
-    private readonly unFuncs: Array<VoidUnsubscribe>;
 
     private width: number;
     private height: number;
 
-    //#endregion
-
     constructor() {
+        this.uns = new Array<VoidUnsubscribe>;
+        this.msg = new Messaging1();
+
         this.width = 0;
         this.height = 0;
-
-        this.sizeValidator = new SizeValidator();
-
-        const className = CanvasBase.name;
-        this.msg = new Messaging1(className);
-
-        this.unFuncs = new Array<VoidUnsubscribe>;
     }
-
-    // #region interface
 
     public get size(): Size {
         const size = { width: this.width, height: this.height };
@@ -37,8 +25,6 @@ export abstract class CanvasBase implements ICanvas {
     }
 
     public set size(value: Size) {
-        this.sizeValidator.validateSize(value);
-
         const currentWidth = this.width;
         const currentHeight = this.height;
         const newWidth = value.width;
@@ -52,30 +38,19 @@ export abstract class CanvasBase implements ICanvas {
     }
 
     public dispose(): void {
-        this.unFuncs.forEach((un) => un()); // TODO: handle exceptions
+        this.uns.forEach((un) => un());
         this.msg.dispose();
     }
-
-    // #region interface
-
-    // #region events
 
     public onSizeChange(listener: SizeChangeListener): VoidUnsubscribe {
         return this.msg.listenOnChannel1(listener);
     }
 
+    protected registerUn(func: VoidUnsubscribe): void {
+        this.uns.push(func);
+    }
+
     private invokeSizeChange(event: SizeChangeEvent): void {
         this.msg.sendToChannel1(event);
     }
-
-    // #endregion
-
-    // #region methods
-
-    protected registerUn(func: VoidUnsubscribe): void {
-        this.unFuncs.push(func);
-    }
-
-    // #endregion 
-
 }

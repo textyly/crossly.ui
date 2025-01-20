@@ -16,20 +16,12 @@ import {
 
 
 export abstract class InputCanvasBase extends CanvasBase implements IInputCanvas {
-    // #region fields
-
     private readonly messaging: IMessaging4<ZoomInEvent, ZoomOutEvent, MouseMoveEvent, MouseLeftButtonDownEvent>;
-
-    //#endregion
 
     constructor() {
         super();
-
-        const className = InputCanvasBase.name;
-        this.messaging = new Messaging4(className);
+        this.messaging = new Messaging4();
     }
-
-    // #region interface
 
     public onZoomIn(listener: ZoomInListener): VoidUnsubscribe {
         return this.messaging.listenOnChannel1(listener);
@@ -47,9 +39,10 @@ export abstract class InputCanvasBase extends CanvasBase implements IInputCanvas
         return this.messaging.listenOnChannel4(listener);
     }
 
-    // #endregion
-
-    // #region events
+    public override dispose(): void {
+        this.messaging.dispose();
+        super.dispose();
+    }
 
     protected invokeZoomIn(): void {
         this.messaging.sendToChannel1({});
@@ -66,13 +59,4 @@ export abstract class InputCanvasBase extends CanvasBase implements IInputCanvas
     protected invokeMouseLeftButtonDown(event: MouseLeftButtonDownEvent): void {
         this.messaging.sendToChannel4(event);
     }
-
-    // #endregion
-
-    // #region methods
-    public override dispose(): void {
-        this.messaging.dispose();
-        super.dispose();
-    }
-    // #endregion 
 }

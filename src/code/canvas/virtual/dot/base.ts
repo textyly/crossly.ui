@@ -1,7 +1,7 @@
+import { CanvasBase } from "../../base.js";
 import { Messaging1 } from "../../../messaging/impl.js";
 import { IMessaging1 } from "../../../messaging/types.js";
 import { VoidListener, VoidUnsubscribe } from "../../../types.js";
-import { CanvasBase } from "../../base.js";
 import { Dot, DrawDotEvent, DrawDotListener } from "../types.js";
 
 export abstract class DotVirtualCanvasBase extends CanvasBase {
@@ -9,9 +9,7 @@ export abstract class DotVirtualCanvasBase extends CanvasBase {
 
     constructor() {
         super();
-
-        const className = DotVirtualCanvasBase.name;
-        this.messaging = new Messaging1(className);
+        this.messaging = new Messaging1();
     }
 
     public onRedraw(listener: VoidListener): VoidUnsubscribe {
@@ -22,17 +20,17 @@ export abstract class DotVirtualCanvasBase extends CanvasBase {
         return this.messaging.listenOnChannel1(listener);
     }
 
-    public invokeRedraw(): void {
-        this.messaging.sendToChannel0();
-    }
-
-    public invokeDrawDot(dot: Dot): void {
-        const drawDotEvent = { dot };
-        this.messaging.sendToChannel1(drawDotEvent);
-    }
-
     public override dispose(): void {
         this.messaging.dispose();
         super.dispose();
+    }
+
+    protected invokeRedraw(): void {
+        this.messaging.sendToChannel0();
+    }
+
+    protected invokeDrawDot(dot: Dot): void {
+        const drawDotEvent = { dot };
+        this.messaging.sendToChannel1(drawDotEvent);
     }
 } 

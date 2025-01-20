@@ -1,8 +1,7 @@
-import { CanvasSide, Id, IDotVirtualCanvas, ILineVirtualCanvas, Line } from "../types.js";
-import { IInputCanvas, MouseLeftButtonDownEvent, Position } from "../../input/types.js";
-import { DotVirtualCanvas } from "../dot/dot.js";
-import { LineVirtualCanvasBase } from "./base.js";
 import { Size } from "../../types.js";
+import { LineVirtualCanvasBase } from "./base.js";
+import { IInputCanvas, MouseLeftButtonDownEvent, Position } from "../../input/types.js";
+import { CanvasSide, Id, IDotVirtualCanvas, ILineVirtualCanvas, Line } from "../types.js";
 
 export class LineVirtualCanvas extends LineVirtualCanvasBase implements ILineVirtualCanvas {
     private readonly dotVirtualCanvas: IDotVirtualCanvas;
@@ -15,11 +14,42 @@ export class LineVirtualCanvas extends LineVirtualCanvasBase implements ILineVir
 
     constructor(dotVirtualCanvas: IDotVirtualCanvas, inputCanvas: IInputCanvas) {
         super();
+
+        // TODO: add validator
+
         this.dotVirtualCanvas = dotVirtualCanvas;
         this.inputCanvas = inputCanvas;
+
         this.side = CanvasSide.Default;
         this.lines = [];
+
         this.subscribe();
+    }
+
+    public draw(): void {
+        this.lines = this.createLines();
+        this.lines.forEach((line) => {
+            this.drawLine(line);
+        });
+    }
+
+    private createLines(): Array<Line> {
+        const lines = new Array<Line>();
+
+        this.lines.forEach((line) => {
+            const from = this.dotVirtualCanvas.getDotById(line.from.id)!; // TODO: what if undefined ???
+            const to = this.dotVirtualCanvas.getDotById(line.to.id)!; // TODO: what if undefined ???
+            const l = { from, to, side: line.side };
+            lines.push(l);
+        });
+
+        return lines;
+    }
+
+    private drawLine(line: Line): void {
+        if (line.side === CanvasSide.Front) {
+            super.invokeDrawLine(line);
+        }
     }
 
     private subscribe(): void {
@@ -34,13 +64,6 @@ export class LineVirtualCanvas extends LineVirtualCanvasBase implements ILineVir
 
         const mouseLeftButtonDownUn = this.inputCanvas.onMouseLeftButtonDown(this.handleMouseLeftButtonDown.bind(this));
         super.registerUn(mouseLeftButtonDownUn);
-    }
-
-    public draw(): void {
-        this.lines = this.createLines();
-        this.lines.forEach((line) => {
-            this.drawLine(line);
-        });
     }
 
     private handleDotVirtualCanvasSizeChange(size: Size): void {
@@ -78,24 +101,5 @@ export class LineVirtualCanvas extends LineVirtualCanvasBase implements ILineVir
     private handleDrawLine(line: Line): void {
         this.lines.push(line);
         this.drawLine(line);
-    }
-
-    private drawLine(line: Line): void {
-        if (line.side === CanvasSide.Front) {
-            super.invokeDrawLine(line);
-        }
-    }
-
-    private createLines(): Array<Line> {
-        const lines = new Array<Line>();
-
-        this.lines.forEach((line) => {
-            const from = this.dotVirtualCanvas.getDotById(line.from.id)!; // TODO: what if undefined ???
-            const to = this.dotVirtualCanvas.getDotById(line.to.id)!; // TODO: what if undefined ???
-            const l = { from, to, side: line.side };
-            lines.push(l);
-        });
-
-        return lines;
     }
 }

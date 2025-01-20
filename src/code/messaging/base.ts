@@ -1,33 +1,24 @@
 import { IDisposable } from "../canvas/types.js";
 import { ErrorListener, Unsubscribe } from "../types.js";
-import { MessagingBaseValidator } from "../validators/messaging/base.js";
 import {
-    ChannelListeners,
     Channel,
-    ChannelListener,
     ChannelData,
-    PrivateChannels
+    ChannelListener,
+    PrivateChannels,
+    ChannelListeners,
 } from "./types.js";
 
 export abstract class Messaging implements IDisposable {
     // #region fields
 
-    private readonly name: string;
-
     private readonly errorChannel: Channel;
-    private readonly validator: MessagingBaseValidator;
-
     private readonly privateChannels: Map<Channel, ChannelListeners>;
     private readonly publicChannels: Map<Channel, ChannelListeners>;
 
     // #endregion
 
-    constructor(name: string) {
-        this.name = name;
-
+    constructor() {
         this.errorChannel = PrivateChannels.Error;
-        this.validator = new MessagingBaseValidator(name);
-
         this.privateChannels = new Map<Channel, ChannelListeners>;
         this.publicChannels = new Map<Channel, ChannelListeners>;
     }
@@ -35,8 +26,6 @@ export abstract class Messaging implements IDisposable {
     // #region interface
 
     public onError(listener: ErrorListener): Unsubscribe<ChannelListener> {
-        this.validator.validateRef(listener, "listener");
-
         const un = this.onCore(this.errorChannel, listener, this.privateChannels);
         return un;
     }
@@ -51,7 +40,6 @@ export abstract class Messaging implements IDisposable {
     // #region events
 
     protected on(channel: Channel, listener: ChannelListener): Unsubscribe<ChannelListener> {
-        this.validator.validateOn(channel, listener);
         this.ensureChannelExists(channel, this.publicChannels);
 
         const un = this.onCore(channel, listener, this.publicChannels);
@@ -70,8 +58,6 @@ export abstract class Messaging implements IDisposable {
     // #region methods
 
     protected create(channel: Channel): void {
-        this.validator.validateCreate(channel);
-
         const hasChannel = this.publicChannels.has(channel);
         if (!hasChannel) {
             this.publicChannels.set(channel, []);
@@ -79,7 +65,6 @@ export abstract class Messaging implements IDisposable {
     }
 
     protected send(channel: Channel, data: ChannelData): void {
-        this.validator.validateSend(channel, data);
         this.ensureChannelExists(channel, this.publicChannels);
 
         const listeners = this.publicChannels.get(channel)!;

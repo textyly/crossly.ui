@@ -1,43 +1,42 @@
-import { InputCanvasBase } from "./base.js";
-import { InputCanvasThrottlerValidator } from "../../validators/canvas/input/throttler.js";
-import {
-    CanvasEventType,
-    IInputCanvas,
-    MouseLeftButtonDownEvent,
-    MouseMoveEvent,
-    Position
-} from "./types.js";
 import { Size } from "../types.js";
+import { InputCanvasBase } from "./base.js";
+import {
+    CanvasEvent,
+    IInputCanvas,
+    MouseMoveEvent,
+    CanvasEventType,
+    MouseLeftButtonDownEvent,
+} from "./types.js";
 
 export class InputCanvasThrottler extends InputCanvasBase {
+    private readonly inputCanvas: IInputCanvas;
 
-    // #region fields
-
-    private inputCanvas: IInputCanvas;
     private groupedEvents: Array<CanvasEvent>;
 
     private timerInterval: number;
     private timerId?: number;
 
-    private validator: InputCanvasThrottlerValidator;
-
-    // #endregion
-
     constructor(inputCanvas: IInputCanvas) {
         super();
 
         this.inputCanvas = inputCanvas;
+
         this.groupedEvents = [];
-
-        this.timerInterval = 50;
-
-        const className = InputCanvasThrottler.name;
-        this.validator = new InputCanvasThrottlerValidator(className);
+        this.timerInterval = 50; // TODO: outside!!!
 
         this.subscribe();
     }
 
-    // #region abstract overrides 
+    public override set size(value: Size) {
+        super.size = value;
+        this.inputCanvas.size = value;
+    }
+
+    public override dispose(): void {
+        clearInterval(this.timerId);
+        this.handleEvents();
+        super.dispose();
+    }
 
     private subscribe(): void {
         const zoomInUn = this.inputCanvas.onZoomIn(this.handleZoomIn.bind(this));
@@ -54,21 +53,6 @@ export class InputCanvasThrottler extends InputCanvasBase {
 
         this.timerId = setInterval(this.handleTimer.bind(this), this.timerInterval);
     }
-
-    public override set size(value: Size) {
-        super.size = value;
-        this.inputCanvas.size = value;
-    }
-
-    public override dispose(): void {
-        clearInterval(this.timerId);
-        this.handleEvents();
-        super.dispose();
-    }
-
-    // #endregion
-
-    // #region events 
 
     private handleZoomIn(): void {
         if (this.groupedEvents.length == 0) {
@@ -100,7 +84,6 @@ export class InputCanvasThrottler extends InputCanvasBase {
 
     private handleMouseMove(event: MouseMoveEvent): void {
         const position = event.position;
-        this.validator.validatePosition(position);
 
         if (this.groupedEvents.length == 0) {
             this.groupedEvents.push({ type: CanvasEventType.MouseMove, value: position });
@@ -117,7 +100,6 @@ export class InputCanvasThrottler extends InputCanvasBase {
 
     private handleMouseLeftButtonDown(event: MouseLeftButtonDownEvent): void {
         const position = event.position;
-        this.validator.validatePosition(position);
 
         if (this.groupedEvents.length == 0) {
             this.groupedEvents.push({ type: CanvasEventType.MouseLeftButtonDown, value: position });
@@ -164,8 +146,4 @@ export class InputCanvasThrottler extends InputCanvasBase {
             }
         }
     }
-
-    // #endregion
 }
-
-type CanvasEvent = { type: CanvasEventType, value?: Position };

@@ -1,31 +1,8 @@
-// #region types 
-
 import { IDisposable } from "../canvas/types.js";
 import { Listener, VoidListener, VoidUnsubscribe } from "../types";
 
-/**
- * 
- */
 export type Channel = string;
-
-/**
- * 
- */
 export type ChannelData = any;
-
-/**
- * 
- */
-export type ChannelListener = Listener<ChannelData>;
-
-/**
- * 
- */
-export type ChannelListeners = Array<ChannelListener>;
-
-// #endregion
-
-// #region interfaces 
 
 export interface IVoidMessaging extends IDisposable {
 
@@ -164,13 +141,6 @@ export interface IMessaging7<Data1, Data2, Data3, Data4, Data5, Data6, Data7> ex
     sendToChannel7(data: Data7): void;
 }
 
-// #endregion
-
-// #region enums
-
-/**
- * 
- */
 export enum PublicChannels {
     Channel0 = "channel0",
     Channel1 = "channel1",
@@ -186,4 +156,5 @@ export enum PrivateChannels {
     Error = "error",
 }
 
-// #endregion
+export type ChannelListener = Listener<ChannelData>;
+export type ChannelListeners = Array<ChannelListener>;

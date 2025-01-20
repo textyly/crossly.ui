@@ -1,12 +1,12 @@
+import { Size } from "../types.js";
 import { CanvasBase } from "../base.js";
 import { IDrawingCanvas, IVectorDrawing, SvgDot, SvgLine } from "./types.js";
-import { Size } from "../types.js";
 import {
     Id,
     CanvasSide,
     HoverDotEvent,
-    UnhoverDotEvent,
     DrawLinkEvent,
+    UnhoverDotEvent,
     RemoveLinkEvent,
     ICueVirtualCanvas
 } from "../virtual/types.js";

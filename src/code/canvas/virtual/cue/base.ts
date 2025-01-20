@@ -1,14 +1,14 @@
+import { CanvasBase } from "../../base.js";
 import { Messaging4 } from "../../../messaging/impl.js";
 import { IMessaging4 } from "../../../messaging/types.js";
 import { VoidListener, VoidUnsubscribe } from "../../../types.js";
-import { CanvasBase } from "../../base.js";
 import {
     Dot,
+    Link,
     DrawLinkEvent,
     DrawLinkListener,
     HoverDotEvent,
     HoverDotListener,
-    Link,
     RemoveLinkEvent,
     RemoveLinkListener,
     UnhoverDotEvent,
@@ -20,9 +20,7 @@ export abstract class CueVirtualCanvasBase extends CanvasBase {
 
     constructor() {
         super();
-
-        const className = CueVirtualCanvasBase.name;
-        this.messaging = new Messaging4(className);
+        this.messaging = new Messaging4();
     }
 
     public onRedraw(listener: VoidListener): VoidUnsubscribe {
@@ -45,32 +43,32 @@ export abstract class CueVirtualCanvasBase extends CanvasBase {
         return this.messaging.listenOnChannel4(listener);
     }
 
-    public invokeRedraw(): void {
+    public override dispose(): void {
+        this.messaging.dispose();
+        super.dispose();
+    }
+
+    protected invokeRedraw(): void {
         this.messaging.sendToChannel0();
     }
 
-    public invokeHoverDot(dot: Dot): void {
+    protected invokeHoverDot(dot: Dot): void {
         const hoverDotEvent = { dot };
         this.messaging.sendToChannel1(hoverDotEvent);
     }
 
-    public invokeUnhoverDot(dot: Dot): void {
+    protected invokeUnhoverDot(dot: Dot): void {
         const unhoverDotEvent = { dot };
         this.messaging.sendToChannel2(unhoverDotEvent);
     }
 
-    public invokeDrawLink(link: Link): void {
+    protected invokeDrawLink(link: Link): void {
         const drawLinkEvent = { link };
         this.messaging.sendToChannel3(drawLinkEvent);
     }
 
-    public invokeRemoveLink(link: Link): void {
+    protected invokeRemoveLink(link: Link): void {
         const removeLinkEvent = { link };
         this.messaging.sendToChannel4(removeLinkEvent);
-    }
-
-    public override dispose(): void {
-        this.messaging.dispose();
-        super.dispose();
     }
 }

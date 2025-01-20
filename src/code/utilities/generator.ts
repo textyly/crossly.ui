@@ -1,10 +1,9 @@
 export class IdGenerator {
     private readonly initialId: number;
-
     private nextId: number;
 
-    constructor() {
-        this.initialId = -1;
+    constructor(initialId?: number) {
+        this.initialId = initialId ?? -1;
         this.nextId = this.initialId;
     }
 

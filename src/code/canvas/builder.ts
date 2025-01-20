@@ -1,14 +1,14 @@
+import { ICrosslyCanvas } from "./types.js";
 import { CrosslyCanvas } from "./crossly.js";
+import { InputCanvas } from "./input/input.js";
+import { IInputCanvas } from "./input/types.js";
 import { CueDrawingCanvas } from "./drawing/cue.js";
 import { DotDrawingCanvas } from "./drawing/dot.js";
-import { LineDrawingCanvas } from "./drawing/line.js";
 import { RasterDrawing } from "./drawing/raster.js";
 import { IDrawingCanvas } from "./drawing/types.js";
 import { VectorDrawing } from "./drawing/vector.js";
-import { InputCanvas } from "./input/input.js";
+import { LineDrawingCanvas } from "./drawing/line.js";
 import { InputCanvasThrottler } from "./input/throttler.js";
-import { IInputCanvas } from "./input/types.js";
-import { ICrosslyCanvas } from "./types.js";
 import { ICueVirtualCanvas, IDotVirtualCanvas, ILineVirtualCanvas } from "./virtual/types.js";
 
 export class CrosslyCanvasBuilder {
@@ -18,8 +18,8 @@ export class CrosslyCanvasBuilder {
     private cueDrawingCanvas!: IDrawingCanvas<ICueVirtualCanvas>;
 
     public build(): ICrosslyCanvas {
-        const crosslyCanvas = new CrosslyCanvas();
-        crosslyCanvas.initialize(this.inputCanvas, this.dotDrawingCanvas, this.lineDrawingCanvas, this.cueDrawingCanvas);
+        // TODO: add validator
+        const crosslyCanvas = new CrosslyCanvas(this.inputCanvas, this.dotDrawingCanvas, this.lineDrawingCanvas, this.cueDrawingCanvas);
         return crosslyCanvas;
     }
 

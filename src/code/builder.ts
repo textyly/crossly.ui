@@ -1,14 +1,15 @@
-import { CrosslyCanvasBuilder } from "./canvas/builder.js";
 import { ICrosslyCanvas } from "./canvas/types.js";
+import { CrosslyCanvasBuilder } from "./canvas/builder.js";
 
 export class CanvasBuilder {
-    private crosslyCanvasBuilder: CrosslyCanvasBuilder;
+    private readonly crosslyCanvasBuilder: CrosslyCanvasBuilder;
 
     constructor() {
         this.crosslyCanvasBuilder = new CrosslyCanvasBuilder();
     }
 
     public build(): ICrosslyCanvas {
+        // TODO: add validator
         const inputHTMLElement = this.buildInputHTMLElement();
         this.crosslyCanvasBuilder.withInputCanvas(inputHTMLElement);
 

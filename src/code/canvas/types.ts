@@ -1,6 +1,6 @@
 import { VoidUnsubscribe } from "../types";
-import { SizeChangeListener } from "./input/types";
 import { DotsConfig } from "./virtual/types.js";
+import { SizeChangeListener } from "./input/types";
 
 export type Size = { width: number, height: number };
 

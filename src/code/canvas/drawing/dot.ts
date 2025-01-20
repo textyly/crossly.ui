@@ -1,9 +1,9 @@
 import { Size } from "../types.js";
 import { CanvasBase } from "../base.js";
-import { DrawDotEvent, IDotVirtualCanvas } from "../virtual/types.js";
 import { IDrawingCanvas, IRasterDrawing } from "./types.js";
+import { DrawDotEvent, IDotVirtualCanvas } from "../virtual/types.js";
 
-export class DotDrawingCanvas extends CanvasBase  implements IDrawingCanvas<IDotVirtualCanvas>{
+export class DotDrawingCanvas extends CanvasBase implements IDrawingCanvas<IDotVirtualCanvas> {
     private readonly rasterDrawing: IRasterDrawing;
 
     constructor(rasterDrawing: IRasterDrawing) {

@@ -1,24 +1,31 @@
+import { Size } from "../../types.js";
+import { CueVirtualCanvasBase } from "./base.js";
 import { CanvasSide, ICueVirtualCanvas, Id, IDotVirtualCanvas, Link } from "../types.js";
 import { IInputCanvas, MouseLeftButtonDownEvent, MouseMoveEvent, Position } from "../../input/types.js";
-import { CueVirtualCanvasBase } from "./base.js";
-import { Size } from "../../types.js";
-import { DotVirtualCanvas } from "../dot/dot.js";
 
 export class CueVirtualCanvas extends CueVirtualCanvasBase implements ICueVirtualCanvas {
     private readonly dotVirtualCanvas: IDotVirtualCanvas;
     private readonly inputCanvas: IInputCanvas;
 
+    private link?: Link;
     private clicked?: Id;
     private hovered?: Id;
-    private link?: Link;
     private side: CanvasSide;
 
     constructor(dotVirtualCanvas: IDotVirtualCanvas, inputCanvas: IInputCanvas) {
         super();
+
+        // TODO: add validator
+
         this.dotVirtualCanvas = dotVirtualCanvas;
         this.inputCanvas = inputCanvas;
+
         this.side = CanvasSide.Default;
+
         this.subscribe();
+    }
+
+    public draw(): void {
     }
 
     private subscribe(): void {
@@ -38,13 +45,6 @@ export class CueVirtualCanvas extends CueVirtualCanvasBase implements ICueVirtua
         super.registerUn(mouseLeftButtonDownUn);
     }
 
-    public draw(): void {
-    }
-
-    private handleDotVirtualCanvasSizeChange(size: Size): void {
-        super.size = size;
-    }
-
     private handleZoomIn(): void {
         if (this.hovered) {
             this.handleUnhoverDot();
@@ -53,6 +53,7 @@ export class CueVirtualCanvas extends CueVirtualCanvasBase implements ICueVirtua
             const position = this.link.to;
             this.handleDrawLink(position);
         }
+        this.draw();
     }
 
     private handleZoomOut(): void {
@@ -63,6 +64,7 @@ export class CueVirtualCanvas extends CueVirtualCanvasBase implements ICueVirtua
             const position = this.link.to;
             this.handleDrawLink(position);
         }
+        this.draw();
     }
 
     private handleMouseMove(event: MouseMoveEvent): void {
@@ -124,5 +126,9 @@ export class CueVirtualCanvas extends CueVirtualCanvasBase implements ICueVirtua
         const hovered = this.dotVirtualCanvas.getDotById(this.hovered!)!;
         super.invokeUnhoverDot(hovered);
         this.hovered = undefined;
+    }
+
+    private handleDotVirtualCanvasSizeChange(size: Size): void {
+        super.size = size;
     }
 }
