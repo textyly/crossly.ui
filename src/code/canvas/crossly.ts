@@ -1,11 +1,12 @@
 import { CanvasBase } from "./base.js";
 import { IInputCanvas } from "./input/types.js";
 import { IDrawingCanvas } from "./drawing/types.js";
+import { DotMatcher } from "./virtual/dot/matcher.js";
 import { CueVirtualCanvas } from "./virtual/cue/cue.js";
 import { DotVirtualCanvas } from "./virtual/dot/dot.js";
 import { LineVirtualCanvas } from "./virtual/line/line.js";
-import { ICrosslyCanvas, SizeChangeEvent } from "./types.js";
-import { DotsConfig, ICueVirtualCanvas, IDotVirtualCanvas, ILineVirtualCanvas } from "./virtual/types.js";
+import { DotsConfig, ICrosslyCanvas, SizeChangeEvent } from "./types.js";
+import { ICueVirtualCanvas, IDotVirtualCanvas, ILineVirtualCanvas } from "./virtual/types.js";
 
 export class CrosslyCanvas extends CanvasBase implements ICrosslyCanvas {
     private readonly inputCanvas: IInputCanvas;
@@ -49,7 +50,8 @@ export class CrosslyCanvas extends CanvasBase implements ICrosslyCanvas {
 
     private initializeDotCanvas(dotDrawingCanvas: IDrawingCanvas<IDotVirtualCanvas>): void {
         this.dotDrawingCanvas = dotDrawingCanvas;
-        this.dotVirtualCanvas = new DotVirtualCanvas(this.inputCanvas);
+        const dotMatcher = new DotMatcher();
+        this.dotVirtualCanvas = new DotVirtualCanvas(this.inputCanvas, dotMatcher);
         this.dotDrawingCanvas.subscribe(this.dotVirtualCanvas);
 
         const sizeChangeUn = this.dotVirtualCanvas.onSizeChange(this.handleSizeChange.bind(this));
@@ -58,13 +60,13 @@ export class CrosslyCanvas extends CanvasBase implements ICrosslyCanvas {
 
     private initializeLineCanvas(lineDrawingCanvas: IDrawingCanvas<ILineVirtualCanvas>): void {
         this.lineDrawingCanvas = lineDrawingCanvas;
-        this.lineVirtualCanvas = new LineVirtualCanvas(this.dotVirtualCanvas, this.inputCanvas);
+        this.lineVirtualCanvas = new LineVirtualCanvas(this.inputCanvas, this.dotVirtualCanvas);
         this.lineDrawingCanvas.subscribe(this.lineVirtualCanvas);
     }
 
     private initializeCueCanvas(cueDrawingCanvas: IDrawingCanvas<ICueVirtualCanvas>): void {
         this.cueDrawingCanvas = cueDrawingCanvas;
-        this.cueVirtualCanvas = new CueVirtualCanvas(this.dotVirtualCanvas, this.inputCanvas);
+        this.cueVirtualCanvas = new CueVirtualCanvas(this.inputCanvas, this.dotVirtualCanvas);
         this.cueDrawingCanvas.subscribe(this.cueVirtualCanvas);
     }
 

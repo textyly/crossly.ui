@@ -1,7 +1,9 @@
-import { DotsConfig } from "./virtual/types.js";
 import { Listener, VoidUnsubscribe } from "../types";
 
 export type Size = { width: number, height: number };
+export type RadiusConfig = { value: number, step: number };
+export type SpacingConfig = { value: number, step: number };
+export type DotsConfig = { dotsX: number, dotsY: number, radius: RadiusConfig, spacing: SpacingConfig };
 
 export interface IDisposable {
     dispose(): void;

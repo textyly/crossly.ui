@@ -1,22 +1,23 @@
-import { ICanvas } from "../types.js";
+import { DotsConfig, ICanvas } from "../types.js";
 import { Listener, VoidUnsubscribe } from "../../types.js";
-
-export type RadiusConfig = { value: number, step: number };
-export type SpacingConfig = { value: number, step: number };
-export type DotsConfig = { x: number, y: number, radius: RadiusConfig, spacing: SpacingConfig };
 
 export type Id = string;
 export type Dot = { id: Id, x: number, y: number, radius: number };
 export type Line = { from: Dot, to: Dot, side: CanvasSide };
 export type Link = { id: Id, from: Dot, to: Dot, side: CanvasSide };
+export type DotsState = DotsConfig;
 
 export interface IDotVirtualCanvas extends ICanvas {
-    draw(config: DotsConfig): void;
+    draw(config: Readonly<DotsConfig>): void;
 
-    getDotByCoordinates(x: number, y: number): Dot | undefined;
     getDotById(id: string): Dot | undefined;
+    getDotByCoordinates(x: number, y: number): Dot | undefined;
 
     onDrawDot(listener: DrawDotListener): VoidUnsubscribe;
+}
+
+export interface IDotMatcher {
+    match(mouseX: number, mouseY: number, dotX: number, dotY: number, dotRadius: number): boolean;
 }
 
 export interface ILineVirtualCanvas extends ICanvas {

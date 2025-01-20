@@ -4,19 +4,19 @@ import { CanvasSide, ICueVirtualCanvas, Id, IDotVirtualCanvas, Link } from "../t
 import { IInputCanvas, MouseLeftButtonDownEvent, MouseMoveEvent, Position } from "../../input/types.js";
 
 export class CueVirtualCanvas extends CueVirtualCanvasBase implements ICueVirtualCanvas {
-    private readonly dotVirtualCanvas: IDotVirtualCanvas;
     private readonly inputCanvas: IInputCanvas;
+    private readonly dotVirtualCanvas: IDotVirtualCanvas;
 
     private link?: Link;
     private clicked?: Id;
     private hovered?: Id;
     private side: CanvasSide;
 
-    constructor(dotVirtualCanvas: IDotVirtualCanvas, inputCanvas: IInputCanvas) {
+    constructor(inputCanvas: IInputCanvas, dotVirtualCanvas: IDotVirtualCanvas) {
         super();
 
-        this.dotVirtualCanvas = dotVirtualCanvas;
         this.inputCanvas = inputCanvas;
+        this.dotVirtualCanvas = dotVirtualCanvas;
 
         this.side = CanvasSide.Default;
 

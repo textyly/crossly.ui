@@ -1,27 +1,23 @@
-import { Size } from "../../types.js";
+import { DotsConfig } from "../../types.js";
 import { DotVirtualCanvasBase } from "./base.js";
 import { IInputCanvas } from "../../input/types.js";
 import { IdGenerator } from "../../../utilities/generator.js";
-import { Dot, DotsConfig, Id, IDotVirtualCanvas } from "../types.js";
+import { Dot, DotsState, Id, IDotMatcher, IDotVirtualCanvas } from "../types.js";
 
 export class DotVirtualCanvas extends DotVirtualCanvasBase implements IDotVirtualCanvas {
     private readonly inputCanvas: IInputCanvas;
+    private readonly dotMatcher: IDotMatcher;
+
     private readonly ids: IdGenerator;
     private readonly dots: Map<Id, Dot>;
 
-    private dotsX!: number;
-    private dotsY!: number;
+    private dotsState!: DotsState;
 
-    private radius!: number;
-    private radiusStep!: number;
-
-    private spacing!: number;
-    private spacingStep!: number;
-
-    constructor(inputCanvas: IInputCanvas) {
+    constructor(inputCanvas: IInputCanvas, dotMatcher: IDotMatcher) {
         super();
 
         this.inputCanvas = inputCanvas;
+        this.dotMatcher = dotMatcher;
 
         this.dots = new Map();
         this.ids = new IdGenerator();
@@ -29,66 +25,77 @@ export class DotVirtualCanvas extends DotVirtualCanvasBase implements IDotVirtua
         this.subscribe();
     }
 
-    public draw(config: DotsConfig): void {
-        this.dotsX = config.x;
-        this.dotsY = config.y;
-
-        this.radius = config.radius.value;
-        this.radiusStep = config.radius.step;
-
-        this.spacing = config.spacing.value;
-        this.spacingStep = config.spacing.step;
-
-        this.drawDots();
-    }
-
-    public getDotByCoordinates(x: number, y: number): Dot | undefined {
-        // TODO: try to find a better algorithm
-        for (const dotKvp of this.dots) {
-            const dot = dotKvp[1];
-            const distance = Math.sqrt((x - dot.x) ** 2 + (y - dot.y) ** 2);
-            let isInside = distance <= dot.radius;
-            if (isInside) {
-                return dot;
-            }
-        }
+    public draw(config: Readonly<DotsConfig>): void {
+        this.dotsState = config;
+        this.redraw();
     }
 
     public getDotById(id: string): Dot | undefined {
         return this.dots.get(id);
     }
 
-    private createDots(): void {
-        this.dots.clear();
-        this.ids.reset();
+    public getDotByCoordinates(mouseX: number, mouseY: number): Dot | undefined {
+        const dots = this.dots.values();
 
-        for (let y = 0; y < this.dotsY; ++y) {
-            for (let x = 0; x < this.dotsX; ++x) {
-                const id = this.ids.next();
-
-                // TODO: !!!
-                const x1 = (x * this.spacing) + this.spacing;
-                const y1 = (y * this.spacing) + this.spacing;
-                const dot = { id, x: x1, y: y1, radius: this.radius };
-                this.dots.set(id, dot);
+        for (const dot of dots) {
+            const match = this.dotMatcher.match(mouseX, mouseY, dot.x, dot.y, dot.radius);
+            if (match) {
+                return dot;
             }
         }
     }
 
-    private drawDots(): void {
-        this.createDots();
+    private redraw(): void {
+        this.recreateDots();
+        this.recalculateSize();
+        this.redrawDots();
+    }
 
-        const newSize = this.calculateSize();
-        this.size = newSize;
+    private recreateDots(): void {
+        this.clearState();
 
+        const dotsY = this.dotsState.dotsY;
+        const dotsX = this.dotsState.dotsX;
+
+        for (let y = 0; y < dotsY; ++y) {
+            for (let x = 0; x < dotsX; ++x) {
+                const dot = this.crateDot(x, y);
+                this.dots.set(dot.id, dot);
+            }
+        }
+    }
+
+    private crateDot(x: number, y: number): Dot {
+        const id = this.ids.next();
+        const spacing = this.dotsState.spacing.value;
+        const radius = this.dotsState.radius.value;
+
+        const x1 = (x * spacing) + spacing;
+        const y1 = (y * spacing) + spacing;
+
+        const dot = { id, x: x1, y: y1, radius };
+        return dot;
+    }
+
+    private recalculateSize(): void {
+        const dotsX = this.dotsState.dotsX;
+        const dotsY = this.dotsState.dotsY;
+        const spacing = this.dotsState.spacing.value;
+        const radius = this.dotsState.radius.value;
+
+        const width = spacing + (dotsX * radius) + ((dotsX - 1) * spacing);
+        const height = spacing + (dotsY * radius) + ((dotsY - 1) * spacing);
+
+        this.size = { width, height };
+    }
+
+    private redrawDots(): void {
         this.dots.forEach((dot) => super.invokeDrawDot(dot));
     }
 
-    private calculateSize(): Size {
-        const width = this.spacing + (this.dotsX * this.radius) + ((this.dotsX - 1) * this.spacing);
-        const height = this.spacing + (this.dotsY * this.radius) + ((this.dotsY - 1) * this.spacing);
-        const size = { width, height };
-        return size;
+    private clearState(): void {
+        this.dots.clear();
+        this.ids.reset();
     }
 
     private subscribe(): void {
@@ -100,14 +107,18 @@ export class DotVirtualCanvas extends DotVirtualCanvasBase implements IDotVirtua
     }
 
     private handleZoomIn(): void {
-        this.radius += this.radiusStep;
-        this.spacing += this.spacingStep;
-        this.drawDots();
+        if (this.dotsState) {
+            this.dotsState.radius.value += this.dotsState.radius.step;
+            this.dotsState.spacing.value += this.dotsState.spacing.step;
+            this.redraw();
+        }
     }
 
     private handleZoomOut(): void {
-        this.radius -= this.radiusStep;
-        this.spacing -= this.spacingStep;
-        this.drawDots();
+        if (this.dotsState) {
+            this.dotsState.radius.value -= this.dotsState.radius.step;
+            this.dotsState.spacing.value -= this.dotsState.spacing.step;
+            this.redraw();
+        }
     }
 }

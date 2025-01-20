@@ -4,19 +4,19 @@ import { IInputCanvas, MouseLeftButtonDownEvent, Position } from "../../input/ty
 import { CanvasSide, Id, IDotVirtualCanvas, ILineVirtualCanvas, Line } from "../types.js";
 
 export class LineVirtualCanvas extends LineVirtualCanvasBase implements ILineVirtualCanvas {
-    private readonly dotVirtualCanvas: IDotVirtualCanvas;
     private readonly inputCanvas: IInputCanvas;
+    private readonly dotVirtualCanvas: IDotVirtualCanvas;
 
     private lines: Array<Line>;
 
     private clicked?: Id;
     private side: CanvasSide;
 
-    constructor(dotVirtualCanvas: IDotVirtualCanvas, inputCanvas: IInputCanvas) {
+    constructor(inputCanvas: IInputCanvas, dotVirtualCanvas: IDotVirtualCanvas) {
         super();
 
-        this.dotVirtualCanvas = dotVirtualCanvas;
         this.inputCanvas = inputCanvas;
+        this.dotVirtualCanvas = dotVirtualCanvas;
 
         this.side = CanvasSide.Default;
         this.lines = [];
