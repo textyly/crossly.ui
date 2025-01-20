@@ -1,3 +1,38 @@
 body {
-    background-color: #ffffff;
+  margin: 0;
+}
+
+#container {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+}
+
+#dot {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+}
+
+#line {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 2;
+}
+
+#cue {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 3;
+
+}
+
+#input {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 4;
 }
