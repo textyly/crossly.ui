@@ -1,7 +1,7 @@
 import { SizeChangeEvent } from "../../types.js";
 import { LineVirtualCanvasBase } from "./base.js";
 import { IInputCanvas, MouseLeftButtonDownEvent, Position } from "../../input/types.js";
-import { CanvasSide, Id, IDotVirtualCanvas, ILineVirtualCanvas, Line } from "../types.js";
+import { CanvasSide, Dot, Id, IDotVirtualCanvas, ILineVirtualCanvas, Line } from "../types.js";
 
 export class LineVirtualCanvas extends LineVirtualCanvasBase implements ILineVirtualCanvas {
     private readonly inputCanvas: IInputCanvas;
@@ -9,7 +9,7 @@ export class LineVirtualCanvas extends LineVirtualCanvasBase implements ILineVir
 
     private lines: Array<Line>;
 
-    private clicked?: Id;
+    private previousClickedDot?: Id;
     private side: CanvasSide;
 
     constructor(inputCanvas: IInputCanvas, dotVirtualCanvas: IDotVirtualCanvas) {
@@ -25,29 +25,55 @@ export class LineVirtualCanvas extends LineVirtualCanvasBase implements ILineVir
     }
 
     public draw(): void {
-        this.lines = this.createLines();
-        this.lines.forEach((line) => {
-            this.drawLine(line);
-        });
+        this.redraw();
     }
 
-    private createLines(): Array<Line> {
-        const lines = new Array<Line>();
+    public override dispose(): void {
+        this.lines = [];
+        super.dispose();
+    }
 
-        this.lines.forEach((line) => {
-            const from = this.dotVirtualCanvas.getDotById(line.from.id)!; // TODO: what if undefined ???
-            const to = this.dotVirtualCanvas.getDotById(line.to.id)!; // TODO: what if undefined ???
-            const l = { from, to, side: line.side };
-            lines.push(l);
+    private redrawLines(): Array<Line> {
+        const copy = this.lines;
+        this.lines = [];
+
+        copy.forEach((line) => {
+            const recreated = this.recreateLine(line.from.id, line.to.id, line.side);
+            this.drawLine(recreated);
         });
 
-        return lines;
+        return this.lines;
+    }
+
+    private redraw(): void {
+        this.redrawLines();
+    }
+
+    private recreateLine(fromId: string, toId: string, side: CanvasSide): Line {
+        const from = this.dotVirtualCanvas.getDotById(fromId);
+        const to = this.dotVirtualCanvas.getDotById(toId);
+
+        const recreated = this.ensureLine(from, to, side);
+        return recreated;
     }
 
     private drawLine(line: Line): void {
+        this.lines.push(line);
         if (line.side === CanvasSide.Front) {
             super.invokeDrawLine(line);
         }
+    }
+
+    private ensureLine(from: Dot | undefined, to: Dot | undefined, side: CanvasSide): Line {
+        if (!from) {
+            throw new Error("`from` must be defined.");
+        }
+
+        if (!to) {
+            throw new Error("`to` must be defined.");
+        }
+
+        return { from, to, side };
     }
 
     private subscribe(): void {
@@ -64,17 +90,12 @@ export class LineVirtualCanvas extends LineVirtualCanvasBase implements ILineVir
         super.registerUn(mouseLeftButtonDownUn);
     }
 
-    private handleSizeChange(event: SizeChangeEvent): void {
-        const size = event.size;
-        super.size = size;
-    }
-
     private handleZoomIn(): void {
-        this.draw();
+        this.redraw();
     }
 
     private handleZoomOut(): void {
-        this.draw();
+        this.redraw();
     }
 
     private handleMouseLeftButtonDown(event: MouseLeftButtonDownEvent): void {
@@ -83,22 +104,25 @@ export class LineVirtualCanvas extends LineVirtualCanvasBase implements ILineVir
     }
 
     private handleDotClick(position: Position): void {
-        const clicked = this.dotVirtualCanvas.getDotByCoordinates(position.x, position.y);
-        if (clicked) {
-            if (!this.clicked) {
-                this.side = CanvasSide.Front;
-            } else {
-                const previous = this.dotVirtualCanvas.getDotById(this.clicked!)!;
-                const line: Line = { from: previous, to: clicked, side: this.side };
-                this.handleDrawLine(line);
-                this.side = this.side === CanvasSide.Front ? CanvasSide.Back : CanvasSide.Front;
+        const currentlyClickedDot = this.dotVirtualCanvas.getDotByCoordinates(position.x, position.y);
+        if (currentlyClickedDot) {
+
+            if (this.previousClickedDot) {
+                const recreated = this.recreateLine(this.previousClickedDot, currentlyClickedDot.id, this.side);
+                this.drawLine(recreated);
             }
-            this.clicked = clicked.id;
+
+            this.previousClickedDot = currentlyClickedDot.id;
+            this.changeSide();
         }
     }
 
-    private handleDrawLine(line: Line): void {
-        this.lines.push(line);
-        this.drawLine(line);
+    private changeSide(): void {
+        this.side = this.side === CanvasSide.Front ? CanvasSide.Back : CanvasSide.Front;
+    }
+
+    private handleSizeChange(event: SizeChangeEvent): void {
+        const size = event.size;
+        super.size = size;
     }
 }
