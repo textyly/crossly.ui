@@ -9,7 +9,7 @@ export class LineVirtualCanvas extends LineVirtualCanvasBase implements ILineVir
 
     private lines: Array<Line>;
 
-    private previousClickedDot?: Id;
+    private previousClickedDotId?: Id;
     private side: CanvasSide;
 
     constructor(inputCanvas: IInputCanvas, dotVirtualCanvas: IDotVirtualCanvas) {
@@ -33,20 +33,26 @@ export class LineVirtualCanvas extends LineVirtualCanvasBase implements ILineVir
         super.dispose();
     }
 
+    private redraw(): void {
+        this.redrawLines();
+    }
+
     private redrawLines(): Array<Line> {
         const copy = this.lines;
         this.lines = [];
 
-        copy.forEach((line) => {
-            const recreated = this.recreateLine(line.from.id, line.to.id, line.side);
-            this.drawLine(recreated);
-        });
+        copy.forEach((line) => this.drawLine(line.from.id, line.to.id, line.side));
 
         return this.lines;
     }
 
-    private redraw(): void {
-        this.redrawLines();
+    private drawLine(fromId: string, toId: string, side: CanvasSide): void {
+        const recreated = this.recreateLine(fromId, toId, side);
+        this.lines.push(recreated);
+
+        if (side === CanvasSide.Front) {
+            super.invokeDrawLine(recreated);
+        }
     }
 
     private recreateLine(fromId: string, toId: string, side: CanvasSide): Line {
@@ -55,13 +61,6 @@ export class LineVirtualCanvas extends LineVirtualCanvasBase implements ILineVir
 
         const recreated = this.ensureLine(from, to, side);
         return recreated;
-    }
-
-    private drawLine(line: Line): void {
-        this.lines.push(line);
-        if (line.side === CanvasSide.Front) {
-            super.invokeDrawLine(line);
-        }
     }
 
     private ensureLine(from: Dot | undefined, to: Dot | undefined, side: CanvasSide): Line {
@@ -107,12 +106,11 @@ export class LineVirtualCanvas extends LineVirtualCanvasBase implements ILineVir
         const currentlyClickedDot = this.dotVirtualCanvas.getDotByCoordinates(position.x, position.y);
         if (currentlyClickedDot) {
 
-            if (this.previousClickedDot) {
-                const recreated = this.recreateLine(this.previousClickedDot, currentlyClickedDot.id, this.side);
-                this.drawLine(recreated);
+            if (this.previousClickedDotId) {
+                this.drawLine(this.previousClickedDotId, currentlyClickedDot.id, this.side);
             }
 
-            this.previousClickedDot = currentlyClickedDot.id;
+            this.previousClickedDotId = currentlyClickedDot.id;
             this.changeSide();
         }
     }
