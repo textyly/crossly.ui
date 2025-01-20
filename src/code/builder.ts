@@ -9,7 +9,6 @@ export class CanvasBuilder {
     }
 
     public build(): ICrosslyCanvas {
-        // TODO: add validator
         const inputHTMLElement = this.buildInputHTMLElement();
         this.crosslyCanvasBuilder.withInputCanvas(inputHTMLElement);
 

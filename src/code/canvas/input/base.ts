@@ -11,7 +11,8 @@ import {
     MouseMoveListener,
     MouseLeftButtonDownListener,
     ZoomInEvent,
-    ZoomOutEvent
+    ZoomOutEvent,
+    Position
 } from "./types.js";
 
 
@@ -52,11 +53,13 @@ export abstract class InputCanvasBase extends CanvasBase implements IInputCanvas
         this.messaging.sendToChannel2({});
     }
 
-    protected invokeMouseMove(event: MouseMoveEvent): void {
+    protected invokeMouseMove(position: Position): void {
+        const event = { position };
         this.messaging.sendToChannel3(event);
     }
 
-    protected invokeMouseLeftButtonDown(event: MouseLeftButtonDownEvent): void {
+    protected invokeMouseLeftButtonDown(position: Position): void {
+        const event = { position };
         this.messaging.sendToChannel4(event);
     }
 }

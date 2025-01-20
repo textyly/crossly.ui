@@ -1,5 +1,5 @@
-import { Size } from "../types.js";
 import { CanvasBase } from "../base.js";
+import { SizeChangeEvent } from "../types.js";
 import { IDrawingCanvas, IRasterDrawing } from "./types.js";
 import { DrawLineEvent, ILineVirtualCanvas } from "../virtual/types.js";
 
@@ -15,8 +15,8 @@ export class LineDrawingCanvas extends CanvasBase implements IDrawingCanvas<ILin
         const drawLineUn = lineVirtualCanvas.onDrawLine(this.handleDrawLine.bind(this));
         super.registerUn(drawLineUn);
 
-        const sizeChangedUn = lineVirtualCanvas.onSizeChange(this.handleSizeChange.bind(this));
-        super.registerUn(sizeChangedUn);
+        const sizeChangeUn = lineVirtualCanvas.onSizeChange(this.handleSizeChange.bind(this));
+        super.registerUn(sizeChangeUn);
     }
 
     private handleDrawLine(event: DrawLineEvent): void {
@@ -24,7 +24,8 @@ export class LineDrawingCanvas extends CanvasBase implements IDrawingCanvas<ILin
         this.rasterDrawing.drawLine(line);
     }
 
-    private handleSizeChange(size: Size): void {
+    private handleSizeChange(event: SizeChangeEvent): void {
+        const size = event.size;
         super.size = size;
         this.rasterDrawing.size = size;
     }

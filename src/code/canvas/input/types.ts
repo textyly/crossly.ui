@@ -1,4 +1,4 @@
-import { ICanvas, Size } from "../types";
+import { ICanvas, SizeChangeListener } from "../types";
 import { Listener, VoidUnsubscribe } from "../../types";
 
 export type CanvasEvent = { type: CanvasEventType, value?: Position };
@@ -32,9 +32,6 @@ export type MouseMoveListener = Listener<MouseMoveEvent>;
 
 export type MouseButtonDownEvent = { position: Position } & { button: number };
 export type MouseButtonDownListener = Listener<MouseButtonDownEvent>;
-
-export type SizeChangeEvent = Size;
-export type SizeChangeListener = Listener<Size>;
 
 export type Position = { x: number, y: number };
 export type PositionEvent = { position: Position };

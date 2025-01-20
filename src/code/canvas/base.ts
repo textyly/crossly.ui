@@ -1,8 +1,7 @@
-import { ICanvas, Size } from "./types.js";
 import { VoidUnsubscribe } from "../types.js";
 import { Messaging1 } from "../messaging/impl.js";
 import { IMessaging1 } from "../messaging/types.js";
-import { SizeChangeEvent, SizeChangeListener } from "./input/types.js";
+import { ICanvas, Size, SizeChangeEvent, SizeChangeListener } from "./types.js";
 
 export abstract class CanvasBase implements ICanvas {
     private readonly uns: Array<VoidUnsubscribe>;
@@ -50,7 +49,8 @@ export abstract class CanvasBase implements ICanvas {
         this.uns.push(func);
     }
 
-    private invokeSizeChange(event: SizeChangeEvent): void {
+    private invokeSizeChange(size: Size): void {
+        const event = { size };
         this.msg.sendToChannel1(event);
     }
 }

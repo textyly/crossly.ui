@@ -1,5 +1,5 @@
-import { Size } from "../types.js";
 import { CanvasBase } from "../base.js";
+import { SizeChangeEvent } from "../types.js";
 import { IDrawingCanvas, IRasterDrawing } from "./types.js";
 import { DrawDotEvent, IDotVirtualCanvas } from "../virtual/types.js";
 
@@ -15,8 +15,8 @@ export class DotDrawingCanvas extends CanvasBase implements IDrawingCanvas<IDotV
         const drawDotUn = dotVirtualCanvas.onDrawDot(this.handleDrawDot.bind(this));
         super.registerUn(drawDotUn);
 
-        const sizeChangedUn = dotVirtualCanvas.onSizeChange(this.handleSizeChange.bind(this));
-        super.registerUn(sizeChangedUn);
+        const sizeChangeUn = dotVirtualCanvas.onSizeChange(this.handleSizeChange.bind(this));
+        super.registerUn(sizeChangeUn);
     }
 
     private handleDrawDot(event: DrawDotEvent): void {
@@ -24,7 +24,8 @@ export class DotDrawingCanvas extends CanvasBase implements IDrawingCanvas<IDotV
         this.rasterDrawing.drawDot(dot);
     }
 
-    private handleSizeChange(size: Size): void {
+    private handleSizeChange(event: SizeChangeEvent): void {
+        const size = event.size;
         super.size = size;
         this.rasterDrawing.size = size;
     }

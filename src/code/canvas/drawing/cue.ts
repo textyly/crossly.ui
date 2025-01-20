@@ -1,5 +1,5 @@
-import { Size } from "../types.js";
 import { CanvasBase } from "../base.js";
+import { SizeChangeEvent } from "../types.js";
 import { IDrawingCanvas, IVectorDrawing, SvgDot, SvgLine } from "./types.js";
 import {
     Id,
@@ -36,8 +36,8 @@ export class CueDrawingCanvas extends CanvasBase implements IDrawingCanvas<ICueV
         const dotUnhoveredUn = cueVirtualCanvas.onUnhoverDot(this.handleDotUnhovered.bind(this));
         super.registerUn(dotUnhoveredUn);
 
-        const sizeChangedUn = cueVirtualCanvas.onSizeChange(this.handleSizeChange.bind(this));
-        super.registerUn(sizeChangedUn);
+        const sizeChangeUn = cueVirtualCanvas.onSizeChange(this.handleSizeChange.bind(this));
+        super.registerUn(sizeChangeUn);
     }
 
     public override dispose(): void {
@@ -89,7 +89,8 @@ export class CueDrawingCanvas extends CanvasBase implements IDrawingCanvas<ICueV
         }
     }
 
-    private handleSizeChange(size: Size): void {
+    private handleSizeChange(event: SizeChangeEvent): void {
+        const size = event.size;
         super.size = size;
         this.vectorDrawing.size = size;
     }

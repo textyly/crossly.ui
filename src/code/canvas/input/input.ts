@@ -11,8 +11,6 @@ export class InputCanvas extends InputCanvasBase {
     constructor(svgCanvas: HTMLElement) {
         super();
 
-        // TODO: add validator
-
         this.svgCanvas = svgCanvas;
 
         this.wheelChangeHandler = this.handleWheelChange.bind(this);
@@ -58,9 +56,7 @@ export class InputCanvas extends InputCanvasBase {
 
     private handleMouseMove(event: MouseEvent): void {
         const position = this.getPosition(event);
-
-        const mouseMoveEvent = { position };
-        super.invokeMouseMove(mouseMoveEvent);
+        super.invokeMouseMove(position);
     }
 
     private handleMouseButtonDown(event: MouseEvent): void {
@@ -68,8 +64,7 @@ export class InputCanvas extends InputCanvasBase {
 
         const leftButton = 0;
         if (event.button === leftButton) {
-            const mouseLeftButtonDownEvent = { position, button: event.button };
-            super.invokeMouseLeftButtonDown(mouseLeftButtonDownEvent);
+            super.invokeMouseLeftButtonDown(position);
         }
     }
 }

@@ -18,7 +18,6 @@ export class CrosslyCanvasBuilder {
     private cueDrawingCanvas!: IDrawingCanvas<ICueVirtualCanvas>;
 
     public build(): ICrosslyCanvas {
-        // TODO: add validator
         const crosslyCanvas = new CrosslyCanvas(this.inputCanvas, this.dotDrawingCanvas, this.lineDrawingCanvas, this.cueDrawingCanvas);
         return crosslyCanvas;
     }

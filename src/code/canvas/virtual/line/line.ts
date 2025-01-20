@@ -1,4 +1,4 @@
-import { Size } from "../../types.js";
+import { SizeChangeEvent } from "../../types.js";
 import { LineVirtualCanvasBase } from "./base.js";
 import { IInputCanvas, MouseLeftButtonDownEvent, Position } from "../../input/types.js";
 import { CanvasSide, Id, IDotVirtualCanvas, ILineVirtualCanvas, Line } from "../types.js";
@@ -14,8 +14,6 @@ export class LineVirtualCanvas extends LineVirtualCanvasBase implements ILineVir
 
     constructor(dotVirtualCanvas: IDotVirtualCanvas, inputCanvas: IInputCanvas) {
         super();
-
-        // TODO: add validator
 
         this.dotVirtualCanvas = dotVirtualCanvas;
         this.inputCanvas = inputCanvas;
@@ -53,7 +51,7 @@ export class LineVirtualCanvas extends LineVirtualCanvasBase implements ILineVir
     }
 
     private subscribe(): void {
-        const sizeChangeUn = this.dotVirtualCanvas.onSizeChange(this.handleDotVirtualCanvasSizeChange.bind(this));
+        const sizeChangeUn = this.dotVirtualCanvas.onSizeChange(this.handleSizeChange.bind(this));
         super.registerUn(sizeChangeUn);
 
         const zoomInUn = this.inputCanvas.onZoomIn(this.handleZoomIn.bind(this));
@@ -66,7 +64,8 @@ export class LineVirtualCanvas extends LineVirtualCanvasBase implements ILineVir
         super.registerUn(mouseLeftButtonDownUn);
     }
 
-    private handleDotVirtualCanvasSizeChange(size: Size): void {
+    private handleSizeChange(event: SizeChangeEvent): void {
+        const size = event.size;
         super.size = size;
     }
 

@@ -21,8 +21,6 @@ export class DotVirtualCanvas extends DotVirtualCanvasBase implements IDotVirtua
     constructor(inputCanvas: IInputCanvas) {
         super();
 
-        // TODO: add validator
-
         this.inputCanvas = inputCanvas;
 
         this.dots = new Map();
@@ -32,8 +30,6 @@ export class DotVirtualCanvas extends DotVirtualCanvasBase implements IDotVirtua
     }
 
     public draw(config: DotsConfig): void {
-        // TODO: add validator
-
         this.dotsX = config.x;
         this.dotsY = config.y;
 

@@ -137,11 +137,11 @@ export class InputCanvasThrottler extends InputCanvasBase {
                 break;
             }
             case CanvasEventType.MouseMove: {
-                super.invokeMouseMove({ position });
+                super.invokeMouseMove(position);
                 break;
             }
             case CanvasEventType.MouseLeftButtonDown: {
-                super.invokeMouseLeftButtonDown({ position });
+                super.invokeMouseLeftButtonDown(position);
                 break;
             }
         }

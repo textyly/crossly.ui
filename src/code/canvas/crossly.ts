@@ -1,10 +1,10 @@
 import { CanvasBase } from "./base.js";
 import { IInputCanvas } from "./input/types.js";
-import { ICrosslyCanvas, Size } from "./types.js";
 import { IDrawingCanvas } from "./drawing/types.js";
 import { CueVirtualCanvas } from "./virtual/cue/cue.js";
 import { DotVirtualCanvas } from "./virtual/dot/dot.js";
 import { LineVirtualCanvas } from "./virtual/line/line.js";
+import { ICrosslyCanvas, SizeChangeEvent } from "./types.js";
 import { DotsConfig, ICueVirtualCanvas, IDotVirtualCanvas, ILineVirtualCanvas } from "./virtual/types.js";
 
 export class CrosslyCanvas extends CanvasBase implements ICrosslyCanvas {
@@ -24,9 +24,9 @@ export class CrosslyCanvas extends CanvasBase implements ICrosslyCanvas {
         dotDrawingCanvas: IDrawingCanvas<IDotVirtualCanvas>,
         lineDrawingCanvas: IDrawingCanvas<ILineVirtualCanvas>,
         cueDrawingCanvas: IDrawingCanvas<ICueVirtualCanvas>) {
+
         super();
 
-        // TODO: add validator
         this.inputCanvas = inputCanvas;
         this.initializeDotCanvas(dotDrawingCanvas);
         this.initializeLineCanvas(lineDrawingCanvas);
@@ -52,8 +52,8 @@ export class CrosslyCanvas extends CanvasBase implements ICrosslyCanvas {
         this.dotVirtualCanvas = new DotVirtualCanvas(this.inputCanvas);
         this.dotDrawingCanvas.subscribe(this.dotVirtualCanvas);
 
-        const sizeChangedUn = this.dotVirtualCanvas.onSizeChange(this.handleDotVirtualCanvasSizeChange.bind(this));
-        super.registerUn(sizeChangedUn);
+        const sizeChangeUn = this.dotVirtualCanvas.onSizeChange(this.handleSizeChange.bind(this));
+        super.registerUn(sizeChangeUn);
     }
 
     private initializeLineCanvas(lineDrawingCanvas: IDrawingCanvas<ILineVirtualCanvas>): void {
@@ -68,7 +68,8 @@ export class CrosslyCanvas extends CanvasBase implements ICrosslyCanvas {
         this.cueDrawingCanvas.subscribe(this.cueVirtualCanvas);
     }
 
-    private handleDotVirtualCanvasSizeChange(size: Size): void {
+    private handleSizeChange(event: SizeChangeEvent): void {
+        const size = event.size;
         super.size = size;
         this.inputCanvas.size = size;
     }

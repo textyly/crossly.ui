@@ -1,4 +1,4 @@
-import { Size } from "../../types.js";
+import { SizeChangeEvent } from "../../types.js";
 import { CueVirtualCanvasBase } from "./base.js";
 import { CanvasSide, ICueVirtualCanvas, Id, IDotVirtualCanvas, Link } from "../types.js";
 import { IInputCanvas, MouseLeftButtonDownEvent, MouseMoveEvent, Position } from "../../input/types.js";
@@ -15,8 +15,6 @@ export class CueVirtualCanvas extends CueVirtualCanvasBase implements ICueVirtua
     constructor(dotVirtualCanvas: IDotVirtualCanvas, inputCanvas: IInputCanvas) {
         super();
 
-        // TODO: add validator
-
         this.dotVirtualCanvas = dotVirtualCanvas;
         this.inputCanvas = inputCanvas;
 
@@ -29,7 +27,7 @@ export class CueVirtualCanvas extends CueVirtualCanvasBase implements ICueVirtua
     }
 
     private subscribe(): void {
-        const sizeChangeUn = this.dotVirtualCanvas.onSizeChange(this.handleDotVirtualCanvasSizeChange.bind(this));
+        const sizeChangeUn = this.dotVirtualCanvas.onSizeChange(this.handleSizeChange.bind(this));
         super.registerUn(sizeChangeUn);
 
         const zoomInUn = this.inputCanvas.onZoomIn(this.handleZoomIn.bind(this));
@@ -128,7 +126,8 @@ export class CueVirtualCanvas extends CueVirtualCanvasBase implements ICueVirtua
         this.hovered = undefined;
     }
 
-    private handleDotVirtualCanvasSizeChange(size: Size): void {
+    private handleSizeChange(event: SizeChangeEvent): void {
+        const size = event.size;
         super.size = size;
     }
 }
