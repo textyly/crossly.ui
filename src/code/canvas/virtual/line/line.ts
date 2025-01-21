@@ -46,7 +46,7 @@ export class LineVirtualCanvas extends LineVirtualCanvasBase implements ILineVir
     }
 
     private drawLine(fromId: string, toId: string, side: CanvasSide): void {
-        const recreated = this.recreateLine(fromId, toId, side);
+        const recreated = this.createLine(fromId, toId, side);
         this.lines.push(recreated);
 
         if (side === CanvasSide.Front) {
@@ -54,15 +54,16 @@ export class LineVirtualCanvas extends LineVirtualCanvasBase implements ILineVir
         }
     }
 
-    private recreateLine(fromId: string, toId: string, side: CanvasSide): Line {
+    private createLine(fromId: string, toId: string, side: CanvasSide): Line {
         const from = this.dotVirtualCanvas.getDotById(fromId);
         const to = this.dotVirtualCanvas.getDotById(toId);
 
-        const recreated = this.ensureLine(from, to, side);
-        return recreated;
+        const dots = this.ensureDots(from, to);
+        const line = { from: dots.from, to: dots.to, width: dots.to.radius * 2, side };
+        return line;
     }
 
-    private ensureLine(from: Dot | undefined, to: Dot | undefined, side: CanvasSide): Line {
+    private ensureDots(from: Dot | undefined, to: Dot | undefined): { from: Dot, to: Dot } {
         if (!from) {
             throw new Error("`from` must be defined.");
         }
@@ -71,7 +72,7 @@ export class LineVirtualCanvas extends LineVirtualCanvasBase implements ILineVir
             throw new Error("`to` must be defined.");
         }
 
-        return { from, to, side };
+        return { from, to };
     }
 
     private subscribe(): void {

@@ -65,13 +65,11 @@ export class CueDrawingCanvas extends CanvasBase implements IDrawingCanvas<ICueV
     private handleDrawLink(event: DrawLinkEvent): void {
         const link = event.link;
         const id = link.id;
-        const from = link.from;
-        const to = link.to;
         const side = link.side;
 
         const svgLine = side === CanvasSide.Front
-            ? this.vectorDrawing.drawLine(from, to)
-            : this.vectorDrawing.drawDashLine(from, to);
+            ? this.vectorDrawing.drawLine(link)
+            : this.vectorDrawing.drawDashLine(link);
 
         this.svgLines.set(id, svgLine);
     }

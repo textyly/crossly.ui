@@ -82,12 +82,15 @@ export class CueVirtualCanvas extends CueVirtualCanvasBase implements ICueVirtua
 
     private handleDotChange(position: Position): void {
         const hovered = this.dotVirtualCanvas.getDotByCoordinates(position.x, position.y);
-        if (hovered) {
-            if (hovered.id !== this.previousHoveredDotId) {
-                this.previousHoveredDotId = hovered.id;
-                const hoveredDot = { id: hovered.id, radius: hovered.radius + 2, x: hovered.x, y: hovered.y, visibility: DotVisibility.Default }; // TODO: +2 must go outside
-                super.invokeHoverDot(hoveredDot);
+
+        if (hovered && (hovered.id !== this.previousHoveredDotId)) {
+            if (this.previousHoveredDotId) {
+                this.handleUnhoverDot(this.previousHoveredDotId);
             }
+
+            this.previousHoveredDotId = hovered.id;
+            const hoveredDot = { id: hovered.id, radius: hovered.radius + 2, x: hovered.x, y: hovered.y, visibility: DotVisibility.Default }; // TODO: +2 must go outside
+            super.invokeHoverDot(hoveredDot);
         } else if (this.previousHoveredDotId) {
             this.handleUnhoverDot(this.previousHoveredDotId);
         }
@@ -117,7 +120,7 @@ export class CueVirtualCanvas extends CueVirtualCanvasBase implements ICueVirtua
         const toDot = { ...currentMousePosition, id: toDotId, radius: previousClickedDot.radius, visibility: DotVisibility.Default };
 
         const linkId = this.ids.next();
-        this.currentLink = { id: linkId, from: previousClickedDot, to: toDot, side: this.currentSide };
+        this.currentLink = { id: linkId, from: previousClickedDot, to: toDot, width: toDot.radius, side: this.currentSide };
 
         super.invokeDrawLink(this.currentLink);
     }

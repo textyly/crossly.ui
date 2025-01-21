@@ -18,7 +18,7 @@ export interface IVectorDrawing extends ICanvas {
     drawDot(dot: Dot): SvgDot;
     removeDot(dot: SvgDot): void;
 
-    drawLine(from: Dot, to: Dot): SvgLine;
-    drawDashLine(from: Dot, to: Dot): SvgLine;
+    drawLine(line: Line): SvgLine;
+    drawDashLine(line: Line): SvgLine;
     removeLine(line: SvgLine): void;
 }

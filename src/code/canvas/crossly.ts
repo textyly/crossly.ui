@@ -5,7 +5,7 @@ import { DotMatcher } from "./virtual/dot/matcher.js";
 import { CueVirtualCanvas } from "./virtual/cue/cue.js";
 import { DotVirtualCanvas } from "./virtual/dot/dot.js";
 import { LineVirtualCanvas } from "./virtual/line/line.js";
-import { DotsConfig, ICrosslyCanvas, SizeChangeEvent } from "./types.js";
+import { CanvasConfig, ICrosslyCanvas, SizeChangeEvent } from "./types.js";
 import { ICueVirtualCanvas, IDotVirtualCanvas, ILineVirtualCanvas } from "./virtual/types.js";
 
 export class CrosslyCanvas extends CanvasBase implements ICrosslyCanvas {
@@ -34,8 +34,8 @@ export class CrosslyCanvas extends CanvasBase implements ICrosslyCanvas {
         this.initializeCueCanvas(cueDrawingCanvas);
     }
 
-    public draw(dotsConfig: DotsConfig): void {
-        this.dotVirtualCanvas.draw(dotsConfig);
+    public draw(config: CanvasConfig): void {
+        this.dotVirtualCanvas.draw(config);
     }
 
     public override dispose(): void {

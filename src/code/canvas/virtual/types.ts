@@ -1,10 +1,10 @@
 import { Listener, VoidUnsubscribe } from "../../types.js";
-import { Dot, Line, Link, DotsConfig, ICanvas } from "../types.js";
+import { Dot, Line, Link, CanvasConfig, ICanvas } from "../types.js";
 
-export type DotsState = DotsConfig;
+export type DotsState = CanvasConfig;
 
 export interface IDotVirtualCanvas extends ICanvas {
-    draw(config: Readonly<DotsConfig>): void;
+    draw(config: Readonly<CanvasConfig>): void;
 
     getDotById(id: string): Dot | undefined;
     getDotByCoordinates(x: number, y: number): Dot | undefined;

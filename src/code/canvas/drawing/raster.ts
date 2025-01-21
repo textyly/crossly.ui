@@ -30,7 +30,7 @@ export class RasterDrawing extends CanvasBase implements IRasterDrawing {
         const to = line.to;
         this.rasterContext.lineTo(to.x, to.y);
 
-        this.rasterContext.lineWidth = line.from.radius;
+        this.rasterContext.lineWidth = line.width;
         this.rasterContext.strokeStyle = "gray";
         this.rasterContext.stroke();
     }

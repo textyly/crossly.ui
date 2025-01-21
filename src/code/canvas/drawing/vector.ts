@@ -1,4 +1,4 @@
-import { Dot } from "../types.js";
+import { Dot, Line } from "../types.js";
 import { Size } from "../types.js";
 import { CanvasBase } from "../base.js";
 import { IVectorDrawing, SvgDot, SvgLine } from "./types.js";
@@ -21,17 +21,17 @@ export class VectorDrawing extends CanvasBase implements IVectorDrawing {
         this.svgCanvas.removeChild(dot);
     }
 
-    public drawLine(from: Dot, to: Dot): SvgLine {
-        const line = this.createLine(from, to);
-        this.svgCanvas.appendChild(line);
-        return line;
+    public drawLine(line: Line): SvgLine {
+        const svgLine = this.createLine(line);
+        this.svgCanvas.appendChild(svgLine);
+        return svgLine;
     }
 
-    public drawDashLine(from: Dot, to: Dot): SvgLine {
-        const line = this.createLine(from, to);
-        line.setAttribute("stroke-dasharray", "5,2");
-        this.svgCanvas.appendChild(line);
-        return line;
+    public drawDashLine(line: Line): SvgLine {
+        const svgLine = this.createLine(line);
+        svgLine.setAttribute("stroke-dasharray", "5,2");
+        this.svgCanvas.appendChild(svgLine);
+        return svgLine;
     }
 
     public removeLine(line: SvgLine): void {
@@ -62,23 +62,24 @@ export class VectorDrawing extends CanvasBase implements IVectorDrawing {
         return circle;
     }
 
-    private createLine(from: Dot, to: Dot): SvgLine {
-        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    private createLine(line: Line): SvgLine {
+        const svgLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
 
-        const x1 = from.x.toString();
-        const y1 = from.y.toString();
-        const x2 = to.x.toString();
-        const y2 = to.y.toString();
+        const x1 = line.from.x.toString();
+        const y1 = line.from.y.toString();
+        const x2 = line.to.x.toString();
+        const y2 = line.to.y.toString();
+        const width = line.width.toString();
 
-        line.setAttribute('x1', x1);
-        line.setAttribute('y1', y1);
+        svgLine.setAttribute('x1', x1);
+        svgLine.setAttribute('y1', y1);
 
-        line.setAttribute('x2', x2);
-        line.setAttribute('y2', y2);
+        svgLine.setAttribute('x2', x2);
+        svgLine.setAttribute('y2', y2);
 
-        line.setAttribute('stroke', 'red'); //TODO: dot prop
-        line.setAttribute('stroke-width', "2"); //TODO: dot prop
+        svgLine.setAttribute('stroke', 'red'); //TODO: dot prop
+        svgLine.setAttribute('stroke-width', width);
 
-        return line;
+        return svgLine;
     }
 }
