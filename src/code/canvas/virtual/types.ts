@@ -1,10 +1,6 @@
-import { DotsConfig, ICanvas } from "../types.js";
 import { Listener, VoidUnsubscribe } from "../../types.js";
+import { Dot, Line, Link, DotsConfig, ICanvas } from "../types.js";
 
-export type Id = string;
-export type Dot = { id: Id, x: number, y: number, radius: number };
-export type Line = { from: Dot, to: Dot, side: CanvasSide };
-export type Link = { id: Id, from: Dot, to: Dot, side: CanvasSide };
 export type DotsState = DotsConfig;
 
 export interface IDotVirtualCanvas extends ICanvas {
@@ -29,12 +25,6 @@ export interface ICueVirtualCanvas extends ICanvas {
     onRemoveLink(listener: RemoveLinkListener): VoidUnsubscribe;
     onHoverDot(listener: HoverDotListener): VoidUnsubscribe;
     onUnhoverDot(listener: UnhoverDotListener): VoidUnsubscribe;
-}
-
-export enum CanvasSide {
-    Front,
-    Back,
-    Default = Back,
 }
 
 export type DrawDotEvent = { dot: Dot };

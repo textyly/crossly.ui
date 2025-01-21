@@ -1,7 +1,7 @@
-import { SizeChangeEvent } from "../../types.js";
 import { LineVirtualCanvasBase } from "./base.js";
+import { IDotVirtualCanvas, ILineVirtualCanvas } from "../types.js";
+import { CanvasSide, Dot, Id, Line, SizeChangeEvent } from "../../types.js";
 import { IInputCanvas, MouseLeftButtonDownEvent, Position } from "../../input/types.js";
-import { CanvasSide, Dot, Id, IDotVirtualCanvas, ILineVirtualCanvas, Line } from "../types.js";
 
 export class LineVirtualCanvas extends LineVirtualCanvasBase implements ILineVirtualCanvas {
     private readonly inputCanvas: IInputCanvas;

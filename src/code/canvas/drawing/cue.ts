@@ -1,9 +1,7 @@
 import { CanvasBase } from "../base.js";
-import { SizeChangeEvent } from "../types.js";
+import { CanvasSide, Id, SizeChangeEvent } from "../types.js";
 import { IDrawingCanvas, IVectorDrawing, SvgDot, SvgLine } from "./types.js";
 import {
-    Id,
-    CanvasSide,
     HoverDotEvent,
     DrawLinkEvent,
     UnhoverDotEvent,

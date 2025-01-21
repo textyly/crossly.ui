@@ -1,8 +1,9 @@
+import { Line } from "../../types.js";
 import { CanvasBase } from "../../base.js";
 import { Messaging1 } from "../../../messaging/impl.js";
 import { IMessaging1 } from "../../../messaging/types.js";
+import { DrawLineEvent, DrawLineListener } from "../types.js";
 import { VoidListener, VoidUnsubscribe } from "../../../types.js";
-import { DrawLineEvent, DrawLineListener, Line } from "../types.js";
 
 export abstract class LineVirtualCanvasBase extends CanvasBase {
     private readonly messaging: IMessaging1<DrawLineEvent>;

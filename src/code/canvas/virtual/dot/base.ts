@@ -1,8 +1,9 @@
+import { Dot } from "../../types.js";
 import { CanvasBase } from "../../base.js";
 import { Messaging1 } from "../../../messaging/impl.js";
 import { IMessaging1 } from "../../../messaging/types.js";
+import { DrawDotEvent, DrawDotListener } from "../types.js";
 import { VoidListener, VoidUnsubscribe } from "../../../types.js";
-import { Dot, DrawDotEvent, DrawDotListener } from "../types.js";
 
 export abstract class DotVirtualCanvasBase extends CanvasBase {
     private readonly messaging: IMessaging1<DrawDotEvent>;

@@ -1,8 +1,8 @@
-import { DotsConfig } from "../../types.js";
 import { DotVirtualCanvasBase } from "./base.js";
 import { IInputCanvas } from "../../input/types.js";
+import { Dot, DotsConfig, DotVisibility, Id } from "../../types.js";
 import { IdGenerator } from "../../../utilities/generator.js";
-import { Dot, DotsState, Id, IDotMatcher, IDotVirtualCanvas } from "../types.js";
+import { DotsState, IDotMatcher, IDotVirtualCanvas } from "../types.js";
 
 export class DotVirtualCanvas extends DotVirtualCanvasBase implements IDotVirtualCanvas {
     private readonly inputCanvas: IInputCanvas;
@@ -59,13 +59,14 @@ export class DotVirtualCanvas extends DotVirtualCanvasBase implements IDotVirtua
 
         for (let y = 0; y < dotsY; ++y) {
             for (let x = 0; x < dotsX; ++x) {
-                const dot = this.crateDot(x, y);
+                const visibility = DotVisibility.Default;
+                const dot = this.crateDot(x, y, visibility);
                 this.dots.set(dot.id, dot);
             }
         }
     }
 
-    private crateDot(x: number, y: number): Dot {
+    private crateDot(x: number, y: number, visibility: DotVisibility): Dot {
         const id = this.ids.next();
         const spacing = this.dotsState.spacing.value;
         const radius = this.dotsState.radius.value;
@@ -73,7 +74,7 @@ export class DotVirtualCanvas extends DotVirtualCanvasBase implements IDotVirtua
         const x1 = (x * spacing) + spacing;
         const y1 = (y * spacing) + spacing;
 
-        const dot = { id, x: x1, y: y1, radius };
+        const dot = { id, x: x1, y: y1, radius, visibility };
         return dot;
     }
 

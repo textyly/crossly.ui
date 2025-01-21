@@ -1,5 +1,5 @@
 import { ICanvas } from "../types.js";
-import { Dot, Line } from "../virtual/types.js";
+import { Dot, Line } from "../types.js";
 
 export type SvgDot = SVGCircleElement;
 export type SvgLine = SVGLineElement;

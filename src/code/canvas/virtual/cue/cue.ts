@@ -1,7 +1,7 @@
-import { SizeChangeEvent } from "../../types.js";
 import { CueVirtualCanvasBase } from "./base.js";
 import { IdGenerator } from "../../../utilities/generator.js";
-import { CanvasSide, Dot, ICueVirtualCanvas, Id, IDotVirtualCanvas, Link } from "../types.js";
+import { ICueVirtualCanvas, IDotVirtualCanvas } from "../types.js";
+import { CanvasSide, Dot, DotVisibility, Id, Link, SizeChangeEvent } from "../../types.js";
 import { IInputCanvas, MouseLeftButtonDownEvent, MouseMoveEvent, Position } from "../../input/types.js";
 
 export class CueVirtualCanvas extends CueVirtualCanvasBase implements ICueVirtualCanvas {
@@ -85,7 +85,7 @@ export class CueVirtualCanvas extends CueVirtualCanvasBase implements ICueVirtua
         if (hovered) {
             if (hovered.id !== this.previousHoveredDotId) {
                 this.previousHoveredDotId = hovered.id;
-                const hoveredDot = { id: hovered.id, radius: hovered.radius + 2, x: hovered.x, y: hovered.y }; // TODO: +2 must go outside
+                const hoveredDot = { id: hovered.id, radius: hovered.radius + 2, x: hovered.x, y: hovered.y, visibility: DotVisibility.Default }; // TODO: +2 must go outside
                 super.invokeHoverDot(hoveredDot);
             }
         } else if (this.previousHoveredDotId) {
@@ -114,7 +114,7 @@ export class CueVirtualCanvas extends CueVirtualCanvasBase implements ICueVirtua
 
     private drawLink(previousClickedDot: Dot, currentMousePosition: Position): void {
         const toDotId = this.ids.next();
-        const toDot = { ...currentMousePosition, id: toDotId, radius: previousClickedDot.radius };
+        const toDot = { ...currentMousePosition, id: toDotId, radius: previousClickedDot.radius, visibility: DotVisibility.Default };
 
         const linkId = this.ids.next();
         this.currentLink = { id: linkId, from: previousClickedDot, to: toDot, side: this.currentSide };

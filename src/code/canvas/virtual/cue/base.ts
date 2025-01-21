@@ -1,10 +1,9 @@
+import { Dot, Link } from "../../types.js";
 import { CanvasBase } from "../../base.js";
 import { Messaging4 } from "../../../messaging/impl.js";
 import { IMessaging4 } from "../../../messaging/types.js";
 import { VoidListener, VoidUnsubscribe } from "../../../types.js";
 import {
-    Dot,
-    Link,
     DrawLinkEvent,
     DrawLinkListener,
     HoverDotEvent,

@@ -1,6 +1,6 @@
+import { Dot } from "../types.js";
 import { Size } from "../types.js";
 import { CanvasBase } from "../base.js";
-import { Dot } from "../virtual/types.js";
 import { IVectorDrawing, SvgDot, SvgLine } from "./types.js";
 
 export class VectorDrawing extends CanvasBase implements IVectorDrawing {

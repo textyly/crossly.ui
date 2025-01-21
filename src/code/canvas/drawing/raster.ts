@@ -1,7 +1,7 @@
 import { Size } from "../types.js";
 import { CanvasBase } from "../base.js";
+import { Dot, Line } from "../types.js";
 import { IRasterDrawing } from "./types.js";
-import { Dot, Line } from "../virtual/types.js";
 
 export class RasterDrawing extends CanvasBase implements IRasterDrawing {
     private readonly rasterContext: CanvasRenderingContext2D;
