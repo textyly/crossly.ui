@@ -8,14 +8,14 @@ body {
   height: 100vh;
 }
 
-#dot {
+#grid {
   position: absolute;
   top: 0;
   left: 0;
   z-index: 1;
 }
 
-#line {
+#stitch {
   position: absolute;
   top: 0;
   left: 0;

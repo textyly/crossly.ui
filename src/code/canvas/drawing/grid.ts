@@ -1,9 +1,9 @@
 import { CanvasBase } from "../base.js";
 import { SizeChangeEvent } from "../types.js";
 import { IDrawingCanvas, IRasterDrawing } from "./types.js";
-import { DrawDotEvent, IDotVirtualCanvas } from "../virtual/types.js";
+import { DrawDotEvent, IGridCanvas } from "../virtual/types.js";
 
-export class DotDrawingCanvas extends CanvasBase implements IDrawingCanvas<IDotVirtualCanvas> {
+export class GirdDrawingCanvas extends CanvasBase implements IDrawingCanvas<IGridCanvas> {
     private readonly rasterDrawing: IRasterDrawing;
 
     constructor(rasterDrawing: IRasterDrawing) {
@@ -11,7 +11,7 @@ export class DotDrawingCanvas extends CanvasBase implements IDrawingCanvas<IDotV
         this.rasterDrawing = rasterDrawing;
     }
 
-    public subscribe(dotVirtualCanvas: IDotVirtualCanvas): void {
+    public subscribe(dotVirtualCanvas: IGridCanvas): void {
         const drawDotUn = dotVirtualCanvas.onDrawDot(this.handleDrawDot.bind(this));
         super.registerUn(drawDotUn);
 

@@ -1,12 +1,12 @@
-import { CueVirtualCanvasBase } from "./base.js";
+import { CueCanvasBase } from "./base.js";
 import { IdGenerator } from "../../../utilities/generator.js";
-import { ICueVirtualCanvas, IDotVirtualCanvas } from "../types.js";
+import { ICueCanvas, IGridCanvas } from "../types.js";
 import { CanvasSide, Dot, DotVisibility, Id, Link, SizeChangeEvent } from "../../types.js";
 import { IInputCanvas, MouseLeftButtonDownEvent, MouseMoveEvent, Position } from "../../input/types.js";
 
-export class CueVirtualCanvas extends CueVirtualCanvasBase implements ICueVirtualCanvas {
+export class CueCanvas extends CueCanvasBase implements ICueCanvas {
     private readonly inputCanvas: IInputCanvas;
-    private readonly dotVirtualCanvas: IDotVirtualCanvas;
+    private readonly gridCanvas: IGridCanvas;
     private readonly ids: IdGenerator;
 
     private currentLink?: Link;
@@ -14,11 +14,11 @@ export class CueVirtualCanvas extends CueVirtualCanvasBase implements ICueVirtua
     private previousClickedDotId?: Id;
     private previousHoveredDotId?: Id;
 
-    constructor(inputCanvas: IInputCanvas, dotVirtualCanvas: IDotVirtualCanvas) {
+    constructor(inputCanvas: IInputCanvas, gridCanvas: IGridCanvas) {
         super();
 
         this.inputCanvas = inputCanvas;
-        this.dotVirtualCanvas = dotVirtualCanvas;
+        this.gridCanvas = gridCanvas;
 
         this.ids = new IdGenerator();
         this.currentSide = CanvasSide.Default;
@@ -40,7 +40,7 @@ export class CueVirtualCanvas extends CueVirtualCanvasBase implements ICueVirtua
     }
 
     private subscribe(): void {
-        const sizeChangeUn = this.dotVirtualCanvas.onSizeChange(this.handleSizeChange.bind(this));
+        const sizeChangeUn = this.gridCanvas.onSizeChange(this.handleSizeChange.bind(this));
         super.registerUn(sizeChangeUn);
 
         const zoomInUn = this.inputCanvas.onZoomIn(this.handleZoomIn.bind(this));
@@ -73,7 +73,7 @@ export class CueVirtualCanvas extends CueVirtualCanvasBase implements ICueVirtua
     private handleMouseLeftButtonDown(event: MouseLeftButtonDownEvent): void {
         const position = event.position;
 
-        const previousClickedDot = this.dotVirtualCanvas.getDotByCoordinates(position.x, position.y);
+        const previousClickedDot = this.gridCanvas.getDotByPosition(position);
         if (previousClickedDot) {
             this.changeSide();
             this.previousClickedDotId = previousClickedDot.id;
@@ -81,23 +81,25 @@ export class CueVirtualCanvas extends CueVirtualCanvasBase implements ICueVirtua
     }
 
     private handleDotChange(position: Position): void {
-        const hovered = this.dotVirtualCanvas.getDotByCoordinates(position.x, position.y);
+        const hovered = this.gridCanvas.getDotByPosition(position);
 
-        if (hovered && (hovered.id !== this.previousHoveredDotId)) {
-            if (this.previousHoveredDotId) {
-                this.handleUnhoverDot(this.previousHoveredDotId);
+        if (hovered) {
+            if ((hovered.id !== this.previousHoveredDotId)) {
+                if (this.previousHoveredDotId) {
+                    this.handleUnhoverDot(this.previousHoveredDotId);
+                }
+
+                this.previousHoveredDotId = hovered.id;
+                const hoveredDot = { id: hovered.id, radius: hovered.radius + 2, x: hovered.x, y: hovered.y, visibility: DotVisibility.Default }; // TODO: +2 must go outside
+                super.invokeHoverDot(hoveredDot);
             }
-
-            this.previousHoveredDotId = hovered.id;
-            const hoveredDot = { id: hovered.id, radius: hovered.radius + 2, x: hovered.x, y: hovered.y, visibility: DotVisibility.Default }; // TODO: +2 must go outside
-            super.invokeHoverDot(hoveredDot);
         } else if (this.previousHoveredDotId) {
             this.handleUnhoverDot(this.previousHoveredDotId);
         }
     }
 
     private handleUnhoverDot(previousHoveredDotId: string): void {
-        const previousHoveredDot = this.dotVirtualCanvas.getDotById(previousHoveredDotId);
+        const previousHoveredDot = this.gridCanvas.getDotById(previousHoveredDotId);
         if (previousHoveredDot) {
             super.invokeUnhoverDot(previousHoveredDot);
         }
@@ -105,7 +107,7 @@ export class CueVirtualCanvas extends CueVirtualCanvasBase implements ICueVirtua
     }
 
     private handleLinkChange(position: Position): void {
-        const previousClickedDot = this.dotVirtualCanvas.getDotById(this.previousClickedDotId!)!;
+        const previousClickedDot = this.gridCanvas.getDotById(this.previousClickedDotId!)!;
 
         if (previousClickedDot) {
             if (this.currentLink) {

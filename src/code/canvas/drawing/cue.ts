@@ -6,10 +6,10 @@ import {
     DrawLinkEvent,
     UnhoverDotEvent,
     RemoveLinkEvent,
-    ICueVirtualCanvas
+    ICueCanvas
 } from "../virtual/types.js";
 
-export class CueDrawingCanvas extends CanvasBase implements IDrawingCanvas<ICueVirtualCanvas> {
+export class CueDrawingCanvas extends CanvasBase implements IDrawingCanvas<ICueCanvas> {
     private readonly vectorDrawing: IVectorDrawing;
     private readonly svgDots: Map<Id, SvgDot>;
     private readonly svgLines: Map<Id, SvgLine>;
@@ -21,7 +21,7 @@ export class CueDrawingCanvas extends CanvasBase implements IDrawingCanvas<ICueV
         this.svgLines = new Map<Id, SvgLine>();
     }
 
-    public subscribe(cueVirtualCanvas: ICueVirtualCanvas): void {
+    public subscribe(cueVirtualCanvas: ICueCanvas): void {
         const drawLinkUn = cueVirtualCanvas.onDrawLink(this.handleDrawLink.bind(this));
         super.registerUn(drawLinkUn);
 

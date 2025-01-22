@@ -8,7 +8,16 @@ export type Link = { id: Id } & Line;
 export type Size = { width: number, height: number };
 export type RadiusConfig = { value: number, step: number };
 export type SpacingConfig = { value: number, step: number };
-export type CanvasConfig = { columns: number, rows: number, radius: RadiusConfig, spacing: SpacingConfig };
+
+export type CanvasConfig = {
+    columns: number,
+    rows: number,
+    // grid (radius + spacing) 
+    radius: RadiusConfig,
+    spacing: SpacingConfig,
+    // cue (dot and link)
+    // stitch (width, ...)
+};
 
 export interface IDisposable {
     dispose(): void;

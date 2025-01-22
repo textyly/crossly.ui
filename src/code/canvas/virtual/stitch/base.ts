@@ -1,12 +1,12 @@
-import { Dot } from "../../types.js";
+import { Line } from "../../types.js";
 import { CanvasBase } from "../../base.js";
 import { Messaging1 } from "../../../messaging/impl.js";
 import { IMessaging1 } from "../../../messaging/types.js";
-import { DrawDotEvent, DrawDotListener } from "../types.js";
+import { DrawLineEvent, DrawLineListener } from "../types.js";
 import { VoidListener, VoidUnsubscribe } from "../../../types.js";
 
-export abstract class DotVirtualCanvasBase extends CanvasBase {
-    private readonly messaging: IMessaging1<DrawDotEvent>;
+export abstract class StitchCanvasBase extends CanvasBase {
+    private readonly messaging: IMessaging1<DrawLineEvent>;
 
     constructor() {
         super();
@@ -17,7 +17,7 @@ export abstract class DotVirtualCanvasBase extends CanvasBase {
         return this.messaging.listenOnChannel0(listener);
     }
 
-    public onDrawDot(listener: DrawDotListener): VoidUnsubscribe {
+    public onDrawLine(listener: DrawLineListener): VoidUnsubscribe {
         return this.messaging.listenOnChannel1(listener);
     }
 
@@ -30,8 +30,8 @@ export abstract class DotVirtualCanvasBase extends CanvasBase {
         this.messaging.sendToChannel0();
     }
 
-    protected invokeDrawDot(dot: Dot): void {
-        const drawDotEvent = { dot };
+    protected invokeDrawLine(line: Line): void {
+        const drawDotEvent = { line };
         this.messaging.sendToChannel1(drawDotEvent);
     }
-} 
+}

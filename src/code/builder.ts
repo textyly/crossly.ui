@@ -13,10 +13,10 @@ export class CanvasBuilder {
         this.crosslyCanvasBuilder.withInputCanvas(inputHTMLElement);
 
         const dotHTMLElement = this.buildDotHTMLElement();
-        this.crosslyCanvasBuilder.withDotCanvas(dotHTMLElement);
+        this.crosslyCanvasBuilder.withGridCanvas(dotHTMLElement);
 
         const lineHTMLElement = this.buildLineHTMLElement();
-        this.crosslyCanvasBuilder.withLineCanvas(lineHTMLElement);
+        this.crosslyCanvasBuilder.withStitchCanvas(lineHTMLElement);
 
         const cueHTMLElement = this.buildCueHTMLElement();
         this.crosslyCanvasBuilder.withCueCanvas(cueHTMLElement);
@@ -31,12 +31,12 @@ export class CanvasBuilder {
     }
 
     private buildDotHTMLElement(): HTMLCanvasElement {
-        const htmlCanvasElement = document.getElementById("dot") as HTMLCanvasElement;
+        const htmlCanvasElement = document.getElementById("grid") as HTMLCanvasElement;
         return htmlCanvasElement;
     }
 
     private buildLineHTMLElement(): HTMLCanvasElement {
-        const htmlCanvasElement = document.getElementById("line") as HTMLCanvasElement;
+        const htmlCanvasElement = document.getElementById("stitch") as HTMLCanvasElement;
         return htmlCanvasElement;
     }
 

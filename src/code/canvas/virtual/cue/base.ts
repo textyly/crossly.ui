@@ -14,7 +14,7 @@ import {
     UnhoverDotListener
 } from "../types.js";
 
-export abstract class CueVirtualCanvasBase extends CanvasBase {
+export abstract class CueCanvasBase extends CanvasBase {
     private readonly messaging: IMessaging4<HoverDotEvent, UnhoverDotEvent, DrawLinkEvent, RemoveLinkEvent>;
 
     constructor() {

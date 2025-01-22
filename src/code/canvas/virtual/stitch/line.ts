@@ -1,21 +1,21 @@
-import { LineVirtualCanvasBase } from "./base.js";
-import { IDotVirtualCanvas, ILineVirtualCanvas } from "../types.js";
+import { StitchCanvasBase } from "./base.js";
+import { IGridCanvas, IStitchCanvas } from "../types.js";
 import { CanvasSide, Dot, Id, Line, SizeChangeEvent } from "../../types.js";
 import { IInputCanvas, MouseLeftButtonDownEvent, Position } from "../../input/types.js";
 
-export class LineVirtualCanvas extends LineVirtualCanvasBase implements ILineVirtualCanvas {
+export class StitchCanvas extends StitchCanvasBase implements IStitchCanvas {
     private readonly inputCanvas: IInputCanvas;
-    private readonly dotVirtualCanvas: IDotVirtualCanvas;
+    private readonly gridCanvas: IGridCanvas;
 
     private lines: Array<Line>;
     private currentSide: CanvasSide;
     private previousClickedDotId?: Id;
 
-    constructor(inputCanvas: IInputCanvas, dotVirtualCanvas: IDotVirtualCanvas) {
+    constructor(inputCanvas: IInputCanvas, gridCanvas: IGridCanvas) {
         super();
 
         this.inputCanvas = inputCanvas;
-        this.dotVirtualCanvas = dotVirtualCanvas;
+        this.gridCanvas = gridCanvas;
 
         this.currentSide = CanvasSide.Default;
         this.lines = [];
@@ -55,8 +55,8 @@ export class LineVirtualCanvas extends LineVirtualCanvasBase implements ILineVir
     }
 
     private createLine(fromId: string, toId: string, side: CanvasSide): Line {
-        const from = this.dotVirtualCanvas.getDotById(fromId);
-        const to = this.dotVirtualCanvas.getDotById(toId);
+        const from = this.gridCanvas.getDotById(fromId);
+        const to = this.gridCanvas.getDotById(toId);
 
         const dots = this.ensureDots(from, to);
         const line = { from: dots.from, to: dots.to, width: dots.to.radius * 2, side };
@@ -76,7 +76,7 @@ export class LineVirtualCanvas extends LineVirtualCanvasBase implements ILineVir
     }
 
     private subscribe(): void {
-        const sizeChangeUn = this.dotVirtualCanvas.onSizeChange(this.handleSizeChange.bind(this));
+        const sizeChangeUn = this.gridCanvas.onSizeChange(this.handleSizeChange.bind(this));
         super.registerUn(sizeChangeUn);
 
         const zoomInUn = this.inputCanvas.onZoomIn(this.handleZoomIn.bind(this));
@@ -103,7 +103,7 @@ export class LineVirtualCanvas extends LineVirtualCanvasBase implements ILineVir
     }
 
     private handleDotClick(position: Position): void {
-        const currentlyClickedDot = this.dotVirtualCanvas.getDotByCoordinates(position.x, position.y);
+        const currentlyClickedDot = this.gridCanvas.getDotByPosition(position);
         if (currentlyClickedDot) {
 
             if (this.previousClickedDotId) {

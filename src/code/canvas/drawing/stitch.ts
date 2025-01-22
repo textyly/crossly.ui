@@ -1,9 +1,9 @@
 import { CanvasBase } from "../base.js";
 import { SizeChangeEvent } from "../types.js";
 import { IDrawingCanvas, IRasterDrawing } from "./types.js";
-import { DrawLineEvent, ILineVirtualCanvas } from "../virtual/types.js";
+import { DrawLineEvent, IStitchCanvas } from "../virtual/types.js";
 
-export class LineDrawingCanvas extends CanvasBase implements IDrawingCanvas<ILineVirtualCanvas> {
+export class StitchDrawingCanvas extends CanvasBase implements IDrawingCanvas<IStitchCanvas> {
     private readonly rasterDrawing: IRasterDrawing;
 
     constructor(rasterDrawing: IRasterDrawing) {
@@ -11,7 +11,7 @@ export class LineDrawingCanvas extends CanvasBase implements IDrawingCanvas<ILin
         this.rasterDrawing = rasterDrawing;
     }
 
-    public subscribe(lineVirtualCanvas: ILineVirtualCanvas): void {
+    public subscribe(lineVirtualCanvas: IStitchCanvas): void {
         const drawLineUn = lineVirtualCanvas.onDrawLine(this.handleDrawLine.bind(this));
         super.registerUn(drawLineUn);
 

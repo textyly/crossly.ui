@@ -1,10 +1,10 @@
-import { DotVirtualCanvasBase } from "./base.js";
-import { IInputCanvas } from "../../input/types.js";
+import { GridCanvasBase } from "./base.js";
+import { IInputCanvas, Position } from "../../input/types.js";
 import { IdGenerator } from "../../../utilities/generator.js";
 import { Dot, CanvasConfig, DotVisibility, Id } from "../../types.js";
-import { DotsState, IDotMatcher, IDotVirtualCanvas } from "../types.js";
+import { DotsState, IDotMatcher, IGridCanvas } from "../types.js";
 
-export class DotVirtualCanvas extends DotVirtualCanvasBase implements IDotVirtualCanvas {
+export class GridCanvas extends GridCanvasBase implements IGridCanvas {
     private readonly inputCanvas: IInputCanvas;
     private readonly dotMatcher: IDotMatcher;
 
@@ -48,11 +48,11 @@ export class DotVirtualCanvas extends DotVirtualCanvasBase implements IDotVirtua
         return this.dots.get(id);
     }
 
-    public getDotByCoordinates(mouseX: number, mouseY: number): Dot | undefined {
+    public getDotByPosition(mouse: Position): Dot | undefined {
         const dots = this.dots.values();
 
         for (const dot of dots) {
-            const match = this.dotMatcher.match(mouseX, mouseY, dot.x, dot.y, dot.radius);
+            const match = this.dotMatcher.match(dot, mouse);
             if (match) {
                 return dot;
             }

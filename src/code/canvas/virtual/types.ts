@@ -1,30 +1,31 @@
+import { Position } from "../input/types.js";
 import { Listener, VoidUnsubscribe } from "../../types.js";
 import { Dot, Line, Link, CanvasConfig, ICanvas } from "../types.js";
 
 export type DotsState = CanvasConfig;
 
-export interface IDotVirtualCanvas extends ICanvas {
+export interface IGridCanvas extends ICanvas {
     draw(config: Readonly<CanvasConfig>): void;
 
     getDotById(id: string): Dot | undefined;
-    getDotByCoordinates(x: number, y: number): Dot | undefined;
+    getDotByPosition(mouse: Position): Dot | undefined;
 
     onDrawDot(listener: DrawDotListener): VoidUnsubscribe;
 }
 
-export interface IDotMatcher {
-    match(mouseX: number, mouseY: number, dotX: number, dotY: number, dotRadius: number): boolean;
-}
-
-export interface ILineVirtualCanvas extends ICanvas {
+export interface IStitchCanvas extends ICanvas {
     onDrawLine(listener: DrawLineListener): VoidUnsubscribe;
 }
 
-export interface ICueVirtualCanvas extends ICanvas {
+export interface ICueCanvas extends ICanvas {
     onDrawLink(listener: DrawLinkListener): VoidUnsubscribe;
     onRemoveLink(listener: RemoveLinkListener): VoidUnsubscribe;
     onHoverDot(listener: HoverDotListener): VoidUnsubscribe;
     onUnhoverDot(listener: UnhoverDotListener): VoidUnsubscribe;
+}
+
+export interface IDotMatcher {
+    match(dot: Dot, mouse: Position): boolean;
 }
 
 export type DrawDotEvent = { dot: Dot };
