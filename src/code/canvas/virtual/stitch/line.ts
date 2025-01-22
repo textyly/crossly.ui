@@ -50,6 +50,8 @@ export class StitchCanvas extends StitchCanvasBase implements IStitchCanvas {
         this.lines.push(recreated);
 
         if (side === CanvasSide.Front) {
+            super.invokeDrawDot(recreated.from);
+            super.invokeDrawDot(recreated.to);
             super.invokeDrawLine(recreated);
         }
     }

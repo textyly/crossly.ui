@@ -14,6 +14,7 @@ export interface IGridCanvas extends ICanvas {
 }
 
 export interface IStitchCanvas extends ICanvas {
+    onDrawDot(listener: DrawDotListener): VoidUnsubscribe;
     onDrawLine(listener: DrawLineListener): VoidUnsubscribe;
 }
 

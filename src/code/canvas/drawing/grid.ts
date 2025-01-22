@@ -11,11 +11,11 @@ export class GirdDrawingCanvas extends CanvasBase implements IDrawingCanvas<IGri
         this.rasterDrawing = rasterDrawing;
     }
 
-    public subscribe(dotVirtualCanvas: IGridCanvas): void {
-        const drawDotUn = dotVirtualCanvas.onDrawDot(this.handleDrawDot.bind(this));
+    public subscribe(gridCanvas: IGridCanvas): void {
+        const drawDotUn = gridCanvas.onDrawDot(this.handleDrawDot.bind(this));
         super.registerUn(drawDotUn);
 
-        const sizeChangeUn = dotVirtualCanvas.onSizeChange(this.handleSizeChange.bind(this));
+        const sizeChangeUn = gridCanvas.onSizeChange(this.handleSizeChange.bind(this));
         super.registerUn(sizeChangeUn);
     }
 

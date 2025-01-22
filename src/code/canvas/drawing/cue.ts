@@ -21,20 +21,20 @@ export class CueDrawingCanvas extends CanvasBase implements IDrawingCanvas<ICueC
         this.svgLines = new Map<Id, SvgLine>();
     }
 
-    public subscribe(cueVirtualCanvas: ICueCanvas): void {
-        const drawLinkUn = cueVirtualCanvas.onDrawLink(this.handleDrawLink.bind(this));
+    public subscribe(cueCanvas: ICueCanvas): void {
+        const drawLinkUn = cueCanvas.onDrawLink(this.handleDrawLink.bind(this));
         super.registerUn(drawLinkUn);
 
-        const removeLinkUn = cueVirtualCanvas.onRemoveLink(this.handleRemoveLink.bind(this));
+        const removeLinkUn = cueCanvas.onRemoveLink(this.handleRemoveLink.bind(this));
         super.registerUn(removeLinkUn);
 
-        const dotHoveredUn = cueVirtualCanvas.onHoverDot(this.handleDotHovered.bind(this));
+        const dotHoveredUn = cueCanvas.onHoverDot(this.handleDotHovered.bind(this));
         super.registerUn(dotHoveredUn);
 
-        const dotUnhoveredUn = cueVirtualCanvas.onUnhoverDot(this.handleDotUnhovered.bind(this));
+        const dotUnhoveredUn = cueCanvas.onUnhoverDot(this.handleDotUnhovered.bind(this));
         super.registerUn(dotUnhoveredUn);
 
-        const sizeChangeUn = cueVirtualCanvas.onSizeChange(this.handleSizeChange.bind(this));
+        const sizeChangeUn = cueCanvas.onSizeChange(this.handleSizeChange.bind(this));
         super.registerUn(sizeChangeUn);
     }
 

@@ -24,7 +24,7 @@ export enum CanvasEventType {
     MouseLeftButtonDown = "mouse-left-button-down"
 }
 
-export type WheelEvent = { deltaY: number };
+export type WheelEvent = { deltaY: number, ctrlKey: boolean, preventDefault: () => void };
 export type WheelListener = Listener<WheelEvent>;
 
 export type MouseMoveEvent = { position: Position };
