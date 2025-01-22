@@ -1,9 +1,9 @@
 import { CanvasBase } from "./base.js";
 import { IInputCanvas } from "./input/types.js";
-import { IDrawingCanvas } from "./drawing/types.js";
-import { DotMatcher } from "./virtual/grid/matcher.js";
 import { CueCanvas } from "./virtual/cue/cue.js";
+import { IDrawingCanvas } from "./drawing/types.js";
 import { GridCanvas } from "./virtual/grid/grid.js";
+import { DotMatcher } from "./virtual/grid/matcher.js";
 import { StitchCanvas } from "./virtual/stitch/line.js";
 import { CanvasConfig, ICrosslyCanvas, SizeChangeEvent } from "./types.js";
 import { ICueCanvas, IGridCanvas, IStitchCanvas } from "./virtual/types.js";
@@ -22,15 +22,15 @@ export class CrosslyCanvas extends CanvasBase implements ICrosslyCanvas {
 
     constructor(
         inputCanvas: IInputCanvas,
-        dotDrawingCanvas: IDrawingCanvas<IGridCanvas>,
-        lineDrawingCanvas: IDrawingCanvas<IStitchCanvas>,
+        gridDrawingCanvas: IDrawingCanvas<IGridCanvas>,
+        stitchDrawingCanvas: IDrawingCanvas<IStitchCanvas>,
         cueDrawingCanvas: IDrawingCanvas<ICueCanvas>) {
 
         super();
 
         this.inputCanvas = inputCanvas;
-        this.initializeDotCanvas(dotDrawingCanvas);
-        this.initializeLineCanvas(lineDrawingCanvas);
+        this.initializeGridCanvas(gridDrawingCanvas);
+        this.initializeStitchCanvas(stitchDrawingCanvas);
         this.initializeCueCanvas(cueDrawingCanvas);
     }
 
@@ -40,15 +40,15 @@ export class CrosslyCanvas extends CanvasBase implements ICrosslyCanvas {
 
     public override dispose(): void {
         this.disposeCueCanvas();
-        this.disposeLineCanvas();
-        this.disposeDotCanvas();
+        this.disposeStitchCanvas();
+        this.disposeGridCanvas();
 
         this.inputCanvas?.dispose();
 
         super.dispose();
     }
 
-    private initializeDotCanvas(dotDrawingCanvas: IDrawingCanvas<IGridCanvas>): void {
+    private initializeGridCanvas(dotDrawingCanvas: IDrawingCanvas<IGridCanvas>): void {
         this.gridDrawingCanvas = dotDrawingCanvas;
         const dotMatcher = new DotMatcher();
         this.gridCanvas = new GridCanvas(this.inputCanvas, dotMatcher);
@@ -58,7 +58,7 @@ export class CrosslyCanvas extends CanvasBase implements ICrosslyCanvas {
         super.registerUn(sizeChangeUn);
     }
 
-    private initializeLineCanvas(stitchDrawingCanvas: IDrawingCanvas<IStitchCanvas>): void {
+    private initializeStitchCanvas(stitchDrawingCanvas: IDrawingCanvas<IStitchCanvas>): void {
         this.stitchDrawingCanvas = stitchDrawingCanvas;
         this.stitchCanvas = new StitchCanvas(this.inputCanvas, this.gridCanvas);
         this.stitchDrawingCanvas.subscribe(this.stitchCanvas);
@@ -81,12 +81,12 @@ export class CrosslyCanvas extends CanvasBase implements ICrosslyCanvas {
         this.cueDrawingCanvas?.dispose();
     }
 
-    private disposeLineCanvas(): void {
+    private disposeStitchCanvas(): void {
         this.stitchCanvas?.dispose();
         this.stitchDrawingCanvas?.dispose();
     }
 
-    private disposeDotCanvas(): void {
+    private disposeGridCanvas(): void {
         this.gridCanvas?.dispose();
         this.gridDrawingCanvas?.dispose();
     }

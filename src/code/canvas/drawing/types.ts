@@ -4,8 +4,8 @@ import { Dot, Line } from "../types.js";
 export type SvgDot = SVGCircleElement;
 export type SvgLine = SVGLineElement;
 
-export interface IDrawingCanvas<TVirtualCanvas> extends ICanvas {
-    subscribe(virtualCanvas: TVirtualCanvas): void;
+export interface IDrawingCanvas<TCanvas> extends ICanvas {
+    subscribe(canvas: TCanvas): void;
 }
 
 export interface IRasterDrawing extends ICanvas {
