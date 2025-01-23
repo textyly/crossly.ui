@@ -1,39 +1,53 @@
 import { Position } from "../input/types.js";
 import { Listener, VoidUnsubscribe } from "../../types.js";
-import { Dot, Line, Link, CanvasConfig, ICanvas } from "../types.js";
+import { StitchDot, StitchLine, Link, CanvasConfig, ICanvas, GridDot, GridLine } from "../types.js";
 
-export type DotsState = CanvasConfig;
+export type GridState = CanvasConfig;
 
 export interface IGridCanvas extends ICanvas {
     draw(config: Readonly<CanvasConfig>): void;
 
-    getDotById(id: string): Dot | undefined;
-    getDotByPosition(mouse: Position): Dot | undefined;
+    getDotById(id: string): GridDot | undefined;
+    getDotByPosition(position: Position): GridDot | undefined;
 
-    onDrawDot(listener: DrawDotListener): VoidUnsubscribe;
+    onDrawVisibleDot(listener: DrawGridDotListener): VoidUnsubscribe;
+    onDrawInvisibleDot(listener: DrawGridDotListener): VoidUnsubscribe;
+
+    onDrawVisibleLine(listener: DrawGridLineListener): VoidUnsubscribe;
+    onDrawInvisibleLine(listener: DrawGridLineListener): VoidUnsubscribe;
 }
 
 export interface IStitchCanvas extends ICanvas {
-    onDrawDot(listener: DrawDotListener): VoidUnsubscribe;
-    onDrawLine(listener: DrawLineListener): VoidUnsubscribe;
+    onDrawFrontDot(listener: DrawStitchDotListener): VoidUnsubscribe;
+    onDrawBackDot(listener: DrawStitchDotListener): VoidUnsubscribe;
+
+    onDrawFrontLine(listener: DrawStitchLineListener): VoidUnsubscribe;
+    onDrawBackLine(listener: DrawStitchLineListener): VoidUnsubscribe;
 }
 
 export interface ICueCanvas extends ICanvas {
     onDrawLink(listener: DrawLinkListener): VoidUnsubscribe;
     onRemoveLink(listener: RemoveLinkListener): VoidUnsubscribe;
+
     onHoverDot(listener: HoverDotListener): VoidUnsubscribe;
     onUnhoverDot(listener: UnhoverDotListener): VoidUnsubscribe;
 }
 
 export interface IDotMatcher {
-    match(dot: Dot, mouse: Position): boolean;
+    match(dot: GridDot, position: Position): boolean;
 }
 
-export type DrawDotEvent = { dot: Dot };
-export type DrawDotListener = Listener<DrawDotEvent>;
+export type DrawStitchDotEvent = { dot: StitchDot };
+export type DrawStitchDotListener = Listener<DrawStitchDotEvent>;
 
-export type DrawLineEvent = { line: Line };
-export type DrawLineListener = Listener<DrawLineEvent>;
+export type DrawGridDotEvent = { dot: GridDot };
+export type DrawGridDotListener = Listener<DrawGridDotEvent>;
+
+export type DrawStitchLineEvent = { line: StitchLine };
+export type DrawStitchLineListener = Listener<DrawStitchLineEvent>;
+
+export type DrawGridLineEvent = { line: GridLine };
+export type DrawGridLineListener = Listener<DrawGridLineEvent>;
 
 export type DrawLinkEvent = { link: Link };
 export type DrawLinkListener = Listener<DrawLinkEvent>;
@@ -41,8 +55,8 @@ export type DrawLinkListener = Listener<DrawLinkEvent>;
 export type RemoveLinkEvent = { link: Link };
 export type RemoveLinkListener = Listener<RemoveLinkEvent>;
 
-export type HoverDotEvent = { dot: Dot };
-export type HoverDotListener = Listener<HoverDotEvent>;
+export type HoverGridDotEvent = { dot: GridDot };
+export type HoverDotListener = Listener<HoverGridDotEvent>;
 
-export type UnhoverDotEvent = { dot: Dot };
-export type UnhoverDotListener = Listener<UnhoverDotEvent>;
+export type UnhoverGridDotEvent = { dot: GridDot };
+export type UnhoverDotListener = Listener<UnhoverGridDotEvent>;

@@ -1,7 +1,7 @@
 import { Size } from "../types.js";
 import { CanvasBase } from "../base.js";
-import { Dot, Line } from "../types.js";
 import { IRasterDrawing } from "./types.js";
+import { StitchDot, StitchLine } from "../types.js";
 
 export class RasterDrawing extends CanvasBase implements IRasterDrawing {
     private readonly rasterContext: CanvasRenderingContext2D;
@@ -12,7 +12,7 @@ export class RasterDrawing extends CanvasBase implements IRasterDrawing {
         this.rasterContext = rasterCanvas.getContext("2d")!;
     }
 
-    public drawDot(dot: Dot): void {
+    public drawDot(dot: StitchDot): void {
         this.rasterContext.fillStyle = "gray";
 
         this.rasterContext.beginPath();
@@ -21,7 +21,7 @@ export class RasterDrawing extends CanvasBase implements IRasterDrawing {
         this.rasterContext.closePath();
     }
 
-    public drawLine(line: Line): void {
+    public drawLine(line: StitchLine): void {
         this.rasterContext.beginPath();
 
         const from = line.from;

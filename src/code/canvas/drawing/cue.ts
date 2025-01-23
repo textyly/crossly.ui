@@ -2,9 +2,9 @@ import { CanvasBase } from "../base.js";
 import { CanvasSide, Id, SizeChangeEvent } from "../types.js";
 import { IDrawingCanvas, IVectorDrawing, SvgDot, SvgLine } from "./types.js";
 import {
-    HoverDotEvent,
+    HoverGridDotEvent,
     DrawLinkEvent,
-    UnhoverDotEvent,
+    UnhoverGridDotEvent,
     RemoveLinkEvent,
     ICueCanvas
 } from "../virtual/types.js";
@@ -44,7 +44,7 @@ export class CueDrawingCanvas extends CanvasBase implements IDrawingCanvas<ICueC
         super.dispose();
     }
 
-    private handleDotHovered(event: HoverDotEvent): void {
+    private handleDotHovered(event: HoverGridDotEvent): void {
         const dot = event.dot;
         const id = dot.id;
 
@@ -52,7 +52,7 @@ export class CueDrawingCanvas extends CanvasBase implements IDrawingCanvas<ICueC
         this.svgDots.set(id, svgDot);
     }
 
-    private handleDotUnhovered(event: UnhoverDotEvent): void {
+    private handleDotUnhovered(event: UnhoverGridDotEvent): void {
         const id = event.dot.id;
 
         if (this.svgDots.has(id)) {

@@ -1,9 +1,14 @@
 import { Listener, VoidUnsubscribe } from "../types";
 
 export type Id = string;
-export type Dot = { id: Id, x: number, y: number, radius: number, visibility: DotVisibility };
-export type Line = { from: Dot, to: Dot, width: number, side: CanvasSide };
-export type Link = { id: Id } & Line;
+export type Dot = { id: Id, x: number, y: number, radius: number };
+export type StitchDot = Dot & { side: CanvasSide };
+export type GridDot = Dot & { visibility: Visibility };
+
+export type Line<TDot> = { from: TDot, to: TDot, width: number };
+export type StitchLine = Line<StitchDot> & { side: CanvasSide };
+export type GridLine = Line<GridDot> & { visibility: Visibility };
+export type Link = { id: Id } & StitchLine;
 
 export type Size = { width: number, height: number };
 export type RadiusConfig = { value: number, step: number };
@@ -37,13 +42,11 @@ export interface ICrosslyCanvas extends ICanvas {
 export enum CanvasSide {
     Front,
     Back,
-    Default = Back,
 }
 
-export enum DotVisibility {
+export enum Visibility {
     Visible,
     Invisible,
-    Default = Visible,
 }
 
 export type SizeChangeEvent = { size: Size };

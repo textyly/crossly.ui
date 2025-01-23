@@ -1,17 +1,17 @@
 import { GridCanvasBase } from "./base.js";
 import { IInputCanvas, Position } from "../../input/types.js";
 import { IdGenerator } from "../../../utilities/generator.js";
-import { Dot, CanvasConfig, DotVisibility, Id } from "../../types.js";
-import { DotsState, IDotMatcher, IGridCanvas } from "../types.js";
+import { GridState, IDotMatcher, IGridCanvas } from "../types.js";
+import { CanvasConfig, Visibility, Id, GridDot, GridLine } from "../../types.js";
 
 export class GridCanvas extends GridCanvasBase implements IGridCanvas {
     private readonly inputCanvas: IInputCanvas;
     private readonly dotMatcher: IDotMatcher;
 
     private readonly ids: IdGenerator;
-    private readonly dots: Map<Id, Dot>;
+    private readonly dots: Map<Id, GridDot>;
 
-    private state!: DotsState;
+    private state!: GridState;
 
     constructor(inputCanvas: IInputCanvas, dotMatcher: IDotMatcher) {
         super();
@@ -19,8 +19,8 @@ export class GridCanvas extends GridCanvasBase implements IGridCanvas {
         this.inputCanvas = inputCanvas;
         this.dotMatcher = dotMatcher;
 
-        this.dots = new Map();
         this.ids = new IdGenerator();
+        this.dots = new Map();
 
         this.subscribe();
     }
@@ -44,15 +44,15 @@ export class GridCanvas extends GridCanvasBase implements IGridCanvas {
         this.redraw();
     }
 
-    public getDotById(id: string): Dot | undefined {
+    public getDotById(id: string): GridDot | undefined {
         return this.dots.get(id);
     }
 
-    public getDotByPosition(mouse: Position): Dot | undefined {
+    public getDotByPosition(position: Position): GridDot | undefined {
         const dots = this.dots.values();
 
         for (const dot of dots) {
-            const match = this.dotMatcher.match(dot, mouse);
+            const match = this.dotMatcher.match(dot, position);
             if (match) {
                 return dot;
             }
@@ -61,61 +61,69 @@ export class GridCanvas extends GridCanvasBase implements IGridCanvas {
 
     private redraw(): void {
         this.recreateDots();
-        // TODO: recreateLines
         this.recalculateSize();
         this.redrawDots();
-        // TODO: redrawLines
+        this.redrawLines();
     }
 
     private recreateDots(): void {
-        this.dots.clear();
         this.ids.reset();
+        this.dots.clear();
 
-        for (let row = 0; row < this.state.rows; ++row) {
-            this.createRow(row);
+        for (let rowIdx = 0; rowIdx < this.state.rows; ++rowIdx) {
+            const dotsNumber = this.state.columns;
+            this.createRowDots(rowIdx, dotsNumber);
         }
     }
 
-    private createRow(row: number): void {
-        const visible = row % 2 == 0;
-        if (visible) {
-            this.createVisibleRow(this.state.columns, row);
+    private createRowDots(rowIdx: number, dotsNumber: number): void {
+        const isVisibleRow = rowIdx % 2 == 0;
+        if (isVisibleRow) {
+            this.createDots(rowIdx, dotsNumber);
         } else {
-            this.createInvisibleRow(this.state.columns, row);
+            this.createInvisibleDots(rowIdx, dotsNumber);
         }
     }
 
-    private createVisibleRow(columns: number, row: number): void {
-        for (let column = 0; column < columns; ++column) {
-
-            const visibility = column % 2 == 0
-                ? DotVisibility.Visible
-                : DotVisibility.Invisible;
-
-            const dot = this.crateDot(column, row, visibility);
-            this.dots.set(dot.id, dot);
-
-            // TODO: create line for grid of lines
-        }
-    }
-
-    private createInvisibleRow(rowDots: number, row: number): void {
-        for (let x = 0; x < rowDots; ++x) {
-            const dot = this.crateDot(x, row, DotVisibility.Invisible);
+    private createDots(rowIdx: number, dotsNumber: number): void {
+        for (let dotIdx = 0; dotIdx < dotsNumber; ++dotIdx) {
+            const isVisibleDot = dotIdx % 2 == 0 ? Visibility.Visible : Visibility.Invisible;
+            const dot = this.crateDot(dotIdx, rowIdx, isVisibleDot);
             this.dots.set(dot.id, dot);
         }
     }
 
-    private crateDot(column: number, row: number, visibility: DotVisibility): Dot {
+    private createInvisibleDots(rowIdx: number, dotsNumber: number): void {
+        for (let dotIdx = 0; dotIdx < dotsNumber; ++dotIdx) {
+            const dot = this.crateDot(dotIdx, rowIdx, Visibility.Invisible);
+            this.dots.set(dot.id, dot);
+        }
+    }
+
+    private crateDot(dotIdx: number, rowIdx: number, visibility: Visibility): GridDot {
         const id = this.ids.next();
         const spacing = this.state.spacing.value;
         const radius = this.state.radius.value;
 
-        const x = (column * spacing) + spacing;
-        const y = (row * spacing) + spacing;
+        const x = (dotIdx * spacing) + spacing;
+        const y = (rowIdx * spacing) + spacing;
 
         const dot = { id, x, y, radius, visibility };
         return dot;
+    }
+
+    private redrawDots(): void {
+        this.dots.forEach((dot) => this.drawDot(dot));
+    }
+
+    private drawDot(dot: GridDot): void {
+        const isVisibleDot = dot.visibility === Visibility.Visible;
+
+        if (isVisibleDot) {
+            super.invokeDrawVisibleDot(dot);
+        } else {
+            super.invokeDrawInvisibleDot(dot);
+        }
     }
 
     private recalculateSize(): void {
@@ -130,12 +138,72 @@ export class GridCanvas extends GridCanvasBase implements IGridCanvas {
         this.size = { width, height };
     }
 
-    private redrawDots(): void {
-        this.dots.forEach((dot) => {
-            if (dot.visibility === DotVisibility.Visible) {
-                super.invokeDrawDot(dot);
-            }
-        });
+    private redrawLines(): void {
+        this.redrawColumnsLines();
+        this.redrawRowsLines();
+    }
+
+    private redrawColumnsLines(): void {
+        for (let columnIdx = 0; columnIdx < this.state.columns; ++columnIdx) {
+            const isVisibleColumn = columnIdx % 2 === 0;
+            const visibility = isVisibleColumn ? Visibility.Visible : Visibility.Invisible;
+            this.redrawColumnLine(columnIdx, visibility);
+        }
+    }
+
+    private redrawColumnLine(columnIdx: number, visibility: Visibility): void {
+        const fromDotId = columnIdx.toString();
+        const fromDot = this.dots.get(fromDotId)!;
+
+        const toDotId = this.state.columns * (this.state.rows - 1) + (columnIdx);
+        const toStrDotId = toDotId.toString();
+        const toDot = this.dots.get(toStrDotId)!;
+
+        this.drawLine(fromDot, toDot, visibility);
+    }
+
+    private redrawRowsLines(): void {
+        for (let rowIdx = 0; rowIdx < this.state.rows; ++rowIdx) {
+            const isVisibleColumn = rowIdx % 2 === 0;
+            const visibility = isVisibleColumn ? Visibility.Visible : Visibility.Invisible;
+            this.redrawRowLine(rowIdx, visibility);
+        }
+    }
+
+    private redrawRowLine(rowIdx: number, visibility: Visibility): void {
+        const fromDotId = rowIdx * this.state.columns;
+        const fromStrDotId = fromDotId.toString();
+        const fromDot = this.dots.get(fromStrDotId)!;
+
+        const toDotId = (rowIdx * this.state.columns) + (this.state.columns - 1);
+        const toStrDotId = toDotId.toString();
+        const toDot = this.dots.get(toStrDotId)!;
+
+        this.drawLine(fromDot, toDot, visibility);
+    }
+
+    private drawLine(from: GridDot, to: GridDot, visibility: Visibility): void {
+        const line = this.ensureLine(from, to, 1, visibility);
+        const isVisibleLine = line.visibility === Visibility.Visible;
+
+        if (isVisibleLine) {
+            super.invokeDrawVisibleLine(line);
+        } else {
+            super.invokeDrawInvisibleLine(line);
+        }
+    }
+
+    private ensureLine(from: GridDot | undefined, to: GridDot | undefined, width: number, visibility: Visibility): GridLine {
+        if (!from) {
+            throw new Error("`from` dot must exist.");
+        }
+
+        if (!to) {
+            throw new Error("`to` dot must exist.");
+        }
+
+        const line: GridLine = { from, to, width, visibility };
+        return line;
     }
 
     private subscribe(): void {

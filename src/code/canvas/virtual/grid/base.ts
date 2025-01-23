@@ -1,24 +1,36 @@
-import { Dot } from "../../types.js";
 import { CanvasBase } from "../../base.js";
-import { Messaging1 } from "../../../messaging/impl.js";
-import { IMessaging1 } from "../../../messaging/types.js";
-import { DrawDotEvent, DrawDotListener } from "../types.js";
+import { GridDot, GridLine } from "../../types.js";
+import { Messaging4 } from "../../../messaging/impl.js";
+import { IMessaging4 } from "../../../messaging/types.js";
 import { VoidListener, VoidUnsubscribe } from "../../../types.js";
+import { DrawGridDotEvent, DrawGridDotListener, DrawGridLineEvent, DrawGridLineListener } from "../types.js";
 
 export abstract class GridCanvasBase extends CanvasBase {
-    private readonly messaging: IMessaging1<DrawDotEvent>;
+    private readonly messaging: IMessaging4<DrawGridDotEvent, DrawGridDotEvent, DrawGridLineEvent, DrawGridLineEvent>;
 
     constructor() {
         super();
-        this.messaging = new Messaging1();
+        this.messaging = new Messaging4();
     }
 
     public onRedraw(listener: VoidListener): VoidUnsubscribe {
         return this.messaging.listenOnChannel0(listener);
     }
 
-    public onDrawDot(listener: DrawDotListener): VoidUnsubscribe {
+    public onDrawVisibleDot(listener: DrawGridDotListener): VoidUnsubscribe {
         return this.messaging.listenOnChannel1(listener);
+    }
+
+    public onDrawInvisibleDot(listener: DrawGridDotListener): VoidUnsubscribe {
+        return this.messaging.listenOnChannel2(listener);
+    }
+
+    public onDrawVisibleLine(listener: DrawGridLineListener): VoidUnsubscribe {
+        return this.messaging.listenOnChannel3(listener);
+    }
+
+    public onDrawInvisibleLine(listener: DrawGridLineListener): VoidUnsubscribe {
+        return this.messaging.listenOnChannel4(listener);
     }
 
     public override dispose(): void {
@@ -30,8 +42,23 @@ export abstract class GridCanvasBase extends CanvasBase {
         this.messaging.sendToChannel0();
     }
 
-    protected invokeDrawDot(dot: Dot): void {
+    protected invokeDrawVisibleDot(dot: GridDot): void {
         const drawDotEvent = { dot };
         this.messaging.sendToChannel1(drawDotEvent);
+    }
+
+    protected invokeDrawInvisibleDot(dot: GridDot): void {
+        const drawDotEvent = { dot };
+        this.messaging.sendToChannel2(drawDotEvent);
+    }
+
+    protected invokeDrawVisibleLine(line: GridLine): void {
+        const drawLineEvent = { line };
+        this.messaging.sendToChannel3(drawLineEvent);
+    }
+
+    protected invokeDrawInvisibleLine(line: GridLine): void {
+        const drawLineEvent = { line };
+        this.messaging.sendToChannel4(drawLineEvent);
     }
 } 

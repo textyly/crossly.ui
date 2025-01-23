@@ -1,13 +1,15 @@
 import { StitchCanvasBase } from "./base.js";
 import { IGridCanvas, IStitchCanvas } from "../types.js";
-import { CanvasSide, Dot, Id, Line, SizeChangeEvent } from "../../types.js";
+import { CanvasSide, Id, StitchLine, SizeChangeEvent, GridDot } from "../../types.js";
 import { IInputCanvas, MouseLeftButtonDownEvent, Position } from "../../input/types.js";
+import { Converter } from "../../../utilities/converter.js";
 
 export class StitchCanvas extends StitchCanvasBase implements IStitchCanvas {
     private readonly inputCanvas: IInputCanvas;
     private readonly gridCanvas: IGridCanvas;
+    private readonly converter: Converter;
 
-    private lines: Array<Line>;
+    private lines: Array<StitchLine>;
     private currentSide: CanvasSide;
     private previousClickedDotId?: Id;
 
@@ -16,8 +18,9 @@ export class StitchCanvas extends StitchCanvasBase implements IStitchCanvas {
 
         this.inputCanvas = inputCanvas;
         this.gridCanvas = gridCanvas;
+        this.converter = new Converter();
 
-        this.currentSide = CanvasSide.Default;
+        this.currentSide = CanvasSide.Back;
         this.lines = [];
 
         this.subscribe();
@@ -36,7 +39,7 @@ export class StitchCanvas extends StitchCanvasBase implements IStitchCanvas {
         this.redrawLines();
     }
 
-    private redrawLines(): Array<Line> {
+    private redrawLines(): Array<StitchLine> {
         const copy = this.lines;
         this.lines = [];
 
@@ -46,26 +49,41 @@ export class StitchCanvas extends StitchCanvasBase implements IStitchCanvas {
     }
 
     private drawLine(fromId: string, toId: string, side: CanvasSide): void {
-        const recreated = this.createLine(fromId, toId, side);
-        this.lines.push(recreated);
+        const line = this.createLine(fromId, toId, side);
+        this.lines.push(line);
 
-        if (side === CanvasSide.Front) {
-            super.invokeDrawDot(recreated.from);
-            super.invokeDrawDot(recreated.to);
-            super.invokeDrawLine(recreated);
+        if (side == CanvasSide.Front) {
+            this.drawFrontLine(line);
+        } else {
+            this.drawBackLine(line);
         }
     }
 
-    private createLine(fromId: string, toId: string, side: CanvasSide): Line {
-        const from = this.gridCanvas.getDotById(fromId);
-        const to = this.gridCanvas.getDotById(toId);
+    private drawFrontLine(line: StitchLine): void {
+        super.invokeDrawFrontDot(line.from);
+        super.invokeDrawFrontDot(line.to);
+        super.invokeDrawFrontLine(line);
+    }
 
-        const dots = this.ensureDots(from, to);
-        const line = { from: dots.from, to: dots.to, width: dots.to.radius * 2, side };
+    private drawBackLine(line: StitchLine): void {
+        super.invokeDrawBackDot(line.from);
+        super.invokeDrawBackDot(line.to);
+        super.invokeDrawBackLine(line);
+    }
+
+    private createLine(fromId: string, toId: string, side: CanvasSide): StitchLine {
+        const fromGridDot = this.gridCanvas.getDotById(fromId);
+        const toGridDot = this.gridCanvas.getDotById(toId);
+
+        const dots = this.ensureDots(fromGridDot, toGridDot);
+
+        const width = (dots.to.radius * 2) + 2; // TODO: !!!
+        const line = this.converter.convertToStitchLine(dots.from, dots.to, width, side);
+
         return line;
     }
 
-    private ensureDots(from: Dot | undefined, to: Dot | undefined): { from: Dot, to: Dot } {
+    private ensureDots(from: GridDot | undefined, to: GridDot | undefined): { from: GridDot, to: GridDot } {
         if (!from) {
             throw new Error("`from` must be defined.");
         }

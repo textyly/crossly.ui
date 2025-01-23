@@ -1,21 +1,21 @@
-import { Dot, Link } from "../../types.js";
 import { CanvasBase } from "../../base.js";
+import { Link, GridDot } from "../../types.js";
 import { Messaging4 } from "../../../messaging/impl.js";
 import { IMessaging4 } from "../../../messaging/types.js";
 import { VoidListener, VoidUnsubscribe } from "../../../types.js";
 import {
     DrawLinkEvent,
     DrawLinkListener,
-    HoverDotEvent,
+    HoverGridDotEvent,
     HoverDotListener,
     RemoveLinkEvent,
     RemoveLinkListener,
-    UnhoverDotEvent,
+    UnhoverGridDotEvent,
     UnhoverDotListener
 } from "../types.js";
 
 export abstract class CueCanvasBase extends CanvasBase {
-    private readonly messaging: IMessaging4<HoverDotEvent, UnhoverDotEvent, DrawLinkEvent, RemoveLinkEvent>;
+    private readonly messaging: IMessaging4<HoverGridDotEvent, UnhoverGridDotEvent, DrawLinkEvent, RemoveLinkEvent>;
 
     constructor() {
         super();
@@ -51,12 +51,12 @@ export abstract class CueCanvasBase extends CanvasBase {
         this.messaging.sendToChannel0();
     }
 
-    protected invokeHoverDot(dot: Dot): void {
+    protected invokeHoverDot(dot: GridDot): void {
         const hoverDotEvent = { dot };
         this.messaging.sendToChannel1(hoverDotEvent);
     }
 
-    protected invokeUnhoverDot(dot: Dot): void {
+    protected invokeUnhoverDot(dot: GridDot): void {
         const unhoverDotEvent = { dot };
         this.messaging.sendToChannel2(unhoverDotEvent);
     }

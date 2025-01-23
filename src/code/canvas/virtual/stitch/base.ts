@@ -1,28 +1,36 @@
-import { Dot, Line } from "../../types.js";
 import { CanvasBase } from "../../base.js";
-import { Messaging2 } from "../../../messaging/impl.js";
-import { IMessaging2 } from "../../../messaging/types.js";
+import { StitchDot, StitchLine } from "../../types.js";
+import { Messaging4 } from "../../../messaging/impl.js";
+import { IMessaging4 } from "../../../messaging/types.js";
 import { VoidListener, VoidUnsubscribe } from "../../../types.js";
-import { DrawDotEvent, DrawDotListener, DrawLineEvent, DrawLineListener } from "../types.js";
+import { DrawStitchDotEvent, DrawStitchDotListener, DrawStitchLineEvent, DrawStitchLineListener } from "../types.js";
 
 export abstract class StitchCanvasBase extends CanvasBase {
-    private readonly messaging: IMessaging2<DrawLineEvent, DrawDotEvent>;
+    private readonly messaging: IMessaging4<DrawStitchDotEvent, DrawStitchDotEvent, DrawStitchLineEvent, DrawStitchLineEvent>;
 
     constructor() {
         super();
-        this.messaging = new Messaging2();
+        this.messaging = new Messaging4();
     }
 
     public onRedraw(listener: VoidListener): VoidUnsubscribe {
         return this.messaging.listenOnChannel0(listener);
     }
 
-    public onDrawLine(listener: DrawLineListener): VoidUnsubscribe {
+    public onDrawFrontDot(listener: DrawStitchDotListener): VoidUnsubscribe {
         return this.messaging.listenOnChannel1(listener);
     }
 
-    public onDrawDot(listener: DrawDotListener): VoidUnsubscribe {
+    public onDrawBackDot(listener: DrawStitchDotListener): VoidUnsubscribe {
         return this.messaging.listenOnChannel2(listener);
+    }
+
+    public onDrawFrontLine(listener: DrawStitchLineListener): VoidUnsubscribe {
+        return this.messaging.listenOnChannel3(listener);
+    }
+
+    public onDrawBackLine(listener: DrawStitchLineListener): VoidUnsubscribe {
+        return this.messaging.listenOnChannel4(listener);
     }
 
     public override dispose(): void {
@@ -34,13 +42,23 @@ export abstract class StitchCanvasBase extends CanvasBase {
         this.messaging.sendToChannel0();
     }
 
-    protected invokeDrawLine(line: Line): void {
-        const drawLineEvent = { line };
-        this.messaging.sendToChannel1(drawLineEvent);
+    protected invokeDrawFrontDot(dot: StitchDot): void {
+        const drawDotEvent = { dot };
+        this.messaging.sendToChannel1(drawDotEvent);
     }
 
-    protected invokeDrawDot(dot: Dot): void {
+    protected invokeDrawBackDot(dot: StitchDot): void {
         const drawDotEvent = { dot };
         this.messaging.sendToChannel2(drawDotEvent);
+    }
+
+    protected invokeDrawFrontLine(line: StitchLine): void {
+        const drawLineEvent = { line };
+        this.messaging.sendToChannel3(drawLineEvent);
+    }
+
+    protected invokeDrawBackLine(line: StitchLine): void {
+        const drawLineEvent = { line };
+        this.messaging.sendToChannel4(drawLineEvent);
     }
 }

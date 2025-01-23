@@ -3,10 +3,10 @@ import { CrosslyCanvas } from "./crossly.js";
 import { InputCanvas } from "./input/input.js";
 import { IInputCanvas } from "./input/types.js";
 import { CueDrawingCanvas } from "./drawing/cue.js";
-import { GirdDrawingCanvas } from "./drawing/grid.js";
 import { RasterDrawing } from "./drawing/raster.js";
 import { IDrawingCanvas } from "./drawing/types.js";
 import { VectorDrawing } from "./drawing/vector.js";
+import { GridDrawingCanvas } from "./drawing/grid.js";
 import { StitchDrawingCanvas } from "./drawing/stitch.js";
 import { InputCanvasThrottler } from "./input/throttler.js";
 import { ICueCanvas, IGridCanvas, IStitchCanvas } from "./virtual/types.js";
@@ -31,7 +31,7 @@ export class CrosslyCanvasBuilder {
 
     public withGridCanvas(htmlCanvasElement: HTMLCanvasElement): CrosslyCanvasBuilder {
         const rasterDrawing = new RasterDrawing(htmlCanvasElement);
-        this.gridDrawingCanvas = new GirdDrawingCanvas(rasterDrawing);
+        this.gridDrawingCanvas = new GridDrawingCanvas(rasterDrawing);
         return this;
     }
 

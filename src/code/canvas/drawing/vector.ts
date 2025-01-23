@@ -1,6 +1,6 @@
-import { Dot, Line } from "../types.js";
 import { Size } from "../types.js";
 import { CanvasBase } from "../base.js";
+import { StitchDot, StitchLine } from "../types.js";
 import { IVectorDrawing, SvgDot, SvgLine } from "./types.js";
 
 export class VectorDrawing extends CanvasBase implements IVectorDrawing {
@@ -11,7 +11,7 @@ export class VectorDrawing extends CanvasBase implements IVectorDrawing {
         this.svgCanvas = svgCanvas;
     }
 
-    public drawDot(dot: Dot): SvgDot {
+    public drawDot(dot: StitchDot): SvgDot {
         const circle = this.createCircle(dot);
         this.svgCanvas.appendChild(circle);
         return circle;
@@ -21,13 +21,13 @@ export class VectorDrawing extends CanvasBase implements IVectorDrawing {
         this.svgCanvas.removeChild(dot);
     }
 
-    public drawLine(line: Line): SvgLine {
+    public drawLine(line: StitchLine): SvgLine {
         const svgLine = this.createLine(line);
         this.svgCanvas.appendChild(svgLine);
         return svgLine;
     }
 
-    public drawDashLine(line: Line): SvgLine {
+    public drawDashLine(line: StitchLine): SvgLine {
         const svgLine = this.createLine(line);
         svgLine.setAttribute("stroke-dasharray", "5,2");
         this.svgCanvas.appendChild(svgLine);
@@ -47,7 +47,7 @@ export class VectorDrawing extends CanvasBase implements IVectorDrawing {
         this.svgCanvas.setAttribute("height", height);
     }
 
-    private createCircle(dot: Dot): SVGCircleElement {
+    private createCircle(dot: StitchDot): SVGCircleElement {
         const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
 
         const cx = dot.x.toString();
@@ -62,7 +62,7 @@ export class VectorDrawing extends CanvasBase implements IVectorDrawing {
         return circle;
     }
 
-    private createLine(line: Line): SvgLine {
+    private createLine(line: StitchLine): SvgLine {
         const svgLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
 
         const x1 = line.from.x.toString();

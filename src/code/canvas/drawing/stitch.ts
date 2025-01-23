@@ -1,7 +1,7 @@
 import { CanvasBase } from "../base.js";
 import { SizeChangeEvent } from "../types.js";
 import { IDrawingCanvas, IRasterDrawing } from "./types.js";
-import { DrawDotEvent, DrawLineEvent, IStitchCanvas } from "../virtual/types.js";
+import { DrawStitchDotEvent, DrawStitchLineEvent, IStitchCanvas } from "../virtual/types.js";
 
 export class StitchDrawingCanvas extends CanvasBase implements IDrawingCanvas<IStitchCanvas> {
     private readonly rasterDrawing: IRasterDrawing;
@@ -12,22 +12,22 @@ export class StitchDrawingCanvas extends CanvasBase implements IDrawingCanvas<IS
     }
 
     public subscribe(stitchCanvas: IStitchCanvas): void {
-        const drawLineUn = stitchCanvas.onDrawLine(this.handleDrawLine.bind(this));
-        super.registerUn(drawLineUn);
+        const drawFrontDotUn = stitchCanvas.onDrawFrontDot(this.handleDrawFrontDot.bind(this));
+        super.registerUn(drawFrontDotUn);
 
-        const drawDotUn = stitchCanvas.onDrawDot(this.handleDrawDot.bind(this));
-        super.registerUn(drawDotUn);
+        const drawFrontLineUn = stitchCanvas.onDrawFrontLine(this.handleDrawFrontLine.bind(this));
+        super.registerUn(drawFrontLineUn);
 
         const sizeChangeUn = stitchCanvas.onSizeChange(this.handleSizeChange.bind(this));
         super.registerUn(sizeChangeUn);
     }
 
-    private handleDrawLine(event: DrawLineEvent): void {
+    private handleDrawFrontLine(event: DrawStitchLineEvent): void {
         const line = event.line;
         this.rasterDrawing.drawLine(line);
     }
 
-    private handleDrawDot(event: DrawDotEvent): void {
+    private handleDrawFrontDot(event: DrawStitchDotEvent): void {
         const dot = event.dot;
         this.rasterDrawing.drawDot(dot);
     }

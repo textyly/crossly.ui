@@ -4,7 +4,7 @@ import { CueCanvas } from "./virtual/cue/cue.js";
 import { IDrawingCanvas } from "./drawing/types.js";
 import { GridCanvas } from "./virtual/grid/grid.js";
 import { DotMatcher } from "./virtual/grid/matcher.js";
-import { StitchCanvas } from "./virtual/stitch/line.js";
+import { StitchCanvas } from "./virtual/stitch/stitch.js";
 import { CanvasConfig, ICrosslyCanvas, SizeChangeEvent } from "./types.js";
 import { ICueCanvas, IGridCanvas, IStitchCanvas } from "./virtual/types.js";
 

@@ -1,13 +1,16 @@
 import { CueCanvasBase } from "./base.js";
-import { IdGenerator } from "../../../utilities/generator.js";
 import { ICueCanvas, IGridCanvas } from "../types.js";
-import { CanvasSide, Dot, DotVisibility, Id, Link, SizeChangeEvent } from "../../types.js";
+import { IdGenerator } from "../../../utilities/generator.js";
+import { CanvasSide, Visibility, Id, Link, SizeChangeEvent, GridDot } from "../../types.js";
 import { IInputCanvas, MouseLeftButtonDownEvent, MouseMoveEvent, Position } from "../../input/types.js";
+import { Converter } from "../../../utilities/converter.js";
 
 export class CueCanvas extends CueCanvasBase implements ICueCanvas {
     private readonly inputCanvas: IInputCanvas;
     private readonly gridCanvas: IGridCanvas;
+
     private readonly ids: IdGenerator;
+    private readonly converter: Converter;
 
     private currentLink?: Link;
     private currentSide: CanvasSide;
@@ -21,7 +24,9 @@ export class CueCanvas extends CueCanvasBase implements ICueCanvas {
         this.gridCanvas = gridCanvas;
 
         this.ids = new IdGenerator();
-        this.currentSide = CanvasSide.Default;
+        this.converter = new Converter();
+
+        this.currentSide = CanvasSide.Back;
 
         this.subscribe();
     }
@@ -90,7 +95,7 @@ export class CueCanvas extends CueCanvasBase implements ICueCanvas {
                 }
 
                 this.previousHoveredDotId = hovered.id;
-                const hoveredDot = { id: hovered.id, radius: hovered.radius + 2, x: hovered.x, y: hovered.y, visibility: DotVisibility.Default }; // TODO: +2 must go outside
+                const hoveredDot = { id: hovered.id, radius: hovered.radius + 2, x: hovered.x, y: hovered.y, visibility: Visibility.Visible }; // TODO: +2 must go outside
                 super.invokeHoverDot(hoveredDot);
             }
         } else if (this.previousHoveredDotId) {
@@ -117,12 +122,14 @@ export class CueCanvas extends CueCanvasBase implements ICueCanvas {
         }
     }
 
-    private drawLink(previousClickedDot: Dot, currentMousePosition: Position): void {
+    private drawLink(previousClickedDot: GridDot, currentMousePosition: Position): void {
         const toDotId = this.ids.next();
-        const toDot = { ...currentMousePosition, id: toDotId, radius: previousClickedDot.radius, visibility: DotVisibility.Default };
+        const toDot = { ...currentMousePosition, id: toDotId, radius: previousClickedDot.radius, side: this.currentSide };
 
         const linkId = this.ids.next();
-        this.currentLink = { id: linkId, from: previousClickedDot, to: toDot, width: toDot.radius, side: this.currentSide };
+        const fromDot = this.converter.convertToStitchDot(previousClickedDot, this.currentSide);
+
+        this.currentLink = { id: linkId, from: fromDot, to: toDot, width: toDot.radius, side: this.currentSide }; // TODO: width: toDot.radius 
 
         super.invokeDrawLink(this.currentLink);
     }
