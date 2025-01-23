@@ -1,20 +1,16 @@
-import { CanvasBase } from "../../base.js";
+import { VirtualCanvasBase } from "../base.js";
 import { GridDot, GridLine } from "../../types.js";
+import { VoidUnsubscribe } from "../../../types.js";
 import { Messaging4 } from "../../../messaging/impl.js";
 import { IMessaging4 } from "../../../messaging/types.js";
-import { VoidListener, VoidUnsubscribe } from "../../../types.js";
-import { DrawGridDotEvent, DrawGridDotListener, DrawGridLineEvent, DrawGridLineListener } from "../types.js";
+import { DrawGridDotEvent, DrawGridDotListener, DrawGridLineEvent, DrawGridLineListener, GridCanvasConfig } from "../types.js";
 
-export abstract class GridCanvasBase extends CanvasBase {
+export abstract class GridCanvasBase extends VirtualCanvasBase<GridCanvasConfig> {
     private readonly messaging: IMessaging4<DrawGridDotEvent, DrawGridDotEvent, DrawGridLineEvent, DrawGridLineEvent>;
 
     constructor() {
         super();
         this.messaging = new Messaging4();
-    }
-
-    public onRedraw(listener: VoidListener): VoidUnsubscribe {
-        return this.messaging.listenOnChannel0(listener);
     }
 
     public onDrawVisibleDot(listener: DrawGridDotListener): VoidUnsubscribe {
@@ -36,10 +32,6 @@ export abstract class GridCanvasBase extends CanvasBase {
     public override dispose(): void {
         this.messaging.dispose();
         super.dispose();
-    }
-
-    protected invokeRedraw(): void {
-        this.messaging.sendToChannel0();
     }
 
     protected invokeDrawVisibleDot(dot: GridDot): void {

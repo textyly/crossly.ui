@@ -13,10 +13,10 @@ export class RasterDrawing extends CanvasBase implements IRasterDrawing {
     }
 
     public drawDot(dot: StitchDot): void {
-        this.rasterContext.fillStyle = "gray";
+        this.rasterContext.fillStyle = dot.color;
 
         this.rasterContext.beginPath();
-        this.rasterContext.arc(dot.x, dot.y, dot.radius, 0, Math.PI * 2); // TODO: 2 ???
+        this.rasterContext.arc(dot.x, dot.y, dot.radius, 0, Math.PI * 2);
         this.rasterContext.fill();
         this.rasterContext.closePath();
     }
@@ -31,7 +31,7 @@ export class RasterDrawing extends CanvasBase implements IRasterDrawing {
         this.rasterContext.lineTo(to.x, to.y);
 
         this.rasterContext.lineWidth = line.width;
-        this.rasterContext.strokeStyle = "gray";
+        this.rasterContext.strokeStyle = line.color;
         this.rasterContext.stroke();
     }
 

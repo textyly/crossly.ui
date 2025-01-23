@@ -7,6 +7,7 @@ export class Converter {
             x: gridDot.x,
             y: gridDot.y,
             radius: gridDot.radius,
+            color: gridDot.color,
         };
 
         const stitchDot = { ...dot, side };
@@ -19,25 +20,26 @@ export class Converter {
             x: stitchDot.x,
             y: stitchDot.y,
             radius: stitchDot.radius,
+            color: stitchDot.color,
         };
 
         const gridDot = { ...dot, visibility };
         return gridDot;
     }
 
-    public convertToStitchLine(from: GridDot, to: GridDot, width: number, side: CanvasSide): StitchLine {
+    public convertToStitchLine(from: GridDot, to: GridDot, width: number, side: CanvasSide, color: string): StitchLine {
         const fromStitchDot = this.convertToStitchDot(from, side);
         const toStitchDot = this.convertToStitchDot(to, side);
 
-        const stitchLine = { from: fromStitchDot, to: toStitchDot, width, side };
+        const stitchLine = { from: fromStitchDot, to: toStitchDot, width, color, side };
         return stitchLine;
     }
 
-    public convertToGridLine(from: StitchDot, to: StitchDot, width: number, visibility: Visibility): GridLine {
+    public convertToGridLine(from: StitchDot, to: StitchDot, width: number, visibility: Visibility, color: string): GridLine {
         const fromGridDot = this.convertToGridDot(from, visibility);
         const toGridDot = this.convertToGridDot(to, visibility);
 
-        const gridLine = { from: fromGridDot, to: toGridDot, width, visibility };
+        const gridLine = { from: fromGridDot, to: toGridDot, width, color, visibility };
         return gridLine;
     }
 }

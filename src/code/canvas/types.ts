@@ -1,11 +1,12 @@
 import { Listener, VoidUnsubscribe } from "../types";
+import { CueCanvasConfig, GridCanvasConfig, StitchCanvasConfig } from "./virtual/types.js";
 
 export type Id = string;
-export type Dot = { id: Id, x: number, y: number, radius: number };
+export type Dot = { id: Id, x: number, y: number, radius: number, color: string };
 export type StitchDot = Dot & { side: CanvasSide };
 export type GridDot = Dot & { visibility: Visibility };
 
-export type Line<TDot> = { from: TDot, to: TDot, width: number };
+export type Line<TDot> = { from: TDot, to: TDot, width: number, color: string };
 export type StitchLine = Line<StitchDot> & { side: CanvasSide };
 export type GridLine = Line<GridDot> & { visibility: Visibility };
 export type Link = { id: Id } & StitchLine;
@@ -15,13 +16,9 @@ export type RadiusConfig = { value: number, step: number };
 export type SpacingConfig = { value: number, step: number };
 
 export type CanvasConfig = {
-    columns: number,
-    rows: number,
-    // grid (radius + spacing) 
-    radius: RadiusConfig,
-    spacing: SpacingConfig,
-    // cue (dot and link)
-    // stitch (width, ...)
+    grid: GridCanvasConfig,
+    stitch: StitchCanvasConfig,
+    cue: CueCanvasConfig
 };
 
 export interface IDisposable {

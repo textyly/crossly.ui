@@ -1,9 +1,9 @@
 import { CueCanvasBase } from "./base.js";
-import { ICueCanvas, IGridCanvas } from "../types.js";
+import { Converter } from "../../../utilities/converter.js";
 import { IdGenerator } from "../../../utilities/generator.js";
+import { CueCanvasConfig, CueState, ICueCanvas, IGridCanvas } from "../types.js";
 import { CanvasSide, Visibility, Id, Link, SizeChangeEvent, GridDot } from "../../types.js";
 import { IInputCanvas, MouseLeftButtonDownEvent, MouseMoveEvent, Position } from "../../input/types.js";
-import { Converter } from "../../../utilities/converter.js";
 
 export class CueCanvas extends CueCanvasBase implements ICueCanvas {
     private readonly inputCanvas: IInputCanvas;
@@ -16,6 +16,8 @@ export class CueCanvas extends CueCanvasBase implements ICueCanvas {
     private currentSide: CanvasSide;
     private previousClickedDotId?: Id;
     private previousHoveredDotId?: Id;
+
+    private state!: CueState;
 
     constructor(inputCanvas: IInputCanvas, gridCanvas: IGridCanvas) {
         super();
@@ -31,7 +33,12 @@ export class CueCanvas extends CueCanvasBase implements ICueCanvas {
         this.subscribe();
     }
 
-    public draw(): void {
+    public override draw(config: Readonly<CueCanvasConfig>): void {
+        this.state = config;
+        this.redraw();
+    }
+
+    private redraw(): void {
         this.ids.reset();
 
         if (this.previousHoveredDotId) {
@@ -62,11 +69,15 @@ export class CueCanvas extends CueCanvasBase implements ICueCanvas {
     }
 
     private handleZoomIn(): void {
-        this.draw();
+        this.state.dot.radius.value += this.state.dot.radius.zoomStep;
+        this.state.link.width.value += this.state.link.width.zoomStep;
+        this.redraw();
     }
 
     private handleZoomOut(): void {
-        this.draw();
+        this.state.dot.radius.value -= this.state.dot.radius.zoomStep;
+        this.state.link.width.value -= this.state.link.width.zoomStep;
+        this.redraw();
     }
 
     private handleMouseMove(event: MouseMoveEvent): void {
@@ -95,7 +106,7 @@ export class CueCanvas extends CueCanvasBase implements ICueCanvas {
                 }
 
                 this.previousHoveredDotId = hovered.id;
-                const hoveredDot = { id: hovered.id, radius: hovered.radius + 2, x: hovered.x, y: hovered.y, visibility: Visibility.Visible }; // TODO: +2 must go outside
+                const hoveredDot = { id: hovered.id, x: hovered.x, y: hovered.y, radius: this.state.dot.radius.value, visibility: Visibility.Visible, color: this.state.dot.color };
                 super.invokeHoverDot(hoveredDot);
             }
         } else if (this.previousHoveredDotId) {
@@ -124,12 +135,12 @@ export class CueCanvas extends CueCanvasBase implements ICueCanvas {
 
     private drawLink(previousClickedDot: GridDot, currentMousePosition: Position): void {
         const toDotId = this.ids.next();
-        const toDot = { ...currentMousePosition, id: toDotId, radius: previousClickedDot.radius, side: this.currentSide };
+        const toDot = { ...currentMousePosition, id: toDotId, radius: this.state.dot.radius.value, side: this.currentSide, color: this.state.dot.color };
 
         const linkId = this.ids.next();
         const fromDot = this.converter.convertToStitchDot(previousClickedDot, this.currentSide);
 
-        this.currentLink = { id: linkId, from: fromDot, to: toDot, width: toDot.radius, side: this.currentSide }; // TODO: width: toDot.radius 
+        this.currentLink = { id: linkId, from: fromDot, to: toDot, width: this.state.link.width.value, side: this.currentSide, color: this.state.link.color };
 
         super.invokeDrawLink(this.currentLink);
     }

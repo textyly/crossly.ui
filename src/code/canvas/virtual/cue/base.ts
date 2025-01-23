@@ -1,8 +1,8 @@
-import { CanvasBase } from "../../base.js";
+import { VirtualCanvasBase } from "../base.js";
 import { Link, GridDot } from "../../types.js";
+import { VoidUnsubscribe } from "../../../types.js";
 import { Messaging4 } from "../../../messaging/impl.js";
 import { IMessaging4 } from "../../../messaging/types.js";
-import { VoidListener, VoidUnsubscribe } from "../../../types.js";
 import {
     DrawLinkEvent,
     DrawLinkListener,
@@ -11,19 +11,16 @@ import {
     RemoveLinkEvent,
     RemoveLinkListener,
     UnhoverGridDotEvent,
-    UnhoverDotListener
+    UnhoverDotListener,
+    CueCanvasConfig
 } from "../types.js";
 
-export abstract class CueCanvasBase extends CanvasBase {
+export abstract class CueCanvasBase extends VirtualCanvasBase<CueCanvasConfig> {
     private readonly messaging: IMessaging4<HoverGridDotEvent, UnhoverGridDotEvent, DrawLinkEvent, RemoveLinkEvent>;
 
     constructor() {
         super();
         this.messaging = new Messaging4();
-    }
-
-    public onRedraw(listener: VoidListener): VoidUnsubscribe {
-        return this.messaging.listenOnChannel0(listener);
     }
 
     public onHoverDot(listener: HoverDotListener): VoidUnsubscribe {
@@ -45,10 +42,6 @@ export abstract class CueCanvasBase extends CanvasBase {
     public override dispose(): void {
         this.messaging.dispose();
         super.dispose();
-    }
-
-    protected invokeRedraw(): void {
-        this.messaging.sendToChannel0();
     }
 
     protected invokeHoverDot(dot: GridDot): void {

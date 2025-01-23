@@ -1,8 +1,8 @@
 import { StitchCanvasBase } from "./base.js";
-import { IGridCanvas, IStitchCanvas } from "../types.js";
+import { Converter } from "../../../utilities/converter.js";
+import { IGridCanvas, IStitchCanvas, StitchCanvasConfig, StitchState } from "../types.js";
 import { CanvasSide, Id, StitchLine, SizeChangeEvent, GridDot } from "../../types.js";
 import { IInputCanvas, MouseLeftButtonDownEvent, Position } from "../../input/types.js";
-import { Converter } from "../../../utilities/converter.js";
 
 export class StitchCanvas extends StitchCanvasBase implements IStitchCanvas {
     private readonly inputCanvas: IInputCanvas;
@@ -12,6 +12,8 @@ export class StitchCanvas extends StitchCanvasBase implements IStitchCanvas {
     private lines: Array<StitchLine>;
     private currentSide: CanvasSide;
     private previousClickedDotId?: Id;
+
+    private state!: StitchState;
 
     constructor(inputCanvas: IInputCanvas, gridCanvas: IGridCanvas) {
         super();
@@ -26,7 +28,8 @@ export class StitchCanvas extends StitchCanvasBase implements IStitchCanvas {
         this.subscribe();
     }
 
-    public draw(): void {
+    public draw(config: Readonly<StitchCanvasConfig>): void {
+        this.state = config;
         this.redraw();
     }
 
@@ -43,13 +46,13 @@ export class StitchCanvas extends StitchCanvasBase implements IStitchCanvas {
         const copy = this.lines;
         this.lines = [];
 
-        copy.forEach((line) => this.drawLine(line.from.id, line.to.id, line.side));
+        copy.forEach((line) => this.drawLine(line.from.id, line.to.id, this.state.lines.width.value, line.side, this.state.lines.color));
 
         return this.lines;
     }
 
-    private drawLine(fromId: string, toId: string, side: CanvasSide): void {
-        const line = this.createLine(fromId, toId, side);
+    private drawLine(fromId: string, toId: string, width: number, side: CanvasSide, color: string): void {
+        const line = this.createLine(fromId, toId, width, side, color);
         this.lines.push(line);
 
         if (side == CanvasSide.Front) {
@@ -71,14 +74,13 @@ export class StitchCanvas extends StitchCanvasBase implements IStitchCanvas {
         super.invokeDrawBackLine(line);
     }
 
-    private createLine(fromId: string, toId: string, side: CanvasSide): StitchLine {
-        const fromGridDot = this.gridCanvas.getDotById(fromId);
-        const toGridDot = this.gridCanvas.getDotById(toId);
+    private createLine(fromId: string, toId: string, width: number, side: CanvasSide, color: string): StitchLine {
+        const fromGridDot = this.gridCanvas.getDotById(fromId); // TODO: dot color!!!
+        const toGridDot = this.gridCanvas.getDotById(toId); // TODO: dot color!!!
 
         const dots = this.ensureDots(fromGridDot, toGridDot);
 
-        const width = (dots.to.radius * 2) + 2; // TODO: !!!
-        const line = this.converter.convertToStitchLine(dots.from, dots.to, width, side);
+        const line = this.converter.convertToStitchLine(dots.from, dots.to, width, side, color);
 
         return line;
     }
@@ -110,10 +112,14 @@ export class StitchCanvas extends StitchCanvasBase implements IStitchCanvas {
     }
 
     private handleZoomIn(): void {
+        this.state.dots.radius.value += this.state.dots.radius.zoomStep;
+        this.state.lines.width.value += this.state.lines.width.zoomStep;
         this.redraw();
     }
 
     private handleZoomOut(): void {
+        this.state.dots.radius.value -= this.state.dots.radius.zoomStep;
+        this.state.lines.width.value -= this.state.lines.width.zoomStep;
         this.redraw();
     }
 
@@ -127,7 +133,7 @@ export class StitchCanvas extends StitchCanvasBase implements IStitchCanvas {
         if (currentlyClickedDot) {
 
             if (this.previousClickedDotId) {
-                this.drawLine(this.previousClickedDotId, currentlyClickedDot.id, this.currentSide);
+                this.drawLine(this.previousClickedDotId, currentlyClickedDot.id, this.state.lines.width.value, this.currentSide, this.state.lines.color);
             }
 
             this.previousClickedDotId = currentlyClickedDot.id;

@@ -35,7 +35,9 @@ export class CrosslyCanvas extends CanvasBase implements ICrosslyCanvas {
     }
 
     public draw(config: CanvasConfig): void {
-        this.gridCanvas.draw(config);
+        this.gridCanvas.draw(config.grid);
+        this.stitchCanvas.draw(config.stitch);
+        this.cueCanvas.draw(config.cue);
     }
 
     public override dispose(): void {

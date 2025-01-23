@@ -29,7 +29,7 @@ export class VectorDrawing extends CanvasBase implements IVectorDrawing {
 
     public drawDashLine(line: StitchLine): SvgLine {
         const svgLine = this.createLine(line);
-        svgLine.setAttribute("stroke-dasharray", "5,2");
+        svgLine.setAttribute("stroke-dasharray", "5,2"); //TODO: !!!
         this.svgCanvas.appendChild(svgLine);
         return svgLine;
     }
@@ -57,7 +57,7 @@ export class VectorDrawing extends CanvasBase implements IVectorDrawing {
         circle.setAttribute("cx", cx);
         circle.setAttribute("cy", cy);
         circle.setAttribute("r", r);
-        circle.setAttribute("fill", "gray"); //TODO: line prop
+        circle.setAttribute("fill", dot.color);
 
         return circle;
     }
@@ -77,7 +77,7 @@ export class VectorDrawing extends CanvasBase implements IVectorDrawing {
         svgLine.setAttribute('x2', x2);
         svgLine.setAttribute('y2', y2);
 
-        svgLine.setAttribute('stroke', 'red'); //TODO: dot prop
+        svgLine.setAttribute('stroke', line.color);
         svgLine.setAttribute('stroke-width', width);
 
         return svgLine;
