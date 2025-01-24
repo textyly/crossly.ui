@@ -22,7 +22,7 @@ export class GridCanvas extends GridCanvasBase implements IGridCanvas {
         this.ids = new IdGenerator();
         this.dots = new Map();
 
-        this.state = super.configuration;
+        this.state = super.config;
 
         // create space for the invisible rows and columns (of dots)
         this.state.spacing.value = this.state.spacing.value / 2;

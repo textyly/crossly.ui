@@ -29,8 +29,8 @@ export type CueCanvasConfig = {
     line: LineConfig;
 }
 
-export interface IVirtualCanvas<TConfiguration> extends ICanvas {
-    get configuration(): TConfiguration;
+export interface IVirtualCanvas<TConfig> extends ICanvas {
+    get config(): TConfig;
 
     draw(): void;
     onRedraw(listener: VoidListener): VoidUnsubscribe;

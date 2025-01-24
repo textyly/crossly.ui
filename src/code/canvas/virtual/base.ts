@@ -4,18 +4,18 @@ import { VoidMessaging } from "../../messaging/impl.js";
 import { IVoidMessaging } from "../../messaging/types.js";
 import { VoidListener, VoidUnsubscribe } from "../../types.js";
 
-export abstract class VirtualCanvasBase<TConfiguration> extends CanvasBase implements IVirtualCanvas<TConfiguration> {
-    private readonly config: Readonly<TConfiguration>;
+export abstract class VirtualCanvasBase<TConfig> extends CanvasBase implements IVirtualCanvas<TConfig> {
+    private readonly configuration: Readonly<TConfig>;
     private readonly voidMessaging: IVoidMessaging;
 
-    constructor(config: TConfiguration) {
+    constructor(config: TConfig) {
         super();
-        this.config = config;
+        this.configuration = config;
         this.voidMessaging = new VoidMessaging();
     }
 
-    public get configuration(): TConfiguration {
-        return this.config;
+    public get config(): TConfig {
+        return this.configuration;
     }
 
     abstract draw(): void;

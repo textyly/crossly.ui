@@ -18,7 +18,7 @@ export class StitchCanvas extends StitchCanvasBase {
     constructor(config: StitchCanvasConfig, inputCanvas: IInputCanvas, gridCanvas: IGridCanvas) {
         super(config);
 
-        this.state = super.configuration;
+        this.state = super.config;
         this.inputCanvas = inputCanvas;
         this.gridCanvas = gridCanvas;
 
