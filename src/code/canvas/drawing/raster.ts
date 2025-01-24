@@ -8,7 +8,6 @@ export class RasterDrawing extends CanvasBase implements IRasterDrawing {
 
     constructor(private rasterCanvas: HTMLCanvasElement) {
         super();
-
         this.rasterContext = rasterCanvas.getContext("2d")!;
     }
 
