@@ -1,4 +1,5 @@
 import { GridCanvasBase } from "./base.js";
+import { DotsUtility } from "../../../utilities/dots.js";
 import { IInputCanvas, Position } from "../../input/types.js";
 import { IdGenerator } from "../../../utilities/generator.js";
 import { Visibility, Id, GridDot, GridLine } from "../../types.js";
@@ -7,6 +8,7 @@ import { GridCanvasConfig, GridState, IDotMatcher, IGridCanvas } from "../types.
 export class GridCanvas extends GridCanvasBase implements IGridCanvas {
     private readonly inputCanvas: IInputCanvas;
     private readonly dotMatcher: IDotMatcher;
+    private readonly dotsUtility: DotsUtility<GridDot>;
 
     private readonly ids: IdGenerator;
     private readonly dots: Map<Id, GridDot>;
@@ -18,6 +20,7 @@ export class GridCanvas extends GridCanvasBase implements IGridCanvas {
 
         this.inputCanvas = inputCanvas;
         this.dotMatcher = dotMatcher;
+        this.dotsUtility = new DotsUtility();
 
         this.ids = new IdGenerator();
         this.dots = new Map();
@@ -59,6 +62,32 @@ export class GridCanvas extends GridCanvasBase implements IGridCanvas {
             if (match) {
                 return dot;
             }
+        }
+    }
+
+    private subscribe(): void {
+        const zoomInUn = this.inputCanvas.onZoomIn(this.handleZoomIn.bind(this));
+        super.registerUn(zoomInUn);
+
+        const zoomOutUn = this.inputCanvas.onZoomOut(this.handleZoomOut.bind(this));
+        super.registerUn(zoomOutUn);
+    }
+
+    private handleZoomIn(): void {
+        if (this.state) {
+            this.state.dot.radius.value += this.state.dot.radius.zoomStep;
+            this.state.spacing.value += this.state.spacing.zoomStep;
+            this.state.line.width.value += this.state.line.width.zoomStep;
+            this.draw();
+        }
+    }
+
+    private handleZoomOut(): void {
+        if (this.state) {
+            this.state.dot.radius.value -= this.state.dot.radius.zoomStep;
+            this.state.spacing.value -= this.state.spacing.zoomStep;
+            this.state.line.width.value -= this.state.line.width.zoomStep;
+            this.draw();
         }
     }
 
@@ -136,19 +165,19 @@ export class GridCanvas extends GridCanvasBase implements IGridCanvas {
     }
 
     private drawLines(): void {
-        this.redrawColumnsLines();
-        this.redrawRowsLines();
+        this.drawColumnsLines();
+        this.drawRowsLines();
     }
 
-    private redrawColumnsLines(): void {
+    private drawColumnsLines(): void {
         for (let columnIdx = 0; columnIdx < this.state.columns; ++columnIdx) {
             const isVisibleColumn = columnIdx % 2 === 0;
             const visibility = isVisibleColumn ? Visibility.Visible : Visibility.Invisible;
-            this.redrawColumnLine(columnIdx, visibility);
+            this.drawColumnLine(columnIdx, visibility);
         }
     }
 
-    private redrawColumnLine(columnIdx: number, visibility: Visibility): void {
+    private drawColumnLine(columnIdx: number, visibility: Visibility): void {
         const fromDotId = columnIdx.toString();
         const fromDot = this.dots.get(fromDotId)!;
 
@@ -156,18 +185,20 @@ export class GridCanvas extends GridCanvasBase implements IGridCanvas {
         const toStrDotId = toDotId.toString();
         const toDot = this.dots.get(toStrDotId)!;
 
-        this.drawLine(fromDot, toDot, this.state.line.width.value, visibility, this.state.line.color);
+        const dots = this.dotsUtility.ensureDots(fromDot, toDot);
+        const line = { from: dots.from, to: dots.to, width: this.state.line.width.value, visibility, color: this.state.line.color }
+        this.drawLine(line);
     }
 
-    private redrawRowsLines(): void {
+    private drawRowsLines(): void {
         for (let rowIdx = 0; rowIdx < this.state.rows; ++rowIdx) {
             const isVisibleColumn = rowIdx % 2 === 0;
             const visibility = isVisibleColumn ? Visibility.Visible : Visibility.Invisible;
-            this.redrawRowLine(rowIdx, visibility);
+            this.drawRowLine(rowIdx, visibility);
         }
     }
 
-    private redrawRowLine(rowIdx: number, visibility: Visibility): void {
+    private drawRowLine(rowIdx: number, visibility: Visibility): void {
         const fromDotId = rowIdx * this.state.columns;
         const fromStrDotId = fromDotId.toString();
         const fromDot = this.dots.get(fromStrDotId)!;
@@ -176,56 +207,17 @@ export class GridCanvas extends GridCanvasBase implements IGridCanvas {
         const toStrDotId = toDotId.toString();
         const toDot = this.dots.get(toStrDotId)!;
 
-        this.drawLine(fromDot, toDot, this.state.line.width.value, visibility, this.state.line.color);
+        const dots = this.dotsUtility.ensureDots(fromDot, toDot);
+        const line = { from: dots.from, to: dots.to, width: this.state.line.width.value, visibility, color: this.state.line.color }
+        this.drawLine(line);
     }
 
-    private drawLine(from: GridDot, to: GridDot, width: number, visibility: Visibility, color: string): void {
-        const line = this.ensureLine(from, to, width, visibility, color);
+    private drawLine(line: GridLine): void {
         const isVisibleLine = line.visibility === Visibility.Visible;
-
         if (isVisibleLine) {
             super.invokeDrawVisibleLine(line);
         } else {
             super.invokeDrawInvisibleLine(line);
-        }
-    }
-
-    private ensureLine(from: GridDot | undefined, to: GridDot | undefined, width: number, visibility: Visibility, color: string): GridLine {
-        if (!from) {
-            throw new Error("`from` dot must exist.");
-        }
-
-        if (!to) {
-            throw new Error("`to` dot must exist.");
-        }
-
-        const line: GridLine = { from, to, width, visibility, color };
-        return line;
-    }
-
-    private subscribe(): void {
-        const zoomInUn = this.inputCanvas.onZoomIn(this.handleZoomIn.bind(this));
-        super.registerUn(zoomInUn);
-
-        const zoomOutUn = this.inputCanvas.onZoomOut(this.handleZoomOut.bind(this));
-        super.registerUn(zoomOutUn);
-    }
-
-    private handleZoomIn(): void {
-        if (this.state) {
-            this.state.dot.radius.value += this.state.dot.radius.zoomStep;
-            this.state.spacing.value += this.state.spacing.zoomStep;
-            this.state.line.width.value += this.state.line.width.zoomStep;
-            this.draw();
-        }
-    }
-
-    private handleZoomOut(): void {
-        if (this.state) {
-            this.state.dot.radius.value -= this.state.dot.radius.zoomStep;
-            this.state.spacing.value -= this.state.spacing.zoomStep;
-            this.state.line.width.value -= this.state.line.width.zoomStep;
-            this.draw();
         }
     }
 }
