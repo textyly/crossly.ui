@@ -14,8 +14,10 @@ export class CueCanvas extends CueCanvasBase implements ICueCanvas {
 
     private currentLine?: CueLine;
     private currentSide: CanvasSide;
-    private previouslyClickedDotId?: Id;
-    private previouslyHoveredDotId?: Id;
+
+    // TODO: very messy code around these two props!!!
+    private previouslyClickedDotId?: Id; // TODO: create ticket for clearing the code around this prop
+    private previouslyHoveredDotId?: Id; // TODO: create ticket for clearing the code around this prop
 
     private cueDotColor!: string;
     private cueDotRadius!: number;
@@ -26,15 +28,15 @@ export class CueCanvas extends CueCanvasBase implements ICueCanvas {
 
     constructor(config: CueCanvasConfig, inputCanvas: IInputCanvas, gridCanvas: IGridCanvas) {
         super(config);
-        this.setConfig(super.config);
 
         this.inputCanvas = inputCanvas;
         this.gridCanvas = gridCanvas;
 
         this.ids = new IdGenerator();
-        this.currentSide = CanvasSide.Back;
         this.converter = new Converter();
+        this.currentSide = CanvasSide.Back;
 
+        this.setConfig(super.config);
         this.subscribe();
     }
 
@@ -159,12 +161,12 @@ export class CueCanvas extends CueCanvasBase implements ICueCanvas {
 
     private changeDot(position: Position): void {
         const currentlyHovered = this.gridCanvas.getDotByPosition(position);
-        const previousHovered = this.gridCanvas.getDotById(this.previouslyHoveredDotId!);
+        const previouslyHovered = this.gridCanvas.getDotById(this.previouslyHoveredDotId!);
 
         if (!currentlyHovered) {
-            this.unhoverDot(previousHovered);
-        } else if (currentlyHovered.id !== previousHovered?.id) {
-            this.unhoverDot(previousHovered);
+            this.unhoverDot(previouslyHovered);
+        } else if (currentlyHovered.id !== previouslyHovered?.id) {
+            this.unhoverDot(previouslyHovered);
             this.hoverDot(currentlyHovered);
         }
     }
@@ -178,18 +180,18 @@ export class CueCanvas extends CueCanvasBase implements ICueCanvas {
 
         if (this.currentLine) {
             this.removeLine(this.currentLine);
+            this.currentLine = undefined;
         }
 
-        const line = this.createLine(previousClickedDot, position);
-        this.drawLine(line);
+        this.currentLine = this.createLine(previousClickedDot, position);
+        this.drawLine(this.currentLine);
     }
 
     private changeSide(position: Position): void {
-        const previousClicked = this.gridCanvas.getDotByPosition(position);
-
-        if (previousClicked) {
+        const clickedDot = this.gridCanvas.getDotByPosition(position);
+        if (clickedDot) {
             this.currentSide = this.currentSide === CanvasSide.Front ? CanvasSide.Back : CanvasSide.Front;
-            this.previouslyClickedDotId = previousClicked.id;
+            this.previouslyClickedDotId = clickedDot.id;
         }
     }
 
@@ -223,8 +225,6 @@ export class CueCanvas extends CueCanvasBase implements ICueCanvas {
     }
 
     private drawLine(line: CueLine): void {
-        this.currentLine = line;
-
         if (this.currentSide === CanvasSide.Front) {
             super.invokeDrawFrontLine(line);
         } else {
@@ -239,7 +239,5 @@ export class CueCanvas extends CueCanvasBase implements ICueCanvas {
         } else {
             super.invokeRemoveBackLine(line);
         }
-
-        this.currentLine = undefined;
     }
 }
