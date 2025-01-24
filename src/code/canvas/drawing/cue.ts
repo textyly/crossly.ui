@@ -2,10 +2,10 @@ import { CanvasBase } from "../base.js";
 import { CanvasSide, Id, SizeChangeEvent } from "../types.js";
 import { IDrawingCanvas, IVectorDrawing, SvgDot, SvgLine } from "./types.js";
 import {
-    HoverGridDotEvent,
-    DrawLinkEvent,
-    UnhoverGridDotEvent,
-    RemoveLinkEvent,
+    HoverCueDotEvent,
+    DrawCueLineEvent,
+    UnhoverCueDotEvent,
+    RemoveCueLineEvent,
     ICueCanvas
 } from "../virtual/types.js";
 
@@ -22,11 +22,11 @@ export class CueDrawingCanvas extends CanvasBase implements IDrawingCanvas<ICueC
     }
 
     public subscribe(cueCanvas: ICueCanvas): void {
-        const drawLinkUn = cueCanvas.onDrawLink(this.handleDrawLink.bind(this));
-        super.registerUn(drawLinkUn);
+        const drawLineUn = cueCanvas.onDrawLine(this.handleDrawLine.bind(this));
+        super.registerUn(drawLineUn);
 
-        const removeLinkUn = cueCanvas.onRemoveLink(this.handleRemoveLink.bind(this));
-        super.registerUn(removeLinkUn);
+        const removeLineUn = cueCanvas.onRemoveLine(this.handleRemoveLine.bind(this));
+        super.registerUn(removeLineUn);
 
         const dotHoveredUn = cueCanvas.onHoverDot(this.handleDotHovered.bind(this));
         super.registerUn(dotHoveredUn);
@@ -44,7 +44,7 @@ export class CueDrawingCanvas extends CanvasBase implements IDrawingCanvas<ICueC
         super.dispose();
     }
 
-    private handleDotHovered(event: HoverGridDotEvent): void {
+    private handleDotHovered(event: HoverCueDotEvent): void {
         const dot = event.dot;
         const id = dot.id;
 
@@ -52,7 +52,7 @@ export class CueDrawingCanvas extends CanvasBase implements IDrawingCanvas<ICueC
         this.svgDots.set(id, svgDot);
     }
 
-    private handleDotUnhovered(event: UnhoverGridDotEvent): void {
+    private handleDotUnhovered(event: UnhoverCueDotEvent): void {
         const id = event.dot.id;
 
         if (this.svgDots.has(id)) {
@@ -62,21 +62,21 @@ export class CueDrawingCanvas extends CanvasBase implements IDrawingCanvas<ICueC
         }
     }
 
-    private handleDrawLink(event: DrawLinkEvent): void {
-        const link = event.link;
-        const id = link.id;
-        const side = link.side;
+    private handleDrawLine(event: DrawCueLineEvent): void {
+        const line = event.line;
+        const id = line.id;
+        const side = line.side;
 
         const svgLine = side === CanvasSide.Front
-            ? this.vectorDrawing.drawLine(link)
-            : this.vectorDrawing.drawDashLine(link);
+            ? this.vectorDrawing.drawLine(line)
+            : this.vectorDrawing.drawDashLine(line);
 
         this.svgLines.set(id, svgLine);
     }
 
-    private handleRemoveLink(event: RemoveLinkEvent): void {
-        const link = event.link;
-        const id = link.id.toString();
+    private handleRemoveLine(event: RemoveCueLineEvent): void {
+        const line = event.line;
+        const id = line.id.toString();
 
         if (this.svgLines.has(id)) {
             const svgLine = this.svgLines.get(id)!;

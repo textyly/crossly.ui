@@ -1,6 +1,6 @@
 import { Position } from "../input/types.js";
 import { Listener, VoidListener, VoidUnsubscribe } from "../../types.js";
-import { StitchDot, StitchLine, Link, ICanvas, GridDot, GridLine } from "../types.js";
+import { StitchDot, StitchLine, CueLine, ICanvas, GridDot, GridLine, CueDot } from "../types.js";
 
 export type GridState = GridCanvasConfig;
 export type StitchState = StitchCanvasConfig;
@@ -23,7 +23,7 @@ export type StitchCanvasConfig = {
 
 export type CueCanvasConfig = {
     dot: DotConfig
-    link: LineConfig;
+    line: LineConfig;
 
 }
 
@@ -53,11 +53,11 @@ export interface IStitchCanvas extends IVirtualCanvas<StitchCanvasConfig> {
 }
 
 export interface ICueCanvas extends IVirtualCanvas<CueCanvasConfig> {
-    onHoverDot(listener: HoverDotListener): VoidUnsubscribe;
-    onUnhoverDot(listener: UnhoverDotListener): VoidUnsubscribe;
+    onHoverDot(listener: HoverCueDotListener): VoidUnsubscribe;
+    onUnhoverDot(listener: UnhoverCueListener): VoidUnsubscribe;
 
-    onDrawLink(listener: DrawLinkListener): VoidUnsubscribe;
-    onRemoveLink(listener: RemoveLinkListener): VoidUnsubscribe;
+    onDrawLine(listener: DrawCueLineListener): VoidUnsubscribe;
+    onRemoveLine(listener: RemoveCueLineListener): VoidUnsubscribe;
 }
 
 export interface IDotMatcher {
@@ -76,14 +76,14 @@ export type DrawStitchLineListener = Listener<DrawStitchLineEvent>;
 export type DrawGridLineEvent = { line: GridLine };
 export type DrawGridLineListener = Listener<DrawGridLineEvent>;
 
-export type DrawLinkEvent = { link: Link };
-export type DrawLinkListener = Listener<DrawLinkEvent>;
+export type DrawCueLineEvent = { line: CueLine };
+export type DrawCueLineListener = Listener<DrawCueLineEvent>;
 
-export type RemoveLinkEvent = { link: Link };
-export type RemoveLinkListener = Listener<RemoveLinkEvent>;
+export type RemoveCueLineEvent = { line: CueLine };
+export type RemoveCueLineListener = Listener<RemoveCueLineEvent>;
 
-export type HoverGridDotEvent = { dot: GridDot };
-export type HoverDotListener = Listener<HoverGridDotEvent>;
+export type HoverCueDotEvent = { dot: CueDot };
+export type HoverCueDotListener = Listener<HoverCueDotEvent>;
 
-export type UnhoverGridDotEvent = { dot: GridDot };
-export type UnhoverDotListener = Listener<UnhoverGridDotEvent>;
+export type UnhoverCueDotEvent = { dot: CueDot };
+export type UnhoverCueListener = Listener<UnhoverCueDotEvent>;

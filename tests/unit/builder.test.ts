@@ -1,5 +1,4 @@
 import { expect } from "chai";
-import { CanvasBuilder } from "../../src/code/builder.js";
 
 describe('app builder', () => {
     it('return canvas must be defined', () => {

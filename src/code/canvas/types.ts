@@ -1,17 +1,19 @@
 import { Listener, VoidUnsubscribe } from "../types";
 import { CueCanvasConfig, GridCanvasConfig, StitchCanvasConfig } from "./virtual/types.js";
 
+export type Size = { width: number, height: number };
 export type Id = string;
+
 export type Dot = { id: Id, x: number, y: number, radius: number, color: string };
-export type StitchDot = Dot & { side: CanvasSide };
 export type GridDot = Dot & { visibility: Visibility };
+export type StitchDot = Dot & { side: CanvasSide };
+export type CueDot = GridDot;
 
 export type Line<TDot> = { from: TDot, to: TDot, width: number, color: string };
-export type StitchLine = Line<StitchDot> & { side: CanvasSide };
 export type GridLine = Line<GridDot> & { visibility: Visibility };
-export type Link = { id: Id } & StitchLine;
+export type StitchLine = Line<StitchDot> & { side: CanvasSide };
+export type CueLine = { id: Id } & StitchLine;
 
-export type Size = { width: number, height: number };
 export type RadiusConfig = { value: number, step: number };
 export type SpacingConfig = { value: number, step: number };
 

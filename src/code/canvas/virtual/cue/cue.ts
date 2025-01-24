@@ -2,7 +2,7 @@ import { CueCanvasBase } from "./base.js";
 import { Converter } from "../../../utilities/converter.js";
 import { IdGenerator } from "../../../utilities/generator.js";
 import { CueCanvasConfig, CueState, ICueCanvas, IGridCanvas } from "../types.js";
-import { CanvasSide, Visibility, Id, Link, SizeChangeEvent, GridDot } from "../../types.js";
+import { CanvasSide, Visibility, Id, CueLine, SizeChangeEvent, GridDot } from "../../types.js";
 import { IInputCanvas, MouseLeftButtonDownEvent, MouseMoveEvent, Position } from "../../input/types.js";
 
 export class CueCanvas extends CueCanvasBase implements ICueCanvas {
@@ -12,7 +12,7 @@ export class CueCanvas extends CueCanvasBase implements ICueCanvas {
     private readonly ids: IdGenerator;
     private readonly converter: Converter;
 
-    private currentLink?: Link;
+    private currentLine?: CueLine;
     private currentSide: CanvasSide;
     private previousClickedDotId?: Id;
     private previousHoveredDotId?: Id;
@@ -45,9 +45,9 @@ export class CueCanvas extends CueCanvasBase implements ICueCanvas {
             this.handleUnhoverDot(this.previousHoveredDotId);
         }
 
-        if (this.currentLink) {
-            const position = this.currentLink.to;
-            this.handleLinkChange(position);
+        if (this.currentLine) {
+            const position = this.currentLine.to;
+            this.handleLineChange(position);
         }
     }
 
@@ -70,20 +70,20 @@ export class CueCanvas extends CueCanvasBase implements ICueCanvas {
 
     private handleZoomIn(): void {
         this.state.dot.radius.value += this.state.dot.radius.zoomStep;
-        this.state.link.width.value += this.state.link.width.zoomStep;
+        this.state.line.width.value += this.state.line.width.zoomStep;
         this.redraw();
     }
 
     private handleZoomOut(): void {
         this.state.dot.radius.value -= this.state.dot.radius.zoomStep;
-        this.state.link.width.value -= this.state.link.width.zoomStep;
+        this.state.line.width.value -= this.state.line.width.zoomStep;
         this.redraw();
     }
 
     private handleMouseMove(event: MouseMoveEvent): void {
         const position = event.position;
         this.handleDotChange(position);
-        this.handleLinkChange(position);
+        this.handleLineChange(position);
     }
 
     private handleMouseLeftButtonDown(event: MouseLeftButtonDownEvent): void {
@@ -122,32 +122,32 @@ export class CueCanvas extends CueCanvasBase implements ICueCanvas {
         this.previousHoveredDotId = undefined;
     }
 
-    private handleLinkChange(position: Position): void {
+    private handleLineChange(position: Position): void {
         const previousClickedDot = this.gridCanvas.getDotById(this.previousClickedDotId!)!;
 
         if (previousClickedDot) {
-            if (this.currentLink) {
-                this.removeLink(this.currentLink);
+            if (this.currentLine) {
+                this.removeLine(this.currentLine);
             }
-            this.drawLink(previousClickedDot, position);
+            this.drawLine(previousClickedDot, position);
         }
     }
 
-    private drawLink(previousClickedDot: GridDot, currentMousePosition: Position): void {
+    private drawLine(previousClickedDot: GridDot, currentMousePosition: Position): void {
         const toDotId = this.ids.next();
         const toDot = { ...currentMousePosition, id: toDotId, radius: this.state.dot.radius.value, side: this.currentSide, color: this.state.dot.color };
 
-        const linkId = this.ids.next();
+        const lineId = this.ids.next();
         const fromDot = this.converter.convertToStitchDot(previousClickedDot, this.currentSide);
 
-        this.currentLink = { id: linkId, from: fromDot, to: toDot, width: this.state.link.width.value, side: this.currentSide, color: this.state.link.color };
+        this.currentLine = { id: lineId, from: fromDot, to: toDot, width: this.state.line.width.value, side: this.currentSide, color: this.state.line.color };
 
-        super.invokeDrawLink(this.currentLink);
+        super.invokeDrawLine(this.currentLine);
     }
 
-    private removeLink(link: Link) {
-        super.invokeRemoveLink(link);
-        this.currentLink = undefined;
+    private removeLine(line: CueLine) {
+        super.invokeRemoveLine(line);
+        this.currentLine = undefined;
     }
 
     private changeSide(): void {

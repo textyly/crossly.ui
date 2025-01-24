@@ -1,41 +1,41 @@
 import { VirtualCanvasBase } from "../base.js";
-import { Link, GridDot } from "../../types.js";
+import { CueLine, CueDot } from "../../types.js";
 import { VoidUnsubscribe } from "../../../types.js";
 import { Messaging4 } from "../../../messaging/impl.js";
 import { IMessaging4 } from "../../../messaging/types.js";
 import {
-    DrawLinkEvent,
-    DrawLinkListener,
-    HoverGridDotEvent,
-    HoverDotListener,
-    RemoveLinkEvent,
-    RemoveLinkListener,
-    UnhoverGridDotEvent,
-    UnhoverDotListener,
+    DrawCueLineEvent,
+    DrawCueLineListener,
+    HoverCueDotEvent,
+    HoverCueDotListener,
+    RemoveCueLineEvent,
+    RemoveCueLineListener,
+    UnhoverCueDotEvent,
+    UnhoverCueListener,
     CueCanvasConfig
 } from "../types.js";
 
 export abstract class CueCanvasBase extends VirtualCanvasBase<CueCanvasConfig> {
-    private readonly messaging: IMessaging4<HoverGridDotEvent, UnhoverGridDotEvent, DrawLinkEvent, RemoveLinkEvent>;
+    private readonly messaging: IMessaging4<HoverCueDotEvent, UnhoverCueDotEvent, DrawCueLineEvent, RemoveCueLineEvent>;
 
     constructor() {
         super();
         this.messaging = new Messaging4();
     }
 
-    public onHoverDot(listener: HoverDotListener): VoidUnsubscribe {
+    public onHoverDot(listener: HoverCueDotListener): VoidUnsubscribe {
         return this.messaging.listenOnChannel1(listener);
     }
 
-    public onUnhoverDot(listener: UnhoverDotListener): VoidUnsubscribe {
+    public onUnhoverDot(listener: UnhoverCueListener): VoidUnsubscribe {
         return this.messaging.listenOnChannel2(listener);
     }
 
-    public onDrawLink(listener: DrawLinkListener): VoidUnsubscribe {
+    public onDrawLine(listener: DrawCueLineListener): VoidUnsubscribe {
         return this.messaging.listenOnChannel3(listener);
     }
 
-    public onRemoveLink(listener: RemoveLinkListener): VoidUnsubscribe {
+    public onRemoveLine(listener: RemoveCueLineListener): VoidUnsubscribe {
         return this.messaging.listenOnChannel4(listener);
     }
 
@@ -44,23 +44,23 @@ export abstract class CueCanvasBase extends VirtualCanvasBase<CueCanvasConfig> {
         super.dispose();
     }
 
-    protected invokeHoverDot(dot: GridDot): void {
+    protected invokeHoverDot(dot: CueDot): void {
         const hoverDotEvent = { dot };
         this.messaging.sendToChannel1(hoverDotEvent);
     }
 
-    protected invokeUnhoverDot(dot: GridDot): void {
+    protected invokeUnhoverDot(dot: CueDot): void {
         const unhoverDotEvent = { dot };
         this.messaging.sendToChannel2(unhoverDotEvent);
     }
 
-    protected invokeDrawLink(link: Link): void {
-        const drawLinkEvent = { link };
-        this.messaging.sendToChannel3(drawLinkEvent);
+    protected invokeDrawLine(line: CueLine): void {
+        const drawLineEvent = { line };
+        this.messaging.sendToChannel3(drawLineEvent);
     }
 
-    protected invokeRemoveLink(link: Link): void {
-        const removeLinkEvent = { link };
-        this.messaging.sendToChannel4(removeLinkEvent);
+    protected invokeRemoveLine(line: CueLine): void {
+        const removeLineEvent = { line };
+        this.messaging.sendToChannel4(removeLineEvent);
     }
 }
