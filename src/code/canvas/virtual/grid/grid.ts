@@ -62,8 +62,8 @@ export class GridCanvas extends GridCanvasBase implements IGridCanvas {
     private redraw(): void {
         this.recreateDots();
         this.recalculateSize();
-        this.redrawDots();
         this.redrawLines();
+        this.redrawDots();
     }
 
     private recreateDots(): void {
