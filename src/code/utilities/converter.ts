@@ -1,4 +1,4 @@
-import { CanvasSide, Dot, GridDot, StitchDot, Visibility } from "../canvas/types.js";
+import { CanvasSide, CueDot, Dot, GridDot, StitchDot, Visibility } from "../canvas/types.js";
 
 export class Converter {
 
@@ -12,6 +12,11 @@ export class Converter {
         const dot = this.copyDot(gridDot, color);
         const stitchDot = { ...dot, side };
         return stitchDot;
+    }
+
+    public convertToCueDot(gridDot: GridDot, color: string): CueDot {
+        const dot = this.copyDot(gridDot, color);
+        return dot;
     }
 
     private copyDot(dot: Dot, color: string): Dot {

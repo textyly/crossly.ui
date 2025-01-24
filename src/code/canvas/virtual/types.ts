@@ -4,7 +4,6 @@ import { StitchDot, StitchLine, CueLine, ICanvas, GridDot, GridLine, CueDot } fr
 
 export type GridState = GridCanvasConfig;
 export type StitchState = StitchCanvasConfig;
-export type CueState = CueCanvasConfig;
 
 export type ZoomItemConfig = { value: number; zoomStep: number; };
 export type DotConfig = { color: string; radius: ZoomItemConfig; };
@@ -57,11 +56,26 @@ export interface IStitchCanvas extends IVirtualCanvas<StitchCanvasConfig> {
 }
 
 export interface ICueCanvas extends IVirtualCanvas<CueCanvasConfig> {
+    get dotColor(): string;
+    set dotColor(color: string);
+
+    get dotRadius(): number;
+    set dotRadius(radius: number);
+
+    get lineColor(): string;
+    set lineColor(color: string);
+
+    get lineWidth(): number;
+    set lineWidth(width: number);
+
     onHoverDot(listener: HoverCueDotListener): VoidUnsubscribe;
     onUnhoverDot(listener: UnhoverCueListener): VoidUnsubscribe;
 
-    onDrawLine(listener: DrawCueLineListener): VoidUnsubscribe;
-    onRemoveLine(listener: RemoveCueLineListener): VoidUnsubscribe;
+    onDrawFrontLine(listener: DrawCueLineListener): VoidUnsubscribe;
+    onRemoveFrontLine(listener: RemoveCueLineListener): VoidUnsubscribe;
+
+    onDrawBackLine(listener: DrawCueLineListener): VoidUnsubscribe;
+    onRemoveBackLine(listener: RemoveCueLineListener): VoidUnsubscribe;
 }
 
 export interface IDotMatcher {

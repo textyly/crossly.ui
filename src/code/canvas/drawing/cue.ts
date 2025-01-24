@@ -22,11 +22,17 @@ export class CueDrawingCanvas extends CanvasBase implements IDrawingCanvas<ICueC
     }
 
     public subscribe(cueCanvas: ICueCanvas): void {
-        const drawLineUn = cueCanvas.onDrawLine(this.handleDrawLine.bind(this));
-        super.registerUn(drawLineUn);
+        const drawFrontLineUn = cueCanvas.onDrawFrontLine(this.handleDrawFrontLine.bind(this));
+        super.registerUn(drawFrontLineUn);
 
-        const removeLineUn = cueCanvas.onRemoveLine(this.handleRemoveLine.bind(this));
-        super.registerUn(removeLineUn);
+        const removeFrontLineUn = cueCanvas.onRemoveFrontLine(this.handleRemoveLine.bind(this));
+        super.registerUn(removeFrontLineUn);
+
+        const drawBackLineUn = cueCanvas.onDrawBackLine(this.handleDrawBackLine.bind(this));
+        super.registerUn(drawBackLineUn);
+
+        const removeBackLineUn = cueCanvas.onRemoveBackLine(this.handleRemoveLine.bind(this));
+        super.registerUn(removeBackLineUn);
 
         const dotHoveredUn = cueCanvas.onHoverDot(this.handleDotHovered.bind(this));
         super.registerUn(dotHoveredUn);
@@ -62,15 +68,19 @@ export class CueDrawingCanvas extends CanvasBase implements IDrawingCanvas<ICueC
         }
     }
 
-    private handleDrawLine(event: DrawCueLineEvent): void {
+    private handleDrawFrontLine(event: DrawCueLineEvent): void {
         const line = event.line;
         const id = line.id;
-        const side = line.side;
 
-        const svgLine = side === CanvasSide.Front
-            ? this.vectorDrawing.drawLine(line)
-            : this.vectorDrawing.drawDashLine(line);
+        const svgLine = this.vectorDrawing.drawLine(line);
+        this.svgLines.set(id, svgLine);
+    }
 
+    private handleDrawBackLine(event: DrawCueLineEvent): void {
+        const line = event.line;
+        const id = line.id;
+
+        const svgLine = this.vectorDrawing.drawDashLine(line);
         this.svgLines.set(id, svgLine);
     }
 

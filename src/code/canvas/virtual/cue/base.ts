@@ -1,8 +1,8 @@
 import { VirtualCanvasBase } from "../base.js";
 import { CueLine, CueDot } from "../../types.js";
 import { VoidUnsubscribe } from "../../../types.js";
-import { Messaging4 } from "../../../messaging/impl.js";
-import { IMessaging4 } from "../../../messaging/types.js";
+import { Messaging6 } from "../../../messaging/impl.js";
+import { IMessaging6 } from "../../../messaging/types.js";
 import {
     CueCanvasConfig,
     DrawCueLineEvent,
@@ -16,11 +16,11 @@ import {
 } from "../types.js";
 
 export abstract class CueCanvasBase extends VirtualCanvasBase<CueCanvasConfig> {
-    private readonly messaging: IMessaging4<HoverCueDotEvent, UnhoverCueDotEvent, DrawCueLineEvent, RemoveCueLineEvent>;
+    private readonly messaging: IMessaging6<HoverCueDotEvent, UnhoverCueDotEvent, DrawCueLineEvent, RemoveCueLineEvent, DrawCueLineEvent, RemoveCueLineEvent>;
 
     constructor(config: CueCanvasConfig) {
         super(config);
-        this.messaging = new Messaging4();
+        this.messaging = new Messaging6();
     }
 
     public onHoverDot(listener: HoverCueDotListener): VoidUnsubscribe {
@@ -31,12 +31,20 @@ export abstract class CueCanvasBase extends VirtualCanvasBase<CueCanvasConfig> {
         return this.messaging.listenOnChannel2(listener);
     }
 
-    public onDrawLine(listener: DrawCueLineListener): VoidUnsubscribe {
+    public onDrawFrontLine(listener: DrawCueLineListener): VoidUnsubscribe {
         return this.messaging.listenOnChannel3(listener);
     }
 
-    public onRemoveLine(listener: RemoveCueLineListener): VoidUnsubscribe {
+    public onRemoveFrontLine(listener: RemoveCueLineListener): VoidUnsubscribe {
         return this.messaging.listenOnChannel4(listener);
+    }
+
+    public onDrawBackLine(listener: DrawCueLineListener): VoidUnsubscribe {
+        return this.messaging.listenOnChannel5(listener);
+    }
+
+    public onRemoveBackLine(listener: RemoveCueLineListener): VoidUnsubscribe {
+        return this.messaging.listenOnChannel6(listener);
     }
 
     public override dispose(): void {
@@ -54,13 +62,23 @@ export abstract class CueCanvasBase extends VirtualCanvasBase<CueCanvasConfig> {
         this.messaging.sendToChannel2(unhoverDotEvent);
     }
 
-    protected invokeDrawLine(line: CueLine): void {
+    protected invokeDrawFrontLine(line: CueLine): void {
         const drawLineEvent = { line };
         this.messaging.sendToChannel3(drawLineEvent);
     }
 
-    protected invokeRemoveLine(line: CueLine): void {
+    protected invokeRemoveFrontLine(line: CueLine): void {
         const removeLineEvent = { line };
         this.messaging.sendToChannel4(removeLineEvent);
+    }
+
+    protected invokeDrawBackLine(line: CueLine): void {
+        const drawLineEvent = { line };
+        this.messaging.sendToChannel5(drawLineEvent);
+    }
+
+    protected invokeRemoveBackLine(line: CueLine): void {
+        const removeLineEvent = { line };
+        this.messaging.sendToChannel6(removeLineEvent);
     }
 }

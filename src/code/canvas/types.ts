@@ -7,12 +7,12 @@ export type Id = string;
 export type Dot = { id: Id, x: number, y: number, radius: number, color: string };
 export type GridDot = Dot & { visibility: Visibility };
 export type StitchDot = Dot & { side: CanvasSide };
-export type CueDot = GridDot;
+export type CueDot = Dot;
 
 export type Line<TDot> = { from: TDot, to: TDot, width: number, color: string };
 export type GridLine = Line<GridDot> & { visibility: Visibility };
 export type StitchLine = Line<StitchDot> & { side: CanvasSide };
-export type CueLine = { id: Id } & StitchLine;
+export type CueLine = Line<CueDot> & { id: Id };
 
 export type RadiusConfig = { value: number, step: number };
 export type SpacingConfig = { value: number, step: number };
