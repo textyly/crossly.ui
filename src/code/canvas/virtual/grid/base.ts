@@ -8,8 +8,8 @@ import { DrawGridDotEvent, DrawGridDotListener, DrawGridLineEvent, DrawGridLineL
 export abstract class GridCanvasBase extends VirtualCanvasBase<GridCanvasConfig> {
     private readonly messaging: IMessaging4<DrawGridDotEvent, DrawGridDotEvent, DrawGridLineEvent, DrawGridLineEvent>;
 
-    constructor() {
-        super();
+    constructor(config: GridCanvasConfig) {
+        super(config);
         this.messaging = new Messaging4();
     }
 

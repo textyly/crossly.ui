@@ -35,7 +35,9 @@ export interface ICanvas extends IDisposable {
 }
 
 export interface ICrosslyCanvas extends ICanvas {
-    draw(config: CanvasConfig): void;
+    get configuration(): CanvasConfig;
+
+    draw(): void;
 }
 
 export enum CanvasSide {

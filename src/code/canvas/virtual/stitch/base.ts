@@ -8,8 +8,8 @@ import { DrawStitchDotEvent, DrawStitchDotListener, DrawStitchLineEvent, DrawSti
 export abstract class StitchCanvasBase extends VirtualCanvasBase<StitchCanvasConfig> {
     private readonly messaging: IMessaging4<DrawStitchDotEvent, DrawStitchDotEvent, DrawStitchLineEvent, DrawStitchLineEvent>;
 
-    constructor() {
-        super();
+    constructor(config: StitchCanvasConfig) {
+        super(config);
         this.messaging = new Messaging4();
     }
 

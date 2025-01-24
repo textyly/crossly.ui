@@ -1,4 +1,4 @@
-import { ICrosslyCanvas } from "./types.js";
+import { CanvasConfig, ICrosslyCanvas } from "./types.js";
 import { CrosslyCanvas } from "./crossly.js";
 import { InputCanvas } from "./input/input.js";
 import { IInputCanvas } from "./input/types.js";
@@ -12,14 +12,20 @@ import { InputCanvasThrottler } from "./input/throttler.js";
 import { ICueCanvas, IGridCanvas, IStitchCanvas } from "./virtual/types.js";
 
 export class CrosslyCanvasBuilder {
+    private config!: CanvasConfig;
     private inputCanvas!: IInputCanvas;
     private gridDrawingCanvas!: IDrawingCanvas<IGridCanvas>;
     private stitchDrawingCanvas!: IDrawingCanvas<IStitchCanvas>;
     private cueDrawingCanvas!: IDrawingCanvas<ICueCanvas>;
 
     public build(): ICrosslyCanvas {
-        const crosslyCanvas = new CrosslyCanvas(this.inputCanvas, this.gridDrawingCanvas, this.stitchDrawingCanvas, this.cueDrawingCanvas);
+        const crosslyCanvas = new CrosslyCanvas(this.config, this.inputCanvas, this.gridDrawingCanvas, this.stitchDrawingCanvas, this.cueDrawingCanvas);
         return crosslyCanvas;
+    }
+
+    public withConfig(config: CanvasConfig): CrosslyCanvasBuilder {
+        this.config = config;
+        return this;
     }
 
     public withInputCanvas(htmlSvgElement: HTMLElement): CrosslyCanvasBuilder {

@@ -2,26 +2,21 @@ import { CanvasBuilder } from "./builder.js";
 import { CanvasConfig } from "./canvas/types.js";
 import { CueCanvasConfig, GridCanvasConfig, StitchCanvasConfig } from "./canvas/virtual/types.js";
 
-const canvasBuilder = new CanvasBuilder();
-const canvas = canvasBuilder.build();
-
 const gridConfig: GridCanvasConfig = {
-    dots: {
-        columns: 40,
-        rows: 30,
+    columns: 30,
+    rows: 30,
+    spacing: {
+        value: 25,
+        zoomStep: 2.5
+    },
+    dot: {
         color: "#9fa19f",
-        radius:
-        {
+        radius: {
             value: 2,
             zoomStep: 0.2
-        },
-        spacing:
-        {
-            value: 25,
-            zoomStep: 2.5
         }
     },
-    lines: {
+    line: {
         color: "#d2d4d2",
         width: {
             value: 1,
@@ -31,14 +26,14 @@ const gridConfig: GridCanvasConfig = {
 };
 
 const stitchConfig: StitchCanvasConfig = {
-    dots: {
+    dot: {
         color: "gray",
         radius: {
             value: 2,
             zoomStep: 0.2
         },
     },
-    lines: {
+    line: {
         color: "gray",
         width: {
             value: 5,
@@ -70,4 +65,8 @@ const canvasConfig: CanvasConfig = {
     cue: cueConfig
 }
 
-canvas.draw(canvasConfig);
+const canvasBuilder = new CanvasBuilder();
+canvasBuilder.withConfig(canvasConfig);
+
+const canvas = canvasBuilder.build();
+canvas.draw();

@@ -1,8 +1,10 @@
-import { ICrosslyCanvas } from "./canvas/types.js";
+import { CanvasConfig, ICrosslyCanvas } from "./canvas/types.js";
 import { CrosslyCanvasBuilder } from "./canvas/builder.js";
 
 export class CanvasBuilder {
     private readonly crosslyCanvasBuilder: CrosslyCanvasBuilder;
+
+    private config!: CanvasConfig;
 
     constructor() {
         this.crosslyCanvasBuilder = new CrosslyCanvasBuilder();
@@ -21,8 +23,14 @@ export class CanvasBuilder {
         const cueHTMLElement = this.buildCueHTMLElement();
         this.crosslyCanvasBuilder.withCueCanvas(cueHTMLElement);
 
+        this.crosslyCanvasBuilder.withConfig(this.config);
         const crosslyCanvas = this.crosslyCanvasBuilder.build();
         return crosslyCanvas;
+    }
+
+    public withConfig(config: CanvasConfig): CanvasBuilder {
+        this.config = config;
+        return this;
     }
 
     private buildInputHTMLElement(): HTMLElement {

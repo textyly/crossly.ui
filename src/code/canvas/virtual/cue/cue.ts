@@ -19,9 +19,10 @@ export class CueCanvas extends CueCanvasBase implements ICueCanvas {
 
     private state!: CueState;
 
-    constructor(inputCanvas: IInputCanvas, gridCanvas: IGridCanvas) {
-        super();
+    constructor(config: CueCanvasConfig, inputCanvas: IInputCanvas, gridCanvas: IGridCanvas) {
+        super(config);
 
+        this.state = super.configuration;
         this.inputCanvas = inputCanvas;
         this.gridCanvas = gridCanvas;
 
@@ -33,12 +34,7 @@ export class CueCanvas extends CueCanvasBase implements ICueCanvas {
         this.subscribe();
     }
 
-    public override draw(config: Readonly<CueCanvasConfig>): void {
-        this.state = config;
-        this.redraw();
-    }
-
-    private redraw(): void {
+    public override draw(): void {
         this.ids.reset();
 
         if (this.previousHoveredDotId) {
@@ -71,13 +67,13 @@ export class CueCanvas extends CueCanvasBase implements ICueCanvas {
     private handleZoomIn(): void {
         this.state.dot.radius.value += this.state.dot.radius.zoomStep;
         this.state.line.width.value += this.state.line.width.zoomStep;
-        this.redraw();
+        this.draw();
     }
 
     private handleZoomOut(): void {
         this.state.dot.radius.value -= this.state.dot.radius.zoomStep;
         this.state.line.width.value -= this.state.line.width.zoomStep;
-        this.redraw();
+        this.draw();
     }
 
     private handleMouseMove(event: MouseMoveEvent): void {

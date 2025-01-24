@@ -13,8 +13,8 @@ export class GridCanvas extends GridCanvasBase implements IGridCanvas {
 
     private state!: GridState;
 
-    constructor(inputCanvas: IInputCanvas, dotMatcher: IDotMatcher) {
-        super();
+    constructor(config: GridCanvasConfig, inputCanvas: IInputCanvas, dotMatcher: IDotMatcher) {
+        super(config);
 
         this.inputCanvas = inputCanvas;
         this.dotMatcher = dotMatcher;
@@ -22,26 +22,29 @@ export class GridCanvas extends GridCanvasBase implements IGridCanvas {
         this.ids = new IdGenerator();
         this.dots = new Map();
 
+        this.state = super.configuration;
+
+        // create space for the invisible rows and columns (of dots)
+        this.state.spacing.value = this.state.spacing.value / 2;
+
+        // add invisible rows (containing only invisible dots)
+        const visibleRows = this.state.rows;
+        const invisibleRows = visibleRows - 1;
+        this.state.rows = visibleRows + invisibleRows;
+
+        // add invisible columns (containing only invisible dots)
+        const visibleColumns = this.state.columns;
+        const invisibleColumns = visibleColumns - 1;
+        this.state.columns = visibleColumns + invisibleColumns;
+
         this.subscribe();
     }
 
-    public draw(config: Readonly<GridCanvasConfig>): void {
-        this.state = config;
-
-        // create space for the invisible rows and columns (of dots)
-        this.state.dots.spacing.value = this.state.dots.spacing.value / 2;
-
-        // add invisible rows (containing only invisible dots)
-        const visibleRows = this.state.dots.rows;
-        const invisibleRows = visibleRows - 1;
-        this.state.dots.rows = visibleRows + invisibleRows;
-
-        // add invisible columns (containing only invisible dots)
-        const visibleColumns = this.state.dots.columns;
-        const invisibleColumns = visibleColumns - 1;
-        this.state.dots.columns = visibleColumns + invisibleColumns;
-
-        this.redraw();
+    public draw(): void {
+        this.createDots();
+        this.calculateSize();
+        this.drawLines();
+        this.drawDots();
     }
 
     public getDotById(id: string): GridDot | undefined {
@@ -59,19 +62,12 @@ export class GridCanvas extends GridCanvasBase implements IGridCanvas {
         }
     }
 
-    private redraw(): void {
-        this.recreateDots();
-        this.recalculateSize();
-        this.redrawLines();
-        this.redrawDots();
-    }
-
-    private recreateDots(): void {
+    private createDots(): void {
         this.ids.reset();
         this.dots.clear();
 
-        for (let rowIdx = 0; rowIdx < this.state.dots.rows; ++rowIdx) {
-            const dotsNumber = this.state.dots.columns;
+        for (let rowIdx = 0; rowIdx < this.state.rows; ++rowIdx) {
+            const dotsNumber = this.state.columns;
             this.createRowDots(rowIdx, dotsNumber);
         }
     }
@@ -79,13 +75,13 @@ export class GridCanvas extends GridCanvasBase implements IGridCanvas {
     private createRowDots(rowIdx: number, dotsNumber: number): void {
         const isVisibleRow = rowIdx % 2 == 0;
         if (isVisibleRow) {
-            this.createDots(rowIdx, dotsNumber);
+            this.createVisibleDots(rowIdx, dotsNumber);
         } else {
             this.createInvisibleDots(rowIdx, dotsNumber);
         }
     }
 
-    private createDots(rowIdx: number, dotsNumber: number): void {
+    private createVisibleDots(rowIdx: number, dotsNumber: number): void {
         for (let dotIdx = 0; dotIdx < dotsNumber; ++dotIdx) {
             const isVisibleDot = dotIdx % 2 == 0 ? Visibility.Visible : Visibility.Invisible;
             const dot = this.crateDot(dotIdx, rowIdx, isVisibleDot);
@@ -102,9 +98,9 @@ export class GridCanvas extends GridCanvasBase implements IGridCanvas {
 
     private crateDot(dotIdx: number, rowIdx: number, visibility: Visibility): GridDot {
         const id = this.ids.next();
-        const spacing = this.state.dots.spacing.value;
-        const radius = this.state.dots.radius.value;
-        const color = this.state.dots.color;
+        const spacing = this.state.spacing.value;
+        const radius = this.state.dot.radius.value;
+        const color = this.state.dot.color;
 
         const x = (dotIdx * spacing) + spacing;
         const y = (rowIdx * spacing) + spacing;
@@ -113,7 +109,7 @@ export class GridCanvas extends GridCanvasBase implements IGridCanvas {
         return dot;
     }
 
-    private redrawDots(): void {
+    private drawDots(): void {
         this.dots.forEach((dot) => this.drawDot(dot));
     }
 
@@ -127,11 +123,11 @@ export class GridCanvas extends GridCanvasBase implements IGridCanvas {
         }
     }
 
-    private recalculateSize(): void {
-        const dotsX = this.state.dots.columns;
-        const dotsY = this.state.dots.rows;
-        const spacing = this.state.dots.spacing.value;
-        const radius = this.state.dots.radius.value;
+    private calculateSize(): void {
+        const dotsX = this.state.columns;
+        const dotsY = this.state.rows;
+        const spacing = this.state.spacing.value;
+        const radius = this.state.dot.radius.value;
 
         const width = spacing + (dotsX * radius) + ((dotsX - 1) * spacing);
         const height = spacing + (dotsY * radius) + ((dotsY - 1) * spacing);
@@ -139,13 +135,13 @@ export class GridCanvas extends GridCanvasBase implements IGridCanvas {
         this.size = { width, height };
     }
 
-    private redrawLines(): void {
+    private drawLines(): void {
         this.redrawColumnsLines();
         this.redrawRowsLines();
     }
 
     private redrawColumnsLines(): void {
-        for (let columnIdx = 0; columnIdx < this.state.dots.columns; ++columnIdx) {
+        for (let columnIdx = 0; columnIdx < this.state.columns; ++columnIdx) {
             const isVisibleColumn = columnIdx % 2 === 0;
             const visibility = isVisibleColumn ? Visibility.Visible : Visibility.Invisible;
             this.redrawColumnLine(columnIdx, visibility);
@@ -156,15 +152,15 @@ export class GridCanvas extends GridCanvasBase implements IGridCanvas {
         const fromDotId = columnIdx.toString();
         const fromDot = this.dots.get(fromDotId)!;
 
-        const toDotId = this.state.dots.columns * (this.state.dots.rows - 1) + (columnIdx);
+        const toDotId = this.state.columns * (this.state.rows - 1) + (columnIdx);
         const toStrDotId = toDotId.toString();
         const toDot = this.dots.get(toStrDotId)!;
 
-        this.drawLine(fromDot, toDot, this.state.lines.width.value, visibility, this.state.lines.color);
+        this.drawLine(fromDot, toDot, this.state.line.width.value, visibility, this.state.line.color);
     }
 
     private redrawRowsLines(): void {
-        for (let rowIdx = 0; rowIdx < this.state.dots.rows; ++rowIdx) {
+        for (let rowIdx = 0; rowIdx < this.state.rows; ++rowIdx) {
             const isVisibleColumn = rowIdx % 2 === 0;
             const visibility = isVisibleColumn ? Visibility.Visible : Visibility.Invisible;
             this.redrawRowLine(rowIdx, visibility);
@@ -172,15 +168,15 @@ export class GridCanvas extends GridCanvasBase implements IGridCanvas {
     }
 
     private redrawRowLine(rowIdx: number, visibility: Visibility): void {
-        const fromDotId = rowIdx * this.state.dots.columns;
+        const fromDotId = rowIdx * this.state.columns;
         const fromStrDotId = fromDotId.toString();
         const fromDot = this.dots.get(fromStrDotId)!;
 
-        const toDotId = (rowIdx * this.state.dots.columns) + (this.state.dots.columns - 1);
+        const toDotId = (rowIdx * this.state.columns) + (this.state.columns - 1);
         const toStrDotId = toDotId.toString();
         const toDot = this.dots.get(toStrDotId)!;
 
-        this.drawLine(fromDot, toDot, this.state.lines.width.value, visibility, this.state.lines.color);
+        this.drawLine(fromDot, toDot, this.state.line.width.value, visibility, this.state.line.color);
     }
 
     private drawLine(from: GridDot, to: GridDot, width: number, visibility: Visibility, color: string): void {
@@ -217,19 +213,19 @@ export class GridCanvas extends GridCanvasBase implements IGridCanvas {
 
     private handleZoomIn(): void {
         if (this.state) {
-            this.state.dots.radius.value += this.state.dots.radius.zoomStep;
-            this.state.dots.spacing.value += this.state.dots.spacing.zoomStep;
-            this.state.lines.width.value += this.state.lines.width.zoomStep;
-            this.redraw();
+            this.state.dot.radius.value += this.state.dot.radius.zoomStep;
+            this.state.spacing.value += this.state.spacing.zoomStep;
+            this.state.line.width.value += this.state.line.width.zoomStep;
+            this.draw();
         }
     }
 
     private handleZoomOut(): void {
         if (this.state) {
-            this.state.dots.radius.value -= this.state.dots.radius.zoomStep;
-            this.state.dots.spacing.value -= this.state.dots.spacing.zoomStep;
-            this.state.lines.width.value -= this.state.lines.width.zoomStep;
-            this.redraw();
+            this.state.dot.radius.value -= this.state.dot.radius.zoomStep;
+            this.state.spacing.value -= this.state.spacing.zoomStep;
+            this.state.line.width.value -= this.state.line.width.zoomStep;
+            this.draw();
         }
     }
 }

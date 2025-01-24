@@ -9,26 +9,30 @@ export type CueState = CueCanvasConfig;
 export type ZoomItemConfig = { value: number; zoomStep: number; };
 export type DotConfig = { color: string; radius: ZoomItemConfig; };
 export type LineConfig = { color: string; width: ZoomItemConfig; };
-export type DotsConfig = DotConfig & { columns: number, rows: number, spacing: ZoomItemConfig; };
+export type SpacingConfig = ZoomItemConfig;
 
 export type GridCanvasConfig = {
-    dots: DotsConfig;
-    lines: LineConfig;
+    columns: number;
+    rows: number;
+    spacing: SpacingConfig;
+    dot: DotConfig;
+    line: LineConfig;
 }
 
 export type StitchCanvasConfig = {
-    dots: DotConfig;
-    lines: LineConfig;
+    dot: DotConfig;
+    line: LineConfig;
 }
 
 export type CueCanvasConfig = {
     dot: DotConfig
     line: LineConfig;
-
 }
 
-export interface IVirtualCanvas<TConfig> extends ICanvas {
-    draw(config: TConfig): void;
+export interface IVirtualCanvas<TConfiguration> extends ICanvas {
+    get configuration(): TConfiguration;
+
+    draw(): void;
     onRedraw(listener: VoidListener): VoidUnsubscribe;
 }
 

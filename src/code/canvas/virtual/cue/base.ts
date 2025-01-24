@@ -4,6 +4,7 @@ import { VoidUnsubscribe } from "../../../types.js";
 import { Messaging4 } from "../../../messaging/impl.js";
 import { IMessaging4 } from "../../../messaging/types.js";
 import {
+    CueCanvasConfig,
     DrawCueLineEvent,
     DrawCueLineListener,
     HoverCueDotEvent,
@@ -11,15 +12,14 @@ import {
     RemoveCueLineEvent,
     RemoveCueLineListener,
     UnhoverCueDotEvent,
-    UnhoverCueListener,
-    CueCanvasConfig
+    UnhoverCueListener
 } from "../types.js";
 
 export abstract class CueCanvasBase extends VirtualCanvasBase<CueCanvasConfig> {
     private readonly messaging: IMessaging4<HoverCueDotEvent, UnhoverCueDotEvent, DrawCueLineEvent, RemoveCueLineEvent>;
 
-    constructor() {
-        super();
+    constructor(config: CueCanvasConfig) {
+        super(config);
         this.messaging = new Messaging4();
     }
 
