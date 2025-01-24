@@ -2,7 +2,7 @@ import { CueCanvasBase } from "./base.js";
 import { Converter } from "../../../utilities/converter.js";
 import { IdGenerator } from "../../../utilities/generator.js";
 import { CueCanvasConfig, CueState, ICueCanvas, IGridCanvas } from "../types.js";
-import { CanvasSide, Visibility, Id, CueLine, SizeChangeEvent, GridDot } from "../../types.js";
+import { CanvasSide, Visibility, Id, CueLine, SizeChangeEvent, CueDot } from "../../types.js";
 import { IInputCanvas, MouseLeftButtonDownEvent, MouseMoveEvent, Position } from "../../input/types.js";
 
 export class CueCanvas extends CueCanvasBase implements ICueCanvas {
@@ -133,12 +133,12 @@ export class CueCanvas extends CueCanvasBase implements ICueCanvas {
         }
     }
 
-    private drawLine(previousClickedDot: GridDot, currentMousePosition: Position): void {
+    private drawLine(previousClickedDot: CueDot, currentMousePosition: Position): void {
         const toDotId = this.ids.next();
         const toDot = { ...currentMousePosition, id: toDotId, radius: this.state.dot.radius.value, side: this.currentSide, color: this.state.dot.color };
 
         const lineId = this.ids.next();
-        const fromDot = this.converter.convertToStitchDot(previousClickedDot, this.currentSide);
+        const fromDot = this.converter.convertToStitchDot(previousClickedDot, this.state.dot.color, this.currentSide);
 
         this.currentLine = { id: lineId, from: fromDot, to: toDot, width: this.state.line.width.value, side: this.currentSide, color: this.state.line.color };
 

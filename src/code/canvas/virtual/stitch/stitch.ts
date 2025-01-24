@@ -1,8 +1,8 @@
 import { StitchCanvasBase } from "./base.js";
 import { Converter } from "../../../utilities/converter.js";
-import { IGridCanvas, IStitchCanvas, StitchCanvasConfig, StitchState } from "../types.js";
 import { CanvasSide, Id, StitchLine, SizeChangeEvent, GridDot } from "../../types.js";
 import { IInputCanvas, MouseLeftButtonDownEvent, Position } from "../../input/types.js";
+import { IGridCanvas, IStitchCanvas, StitchCanvasConfig, StitchState } from "../types.js";
 
 export class StitchCanvas extends StitchCanvasBase implements IStitchCanvas {
     private readonly inputCanvas: IInputCanvas;
@@ -75,12 +75,14 @@ export class StitchCanvas extends StitchCanvasBase implements IStitchCanvas {
     }
 
     private createLine(fromId: string, toId: string, width: number, side: CanvasSide, color: string): StitchLine {
-        const fromGridDot = this.gridCanvas.getDotById(fromId); // TODO: dot color!!!
-        const toGridDot = this.gridCanvas.getDotById(toId); // TODO: dot color!!!
+        const fromGridDot = this.gridCanvas.getDotById(fromId);
+        const toGridDot = this.gridCanvas.getDotById(toId);
 
         const dots = this.ensureDots(fromGridDot, toGridDot);
+        const fromStitchDot = this.converter.convertToStitchDot(dots.from, this.state.dots.color, side);
+        const toStitchDot = this.converter.convertToStitchDot(dots.to, this.state.dots.color, side);
 
-        const line = this.converter.convertToStitchLine(dots.from, dots.to, width, side, color);
+        const line = { from: fromStitchDot, to: toStitchDot, width, side, color };
 
         return line;
     }
@@ -89,11 +91,9 @@ export class StitchCanvas extends StitchCanvasBase implements IStitchCanvas {
         if (!from) {
             throw new Error("`from` must be defined.");
         }
-
         if (!to) {
             throw new Error("`to` must be defined.");
         }
-
         return { from, to };
     }
 
