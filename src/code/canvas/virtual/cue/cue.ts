@@ -2,7 +2,7 @@ import { CueCanvasBase } from "./base.js";
 import { Converter } from "../../../utilities/converter.js";
 import { IdGenerator } from "../../../utilities/generator.js";
 import { CueCanvasConfig, ICueCanvas, IGridCanvas } from "../types.js";
-import { CanvasSide, Id, CueLine, SizeChangeEvent, GridDot } from "../../types.js";
+import { CanvasSide, Id, CueLine, SizeChangeEvent, GridDot, Size } from "../../types.js";
 import { IInputCanvas, MouseLeftButtonDownEvent, MouseMoveEvent, Position } from "../../input/types.js";
 
 export class CueCanvas extends CueCanvasBase implements ICueCanvas {
@@ -14,8 +14,8 @@ export class CueCanvas extends CueCanvasBase implements ICueCanvas {
 
     private currentLine?: CueLine;
     private currentSide: CanvasSide;
-    private previousClickedDotId?: Id;
-    private previousHoveredDotId?: Id;
+    private previouslyClickedDotId?: Id;
+    private previouslyHoveredDotId?: Id;
 
     private cueDotColor!: string;
     private cueDotRadius!: number;
@@ -85,9 +85,8 @@ export class CueCanvas extends CueCanvasBase implements ICueCanvas {
     public override draw(): void {
         this.ids.reset();
 
-        if (this.previousHoveredDotId) {
-            this.unhoverDot(this.previousHoveredDotId);
-        }
+        const previousHoveredDot = this.gridCanvas.getDotById(this.previouslyHoveredDotId!);
+        this.unhoverDot(previousHoveredDot);
 
         if (this.currentLine) {
             const position = this.currentLine.to;
@@ -108,9 +107,6 @@ export class CueCanvas extends CueCanvasBase implements ICueCanvas {
     }
 
     private subscribe(): void {
-        const sizeChangeUn = this.gridCanvas.onSizeChange(this.handleSizeChange.bind(this));
-        super.registerUn(sizeChangeUn);
-
         const zoomInUn = this.inputCanvas.onZoomIn(this.handleZoomIn.bind(this));
         super.registerUn(zoomInUn);
 
@@ -122,79 +118,96 @@ export class CueCanvas extends CueCanvasBase implements ICueCanvas {
 
         const mouseLeftButtonDownUn = this.inputCanvas.onMouseLeftButtonDown(this.handleMouseLeftButtonDown.bind(this));
         super.registerUn(mouseLeftButtonDownUn);
+
+        const sizeChangeUn = this.gridCanvas.onSizeChange(this.handleSizeChange.bind(this));
+        super.registerUn(sizeChangeUn);
     }
 
     private handleZoomIn(): void {
-        this.dotRadius += this.cueDotRadiusZoomStep;
-        this.lineWidth += this.cueLineWidthZoomStep;
+        this.zoomIn();
     }
 
     private handleZoomOut(): void {
-        this.dotRadius -= this.cueDotRadiusZoomStep;
-        this.lineWidth -= this.cueLineWidthZoomStep;
+        this.zoomOut();
     }
 
     private handleMouseMove(event: MouseMoveEvent): void {
         const position = event.position;
-        this.changeHoveredDot(position);
+        this.changeDot(position);
         this.changeLine(position);
     }
 
     private handleMouseLeftButtonDown(event: MouseLeftButtonDownEvent): void {
         const position = event.position;
-
-        const previousClickedDot = this.gridCanvas.getDotByPosition(position);
-        if (previousClickedDot) {
-            this.changeSide();
-            this.previousClickedDotId = previousClickedDot.id;
-        }
+        this.changeSide(position);
     }
 
     private handleSizeChange(event: SizeChangeEvent): void {
         const size = event.size;
-        super.size = size;
+        this.changeSize(size);
     }
 
-    private changeHoveredDot(position: Position): void {
-        const hoveredDot = this.gridCanvas.getDotByPosition(position);
-
-        if (hoveredDot) {
-            if ((hoveredDot.id !== this.previousHoveredDotId)) {
-                if (this.previousHoveredDotId) {
-                    this.unhoverDot(this.previousHoveredDotId);
-                }
-
-                this.previousHoveredDotId = hoveredDot.id;
-                const hovered = { id: hoveredDot.id, x: hoveredDot.x, y: hoveredDot.y, radius: this.dotRadius, color: this.dotColor };
-                super.invokeHoverDot(hovered);
-            }
-        } else if (this.previousHoveredDotId) {
-            this.unhoverDot(this.previousHoveredDotId);
-        }
+    private zoomIn(): void {
+        this.dotRadius += this.cueDotRadiusZoomStep;
+        this.lineWidth += this.cueLineWidthZoomStep;
     }
 
-    private unhoverDot(previousHoveredDotId: string): void {
-        const previousHoveredDot = this.gridCanvas.getDotById(previousHoveredDotId);
-        if (previousHoveredDot) {
-            super.invokeUnhoverDot(previousHoveredDot);
+    private zoomOut(): void {
+        this.dotRadius -= this.cueDotRadiusZoomStep;
+        this.lineWidth -= this.cueLineWidthZoomStep;
+    }
+
+    private changeDot(position: Position): void {
+        const currentlyHovered = this.gridCanvas.getDotByPosition(position);
+        const previousHovered = this.gridCanvas.getDotById(this.previouslyHoveredDotId!);
+
+        if (!currentlyHovered) {
+            this.unhoverDot(previousHovered);
+        } else if (currentlyHovered.id !== previousHovered?.id) {
+            this.unhoverDot(previousHovered);
+            this.hoverDot(currentlyHovered);
         }
-        this.previousHoveredDotId = undefined;
     }
 
     private changeLine(position: Position): void {
-        const previousClickedDot = this.gridCanvas.getDotById(this.previousClickedDotId!)!;
-        if (previousClickedDot) {
-            if (this.currentLine) {
-                this.removeLine(this.currentLine);
-                this.currentLine = undefined;
-            }
-            this.currentLine = this.createLine(previousClickedDot, position);
-            this.drawLine(this.currentLine);
+        const previousClickedDot = this.gridCanvas.getDotById(this.previouslyClickedDotId!);
+
+        if (!previousClickedDot) {
+            return;
+        }
+
+        if (this.currentLine) {
+            this.removeLine(this.currentLine);
+        }
+
+        const line = this.createLine(previousClickedDot, position);
+        this.drawLine(line);
+    }
+
+    private changeSide(position: Position): void {
+        const previousClicked = this.gridCanvas.getDotByPosition(position);
+
+        if (previousClicked) {
+            this.currentSide = this.currentSide === CanvasSide.Front ? CanvasSide.Back : CanvasSide.Front;
+            this.previouslyClickedDotId = previousClicked.id;
         }
     }
 
-    private changeSide(): void {
-        this.currentSide = this.currentSide === CanvasSide.Front ? CanvasSide.Back : CanvasSide.Front;
+    private changeSize(size: Size): void {
+        super.size = size;
+    }
+
+    private hoverDot(hoveredDot: GridDot): void {
+        this.previouslyHoveredDotId = hoveredDot.id;
+        const hovered = { id: hoveredDot.id, x: hoveredDot.x, y: hoveredDot.y, radius: this.dotRadius, color: this.dotColor };
+        super.invokeHoverDot(hovered);
+    }
+
+    private unhoverDot(previousHoveredDot?: GridDot): void {
+        if (previousHoveredDot) {
+            super.invokeUnhoverDot(previousHoveredDot);
+        }
+        this.previouslyHoveredDotId = undefined;
     }
 
     private createLine(previousClickedDot: GridDot, currentMousePosition: Position): CueLine {
@@ -210,6 +223,8 @@ export class CueCanvas extends CueCanvasBase implements ICueCanvas {
     }
 
     private drawLine(line: CueLine): void {
+        this.currentLine = line;
+
         if (this.currentSide === CanvasSide.Front) {
             super.invokeDrawFrontLine(line);
         } else {
@@ -224,5 +239,7 @@ export class CueCanvas extends CueCanvasBase implements ICueCanvas {
         } else {
             super.invokeRemoveBackLine(line);
         }
+
+        this.currentLine = undefined;
     }
 }
