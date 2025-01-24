@@ -3,7 +3,6 @@ import { Listener, VoidListener, VoidUnsubscribe } from "../../types.js";
 import { StitchDot, StitchLine, CueLine, ICanvas, GridDot, GridLine, CueDot } from "../types.js";
 
 export type GridState = GridCanvasConfig;
-export type StitchState = StitchCanvasConfig;
 
 export type ZoomItemConfig = { value: number; zoomStep: number; };
 export type DotConfig = { color: string; radius: ZoomItemConfig; };
@@ -48,6 +47,18 @@ export interface IGridCanvas extends IVirtualCanvas<GridCanvasConfig> {
 }
 
 export interface IStitchCanvas extends IVirtualCanvas<StitchCanvasConfig> {
+    get dotColor(): string;
+    set dotColor(color: string);
+
+    get dotRadius(): number;
+    set dotRadius(radius: number);
+
+    get lineColor(): string;
+    set lineColor(color: string);
+
+    get lineWidth(): number;
+    set lineWidth(width: number);
+
     onDrawFrontDot(listener: DrawStitchDotListener): VoidUnsubscribe;
     onDrawBackDot(listener: DrawStitchDotListener): VoidUnsubscribe;
 

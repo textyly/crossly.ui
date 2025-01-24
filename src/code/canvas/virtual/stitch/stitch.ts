@@ -1,24 +1,28 @@
 import { StitchCanvasBase } from "./base.js";
 import { Converter } from "../../../utilities/converter.js";
-import { IGridCanvas, StitchCanvasConfig, StitchState } from "../types.js";
-import { CanvasSide, Id, StitchLine, SizeChangeEvent, GridDot } from "../../types.js";
+import { IGridCanvas, IStitchCanvas, StitchCanvasConfig } from "../types.js";
 import { IInputCanvas, MouseLeftButtonDownEvent, Position } from "../../input/types.js";
+import { CanvasSide, Id, StitchLine, SizeChangeEvent, GridDot, Size } from "../../types.js";
 
-export class StitchCanvas extends StitchCanvasBase {
+export class StitchCanvas extends StitchCanvasBase implements IStitchCanvas {
     private readonly inputCanvas: IInputCanvas;
     private readonly gridCanvas: IGridCanvas;
     private readonly converter: Converter;
 
     private lines: Array<StitchLine>;
     private currentSide: CanvasSide;
-    private previousClickedDotId?: Id;
+    private previousClickedDotId?: Id; // TODO: create ticket, very messy code around this prop
 
-    private state!: StitchState;
+    private stitchDotColor!: string;
+    private stitchDotRadius!: number;
+    private stitchDotRadiusZoomStep!: number;
+    private stitchLineColor!: string;
+    private stitchLineWidth!: number;
+    private stitchLineWidthZoomStep!: number;
 
     constructor(config: StitchCanvasConfig, inputCanvas: IInputCanvas, gridCanvas: IGridCanvas) {
         super(config);
 
-        this.state = super.config;
         this.inputCanvas = inputCanvas;
         this.gridCanvas = gridCanvas;
 
@@ -26,11 +30,56 @@ export class StitchCanvas extends StitchCanvasBase {
         this.currentSide = CanvasSide.Back;
         this.lines = [];
 
+        this.setConfig(super.config);
         this.subscribe();
     }
 
+    public get dotColor(): string {
+        return this.stitchDotColor;
+    }
+
+    public set dotColor(color: string) {
+        if (this.stitchDotColor !== color) {
+            this.stitchDotColor = color;
+            this.draw();
+        }
+    }
+
+    public get dotRadius(): number {
+        return this.stitchDotRadius;
+    }
+
+    public set dotRadius(radius: number) {
+        if (this.stitchDotRadius !== radius) {
+            this.stitchDotRadius = radius;
+            this.draw();
+        }
+    }
+
+    public get lineColor(): string {
+        return this.stitchLineColor;
+    }
+
+    public set lineColor(color: string) {
+        if (this.stitchLineColor !== color) {
+            this.stitchLineColor = color;
+            this.draw();
+        }
+    }
+
+    public get lineWidth(): number {
+        return this.stitchLineWidth;
+    }
+
+    public set lineWidth(width: number) {
+        if (this.stitchLineWidth !== width) {
+            this.stitchLineWidth = width;
+            this.draw();
+        }
+    }
+
     public draw(): void {
-        this.redraw();
+        this.drawLines();
     }
 
     public override dispose(): void {
@@ -38,24 +87,97 @@ export class StitchCanvas extends StitchCanvasBase {
         super.dispose();
     }
 
-    private redraw(): void {
-        this.redrawLines();
+    private setConfig(config: StitchCanvasConfig): void {
+        const dotConfig = config.dot;
+        this.stitchDotColor = dotConfig.color;
+        this.stitchDotRadius = dotConfig.radius.value;
+        this.stitchDotRadiusZoomStep = dotConfig.radius.zoomStep;
+
+        const lineConfig = config.line;
+        this.stitchLineColor = lineConfig.color;
+        this.stitchLineWidth = lineConfig.width.value;
+        this.stitchLineWidthZoomStep = lineConfig.width.zoomStep;
     }
 
-    private redrawLines(): Array<StitchLine> {
+    private subscribe(): void {
+        const zoomInUn = this.inputCanvas.onZoomIn(this.handleZoomIn.bind(this));
+        super.registerUn(zoomInUn);
+
+        const zoomOutUn = this.inputCanvas.onZoomOut(this.handleZoomOut.bind(this));
+        super.registerUn(zoomOutUn);
+
+        const mouseLeftButtonDownUn = this.inputCanvas.onMouseLeftButtonDown(this.handleMouseLeftButtonDown.bind(this));
+        super.registerUn(mouseLeftButtonDownUn);
+
+        const sizeChangeUn = this.gridCanvas.onSizeChange(this.handleSizeChange.bind(this));
+        super.registerUn(sizeChangeUn);
+    }
+
+    private handleZoomIn(): void {
+        this.zoomIn();
+    }
+
+    private handleZoomOut(): void {
+        this.zoomOut();
+    }
+
+    private handleMouseLeftButtonDown(event: MouseLeftButtonDownEvent): void {
+        const position = event.position;
+        this.handleDotClick(position);
+    }
+
+    private handleSizeChange(event: SizeChangeEvent): void {
+        const size = event.size;
+        this.changeSize(size);
+    }
+
+    private handleDotClick(position: Position): void {
+        const currentlyClickedDot = this.gridCanvas.getDotByPosition(position);
+        if (!currentlyClickedDot) {
+            return;
+        }
+
+        if (this.previousClickedDotId) {
+            const recreated = this.createLine(this.previousClickedDotId, currentlyClickedDot.id, this.lineWidth, this.currentSide, this.lineColor);
+            this.drawLine(recreated);
+        }
+
+        this.previousClickedDotId = currentlyClickedDot.id;
+        this.changeSide();
+    }
+
+    private zoomIn(): void {
+        this.dotRadius += this.stitchDotRadiusZoomStep;
+        this.lineWidth += this.stitchLineWidthZoomStep;
+        this.draw();
+    }
+
+    private zoomOut(): void {
+        this.dotRadius -= this.stitchDotRadiusZoomStep;
+        this.lineWidth -= this.stitchLineWidthZoomStep;
+        this.draw();
+    }
+
+    private changeSize(size: Size): void {
+        super.size = size;
+    }
+
+    private drawLines(): Array<StitchLine> {
         const copy = this.lines;
         this.lines = [];
 
-        copy.forEach((line) => this.drawLine(line.from.id, line.to.id, this.state.line.width.value, line.side, this.state.line.color));
+        copy.forEach((line) => {
+            const recreated = this.createLine(line.from.id, line.to.id, this.lineWidth, line.side, this.lineColor);
+            this.drawLine(recreated);
+        });
 
         return this.lines;
     }
 
-    private drawLine(fromId: string, toId: string, width: number, side: CanvasSide, color: string): void {
-        const line = this.createLine(fromId, toId, width, side, color);
+    private drawLine(line: StitchLine): void {
         this.lines.push(line);
 
-        if (side == CanvasSide.Front) {
+        if (line.side == CanvasSide.Front) {
             this.drawFrontLine(line);
         } else {
             this.drawBackLine(line);
@@ -79,11 +201,11 @@ export class StitchCanvas extends StitchCanvasBase {
         const toGridDot = this.gridCanvas.getDotById(toId);
 
         const dots = this.ensureDots(fromGridDot, toGridDot);
-        const fromStitchDot = this.converter.convertToStitchDot(dots.from, this.state.dot.color, side);
-        const toStitchDot = this.converter.convertToStitchDot(dots.to, this.state.dot.color, side);
 
-        const line = { from: fromStitchDot, to: toStitchDot, width, side, color };
+        const from = this.converter.convertToStitchDot(dots.from, this.dotColor, side);
+        const to = this.converter.convertToStitchDot(dots.to, this.dotColor, side);
 
+        const line = { from: from, to: to, width, side, color };
         return line;
     }
 
@@ -97,56 +219,7 @@ export class StitchCanvas extends StitchCanvasBase {
         return { from, to };
     }
 
-    private subscribe(): void {
-        const sizeChangeUn = this.gridCanvas.onSizeChange(this.handleSizeChange.bind(this));
-        super.registerUn(sizeChangeUn);
-
-        const zoomInUn = this.inputCanvas.onZoomIn(this.handleZoomIn.bind(this));
-        super.registerUn(zoomInUn);
-
-        const zoomOutUn = this.inputCanvas.onZoomOut(this.handleZoomOut.bind(this));
-        super.registerUn(zoomOutUn);
-
-        const mouseLeftButtonDownUn = this.inputCanvas.onMouseLeftButtonDown(this.handleMouseLeftButtonDown.bind(this));
-        super.registerUn(mouseLeftButtonDownUn);
-    }
-
-    private handleZoomIn(): void {
-        this.state.dot.radius.value += this.state.dot.radius.zoomStep;
-        this.state.line.width.value += this.state.line.width.zoomStep;
-        this.redraw();
-    }
-
-    private handleZoomOut(): void {
-        this.state.dot.radius.value -= this.state.dot.radius.zoomStep;
-        this.state.line.width.value -= this.state.line.width.zoomStep;
-        this.redraw();
-    }
-
-    private handleMouseLeftButtonDown(event: MouseLeftButtonDownEvent): void {
-        const position = event.position;
-        this.handleDotClick(position);
-    }
-
-    private handleDotClick(position: Position): void {
-        const currentlyClickedDot = this.gridCanvas.getDotByPosition(position);
-        if (currentlyClickedDot) {
-
-            if (this.previousClickedDotId) {
-                this.drawLine(this.previousClickedDotId, currentlyClickedDot.id, this.state.line.width.value, this.currentSide, this.state.line.color);
-            }
-
-            this.previousClickedDotId = currentlyClickedDot.id;
-            this.changeSide();
-        }
-    }
-
     private changeSide(): void {
         this.currentSide = this.currentSide === CanvasSide.Front ? CanvasSide.Back : CanvasSide.Front;
-    }
-
-    private handleSizeChange(event: SizeChangeEvent): void {
-        const size = event.size;
-        super.size = size;
     }
 }
