@@ -1,9 +1,9 @@
 import { VirtualCanvasBase } from "../base.js";
-import { GridDot, GridLine } from "../../types.js";
 import { VoidUnsubscribe } from "../../../types.js";
 import { Messaging4 } from "../../../messaging/impl.js";
 import { IMessaging4 } from "../../../messaging/types.js";
-import { DrawGridDotEvent, DrawGridDotListener, DrawGridLineEvent, DrawGridLineListener, GridCanvasConfig } from "../types.js";
+import { GridCanvasConfig, GridDot, GridLine } from "../../types.js";
+import { DrawGridDotEvent, DrawGridDotListener, DrawGridLineEvent, DrawGridLineListener } from "../types.js";
 
 export abstract class GridCanvasBase extends VirtualCanvasBase<GridCanvasConfig> {
     private readonly messaging: IMessaging4<DrawGridDotEvent, DrawGridDotEvent, DrawGridLineEvent, DrawGridLineEvent>;

@@ -1,25 +1,17 @@
 import { Position } from "../input/types.js";
 import { Listener, VoidListener, VoidUnsubscribe } from "../../types.js";
-import { StitchDot, StitchLine, CueLine, ICanvas, GridDot, GridLine, CueDot } from "../types.js";
-
-export type ZoomItemConfig = { value: number; zoomStep: number; };
-export type DotConfig = { color: string; radius: ZoomItemConfig; };
-export type LineConfig = { color: string; width: ZoomItemConfig; };
-export type SpacingConfig = ZoomItemConfig;
-
-export type CanvasConfig = {
-    dot: DotConfig;
-    line: LineConfig;
-}
-
-export type GridCanvasConfig = CanvasConfig & {
-    columns: number;
-    rows: number;
-    spacing: SpacingConfig;
-}
-
-export type StitchCanvasConfig = CanvasConfig;
-export type CueCanvasConfig = CanvasConfig;
+import {
+    StitchDot,
+    StitchLine,
+    CueLine,
+    ICanvas,
+    GridDot,
+    GridLine,
+    CueDot,
+    GridCanvasConfig,
+    StitchCanvasConfig,
+    CueCanvasConfig
+} from "../types.js";
 
 export interface IVirtualCanvas<TConfig> extends ICanvas {
     get config(): TConfig;

@@ -1,9 +1,9 @@
 import { CueCanvasBase } from "./base.js";
+import { ICueCanvas, IGridCanvas } from "../types.js";
 import { Converter } from "../../../utilities/converter.js";
 import { IdGenerator } from "../../../utilities/generator.js";
-import { CueCanvasConfig, ICueCanvas, IGridCanvas } from "../types.js";
-import { CanvasSide, Id, CueLine, SizeChangeEvent, GridDot, Size } from "../../types.js";
 import { IInputCanvas, MouseLeftButtonDownEvent, MouseMoveEvent, Position } from "../../input/types.js";
+import { CanvasSide, Id, CueLine, SizeChangeEvent, GridDot, Size, CueCanvasConfig } from "../../types.js";
 
 export class CueCanvas extends CueCanvasBase implements ICueCanvas {
     private readonly inputCanvas: IInputCanvas;

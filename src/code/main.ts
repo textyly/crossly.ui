@@ -1,6 +1,6 @@
 import { CanvasBuilder } from "./builder.js";
-import { CanvasConfig } from "./canvas/types.js";
-import { CueCanvasConfig, GridCanvasConfig, StitchCanvasConfig } from "./canvas/virtual/types.js";
+import { CrosslyCanvasConfig } from "./canvas/types.js";
+import { CueCanvasConfig, GridCanvasConfig, StitchCanvasConfig } from "./canvas/types.js";
 
 const gridConfig: GridCanvasConfig = {
     columns: 30,
@@ -59,7 +59,7 @@ const cueConfig: CueCanvasConfig = {
     }
 }
 
-const canvasConfig: CanvasConfig = {
+const canvasConfig: CrosslyCanvasConfig = {
     grid: gridConfig,
     stitch: stitchConfig,
     cue: cueConfig

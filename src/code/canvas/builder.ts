@@ -7,12 +7,12 @@ import { IDrawingCanvas } from "./drawing/types.js";
 import { VectorDrawing } from "./drawing/vector.js";
 import { GridDrawingCanvas } from "./drawing/grid.js";
 import { StitchDrawingCanvas } from "./drawing/stitch.js";
-import { CanvasConfig, ICrosslyCanvas } from "./types.js";
 import { InputCanvasThrottler } from "./input/throttler.js";
+import { CrosslyCanvasConfig, ICrosslyCanvas } from "./types.js";
 import { ICueCanvas, IGridCanvas, IStitchCanvas } from "./virtual/types.js";
 
 export class CrosslyCanvasBuilder {
-    private config!: CanvasConfig;
+    private config!: CrosslyCanvasConfig;
     private inputCanvas!: IInputCanvas;
     private gridDrawingCanvas!: IDrawingCanvas<IGridCanvas>;
     private stitchDrawingCanvas!: IDrawingCanvas<IStitchCanvas>;
@@ -23,7 +23,7 @@ export class CrosslyCanvasBuilder {
         return crosslyCanvas;
     }
 
-    public withConfig(config: CanvasConfig): CrosslyCanvasBuilder {
+    public withConfig(config: CrosslyCanvasConfig): CrosslyCanvasBuilder {
         this.config = config;
         return this;
     }

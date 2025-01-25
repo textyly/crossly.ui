@@ -1,10 +1,9 @@
 import { VirtualCanvasBase } from "../base.js";
-import { CueLine, CueDot } from "../../types.js";
 import { VoidUnsubscribe } from "../../../types.js";
 import { Messaging6 } from "../../../messaging/impl.js";
 import { IMessaging6 } from "../../../messaging/types.js";
+import { CueLine, CueDot, CueCanvasConfig } from "../../types.js";
 import {
-    CueCanvasConfig,
     DrawCueLineEvent,
     DrawCueLineListener,
     DrawCueDotEvent,

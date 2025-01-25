@@ -1,9 +1,9 @@
 import { StitchCanvasBase } from "./base.js";
+import { IGridCanvas, IStitchCanvas } from "../types.js";
 import { DotsUtility } from "../../../utilities/dots.js";
 import { Converter } from "../../../utilities/converter.js";
-import { IGridCanvas, IStitchCanvas, StitchCanvasConfig } from "../types.js";
 import { IInputCanvas, MouseLeftButtonDownEvent, Position } from "../../input/types.js";
-import { CanvasSide, Id, StitchLine, SizeChangeEvent, GridDot, Size } from "../../types.js";
+import { CanvasSide, Id, StitchLine, SizeChangeEvent, GridDot, Size, StitchCanvasConfig } from "../../types.js";
 
 export class StitchCanvas extends StitchCanvasBase implements IStitchCanvas {
     private readonly inputCanvas: IInputCanvas;

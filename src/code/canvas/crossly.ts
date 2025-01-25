@@ -5,11 +5,11 @@ import { IDrawingCanvas } from "./drawing/types.js";
 import { GridCanvas } from "./virtual/grid/grid.js";
 import { DotMatcher } from "./virtual/grid/matcher.js";
 import { StitchCanvas } from "./virtual/stitch/stitch.js";
-import { CanvasConfig, ICrosslyCanvas, SizeChangeEvent } from "./types.js";
 import { ICueCanvas, IGridCanvas, IStitchCanvas } from "./virtual/types.js";
+import { CrosslyCanvasConfig, ICrosslyCanvas, SizeChangeEvent } from "./types.js";
 
 export class CrosslyCanvas extends CanvasBase implements ICrosslyCanvas {
-    private readonly config: Readonly<CanvasConfig>;
+    private readonly config: Readonly<CrosslyCanvasConfig>;
     private readonly inputCanvas: IInputCanvas;
 
     private gridCanvas!: IGridCanvas;
@@ -22,7 +22,7 @@ export class CrosslyCanvas extends CanvasBase implements ICrosslyCanvas {
     private cueDrawingCanvas!: IDrawingCanvas<ICueCanvas>;
 
     constructor(
-        config: CanvasConfig,
+        config: CrosslyCanvasConfig,
         inputCanvas: IInputCanvas,
         gridDrawingCanvas: IDrawingCanvas<IGridCanvas>,
         stitchDrawingCanvas: IDrawingCanvas<IStitchCanvas>,
@@ -37,7 +37,7 @@ export class CrosslyCanvas extends CanvasBase implements ICrosslyCanvas {
         this.initializeCueCanvas(cueDrawingCanvas);
     }
 
-    public get configuration(): CanvasConfig {
+    public get configuration(): CrosslyCanvasConfig {
         return this.config;
     }
 

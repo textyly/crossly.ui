@@ -1,7 +1,8 @@
 import { CanvasBase } from "../base.js";
+import { CanvasConfig } from "../types.js";
+import { IVirtualCanvas } from "./types.js";
 import { VoidMessaging } from "../../messaging/impl.js";
 import { IVoidMessaging } from "../../messaging/types.js";
-import { CanvasConfig, IVirtualCanvas } from "./types.js";
 import { VoidListener, VoidUnsubscribe } from "../../types.js";
 
 export abstract class VirtualCanvasBase<TConfig extends CanvasConfig> extends CanvasBase implements IVirtualCanvas<TConfig> {

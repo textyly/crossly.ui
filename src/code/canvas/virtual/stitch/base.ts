@@ -1,9 +1,9 @@
 import { VirtualCanvasBase } from "../base.js";
 import { VoidUnsubscribe } from "../../../types.js";
-import { StitchDot, StitchLine } from "../../types.js";
 import { Messaging4 } from "../../../messaging/impl.js";
 import { IMessaging4 } from "../../../messaging/types.js";
-import { CueCanvasConfig, DrawStitchDotEvent, DrawStitchDotListener, DrawStitchLineEvent, DrawStitchLineListener, StitchCanvasConfig } from "../types.js";
+import { CueCanvasConfig, StitchCanvasConfig, StitchDot, StitchLine } from "../../types.js";
+import { DrawStitchDotEvent, DrawStitchDotListener, DrawStitchLineEvent, DrawStitchLineListener } from "../types.js";
 
 export abstract class StitchCanvasBase extends VirtualCanvasBase<CueCanvasConfig> {
     private readonly messaging: IMessaging4<DrawStitchDotEvent, DrawStitchDotEvent, DrawStitchLineEvent, DrawStitchLineEvent>;

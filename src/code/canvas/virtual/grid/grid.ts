@@ -1,9 +1,9 @@
 import { GridCanvasBase } from "./base.js";
+import { IDotMatcher, IGridCanvas } from "../types.js";
 import { DotsUtility } from "../../../utilities/dots.js";
 import { IInputCanvas, Position } from "../../input/types.js";
 import { IdGenerator } from "../../../utilities/generator.js";
-import { Visibility, Id, GridDot, GridLine } from "../../types.js";
-import { GridCanvasConfig, IDotMatcher, IGridCanvas } from "../types.js";
+import { Visibility, Id, GridDot, GridLine, GridCanvasConfig } from "../../types.js";
 
 export class GridCanvas extends GridCanvasBase implements IGridCanvas {
     private readonly inputCanvas: IInputCanvas;
