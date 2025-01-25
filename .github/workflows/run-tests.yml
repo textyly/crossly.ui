@@ -1,0 +1,36 @@
+name: Run Tests
+
+on: 
+    push:
+      branches:
+        - develop
+        - master
+
+    pull_request:
+        branches:
+            - develop
+            - master
+jobs:
+    test:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v3
+
+            - name: Set up Node.js
+              uses: actions/setup-node@v3
+              with:
+                node-version: '20'
+
+            - name: Cache npm modules
+              uses: actions/cache@v3
+              with:
+                path: node_modules
+                key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
+                restore-keys: |
+                  ${{ runner.os }}-node-
+                  ${{ runner.os }}-node-${{ hashFiles('package.json') }}
+                    
+            - name: Run Tests
+              run: npm test

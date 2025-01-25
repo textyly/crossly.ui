@@ -1,0 +1,22 @@
+{
+    "cSpell.words": [
+        "copyfiles",
+        "knittyly",
+        "textyly",
+        "Unhover",
+        "Unhovered"
+    ],
+    "files.exclude": {
+        "**/dist*": true,
+        "**/package*.json": true,
+        "**/node_modules": true,
+        "**/assets": true,
+        "**/scripts": true,
+        "**/tsconfig*.json": true,
+        "**/.gitignore": true,
+        "**/.github": true,
+        "**/LICENSE": true,
+        "**/README*": true,
+    },
+    "typescript.preferences.importModuleSpecifierEnding": "js",
+}

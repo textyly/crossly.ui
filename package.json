@@ -1,0 +1,37 @@
+{
+  "name": "knittyly.ui",
+  "version": "0.0.1",
+  "description": "TBD",
+  "main": "app.js",
+  "type": "module",
+  "scripts": {
+    "compile": "tsc --version && tsc",
+    "copy": "node ./scripts/copy.js",
+    "build": "npm i && npm run compile && npm run copy",
+    "start:server": "http-server ./ -p 5000 -c-1",
+    "start": "npm run build && npm run start:server",
+    "compile:tests": "tsc --version && tsc -p tsconfig.test.json",
+    "build:tests": "npm run build && npm run compile:tests",
+    "test": "npm run build:tests && mocha 'dist-tests/tests/**/*.test.js'",
+    "clear": "node ./scripts/clear.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/textyly/knittyly.ui.git"
+  },
+  "author": "textyly community",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/textyly/knittyly.ui/issues"
+  },
+  "homepage": "https://github.com/textyly/knittyly.ui#readme",
+  "devDependencies": {
+    "@types/chai": "^5.0.0",
+    "@types/mocha": "^10.0.8",
+    "chai": "^5.1.1",
+    "fs-extra": "^11.2.0",
+    "http-server": "^14.1.1",
+    "mocha": "^10.7.3",
+    "typescript": "^5.6.2"
+  }
+}

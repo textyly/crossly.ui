@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "target": "ES2020", // Update target to ES2020 for more modern features
+    "module": "ESNext", // Use ESNext module syntax for better compatibility with modern frameworks
+    "outDir": "./dist-tests", // Output directory for compiled JavaScript files
+    "rootDir": "./",
+    "strict": true, // Enable all strict type-checking options
+    "sourceMap": true, // Generate source maps for easier debugging
+    "moduleResolution": "node",
+  },
+  "include": [
+    "tests/unit/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "dist-tests"
+  ]
+}
