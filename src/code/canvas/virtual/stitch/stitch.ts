@@ -15,13 +15,6 @@ export class StitchCanvas extends StitchCanvasBase implements IStitchCanvas {
     private currentSide: CanvasSide;
     private previousClickedDotId?: Id; // TODO: create ticket, very messy code around this prop
 
-    private stitchDotColor!: string;
-    private stitchDotRadius!: number;
-    private stitchDotRadiusZoomStep!: number;
-    private stitchLineColor!: string;
-    private stitchLineWidth!: number;
-    private stitchLineWidthZoomStep!: number;
-
     constructor(config: StitchCanvasConfig, inputCanvas: IInputCanvas, gridCanvas: IGridCanvas) {
         super(config);
 
@@ -33,52 +26,7 @@ export class StitchCanvas extends StitchCanvasBase implements IStitchCanvas {
         this.currentSide = CanvasSide.Back;
         this.lines = [];
 
-        this.setConfig(super.config);
         this.subscribe();
-    }
-
-    public get dotColor(): string {
-        return this.stitchDotColor;
-    }
-
-    public set dotColor(color: string) {
-        if (this.stitchDotColor !== color) {
-            this.stitchDotColor = color;
-            this.draw();
-        }
-    }
-
-    public get dotRadius(): number {
-        return this.stitchDotRadius;
-    }
-
-    public set dotRadius(radius: number) {
-        if (this.stitchDotRadius !== radius) {
-            this.stitchDotRadius = radius;
-            this.draw();
-        }
-    }
-
-    public get lineColor(): string {
-        return this.stitchLineColor;
-    }
-
-    public set lineColor(color: string) {
-        if (this.stitchLineColor !== color) {
-            this.stitchLineColor = color;
-            this.draw();
-        }
-    }
-
-    public get lineWidth(): number {
-        return this.stitchLineWidth;
-    }
-
-    public set lineWidth(width: number) {
-        if (this.stitchLineWidth !== width) {
-            this.stitchLineWidth = width;
-            this.draw();
-        }
     }
 
     public draw(): void {
@@ -88,18 +36,6 @@ export class StitchCanvas extends StitchCanvasBase implements IStitchCanvas {
     public override dispose(): void {
         this.lines = [];
         super.dispose();
-    }
-
-    private setConfig(config: StitchCanvasConfig): void {
-        const dotConfig = config.dot;
-        this.stitchDotColor = dotConfig.color;
-        this.stitchDotRadius = dotConfig.radius.value;
-        this.stitchDotRadiusZoomStep = dotConfig.radius.zoomStep;
-
-        const lineConfig = config.line;
-        this.stitchLineColor = lineConfig.color;
-        this.stitchLineWidth = lineConfig.width.value;
-        this.stitchLineWidthZoomStep = lineConfig.width.zoomStep;
     }
 
     private subscribe(): void {
@@ -117,11 +53,11 @@ export class StitchCanvas extends StitchCanvasBase implements IStitchCanvas {
     }
 
     private handleZoomIn(): void {
-        this.zoomIn();
+        super.zoomIn();
     }
 
     private handleZoomOut(): void {
-        this.zoomOut();
+        super.zoomOut();
     }
 
     private handleMouseLeftButtonDown(event: MouseLeftButtonDownEvent): void {
@@ -149,20 +85,9 @@ export class StitchCanvas extends StitchCanvasBase implements IStitchCanvas {
         this.changeSide();
     }
 
-    private zoomIn(): void {
-        this.dotRadius += this.stitchDotRadiusZoomStep;
-        this.lineWidth += this.stitchLineWidthZoomStep;
-        this.draw();
-    }
-
-    private zoomOut(): void {
-        this.dotRadius -= this.stitchDotRadiusZoomStep;
-        this.lineWidth -= this.stitchLineWidthZoomStep;
-        this.draw();
-    }
-
     private changeSize(size: Size): void {
         super.size = size;
+        this.draw();
     }
 
     private drawLines(): Array<StitchLine> {

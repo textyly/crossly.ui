@@ -19,13 +19,6 @@ export class CueCanvas extends CueCanvasBase implements ICueCanvas {
     private previouslyClickedDotId?: Id; // TODO: create ticket for clearing the code around this prop
     private previouslyHoveredDotId?: Id; // TODO: create ticket for clearing the code around this prop
 
-    private cueDotColor!: string;
-    private cueDotRadius!: number;
-    private cueDotRadiusZoomStep!: number;
-    private cueLineColor!: string;
-    private cueLineWidth!: number;
-    private cueLineWidthZoomStep!: number;
-
     constructor(config: CueCanvasConfig, inputCanvas: IInputCanvas, gridCanvas: IGridCanvas) {
         super(config);
 
@@ -36,52 +29,7 @@ export class CueCanvas extends CueCanvasBase implements ICueCanvas {
         this.converter = new Converter();
         this.currentSide = CanvasSide.Back;
 
-        this.setConfig(super.config);
         this.subscribe();
-    }
-
-    public get dotColor(): string {
-        return this.cueDotColor;
-    }
-
-    public set dotColor(color: string) {
-        if (this.cueDotColor !== color) {
-            this.cueDotColor = color;
-            this.draw();
-        }
-    }
-
-    public get dotRadius(): number {
-        return this.cueDotRadius;
-    }
-
-    public set dotRadius(radius: number) {
-        if (this.cueDotRadius !== radius) {
-            this.cueDotRadius = radius;
-            this.draw();
-        }
-    }
-
-    public get lineColor(): string {
-        return this.cueLineColor;
-    }
-
-    public set lineColor(color: string) {
-        if (this.cueLineColor !== color) {
-            this.cueLineColor = color;
-            this.draw();
-        }
-    }
-
-    public get lineWidth(): number {
-        return this.cueLineWidth;
-    }
-
-    public set lineWidth(width: number) {
-        if (this.cueLineWidth !== width) {
-            this.cueLineWidth = width;
-            this.draw();
-        }
     }
 
     public override draw(): void {
@@ -94,18 +42,6 @@ export class CueCanvas extends CueCanvasBase implements ICueCanvas {
             const position = this.currentLine.to;
             this.changeLine(position);
         }
-    }
-
-    private setConfig(config: CueCanvasConfig): void {
-        const dotConfig = config.dot;
-        this.cueDotColor = dotConfig.color;
-        this.cueDotRadius = dotConfig.radius.value;
-        this.cueDotRadiusZoomStep = dotConfig.radius.zoomStep;
-
-        const lineConfig = config.line;
-        this.cueLineColor = lineConfig.color;
-        this.cueLineWidth = lineConfig.width.value;
-        this.cueLineWidthZoomStep = lineConfig.width.zoomStep;
     }
 
     private subscribe(): void {
@@ -126,11 +62,11 @@ export class CueCanvas extends CueCanvasBase implements ICueCanvas {
     }
 
     private handleZoomIn(): void {
-        this.zoomIn();
+        super.zoomIn();
     }
 
     private handleZoomOut(): void {
-        this.zoomOut();
+        super.zoomOut();
     }
 
     private handleMouseMove(event: MouseMoveEvent): void {
@@ -147,16 +83,6 @@ export class CueCanvas extends CueCanvasBase implements ICueCanvas {
     private handleSizeChange(event: SizeChangeEvent): void {
         const size = event.size;
         this.changeSize(size);
-    }
-
-    private zoomIn(): void {
-        this.dotRadius += this.cueDotRadiusZoomStep;
-        this.lineWidth += this.cueLineWidthZoomStep;
-    }
-
-    private zoomOut(): void {
-        this.dotRadius -= this.cueDotRadiusZoomStep;
-        this.lineWidth -= this.cueLineWidthZoomStep;
     }
 
     private changeDot(position: Position): void {
@@ -197,6 +123,7 @@ export class CueCanvas extends CueCanvasBase implements ICueCanvas {
 
     private changeSize(size: Size): void {
         super.size = size;
+        this.draw();
     }
 
     private hoverDot(hoveredDot: GridDot): void {

@@ -2,33 +2,39 @@ import { Position } from "../input/types.js";
 import { Listener, VoidListener, VoidUnsubscribe } from "../../types.js";
 import { StitchDot, StitchLine, CueLine, ICanvas, GridDot, GridLine, CueDot } from "../types.js";
 
-export type GridState = GridCanvasConfig;
-
 export type ZoomItemConfig = { value: number; zoomStep: number; };
 export type DotConfig = { color: string; radius: ZoomItemConfig; };
 export type LineConfig = { color: string; width: ZoomItemConfig; };
 export type SpacingConfig = ZoomItemConfig;
 
-export type GridCanvasConfig = {
+export type CanvasConfig = {
+    dot: DotConfig;
+    line: LineConfig;
+}
+
+export type GridCanvasConfig = CanvasConfig & {
     columns: number;
     rows: number;
     spacing: SpacingConfig;
-    dot: DotConfig;
-    line: LineConfig;
 }
 
-export type StitchCanvasConfig = {
-    dot: DotConfig;
-    line: LineConfig;
-}
-
-export type CueCanvasConfig = {
-    dot: DotConfig
-    line: LineConfig;
-}
+export type StitchCanvasConfig = CanvasConfig;
+export type CueCanvasConfig = CanvasConfig;
 
 export interface IVirtualCanvas<TConfig> extends ICanvas {
     get config(): TConfig;
+
+    get dotColor(): string;
+    set dotColor(value: string);
+
+    get dotRadius(): number;
+    set dotRadius(value: number);
+
+    get lineColor(): string;
+    set lineColor(value: string);
+
+    get lineWidth(): number;
+    set lineWidth(value: number);
 
     draw(): void;
     onRedraw(listener: VoidListener): VoidUnsubscribe;
@@ -36,6 +42,15 @@ export interface IVirtualCanvas<TConfig> extends ICanvas {
 
 
 export interface IGridCanvas extends IVirtualCanvas<GridCanvasConfig> {
+    get spacing(): number;
+    set spacing(value: number);
+
+    get rows(): number;
+    set rows(value: number);
+
+    get columns(): number;
+    set columns(value: number);
+
     getDotById(id: string): GridDot | undefined;
     getDotByPosition(position: Position): GridDot | undefined;
 
@@ -47,18 +62,6 @@ export interface IGridCanvas extends IVirtualCanvas<GridCanvasConfig> {
 }
 
 export interface IStitchCanvas extends IVirtualCanvas<StitchCanvasConfig> {
-    get dotColor(): string;
-    set dotColor(color: string);
-
-    get dotRadius(): number;
-    set dotRadius(radius: number);
-
-    get lineColor(): string;
-    set lineColor(color: string);
-
-    get lineWidth(): number;
-    set lineWidth(width: number);
-
     onDrawFrontDot(listener: DrawStitchDotListener): VoidUnsubscribe;
     onDrawBackDot(listener: DrawStitchDotListener): VoidUnsubscribe;
 
@@ -67,18 +70,6 @@ export interface IStitchCanvas extends IVirtualCanvas<StitchCanvasConfig> {
 }
 
 export interface ICueCanvas extends IVirtualCanvas<CueCanvasConfig> {
-    get dotColor(): string;
-    set dotColor(color: string);
-
-    get dotRadius(): number;
-    set dotRadius(radius: number);
-
-    get lineColor(): string;
-    set lineColor(color: string);
-
-    get lineWidth(): number;
-    set lineWidth(width: number);
-
     onHoverDot(listener: HoverCueDotListener): VoidUnsubscribe;
     onUnhoverDot(listener: UnhoverCueListener): VoidUnsubscribe;
 
