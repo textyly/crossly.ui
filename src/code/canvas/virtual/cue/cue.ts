@@ -15,9 +15,8 @@ export class CueCanvas extends CueCanvasBase implements ICueCanvas {
     private currentLine?: CueLine;
     private currentSide: CanvasSide;
 
-    // TODO: very messy code around these two props!!!
-    private previouslyClickedDotId?: Id; // TODO: create ticket for clearing the code around this prop
-    private previouslyHoveredDotId?: Id; // TODO: create ticket for clearing the code around this prop
+    private previouslyClickedDotId?: Id;
+    private previouslyHoveredDotId?: Id;
 
     constructor(config: CueCanvasConfig, inputCanvas: IInputCanvas, gridCanvas: IGridCanvas) {
         super(config);
@@ -44,7 +43,7 @@ export class CueCanvas extends CueCanvasBase implements ICueCanvas {
 
         if (this.currentLine) {
             const position = this.currentLine.to;
-            this.changeLine(position);
+            this.resizeLine(position);
         }
     }
 
@@ -75,8 +74,8 @@ export class CueCanvas extends CueCanvasBase implements ICueCanvas {
 
     private handleMouseMove(event: MouseMoveEvent): void {
         const position = event.position;
-        this.changeDot(position);
-        this.changeLine(position);
+        this.moveDot(position);
+        this.resizeLine(position);
     }
 
     private handleMouseLeftButtonDown(event: MouseLeftButtonDownEvent): void {
@@ -89,7 +88,7 @@ export class CueCanvas extends CueCanvasBase implements ICueCanvas {
         this.changeSize(size);
     }
 
-    private changeDot(position: Position): void {
+    private moveDot(position: Position): void {
         const currentlyHovered = this.gridCanvas.getDotByPosition(position);
         const previouslyHovered = this.gridCanvas.getDotById(this.previouslyHoveredDotId!);
 
@@ -101,7 +100,7 @@ export class CueCanvas extends CueCanvasBase implements ICueCanvas {
         }
     }
 
-    private changeLine(position: Position): void {
+    private resizeLine(position: Position): void {
         const previousClickedDot = this.gridCanvas.getDotById(this.previouslyClickedDotId!);
 
         if (!previousClickedDot) {
@@ -109,12 +108,11 @@ export class CueCanvas extends CueCanvasBase implements ICueCanvas {
         }
 
         if (this.currentLine) {
-            const id = this.currentLine.id;
-            this.currentLine = this.createLine(previousClickedDot, position);
-            this.currentLine.id = id;
+            this.currentLine = this.createLine(previousClickedDot, position, this.currentLine.id);
             super.invokeMoveLine(this.currentLine);
         } else {
-            this.currentLine = this.createLine(previousClickedDot, position);
+            const lineId = this.ids.next();
+            this.currentLine = this.createLine(previousClickedDot, position, lineId);
             this.drawLine(this.currentLine);
         }
     }
@@ -122,8 +120,10 @@ export class CueCanvas extends CueCanvasBase implements ICueCanvas {
     private changeSide(position: Position): void {
         const clickedDot = this.gridCanvas.getDotByPosition(position);
         if (clickedDot) {
+
             this.currentSide = this.currentSide === CanvasSide.Front ? CanvasSide.Back : CanvasSide.Front;
             this.previouslyClickedDotId = clickedDot.id;
+
             if (this.currentLine) {
                 this.invokeRemoveLine(this.currentLine);
                 this.currentLine = undefined;
@@ -149,15 +149,13 @@ export class CueCanvas extends CueCanvasBase implements ICueCanvas {
         }
     }
 
-    private createLine(previousClickedDot: GridDot, currentMousePosition: Position): CueLine {
+    private createLine(previousClickedDot: GridDot, currentMousePosition: Position, lineId: Id): CueLine {
         const fromDot = this.converter.convertToCueDot(previousClickedDot, this.dotColor);
 
         const toDotId = this.ids.next();
         const toDot = { ...currentMousePosition, id: toDotId, radius: this.dotRadius, color: this.dotColor };
 
-        const lineId = this.ids.next();
         const line = { id: lineId, from: fromDot, to: toDot, width: this.lineWidth, color: this.lineColor };
-
         return line;
     }
 
