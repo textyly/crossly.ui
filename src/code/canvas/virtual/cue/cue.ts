@@ -40,10 +40,7 @@ export class CueCanvas extends CueCanvasBase implements ICueCanvas {
         this.ids.reset();
 
         const previouslyHovered = this.gridCanvas.getDotById(this.previouslyHoveredDotId!);
-        if (previouslyHovered) {
-            super.invokeRemoveDot(previouslyHovered);
-            this.previouslyHoveredDotId = undefined;
-        }
+        this.removeHoveredDot(previouslyHovered);
 
         if (this.currentLine) {
             const position = this.currentLine.to;
@@ -97,15 +94,9 @@ export class CueCanvas extends CueCanvasBase implements ICueCanvas {
         const previouslyHovered = this.gridCanvas.getDotById(this.previouslyHoveredDotId!);
 
         if (!currentlyHovered) {
-            if (previouslyHovered) {
-                super.invokeRemoveDot(previouslyHovered);
-                this.previouslyHoveredDotId = undefined;
-            }
+            this.removeHoveredDot(previouslyHovered);
         } else if (currentlyHovered.id !== previouslyHovered?.id) {
-            if (previouslyHovered) {
-                super.invokeRemoveDot(previouslyHovered);
-                this.previouslyHoveredDotId = undefined;
-            }
+            this.removeHoveredDot(previouslyHovered);
             this.hoverDot(currentlyHovered);
         }
     }
@@ -149,6 +140,13 @@ export class CueCanvas extends CueCanvasBase implements ICueCanvas {
         this.previouslyHoveredDotId = hoveredDot.id;
         const hovered = { id: hoveredDot.id, x: hoveredDot.x, y: hoveredDot.y, radius: this.dotRadius, color: this.dotColor };
         super.invokeDrawDot(hovered);
+    }
+
+    private removeHoveredDot(hoveredDot?: GridDot): void {
+        if (hoveredDot) {
+            super.invokeRemoveDot(hoveredDot);
+            this.previouslyHoveredDotId = undefined;
+        }
     }
 
     private createLine(previousClickedDot: GridDot, currentMousePosition: Position): CueLine {

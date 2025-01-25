@@ -31,8 +31,12 @@ export class GridCanvas extends GridCanvasBase implements IGridCanvas {
         this.dotsIds = new IdGenerator();
         this.dots = new Map();
 
+        // make space for invisible dots, respectively invisible rows and columns
         const spacing = config.spacing.value / 2;
+
+        // lines and dots are blurry if x and y are integers, that is why we add 0.5
         this._spacing = Math.floor(spacing) + 0.5;
+
         this._spacingZoomStep = config.spacing.zoomStep;
 
         this._visibleRows = config.rows;
@@ -120,12 +124,16 @@ export class GridCanvas extends GridCanvasBase implements IGridCanvas {
 
     private handleZoomIn(): void {
         const spacing = this.spacing + this._spacingZoomStep;
+
+        // lines and dots are blurry if x and y are integers, that is why we add 0.5
         this._spacing = Math.floor(spacing) + 0.5;
         super.zoomIn();
     }
 
     private handleZoomOut(): void {
         const spacing = this.spacing - this._spacingZoomStep;
+
+        // lines and dots are blurry if x and y are integers, that is why we subtract 0.5
         this._spacing = Math.floor(spacing) - 0.5;
         super.zoomOut();
     }
@@ -188,6 +196,7 @@ export class GridCanvas extends GridCanvasBase implements IGridCanvas {
 
     private drawLines(): void {
         this.linesIds.reset();
+
         this.drawColumnsLines();
         this.drawRowsLines();
     }
@@ -247,7 +256,7 @@ export class GridCanvas extends GridCanvasBase implements IGridCanvas {
     }
 
     private calculateSize(): void {
-        // TODO: check this calculations
+        // TODO: check this calculations whether they can become simpler
         const width = this.spacing + (this.allColumns * this.dotRadius) + ((this.allColumns - 1) * this.spacing);
         const height = this.spacing + (this.allRows * this.dotRadius) + ((this.allRows - 1) * this.spacing);
 
