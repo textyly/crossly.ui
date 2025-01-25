@@ -125,7 +125,7 @@ export class CueCanvas extends CueCanvasBase implements ICueCanvas {
             this.previouslyClickedDotId = clickedDot.id;
 
             if (this.currentLine) {
-                this.invokeRemoveLine(this.currentLine);
+                super.invokeRemoveLine(this.currentLine);
                 this.currentLine = undefined;
             }
         }
@@ -149,6 +149,14 @@ export class CueCanvas extends CueCanvasBase implements ICueCanvas {
         }
     }
 
+    private drawLine(line: CueLine): void {
+        if (this.currentSide === CanvasSide.Front) {
+            super.invokeDrawLine(line);
+        } else {
+            super.invokeDrawDashLine(line);
+        }
+    }
+
     private createLine(previousClickedDot: GridDot, currentMousePosition: Position, lineId: Id): CueLine {
         const fromDot = this.converter.convertToCueDot(previousClickedDot, this.dotColor);
 
@@ -157,13 +165,5 @@ export class CueCanvas extends CueCanvasBase implements ICueCanvas {
 
         const line = { id: lineId, from: fromDot, to: toDot, width: this.lineWidth, color: this.lineColor };
         return line;
-    }
-
-    private drawLine(line: CueLine): void {
-        if (this.currentSide === CanvasSide.Front) {
-            super.invokeDrawLine(line);
-        } else {
-            super.invokeDrawDashLine(line);
-        }
     }
 }

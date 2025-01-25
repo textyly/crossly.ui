@@ -13,7 +13,7 @@ export class StitchCanvas extends StitchCanvasBase implements IStitchCanvas {
 
     private lines: Array<StitchLine>;
     private currentSide: CanvasSide;
-    private previousClickedDotId?: Id; // TODO: create ticket, very messy code around this prop
+    private previousClickedDotId?: Id;
 
     constructor(config: StitchCanvasConfig, inputCanvas: IInputCanvas, gridCanvas: IGridCanvas) {
         super(config);
