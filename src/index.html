@@ -1,17 +1,21 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="en-US">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>knittyly</title>
+    <meta charset="utf-8" />
+    <title>Canvas tutorial</title>
     <link rel="shortcut icon" href="./assets/favicon.ico" type="image/x-icon">
     <link rel="stylesheet" href="./styles/styles.css">
 </head>
 
 <body>
-    <svg id="grid" width="2000" height="2000" xmlns="http://www.w3.org/2000/svg">
-    </svg>
+    <div id="crossly">
+        <canvas id="grid-dots"></canvas>
+        <svg id="grid-lines" xmlns="http://www.w3.org/2000/svg"> </svg>
+        <canvas id="stitch"></canvas>
+        <svg id="cue" xmlns="http://www.w3.org/2000/svg"> </svg>
+        <svg id="input" xmlns="http://www.w3.org/2000/svg"> </svg>
+    </div>
     <script type="module" src="./code/main.js"></script>
 </body>
 

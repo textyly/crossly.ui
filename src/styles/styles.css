@@ -1,3 +1,45 @@
 body {
-    background-color: #ffffff;
+  margin: 0;
+}
+
+#crossly {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+}
+
+#grid-lines {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+}
+
+#grid-dots {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 2;
+}
+
+#stitch {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 3;
+}
+
+#cue {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 4;
+
+}
+
+#input {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 5;
 }

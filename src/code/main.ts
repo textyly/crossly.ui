@@ -1,6 +1,11 @@
-import { AppBuilder } from "./builder.js";
-import { App } from "./app.js";
+import { CanvasBuilder } from "./builder.js";
+import { ConfigFactory } from "./config/default.js";
 
-const builder = new AppBuilder();
-const app: App = builder.build();
-app.run();
+const canvasBuilder = new CanvasBuilder();
+
+const configFactory = new ConfigFactory();
+const config = configFactory.create();
+canvasBuilder.withConfig(config);
+
+const canvas = canvasBuilder.build();
+canvas.draw();
