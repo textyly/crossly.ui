@@ -10,7 +10,7 @@ export type StitchDot = Dot & { side: CanvasSide };
 export type CueDot = Dot;
 
 export type Line<TDot> = { from: TDot, to: TDot, width: number, color: string };
-export type GridLine = Line<GridDot> & { visibility: Visibility };
+export type GridLine = Line<GridDot> & { id: Id, visibility: Visibility };
 export type StitchLine = Line<StitchDot> & { side: CanvasSide };
 export type CueLine = Line<CueDot> & { id: Id };
 

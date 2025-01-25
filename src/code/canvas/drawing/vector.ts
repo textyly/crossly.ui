@@ -12,7 +12,8 @@ export class VectorDrawing extends CanvasBase implements IVectorDrawing {
     }
 
     public drawDot(dot: StitchDot): SvgDot {
-        const circle = this.createCircle(dot);
+        const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        this.moveDot(dot, circle);
         this.svgCanvas.appendChild(circle);
         return circle;
     }
@@ -22,13 +23,15 @@ export class VectorDrawing extends CanvasBase implements IVectorDrawing {
     }
 
     public drawLine(line: StitchLine): SvgLine {
-        const svgLine = this.createLine(line);
+        const svgLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        this.moveLine(line, svgLine);
         this.svgCanvas.appendChild(svgLine);
         return svgLine;
     }
 
     public drawDashLine(line: StitchLine): SvgLine {
-        const svgLine = this.createLine(line);
+        const svgLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        this.moveLine(line, svgLine);
         svgLine.setAttribute("stroke-dasharray", "5,2"); //TODO: !!!
         this.svgCanvas.appendChild(svgLine);
         return svgLine;
@@ -47,9 +50,7 @@ export class VectorDrawing extends CanvasBase implements IVectorDrawing {
         this.svgCanvas.setAttribute("height", height);
     }
 
-    private createCircle(dot: StitchDot): SVGCircleElement {
-        const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-
+    public moveDot(dot: StitchDot, circle: SvgDot): SvgDot {
         const cx = dot.x.toString();
         const cy = dot.y.toString();
         const r = dot.radius.toString();
@@ -62,9 +63,7 @@ export class VectorDrawing extends CanvasBase implements IVectorDrawing {
         return circle;
     }
 
-    private createLine(line: StitchLine): SvgLine {
-        const svgLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-
+    public moveLine(line: StitchLine, svgLine: SvgLine): SvgLine {
         const x1 = line.from.x.toString();
         const y1 = line.from.y.toString();
         const x2 = line.to.x.toString();

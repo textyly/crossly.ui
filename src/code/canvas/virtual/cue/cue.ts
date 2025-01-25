@@ -33,10 +33,17 @@ export class CueCanvas extends CueCanvasBase implements ICueCanvas {
     }
 
     public override draw(): void {
+        this.redraw();
+    }
+
+    private redraw(): void {
         this.ids.reset();
 
-        const previousHoveredDot = this.gridCanvas.getDotById(this.previouslyHoveredDotId!);
-        this.unhoverDot(previousHoveredDot);
+        const previouslyHovered = this.gridCanvas.getDotById(this.previouslyHoveredDotId!);
+        if (previouslyHovered) {
+            super.invokeRemoveDot(previouslyHovered);
+            this.previouslyHoveredDotId = undefined;
+        }
 
         if (this.currentLine) {
             const position = this.currentLine.to;
@@ -90,9 +97,15 @@ export class CueCanvas extends CueCanvasBase implements ICueCanvas {
         const previouslyHovered = this.gridCanvas.getDotById(this.previouslyHoveredDotId!);
 
         if (!currentlyHovered) {
-            this.unhoverDot(previouslyHovered);
+            if (previouslyHovered) {
+                super.invokeRemoveDot(previouslyHovered);
+                this.previouslyHoveredDotId = undefined;
+            }
         } else if (currentlyHovered.id !== previouslyHovered?.id) {
-            this.unhoverDot(previouslyHovered);
+            if (previouslyHovered) {
+                super.invokeRemoveDot(previouslyHovered);
+                this.previouslyHoveredDotId = undefined;
+            }
             this.hoverDot(currentlyHovered);
         }
     }
@@ -105,12 +118,14 @@ export class CueCanvas extends CueCanvasBase implements ICueCanvas {
         }
 
         if (this.currentLine) {
-            this.removeLine(this.currentLine);
-            this.currentLine = undefined;
+            const id = this.currentLine.id;
+            this.currentLine = this.createLine(previousClickedDot, position);
+            this.currentLine.id = id;
+            super.invokeMoveLine(this.currentLine);
+        } else {
+            this.currentLine = this.createLine(previousClickedDot, position);
+            this.drawLine(this.currentLine);
         }
-
-        this.currentLine = this.createLine(previousClickedDot, position);
-        this.drawLine(this.currentLine);
     }
 
     private changeSide(position: Position): void {
@@ -118,6 +133,10 @@ export class CueCanvas extends CueCanvasBase implements ICueCanvas {
         if (clickedDot) {
             this.currentSide = this.currentSide === CanvasSide.Front ? CanvasSide.Back : CanvasSide.Front;
             this.previouslyClickedDotId = clickedDot.id;
+            if (this.currentLine) {
+                this.invokeRemoveLine(this.currentLine);
+                this.currentLine = undefined;
+            }
         }
     }
 
@@ -129,14 +148,7 @@ export class CueCanvas extends CueCanvasBase implements ICueCanvas {
     private hoverDot(hoveredDot: GridDot): void {
         this.previouslyHoveredDotId = hoveredDot.id;
         const hovered = { id: hoveredDot.id, x: hoveredDot.x, y: hoveredDot.y, radius: this.dotRadius, color: this.dotColor };
-        super.invokeHoverDot(hovered);
-    }
-
-    private unhoverDot(previousHoveredDot?: GridDot): void {
-        if (previousHoveredDot) {
-            super.invokeUnhoverDot(previousHoveredDot);
-        }
-        this.previouslyHoveredDotId = undefined;
+        super.invokeDrawDot(hovered);
     }
 
     private createLine(previousClickedDot: GridDot, currentMousePosition: Position): CueLine {
@@ -153,18 +165,9 @@ export class CueCanvas extends CueCanvasBase implements ICueCanvas {
 
     private drawLine(line: CueLine): void {
         if (this.currentSide === CanvasSide.Front) {
-            super.invokeDrawFrontLine(line);
+            super.invokeDrawLine(line);
         } else {
-            super.invokeDrawBackLine(line);
-        }
-    }
-
-
-    private removeLine(line: CueLine): void {
-        if (this.currentSide === CanvasSide.Front) {
-            super.invokeRemoveFrontLine(line);
-        } else {
-            super.invokeRemoveBackLine(line);
+            super.invokeDrawDashLine(line);
         }
     }
 }

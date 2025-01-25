@@ -70,14 +70,13 @@ export interface IStitchCanvas extends IVirtualCanvas<StitchCanvasConfig> {
 }
 
 export interface ICueCanvas extends IVirtualCanvas<CueCanvasConfig> {
-    onHoverDot(listener: HoverCueDotListener): VoidUnsubscribe;
-    onUnhoverDot(listener: UnhoverCueListener): VoidUnsubscribe;
+    onDrawDot(listener: DrawCueDotListener): VoidUnsubscribe;
+    onRemoveDot(listener: RemoveCueDotListener): VoidUnsubscribe;
 
-    onDrawFrontLine(listener: DrawCueLineListener): VoidUnsubscribe;
-    onRemoveFrontLine(listener: RemoveCueLineListener): VoidUnsubscribe;
-
-    onDrawBackLine(listener: DrawCueLineListener): VoidUnsubscribe;
-    onRemoveBackLine(listener: RemoveCueLineListener): VoidUnsubscribe;
+    onDrawLine(listener: DrawCueLineListener): VoidUnsubscribe;
+    onDrawDashLine(listener: DrawCueLineListener): VoidUnsubscribe;
+    onMoveLine(listener: MoveCueLineListener): VoidUnsubscribe;
+    onRemoveLine(listener: RemoveCueLineListener): VoidUnsubscribe;
 }
 
 export interface IDotMatcher {
@@ -96,14 +95,17 @@ export type DrawStitchLineListener = Listener<DrawStitchLineEvent>;
 export type DrawGridLineEvent = { line: GridLine };
 export type DrawGridLineListener = Listener<DrawGridLineEvent>;
 
+export type DrawCueDotEvent = { dot: CueDot };
+export type DrawCueDotListener = Listener<DrawCueDotEvent>;
+
 export type DrawCueLineEvent = { line: CueLine };
 export type DrawCueLineListener = Listener<DrawCueLineEvent>;
 
+export type RemoveCueDotEvent = { dot: CueDot };
+export type RemoveCueDotListener = Listener<RemoveCueDotEvent>;
+
+export type MoveCueLineEvent = { line: CueLine };
+export type MoveCueLineListener = Listener<MoveCueLineEvent>;
+
 export type RemoveCueLineEvent = { line: CueLine };
-export type RemoveCueLineListener = Listener<RemoveCueLineEvent>;
-
-export type HoverCueDotEvent = { dot: CueDot };
-export type HoverCueDotListener = Listener<HoverCueDotEvent>;
-
-export type UnhoverCueDotEvent = { dot: CueDot };
-export type UnhoverCueListener = Listener<UnhoverCueDotEvent>;
+export type RemoveCueLineListener = Listener<MoveCueLineEvent>;

@@ -7,43 +7,45 @@ import {
     CueCanvasConfig,
     DrawCueLineEvent,
     DrawCueLineListener,
-    HoverCueDotEvent,
-    HoverCueDotListener,
+    DrawCueDotEvent,
+    DrawCueDotListener,
+    RemoveCueDotEvent,
+    MoveCueLineEvent,
+    RemoveCueDotListener,
+    MoveCueLineListener,
     RemoveCueLineEvent,
     RemoveCueLineListener,
-    UnhoverCueDotEvent,
-    UnhoverCueListener
 } from "../types.js";
 
 export abstract class CueCanvasBase extends VirtualCanvasBase<CueCanvasConfig> {
-    private readonly messaging: IMessaging6<HoverCueDotEvent, UnhoverCueDotEvent, DrawCueLineEvent, RemoveCueLineEvent, DrawCueLineEvent, RemoveCueLineEvent>;
+    private readonly messaging: IMessaging6<DrawCueDotEvent, DrawCueLineEvent, RemoveCueDotEvent, MoveCueLineEvent, DrawCueLineEvent, RemoveCueLineEvent>;
 
     constructor(config: CueCanvasConfig) {
         super(config);
         this.messaging = new Messaging6();
     }
 
-    public onHoverDot(listener: HoverCueDotListener): VoidUnsubscribe {
+    public onDrawDot(listener: DrawCueDotListener): VoidUnsubscribe {
         return this.messaging.listenOnChannel1(listener);
     }
 
-    public onUnhoverDot(listener: UnhoverCueListener): VoidUnsubscribe {
+    public onDrawLine(listener: DrawCueLineListener): VoidUnsubscribe {
         return this.messaging.listenOnChannel2(listener);
     }
 
-    public onDrawFrontLine(listener: DrawCueLineListener): VoidUnsubscribe {
+    public onRemoveDot(listener: RemoveCueDotListener): VoidUnsubscribe {
         return this.messaging.listenOnChannel3(listener);
     }
 
-    public onRemoveFrontLine(listener: RemoveCueLineListener): VoidUnsubscribe {
+    public onMoveLine(listener: MoveCueLineListener): VoidUnsubscribe {
         return this.messaging.listenOnChannel4(listener);
     }
 
-    public onDrawBackLine(listener: DrawCueLineListener): VoidUnsubscribe {
+    public onDrawDashLine(listener: DrawCueLineListener): VoidUnsubscribe {
         return this.messaging.listenOnChannel5(listener);
     }
 
-    public onRemoveBackLine(listener: RemoveCueLineListener): VoidUnsubscribe {
+    public onRemoveLine(listener: RemoveCueLineListener): VoidUnsubscribe {
         return this.messaging.listenOnChannel6(listener);
     }
 
@@ -52,33 +54,33 @@ export abstract class CueCanvasBase extends VirtualCanvasBase<CueCanvasConfig> {
         super.dispose();
     }
 
-    protected invokeHoverDot(dot: CueDot): void {
-        const hoverDotEvent = { dot };
-        this.messaging.sendToChannel1(hoverDotEvent);
+    protected invokeDrawDot(dot: CueDot): void {
+        const drawDotEvent = { dot };
+        this.messaging.sendToChannel1(drawDotEvent);
     }
 
-    protected invokeUnhoverDot(dot: CueDot): void {
-        const unhoverDotEvent = { dot };
-        this.messaging.sendToChannel2(unhoverDotEvent);
-    }
-
-    protected invokeDrawFrontLine(line: CueLine): void {
+    protected invokeDrawLine(line: CueLine): void {
         const drawLineEvent = { line };
-        this.messaging.sendToChannel3(drawLineEvent);
+        this.messaging.sendToChannel2(drawLineEvent);
     }
 
-    protected invokeRemoveFrontLine(line: CueLine): void {
-        const removeLineEvent = { line };
-        this.messaging.sendToChannel4(removeLineEvent);
+    protected invokeRemoveDot(dot: CueDot): void {
+        const drawDotEvent = { dot };
+        this.messaging.sendToChannel3(drawDotEvent);
     }
 
-    protected invokeDrawBackLine(line: CueLine): void {
+    protected invokeMoveLine(line: CueLine): void {
+        const drawLineEvent = { line };
+        this.messaging.sendToChannel4(drawLineEvent);
+    }
+
+    protected invokeDrawDashLine(line: CueLine): void {
         const drawLineEvent = { line };
         this.messaging.sendToChannel5(drawLineEvent);
     }
 
-    protected invokeRemoveBackLine(line: CueLine): void {
-        const removeLineEvent = { line };
-        this.messaging.sendToChannel6(removeLineEvent);
+    protected invokeRemoveLine(line: CueLine): void {
+        const drawLineEvent = { line };
+        this.messaging.sendToChannel6(drawLineEvent);
     }
 }

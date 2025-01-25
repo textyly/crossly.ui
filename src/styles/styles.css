@@ -8,25 +8,32 @@ body {
   height: 100vh;
 }
 
-#grid {
+#grid-lines {
   position: absolute;
   top: 0;
   left: 0;
   z-index: 1;
 }
 
-#stitch {
+#grid-dots {
   position: absolute;
   top: 0;
   left: 0;
   z-index: 2;
 }
 
-#cue {
+#stitch {
   position: absolute;
   top: 0;
   left: 0;
   z-index: 3;
+}
+
+#cue {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 4;
 
 }
 
@@ -34,5 +41,5 @@ body {
   position: absolute;
   top: 0;
   left: 0;
-  z-index: 4;
+  z-index: 5;
 }

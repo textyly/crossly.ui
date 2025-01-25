@@ -10,7 +10,8 @@ export class GridCanvas extends GridCanvasBase implements IGridCanvas {
     private readonly dotMatcher: IDotMatcher;
     private readonly dotsUtility: DotsUtility<GridDot>;
 
-    private readonly ids: IdGenerator;
+    private readonly linesIds: IdGenerator;
+    private readonly dotsIds: IdGenerator;
     private readonly dots: Map<Id, GridDot>;
 
     private _spacing!: number;
@@ -26,10 +27,12 @@ export class GridCanvas extends GridCanvasBase implements IGridCanvas {
         this.dotMatcher = dotMatcher;
         this.dotsUtility = new DotsUtility();
 
-        this.ids = new IdGenerator();
+        this.linesIds = new IdGenerator();
+        this.dotsIds = new IdGenerator();
         this.dots = new Map();
 
-        this._spacing = this.calculateSpacing(config.spacing.value);
+        const spacing = config.spacing.value / 2;
+        this._spacing = Math.floor(spacing) + 0.5;
         this._spacingZoomStep = config.spacing.zoomStep;
 
         this._visibleRows = config.rows;
@@ -44,7 +47,8 @@ export class GridCanvas extends GridCanvasBase implements IGridCanvas {
 
     public set spacing(value: number) {
         if (this._spacing !== value) {
-            this._spacing = this.calculateSpacing(value);
+            const spacing = value;
+            this._spacing = Math.floor(spacing) + 0.5;
             this.draw();
         }
     }
@@ -88,10 +92,8 @@ export class GridCanvas extends GridCanvasBase implements IGridCanvas {
     }
 
     public draw(): void {
-        this.createDots();
-        this.calculateSize();
-        this.drawLines();
-        this.drawDots();
+        super.invokeRedraw();
+        this.redraw();
     }
 
     public getDotById(id: string): GridDot | undefined {
@@ -109,6 +111,13 @@ export class GridCanvas extends GridCanvasBase implements IGridCanvas {
         }
     }
 
+    private redraw(): void {
+        this.createDots();
+        this.calculateSize();
+        this.drawLines();
+        this.drawDots();
+    }
+
     private subscribe(): void {
         const zoomInUn = this.inputCanvas.onZoomIn(this.handleZoomIn.bind(this));
         super.registerUn(zoomInUn);
@@ -118,17 +127,19 @@ export class GridCanvas extends GridCanvasBase implements IGridCanvas {
     }
 
     private handleZoomIn(): void {
-        this._spacing += this._spacingZoomStep;
+        const spacing = this.spacing + this._spacingZoomStep;
+        this._spacing = Math.floor(spacing) + 0.5;
         super.zoomIn();
     }
 
     private handleZoomOut(): void {
-        this._spacing -= this._spacingZoomStep;
+        const spacing = this.spacing - this._spacingZoomStep;
+        this._spacing = Math.floor(spacing) - 0.5;
         super.zoomOut();
     }
 
     private createDots(): void {
-        this.ids.reset();
+        this.dotsIds.reset();
         this.dots.clear();
 
         for (let rowIdx = 0; rowIdx < this.allRows; ++rowIdx) {
@@ -164,7 +175,7 @@ export class GridCanvas extends GridCanvasBase implements IGridCanvas {
         const x = (dotIdx * this.spacing) + this.spacing;
         const y = (rowIdx * this.spacing) + this.spacing;
 
-        const id = this.ids.next();
+        const id = this.dotsIds.next();
         const dot = { id, x, y, radius: this.dotRadius, visibility, color: this.dotColor };
         return dot;
     }
@@ -184,6 +195,7 @@ export class GridCanvas extends GridCanvasBase implements IGridCanvas {
     }
 
     private drawLines(): void {
+        this.linesIds.reset();
         this.drawColumnsLines();
         this.drawRowsLines();
     }
@@ -204,8 +216,9 @@ export class GridCanvas extends GridCanvasBase implements IGridCanvas {
         const toStrDotId = toDotId.toString();
         const toDot = this.dots.get(toStrDotId)!;
 
+        const id = this.linesIds.next();
         const dots = this.dotsUtility.ensureDots(fromDot, toDot);
-        const line = { from: dots.from, to: dots.to, width: this.lineWidth, visibility, color: this.lineColor }
+        const line = { id, from: dots.from, to: dots.to, width: this.lineWidth, visibility, color: this.lineColor }
         this.drawLine(line);
     }
 
@@ -226,8 +239,9 @@ export class GridCanvas extends GridCanvasBase implements IGridCanvas {
         const toStrDotId = toDotId.toString();
         const toDot = this.dots.get(toStrDotId)!;
 
+        const id = this.linesIds.next();
         const dots = this.dotsUtility.ensureDots(fromDot, toDot);
-        const line = { from: dots.from, to: dots.to, width: this.lineWidth, visibility, color: this.lineColor }
+        const line = { id, from: dots.from, to: dots.to, width: this.lineWidth, visibility, color: this.lineColor }
         this.drawLine(line);
     }
 
@@ -238,12 +252,6 @@ export class GridCanvas extends GridCanvasBase implements IGridCanvas {
         } else {
             super.invokeDrawInvisibleLine(line);
         }
-    }
-
-    private calculateSpacing(value: number): number {
-        // create space for the invisible rows and columns (of dots)
-        const spacing = value / 2;
-        return spacing;
     }
 
     private calculateSize(): void {

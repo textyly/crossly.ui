@@ -30,12 +30,17 @@ export class StitchCanvas extends StitchCanvasBase implements IStitchCanvas {
     }
 
     public draw(): void {
-        this.drawLines();
+        this.invokeRedraw();
+        this.redraw();
     }
 
     public override dispose(): void {
         this.lines = [];
         super.dispose();
+    }
+
+    private redraw(): void {
+        this.drawLines();
     }
 
     private subscribe(): void {

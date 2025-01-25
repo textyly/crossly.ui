@@ -7,20 +7,20 @@ const gridConfig: GridCanvasConfig = {
     rows: 30,
     spacing: {
         value: 25,
-        zoomStep: 2.5
+        zoomStep: 0.5
     },
     dot: {
         color: "#9fa19f",
         radius: {
             value: 2,
-            zoomStep: 0.2
+            zoomStep: 0.1
         }
     },
     line: {
         color: "#d2d4d2",
         width: {
             value: 1,
-            zoomStep: 0.1
+            zoomStep: 0.05
         }
     }
 };
@@ -30,14 +30,14 @@ const stitchConfig: StitchCanvasConfig = {
         color: "gray",
         radius: {
             value: 2,
-            zoomStep: 0.2
+            zoomStep: 0.1
         },
     },
     line: {
         color: "gray",
         width: {
-            value: 5,
-            zoomStep: 0.5
+            value: 6,
+            zoomStep: 0.30
         }
     }
 }
@@ -47,14 +47,14 @@ const cueConfig: CueCanvasConfig = {
         color: "gray",
         radius: {
             value: 4,
-            zoomStep: 0.4
+            zoomStep: 0.1
         },
     },
     line: {
         color: "gray",
         width: {
             value: 2,
-            zoomStep: 0.2
+            zoomStep: 0.05
         }
     }
 }

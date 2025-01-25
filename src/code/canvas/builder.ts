@@ -1,4 +1,3 @@
-import { CanvasConfig, ICrosslyCanvas } from "./types.js";
 import { CrosslyCanvas } from "./crossly.js";
 import { InputCanvas } from "./input/input.js";
 import { IInputCanvas } from "./input/types.js";
@@ -8,6 +7,7 @@ import { IDrawingCanvas } from "./drawing/types.js";
 import { VectorDrawing } from "./drawing/vector.js";
 import { GridDrawingCanvas } from "./drawing/grid.js";
 import { StitchDrawingCanvas } from "./drawing/stitch.js";
+import { CanvasConfig, ICrosslyCanvas } from "./types.js";
 import { InputCanvasThrottler } from "./input/throttler.js";
 import { ICueCanvas, IGridCanvas, IStitchCanvas } from "./virtual/types.js";
 
@@ -28,27 +28,28 @@ export class CrosslyCanvasBuilder {
         return this;
     }
 
-    public withInputCanvas(htmlSvgElement: HTMLElement): CrosslyCanvasBuilder {
-        const inputCanvas = new InputCanvas(htmlSvgElement);
+    public withInputCanvas(inputSvgElement: HTMLElement): CrosslyCanvasBuilder {
+        const inputCanvas = new InputCanvas(inputSvgElement);
         const inputCanvasThrottler = new InputCanvasThrottler(inputCanvas);
         this.inputCanvas = inputCanvasThrottler;
         return this;
     }
 
-    public withGridCanvas(htmlCanvasElement: HTMLCanvasElement): CrosslyCanvasBuilder {
-        const rasterDrawing = new RasterDrawing(htmlCanvasElement);
-        this.gridDrawingCanvas = new GridDrawingCanvas(rasterDrawing);
+    public withGridCanvas(gridDotsCanvasElement: HTMLCanvasElement, gridLinesSvgElement: HTMLElement): CrosslyCanvasBuilder {
+        const rasterDrawing = new RasterDrawing(gridDotsCanvasElement);
+        const vectorDrawing = new VectorDrawing(gridLinesSvgElement);
+        this.gridDrawingCanvas = new GridDrawingCanvas(rasterDrawing, vectorDrawing);
         return this;
     }
 
-    public withStitchCanvas(htmlCanvasElement: HTMLCanvasElement): CrosslyCanvasBuilder {
-        const rasterDrawing = new RasterDrawing(htmlCanvasElement);
+    public withStitchCanvas(stitchCanvasElement: HTMLCanvasElement): CrosslyCanvasBuilder {
+        const rasterDrawing = new RasterDrawing(stitchCanvasElement);
         this.stitchDrawingCanvas = new StitchDrawingCanvas(rasterDrawing);
         return this;
     }
 
-    public withCueCanvas(htmlSvgElement: HTMLElement): CrosslyCanvasBuilder {
-        const vectorDrawing = new VectorDrawing(htmlSvgElement);
+    public withCueCanvas(cueSvgElement: HTMLElement): CrosslyCanvasBuilder {
+        const vectorDrawing = new VectorDrawing(cueSvgElement);
         this.cueDrawingCanvas = new CueDrawingCanvas(vectorDrawing);
         return this;
     }

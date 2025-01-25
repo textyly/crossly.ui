@@ -18,6 +18,9 @@ export class StitchDrawingCanvas extends CanvasBase implements IDrawingCanvas<IS
         const drawFrontLineUn = stitchCanvas.onDrawFrontLine(this.handleDrawFrontLine.bind(this));
         super.registerUn(drawFrontLineUn);
 
+        const redrawUn = stitchCanvas.onRedraw(this.handleRedraw.bind(this));
+        super.registerUn(redrawUn);
+
         const sizeChangeUn = stitchCanvas.onSizeChange(this.handleSizeChange.bind(this));
         super.registerUn(sizeChangeUn);
     }
@@ -30,6 +33,10 @@ export class StitchDrawingCanvas extends CanvasBase implements IDrawingCanvas<IS
     private handleDrawFrontDot(event: DrawStitchDotEvent): void {
         const dot = event.dot;
         this.rasterDrawing.drawDot(dot);
+    }
+
+    private handleRedraw(): void {
+        this.rasterDrawing.clear();
     }
 
     private handleSizeChange(event: SizeChangeEvent): void {

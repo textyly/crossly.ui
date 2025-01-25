@@ -1,5 +1,5 @@
-import { CanvasConfig, ICrosslyCanvas } from "./canvas/types.js";
 import { CrosslyCanvasBuilder } from "./canvas/builder.js";
+import { CanvasConfig, ICrosslyCanvas } from "./canvas/types.js";
 
 export class CanvasBuilder {
     private readonly crosslyCanvasBuilder: CrosslyCanvasBuilder;
@@ -14,10 +14,11 @@ export class CanvasBuilder {
         const inputHTMLElement = this.buildInputHTMLElement();
         this.crosslyCanvasBuilder.withInputCanvas(inputHTMLElement);
 
-        const dotHTMLElement = this.buildDotHTMLElement();
-        this.crosslyCanvasBuilder.withGridCanvas(dotHTMLElement);
+        const gridDotsHTMLElement = this.buildGridDotsHTMLElement();
+        const gridLinesHTMLElement = this.buildGridLinesHTMLElement();
+        this.crosslyCanvasBuilder.withGridCanvas(gridDotsHTMLElement, gridLinesHTMLElement);
 
-        const lineHTMLElement = this.buildLineHTMLElement();
+        const lineHTMLElement = this.buildStitchHTMLElement();
         this.crosslyCanvasBuilder.withStitchCanvas(lineHTMLElement);
 
         const cueHTMLElement = this.buildCueHTMLElement();
@@ -38,12 +39,17 @@ export class CanvasBuilder {
         return htmlSvgElement;
     }
 
-    private buildDotHTMLElement(): HTMLCanvasElement {
-        const htmlCanvasElement = document.getElementById("grid") as HTMLCanvasElement;
+    private buildGridDotsHTMLElement(): HTMLCanvasElement {
+        const htmlCanvasElement = document.getElementById("grid-dots") as HTMLCanvasElement;
         return htmlCanvasElement;
     }
 
-    private buildLineHTMLElement(): HTMLCanvasElement {
+    private buildGridLinesHTMLElement(): HTMLElement {
+        const htmlCanvasElement = document.getElementById("grid-lines") as HTMLElement;
+        return htmlCanvasElement;
+    }
+
+    private buildStitchHTMLElement(): HTMLCanvasElement {
         const htmlCanvasElement = document.getElementById("stitch") as HTMLCanvasElement;
         return htmlCanvasElement;
     }
