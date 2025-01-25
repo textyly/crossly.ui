@@ -45,14 +45,6 @@ export class GridCanvas extends GridCanvasBase implements IGridCanvas {
         return this._spacing;
     }
 
-    public set spacing(value: number) {
-        if (this._spacing !== value) {
-            const spacing = value;
-            this._spacing = Math.floor(spacing) + 0.5;
-            this.draw();
-        }
-    }
-
     public get spacingZoomStep(): number {
         return this.spacingZoomStep;
     }

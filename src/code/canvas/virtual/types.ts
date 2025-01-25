@@ -43,7 +43,6 @@ export interface IVirtualCanvas<TConfig> extends ICanvas {
 
 export interface IGridCanvas extends IVirtualCanvas<GridCanvasConfig> {
     get spacing(): number;
-    set spacing(value: number);
 
     get rows(): number;
     set rows(value: number);
