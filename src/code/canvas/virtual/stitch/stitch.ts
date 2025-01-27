@@ -50,8 +50,11 @@ export class StitchCanvas extends StitchCanvasBase implements IStitchCanvas {
         const zoomOutUn = this.inputCanvas.onZoomOut(this.handleZoomOut.bind(this));
         super.registerUn(zoomOutUn);
 
-        const mouseLeftButtonDownUn = this.inputCanvas.onMouseLeftButtonDown(this.handleMouseLeftButtonDown.bind(this));
+        const mouseLeftButtonDownUn = this.inputCanvas.onMouseLeftButtonDown(this.handleMouseButtonClick.bind(this));
         super.registerUn(mouseLeftButtonDownUn);
+
+        const mouseLeftButtonDownUp = this.inputCanvas.onMouseLeftButtonUp(this.handleMouseButtonClick.bind(this));
+        super.registerUn(mouseLeftButtonDownUp);
 
         const sizeChangeUn = this.gridCanvas.onSizeChange(this.handleSizeChange.bind(this));
         super.registerUn(sizeChangeUn);
@@ -65,7 +68,7 @@ export class StitchCanvas extends StitchCanvasBase implements IStitchCanvas {
         super.zoomOut();
     }
 
-    private handleMouseLeftButtonDown(event: MouseLeftButtonDownEvent): void {
+    private handleMouseButtonClick(event: MouseLeftButtonDownEvent): void {
         const position = event.position;
         this.handleDotClick(position);
     }
@@ -78,6 +81,10 @@ export class StitchCanvas extends StitchCanvasBase implements IStitchCanvas {
     private handleDotClick(position: Position): void {
         const currentlyClickedDot = this.gridCanvas.getDotByPosition(position);
         if (!currentlyClickedDot) {
+            return;
+        }
+
+        if (currentlyClickedDot.id === this.previousClickedDotId) {
             return;
         }
 

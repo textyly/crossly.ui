@@ -1,9 +1,8 @@
 import { CanvasBase } from "../base.js";
 import { VoidUnsubscribe } from "../../types.js";
-import { Messaging4 } from "../../messaging/impl.js";
-import { IMessaging4 } from "../../messaging/types.js";
+import { Messaging5 } from "../../messaging/impl.js";
+import { IMessaging5 } from "../../messaging/types.js";
 import {
-    IInputCanvas,
     MouseLeftButtonDownEvent,
     MouseMoveEvent,
     ZoomInListener,
@@ -12,16 +11,18 @@ import {
     MouseLeftButtonDownListener,
     ZoomInEvent,
     ZoomOutEvent,
-    Position
+    Position,
+    MouseLeftButtonUpListener,
+    MouseLeftButtonUpEvent
 } from "./types.js";
 
 
-export abstract class InputCanvasBase extends CanvasBase implements IInputCanvas {
-    private readonly messaging: IMessaging4<ZoomInEvent, ZoomOutEvent, MouseMoveEvent, MouseLeftButtonDownEvent>;
+export abstract class InputCanvasBase extends CanvasBase {
+    private readonly messaging: IMessaging5<ZoomInEvent, ZoomOutEvent, MouseMoveEvent, MouseLeftButtonDownEvent, MouseLeftButtonUpEvent>;
 
     constructor() {
         super();
-        this.messaging = new Messaging4();
+        this.messaging = new Messaging5();
     }
 
     public onZoomIn(listener: ZoomInListener): VoidUnsubscribe {
@@ -38,6 +39,10 @@ export abstract class InputCanvasBase extends CanvasBase implements IInputCanvas
 
     public onMouseLeftButtonDown(listener: MouseLeftButtonDownListener): VoidUnsubscribe {
         return this.messaging.listenOnChannel4(listener);
+    }
+
+    public onMouseLeftButtonUp(listener: MouseLeftButtonUpListener): VoidUnsubscribe {
+        return this.messaging.listenOnChannel5(listener);
     }
 
     public override dispose(): void {
@@ -61,5 +66,10 @@ export abstract class InputCanvasBase extends CanvasBase implements IInputCanvas
     protected invokeMouseLeftButtonDown(position: Position): void {
         const event = { position };
         this.messaging.sendToChannel4(event);
+    }
+
+    protected invokeMouseLeftButtonUp(position: Position): void {
+        const event = { position };
+        this.messaging.sendToChannel5(event);
     }
 }

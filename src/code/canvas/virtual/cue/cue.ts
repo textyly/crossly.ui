@@ -57,8 +57,11 @@ export class CueCanvas extends CueCanvasBase implements ICueCanvas {
         const mouseMoveUn = this.inputCanvas.onMouseMove(this.handleMouseMove.bind(this));
         super.registerUn(mouseMoveUn);
 
-        const mouseLeftButtonDownUn = this.inputCanvas.onMouseLeftButtonDown(this.handleMouseLeftButtonDown.bind(this));
+        const mouseLeftButtonDownUn = this.inputCanvas.onMouseLeftButtonDown(this.handleMouseButtonClick.bind(this));
         super.registerUn(mouseLeftButtonDownUn);
+
+        const mouseLeftButtonDownUp = this.inputCanvas.onMouseLeftButtonUp(this.handleMouseButtonClick.bind(this));
+        super.registerUn(mouseLeftButtonDownUp);
 
         const sizeChangeUn = this.gridCanvas.onSizeChange(this.handleSizeChange.bind(this));
         super.registerUn(sizeChangeUn);
@@ -78,9 +81,9 @@ export class CueCanvas extends CueCanvasBase implements ICueCanvas {
         this.resizeThread(position);
     }
 
-    private handleMouseLeftButtonDown(event: MouseLeftButtonDownEvent): void {
+    private handleMouseButtonClick(event: MouseLeftButtonDownEvent): void {
         const position = event.position;
-        this.changeSide(position);
+        this.handleDotClick(position);
     }
 
     private handleSizeChange(event: SizeChangeEvent): void {
@@ -117,9 +120,9 @@ export class CueCanvas extends CueCanvasBase implements ICueCanvas {
         }
     }
 
-    private changeSide(position: Position): void {
+    private handleDotClick(position: Position): void {
         const clickedDot = this.gridCanvas.getDotByPosition(position);
-        if (clickedDot) {
+        if (clickedDot && (clickedDot.id !== this.previouslyClickedDotId)) {
 
             this.currentSide = this.currentSide === CanvasSide.Front ? CanvasSide.Back : CanvasSide.Front;
             this.previouslyClickedDotId = clickedDot.id;

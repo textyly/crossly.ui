@@ -31,16 +31,16 @@ export class VectorDrawing extends CanvasBase implements IVectorDrawing {
     }
 
     public drawLine(thread: Thread<Dot>): SvgLine {
-        const svgLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        const svgLine = document.createElementNS("http://www.w3.org/2000/svg", "line");
         this.moveLine(thread, svgLine);
         this.svgCanvas.appendChild(svgLine);
         return svgLine;
     }
 
     public drawDashLine(thread: Thread<Dot>): SvgLine {
-        const svgLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        const svgLine = document.createElementNS("http://www.w3.org/2000/svg", "line");
         this.moveLine(thread, svgLine);
-        svgLine.setAttribute("stroke-dasharray", "5,2"); //TODO: !!!
+        svgLine.setAttribute("stroke-dasharray", "5,2"); //TODO: move it to the config!!!
         this.svgCanvas.appendChild(svgLine);
         return svgLine;
     }
@@ -56,14 +56,14 @@ export class VectorDrawing extends CanvasBase implements IVectorDrawing {
         const y2 = thread.to.y.toString();
         const width = thread.width.toString();
 
-        svgLine.setAttribute('x1', x1);
+        svgLine.setAttribute("x1", x1);
         svgLine.setAttribute('y1', y1);
 
-        svgLine.setAttribute('x2', x2);
-        svgLine.setAttribute('y2', y2);
+        svgLine.setAttribute("x2", x2);
+        svgLine.setAttribute("y2", y2);
 
-        svgLine.setAttribute('stroke', thread.color);
-        svgLine.setAttribute('stroke-width', width);
+        svgLine.setAttribute("stroke", thread.color);
+        svgLine.setAttribute("stroke-width", width);
 
         return svgLine;
     }

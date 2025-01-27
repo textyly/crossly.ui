@@ -1,12 +1,20 @@
 import { Size } from "../types.js";
 import { InputCanvasBase } from "./base.js";
-import { HtmlCanvasEvents, MouseEventHandler, Position, WheelChangeHandler, WheelEvent } from "./types.js";
+import {
+    HtmlCanvasEvents,
+    IInputCanvas,
+    MouseEventHandler,
+    Position,
+    WheelChangeHandler,
+    WheelEvent
+} from "./types.js";
 
-export class InputCanvas extends InputCanvasBase {
+export class InputCanvas extends InputCanvasBase implements IInputCanvas {
     private readonly htmlElement: HTMLElement;
     private readonly wheelChangeHandler: WheelChangeHandler;
     private readonly mouseMoveHandler: MouseEventHandler;
     private readonly mouseButtonDownHandler: MouseEventHandler;
+    private readonly mouseButtonUpHandler: MouseEventHandler;
 
     constructor(htmlElement: HTMLElement) {
         super();
@@ -15,7 +23,8 @@ export class InputCanvas extends InputCanvasBase {
 
         this.wheelChangeHandler = this.handleWheelChange.bind(this);
         this.mouseMoveHandler = this.handleMouseMove.bind(this);
-        this.mouseButtonDownHandler = this.handleMouseButtonDown.bind(this)
+        this.mouseButtonDownHandler = this.handleMouseButtonDown.bind(this);
+        this.mouseButtonUpHandler = this.handleMouseButtonUp.bind(this);
 
         this.subscribe();
     }
@@ -33,20 +42,16 @@ export class InputCanvas extends InputCanvasBase {
         this.htmlElement.removeEventListener(HtmlCanvasEvents.WheelChange, this.wheelChangeHandler);
         this.htmlElement.removeEventListener(HtmlCanvasEvents.MouseMove, this.mouseMoveHandler);
         this.htmlElement.removeEventListener(HtmlCanvasEvents.MouseDown, this.mouseButtonDownHandler);
-        super.dispose();
-    }
+        this.htmlElement.removeEventListener(HtmlCanvasEvents.MouseUp, this.mouseButtonUpHandler);
 
-    private getPosition(event: MouseEvent): Position {
-        const rect = this.htmlElement.getBoundingClientRect();
-        const x = event.clientX - rect.left;
-        const y = event.clientY - rect.top;
-        return { x, y };
+        super.dispose();
     }
 
     private subscribe(): void {
         this.htmlElement.addEventListener(HtmlCanvasEvents.WheelChange, this.wheelChangeHandler);
         this.htmlElement.addEventListener(HtmlCanvasEvents.MouseMove, this.mouseMoveHandler);
         this.htmlElement.addEventListener(HtmlCanvasEvents.MouseDown, this.mouseButtonDownHandler);
+        this.htmlElement.addEventListener(HtmlCanvasEvents.MouseUp, this.mouseButtonUpHandler);
     }
 
     private handleWheelChange(event: WheelEvent): void {
@@ -69,5 +74,21 @@ export class InputCanvas extends InputCanvasBase {
         if (event.button === leftButton) {
             super.invokeMouseLeftButtonDown(position);
         }
+    }
+
+    private handleMouseButtonUp(event: MouseEvent): void {
+        const position = this.getPosition(event);
+
+        const leftButton = 0;
+        if (event.button === leftButton) {
+            super.invokeMouseLeftButtonUp(position);
+        }
+    }
+
+    private getPosition(event: MouseEvent): Position {
+        const rect = this.htmlElement.getBoundingClientRect();
+        const x = event.clientX - rect.left;
+        const y = event.clientY - rect.top;
+        return { x, y };
     }
 }

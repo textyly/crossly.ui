@@ -7,21 +7,24 @@ export interface IInputCanvas extends ICanvas {
     onZoomIn(listener: ZoomInListener): VoidUnsubscribe;
     onZoomOut(listener: ZoomOutListener): VoidUnsubscribe;
     onSizeChange(listener: SizeChangeListener): VoidUnsubscribe;
-    onMouseMove(listener: MouseMoveListener): VoidUnsubscribe;
     onMouseLeftButtonDown(listener: MouseLeftButtonDownListener): VoidUnsubscribe;
+    onMouseLeftButtonUp(listener: MouseLeftButtonUpListener): VoidUnsubscribe;
+    onMouseMove(listener: MouseMoveListener): VoidUnsubscribe;
 }
 
 export enum HtmlCanvasEvents {
     WheelChange = "wheel",
-    MouseDown = "mousedown",
     MouseMove = "mousemove",
+    MouseDown = "mousedown",
+    MouseUp = "mouseup",
 }
 
 export enum CanvasEventType {
     ZoomIn = "zoom-in",
     ZoomOut = "zoom-out",
     MouseMove = "mouse-move",
-    MouseLeftButtonDown = "mouse-left-button-down"
+    MouseLeftButtonDown = "mouse-left-button-down",
+    MouseLeftButtonUp = "mouse-left-button-up",
 }
 
 export type WheelEvent = { deltaY: number, ctrlKey: boolean, preventDefault: () => void };
@@ -38,6 +41,9 @@ export type PositionEvent = { position: Position };
 
 export type MouseLeftButtonDownEvent = PositionEvent;
 export type MouseLeftButtonDownListener = Listener<MouseLeftButtonDownEvent>;
+
+export type MouseLeftButtonUpEvent = PositionEvent;
+export type MouseLeftButtonUpListener = Listener<MouseLeftButtonUpEvent>;
 
 export type ZoomInEvent = {};
 export type ZoomInListener = Listener<ZoomInEvent>;

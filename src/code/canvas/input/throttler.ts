@@ -6,8 +6,10 @@ import {
     MouseMoveEvent,
     CanvasEventType,
     MouseLeftButtonDownEvent,
+    MouseLeftButtonUpEvent,
 } from "./types.js";
 
+// TODO: all methods should have a common one
 export class InputCanvasThrottler extends InputCanvasBase {
     private readonly inputCanvas: IInputCanvas;
 
@@ -49,6 +51,9 @@ export class InputCanvasThrottler extends InputCanvasBase {
         super.registerUn(mouseMoveUn);
 
         const mouseLeftButtonDown = this.inputCanvas.onMouseLeftButtonDown(this.handleMouseLeftButtonDown.bind(this));
+        super.registerUn(mouseLeftButtonDown);
+
+        const mouseLeftButtonUp = this.inputCanvas.onMouseLeftButtonUp(this.handleMouseLeftButtonUp.bind(this));
         super.registerUn(mouseLeftButtonDown);
 
         this.timerId = setInterval(this.handleTimer.bind(this), this.timerInterval);
@@ -114,6 +119,22 @@ export class InputCanvasThrottler extends InputCanvasBase {
         }
     }
 
+    private handleMouseLeftButtonUp(event: MouseLeftButtonUpEvent): void {
+        const position = event.position;
+
+        if (this.groupedEvents.length == 0) {
+            this.groupedEvents.push({ type: CanvasEventType.MouseLeftButtonUp, value: position });
+        } else {
+            const lastEvent = this.groupedEvents.pop()!;
+
+            if (lastEvent.type !== CanvasEventType.MouseLeftButtonUp) {
+                this.groupedEvents.push(lastEvent);
+            }
+
+            this.groupedEvents.push({ type: CanvasEventType.MouseLeftButtonUp, value: position });
+        }
+    }
+
     private handleTimer(): void {
         this.handleEvents();
     }
@@ -142,6 +163,10 @@ export class InputCanvasThrottler extends InputCanvasBase {
             }
             case CanvasEventType.MouseLeftButtonDown: {
                 super.invokeMouseLeftButtonDown(position);
+                break;
+            }
+            case CanvasEventType.MouseLeftButtonUp: {
+                super.invokeMouseLeftButtonUp(position);
                 break;
             }
         }
