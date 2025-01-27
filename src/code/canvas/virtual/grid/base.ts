@@ -2,30 +2,30 @@ import { VirtualCanvasBase } from "../base.js";
 import { VoidUnsubscribe } from "../../../types.js";
 import { Messaging4 } from "../../../messaging/impl.js";
 import { IMessaging4 } from "../../../messaging/types.js";
-import { GridCanvasConfig, GridDot, GridLine } from "../../types.js";
-import { DrawGridDotEvent, DrawGridDotListener, DrawGridLineEvent, DrawGridLineListener } from "../types.js";
+import { GridCanvasConfig, GridDot, GridThread } from "../../types.js";
+import { DrawGridDotsEvent, DrawGridDotsListener, DrawGridThreadsEvent, DrawGridThreadsListener } from "../types.js";
 
 export abstract class GridCanvasBase extends VirtualCanvasBase<GridCanvasConfig> {
-    private readonly messaging: IMessaging4<DrawGridDotEvent, DrawGridDotEvent, DrawGridLineEvent, DrawGridLineEvent>;
+    private readonly messaging: IMessaging4<DrawGridDotsEvent, DrawGridDotsEvent, DrawGridThreadsEvent, DrawGridThreadsEvent>;
 
     constructor(config: GridCanvasConfig) {
         super(config);
         this.messaging = new Messaging4();
     }
 
-    public onDrawVisibleDot(listener: DrawGridDotListener): VoidUnsubscribe {
+    public onDrawVisibleDots(listener: DrawGridDotsListener): VoidUnsubscribe {
         return this.messaging.listenOnChannel1(listener);
     }
 
-    public onDrawInvisibleDot(listener: DrawGridDotListener): VoidUnsubscribe {
+    public onDrawInvisibleDots(listener: DrawGridDotsListener): VoidUnsubscribe {
         return this.messaging.listenOnChannel2(listener);
     }
 
-    public onDrawVisibleLine(listener: DrawGridLineListener): VoidUnsubscribe {
+    public onDrawVisibleThreads(listener: DrawGridThreadsListener): VoidUnsubscribe {
         return this.messaging.listenOnChannel3(listener);
     }
 
-    public onDrawInvisibleLine(listener: DrawGridLineListener): VoidUnsubscribe {
+    public onDrawInvisibleThreads(listener: DrawGridThreadsListener): VoidUnsubscribe {
         return this.messaging.listenOnChannel4(listener);
     }
 
@@ -34,23 +34,23 @@ export abstract class GridCanvasBase extends VirtualCanvasBase<GridCanvasConfig>
         super.dispose();
     }
 
-    protected invokeDrawVisibleDot(dot: GridDot): void {
-        const drawDotEvent = { dot };
+    protected invokeDrawVisibleDots(dots: Array<GridDot>): void {
+        const drawDotEvent = { dots };
         this.messaging.sendToChannel1(drawDotEvent);
     }
 
-    protected invokeDrawInvisibleDot(dot: GridDot): void {
-        const drawDotEvent = { dot };
+    protected invokeDrawInvisibleDots(dots: Array<GridDot>): void {
+        const drawDotEvent = { dots };
         this.messaging.sendToChannel2(drawDotEvent);
     }
 
-    protected invokeDrawVisibleLine(line: GridLine): void {
-        const drawLineEvent = { line };
-        this.messaging.sendToChannel3(drawLineEvent);
+    protected invokeDrawVisibleThreads(threads: Array<GridThread>): void {
+        const drawThreadsEvent = { threads };
+        this.messaging.sendToChannel3(drawThreadsEvent);
     }
 
-    protected invokeDrawInvisibleLine(line: GridLine): void {
-        const drawLineEvent = { line };
-        this.messaging.sendToChannel4(drawLineEvent);
+    protected invokeDrawInvisibleThreads(threads: Array<GridThread>): void {
+        const drawThreadsEvent = { threads };
+        this.messaging.sendToChannel4(drawThreadsEvent);
     }
 } 

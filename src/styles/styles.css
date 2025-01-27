@@ -2,13 +2,7 @@ body {
   margin: 0;
 }
 
-#crossly {
-  position: relative;
-  width: 100vw;
-  height: 100vh;
-}
-
-#grid-lines {
+#grid-threads {
   position: absolute;
   top: 0;
   left: 0;
@@ -34,10 +28,9 @@ body {
   top: 0;
   left: 0;
   z-index: 4;
-
 }
 
-#input {
+#crossly {
   position: absolute;
   top: 0;
   left: 0;

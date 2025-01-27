@@ -8,19 +8,19 @@ export type GridDot = Dot & { visibility: Visibility };
 export type StitchDot = Dot & { side: CanvasSide };
 export type CueDot = Dot;
 
-export type Line<TDot> = { from: TDot, to: TDot, width: number, color: string };
-export type GridLine = Line<GridDot> & { id: Id, visibility: Visibility };
-export type StitchLine = Line<StitchDot> & { side: CanvasSide };
-export type CueLine = Line<CueDot> & { id: Id };
+export type Thread<TDot> = { from: TDot, to: TDot, width: number, color: string };
+export type GridThread = Thread<GridDot> & { id: Id, visibility: Visibility };
+export type StitchThread = Thread<StitchDot> & { side: CanvasSide };
+export type CueThread = Thread<CueDot> & { id: Id };
 
 export type CanvasConfig = {
     dot: DotConfig,
-    line: LineConfig
+    thread: ThreadConfig
 };
 
 export type ZoomItemConfig = { value: number; zoomStep: number; };
 export type DotConfig = { color: string; radius: ZoomItemConfig; };
-export type LineConfig = { color: string; width: ZoomItemConfig; };
+export type ThreadConfig = { color: string; width: ZoomItemConfig; };
 export type SpacingConfig = ZoomItemConfig;
 
 export type GridCanvasConfig = CanvasConfig & {

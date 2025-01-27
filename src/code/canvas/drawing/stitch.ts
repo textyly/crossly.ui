@@ -1,9 +1,9 @@
 import { CanvasBase } from "../base.js";
-import { SizeChangeEvent } from "../types.js";
-import { IDrawingCanvas, IRasterDrawing } from "./types.js";
-import { DrawStitchDotEvent, DrawStitchLineEvent, IStitchCanvas } from "../virtual/types.js";
+import { Dot, SizeChangeEvent } from "../types.js";
+import { IRasterDrawing, IStitchDrawingCanvas } from "./types.js";
+import { DrawStitchThreadsEvent, IStitchCanvas } from "../virtual/types.js";
 
-export class StitchDrawingCanvas extends CanvasBase implements IDrawingCanvas<IStitchCanvas> {
+export class StitchDrawingCanvas extends CanvasBase implements IStitchDrawingCanvas {
     private readonly rasterDrawing: IRasterDrawing;
 
     constructor(rasterDrawing: IRasterDrawing) {
@@ -12,11 +12,8 @@ export class StitchDrawingCanvas extends CanvasBase implements IDrawingCanvas<IS
     }
 
     public subscribe(stitchCanvas: IStitchCanvas): void {
-        const drawFrontDotUn = stitchCanvas.onDrawFrontDot(this.handleDrawFrontDot.bind(this));
-        super.registerUn(drawFrontDotUn);
-
-        const drawFrontLineUn = stitchCanvas.onDrawFrontLine(this.handleDrawFrontLine.bind(this));
-        super.registerUn(drawFrontLineUn);
+        const drawFrontThreadsUn = stitchCanvas.onDrawFrontThreads(this.handleDrawFrontThreads.bind(this));
+        super.registerUn(drawFrontThreadsUn);
 
         const redrawUn = stitchCanvas.onRedraw(this.handleRedraw.bind(this));
         super.registerUn(redrawUn);
@@ -25,14 +22,14 @@ export class StitchDrawingCanvas extends CanvasBase implements IDrawingCanvas<IS
         super.registerUn(sizeChangeUn);
     }
 
-    private handleDrawFrontLine(event: DrawStitchLineEvent): void {
-        const line = event.line;
-        this.rasterDrawing.drawLine(line);
-    }
+    private handleDrawFrontThreads(event: DrawStitchThreadsEvent): void {
+        const threads = event.threads;
 
-    private handleDrawFrontDot(event: DrawStitchDotEvent): void {
-        const dot = event.dot;
-        this.rasterDrawing.drawDot(dot);
+        const dots: Array<Dot> = [];
+        threads.forEach((thread) => dots.push(thread.from, thread.to));
+
+        this.rasterDrawing.drawDots(dots);
+        this.rasterDrawing.drawLines(threads);
     }
 
     private handleRedraw(): void {

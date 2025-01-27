@@ -2,11 +2,11 @@ import { Position } from "../input/types.js";
 import { Listener, VoidListener, VoidUnsubscribe } from "../../types.js";
 import {
     StitchDot,
-    StitchLine,
-    CueLine,
+    StitchThread,
+    CueThread,
     ICanvas,
     GridDot,
-    GridLine,
+    GridThread,
     CueDot,
     GridCanvasConfig,
     StitchCanvasConfig,
@@ -22,11 +22,11 @@ export interface IVirtualCanvas<TConfig> extends ICanvas {
     get dotRadius(): number;
     set dotRadius(value: number);
 
-    get lineColor(): string;
-    set lineColor(value: string);
+    get threadColor(): string;
+    set threadColor(value: string);
 
-    get lineWidth(): number;
-    set lineWidth(value: number);
+    get threadWidth(): number;
+    set threadWidth(value: number);
 
     draw(): void;
     onRedraw(listener: VoidListener): VoidUnsubscribe;
@@ -45,58 +45,55 @@ export interface IGridCanvas extends IVirtualCanvas<GridCanvasConfig> {
     getDotById(id: string): GridDot | undefined;
     getDotByPosition(position: Position): GridDot | undefined;
 
-    onDrawVisibleDot(listener: DrawGridDotListener): VoidUnsubscribe;
-    onDrawInvisibleDot(listener: DrawGridDotListener): VoidUnsubscribe;
+    onDrawVisibleDots(listener: DrawGridDotsListener): VoidUnsubscribe;
+    onDrawInvisibleDots(listener: DrawGridDotsListener): VoidUnsubscribe;
 
-    onDrawVisibleLine(listener: DrawGridLineListener): VoidUnsubscribe;
-    onDrawInvisibleLine(listener: DrawGridLineListener): VoidUnsubscribe;
+    onDrawVisibleThreads(listener: DrawGridThreadsListener): VoidUnsubscribe;
+    onDrawInvisibleThreads(listener: DrawGridThreadsListener): VoidUnsubscribe;
 }
 
 export interface IStitchCanvas extends IVirtualCanvas<StitchCanvasConfig> {
-    onDrawFrontDot(listener: DrawStitchDotListener): VoidUnsubscribe;
-    onDrawBackDot(listener: DrawStitchDotListener): VoidUnsubscribe;
-
-    onDrawFrontLine(listener: DrawStitchLineListener): VoidUnsubscribe;
-    onDrawBackLine(listener: DrawStitchLineListener): VoidUnsubscribe;
+    onDrawFrontThreads(listener: DrawStitchThreadsListener): VoidUnsubscribe;
+    onDrawBackThreads(listener: DrawStitchThreadsListener): VoidUnsubscribe;
 }
 
 export interface ICueCanvas extends IVirtualCanvas<CueCanvasConfig> {
     onDrawDot(listener: DrawCueDotListener): VoidUnsubscribe;
     onRemoveDot(listener: RemoveCueDotListener): VoidUnsubscribe;
 
-    onDrawLine(listener: DrawCueLineListener): VoidUnsubscribe;
-    onDrawDashLine(listener: DrawCueLineListener): VoidUnsubscribe;
-    onMoveLine(listener: MoveCueLineListener): VoidUnsubscribe;
-    onRemoveLine(listener: RemoveCueLineListener): VoidUnsubscribe;
+    onDrawThread(listener: DrawCueThreadListener): VoidUnsubscribe;
+    onDrawDashThread(listener: DrawCueThreadListener): VoidUnsubscribe;
+    onMoveThread(listener: MoveCueThreadListener): VoidUnsubscribe;
+    onRemoveThread(listener: RemoveCueThreadListener): VoidUnsubscribe;
 }
 
 export interface IDotMatcher {
     match(dot: GridDot, position: Position): boolean;
 }
 
+export type DrawGridDotsEvent = { dots: Array<GridDot> };
+export type DrawGridDotsListener = Listener<DrawGridDotsEvent>;
+
+export type DrawGridThreadsEvent = { threads: Array<GridThread> };
+export type DrawGridThreadsListener = Listener<DrawGridThreadsEvent>;
+
 export type DrawStitchDotEvent = { dot: StitchDot };
 export type DrawStitchDotListener = Listener<DrawStitchDotEvent>;
 
-export type DrawGridDotEvent = { dot: GridDot };
-export type DrawGridDotListener = Listener<DrawGridDotEvent>;
-
-export type DrawStitchLineEvent = { line: StitchLine };
-export type DrawStitchLineListener = Listener<DrawStitchLineEvent>;
-
-export type DrawGridLineEvent = { line: GridLine };
-export type DrawGridLineListener = Listener<DrawGridLineEvent>;
+export type DrawStitchThreadsEvent = { threads: Array<StitchThread> };
+export type DrawStitchThreadsListener = Listener<DrawStitchThreadsEvent>;
 
 export type DrawCueDotEvent = { dot: CueDot };
 export type DrawCueDotListener = Listener<DrawCueDotEvent>;
 
-export type DrawCueLineEvent = { line: CueLine };
-export type DrawCueLineListener = Listener<DrawCueLineEvent>;
+export type DrawCueThreadEvent = { thread: CueThread };
+export type DrawCueThreadListener = Listener<DrawCueThreadEvent>;
 
 export type RemoveCueDotEvent = { dot: CueDot };
 export type RemoveCueDotListener = Listener<RemoveCueDotEvent>;
 
-export type MoveCueLineEvent = { line: CueLine };
-export type MoveCueLineListener = Listener<MoveCueLineEvent>;
+export type MoveCueThreadEvent = { thread: CueThread };
+export type MoveCueThreadListener = Listener<MoveCueThreadEvent>;
 
-export type RemoveCueLineEvent = { line: CueLine };
-export type RemoveCueLineListener = Listener<MoveCueLineEvent>;
+export type RemoveCueThreadEvent = { thread: CueThread };
+export type RemoveCueThreadListener = Listener<MoveCueThreadEvent>;

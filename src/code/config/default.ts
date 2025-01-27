@@ -17,7 +17,7 @@ export class ConfigFactory {
                     zoomStep: 0.1
                 }
             },
-            line: {
+            thread: {
                 color: "#d2d4d2",
                 width: {
                     value: 1,
@@ -34,7 +34,7 @@ export class ConfigFactory {
                     zoomStep: 0.1
                 },
             },
-            line: {
+            thread: {
                 color: "gray",
                 width: {
                     value: 5,
@@ -51,7 +51,7 @@ export class ConfigFactory {
                     zoomStep: 0.1
                 },
             },
-            line: {
+            thread: {
                 color: "gray",
                 width: {
                     value: 2,

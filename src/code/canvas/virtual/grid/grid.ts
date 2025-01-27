@@ -3,14 +3,14 @@ import { IDotMatcher, IGridCanvas } from "../types.js";
 import { DotsUtility } from "../../../utilities/dots.js";
 import { IInputCanvas, Position } from "../../input/types.js";
 import { IdGenerator } from "../../../utilities/generator.js";
-import { Visibility, Id, GridDot, GridLine, GridCanvasConfig } from "../../types.js";
+import { Visibility, Id, GridDot, GridThread, GridCanvasConfig } from "../../types.js";
 
 export class GridCanvas extends GridCanvasBase implements IGridCanvas {
     private readonly inputCanvas: IInputCanvas;
     private readonly dotMatcher: IDotMatcher;
     private readonly dotsUtility: DotsUtility<GridDot>;
 
-    private readonly linesIds: IdGenerator;
+    private readonly threadIds: IdGenerator;
     private readonly dotsIds: IdGenerator;
     private readonly dots: Map<Id, GridDot>;
 
@@ -27,14 +27,14 @@ export class GridCanvas extends GridCanvasBase implements IGridCanvas {
         this.dotMatcher = dotMatcher;
         this.dotsUtility = new DotsUtility();
 
-        this.linesIds = new IdGenerator();
+        this.threadIds = new IdGenerator();
         this.dotsIds = new IdGenerator();
         this.dots = new Map();
 
         // make space for invisible dots, respectively invisible rows and columns
         const spacing = config.spacing.value / 2;
 
-        // lines and dots are blurry if x and y are integers, that is why we add 0.5
+        // threads and dots are blurry if x and y are integers, that is why we add 0.5
         this._spacing = Math.floor(spacing) + 0.5;
 
         this._spacingZoomStep = config.spacing.zoomStep;
@@ -110,7 +110,7 @@ export class GridCanvas extends GridCanvasBase implements IGridCanvas {
     private redraw(): void {
         this.createDots();
         this.calculateSize();
-        this.drawLines();
+        this.drawThreads();
         this.drawDots();
     }
 
@@ -125,7 +125,7 @@ export class GridCanvas extends GridCanvasBase implements IGridCanvas {
     private handleZoomIn(): void {
         const spacing = this.spacing + this._spacingZoomStep;
 
-        // lines and dots are blurry if x and y are integers, that is why we add 0.5
+        // threads and dots are blurry if x and y are integers, that is why we add 0.5
         this._spacing = Math.floor(spacing) + 0.5;
         super.zoomIn();
     }
@@ -133,7 +133,7 @@ export class GridCanvas extends GridCanvasBase implements IGridCanvas {
     private handleZoomOut(): void {
         const spacing = this.spacing - this._spacingZoomStep;
 
-        // lines and dots are blurry if x and y are integers, that is why we subtract 0.5
+        // threads and dots are blurry if x and y are integers, that is why we subtract 0.5
         this._spacing = Math.floor(spacing) - 0.5;
         super.zoomOut();
     }
@@ -181,35 +181,42 @@ export class GridCanvas extends GridCanvasBase implements IGridCanvas {
     }
 
     private drawDots(): void {
-        this.dots.forEach((dot) => this.drawDot(dot));
+        const allDots = [...this.dots.values()];
+
+        const visibleDots = allDots.filter((d) => d.visibility === Visibility.Visible);
+        super.invokeDrawVisibleDots(visibleDots);
+
+        const invisibleDots = allDots.filter((d) => d.visibility === Visibility.Invisible);
+        super.invokeDrawInvisibleDots(invisibleDots);
     }
 
-    private drawDot(dot: GridDot): void {
-        const isVisibleDot = dot.visibility === Visibility.Visible;
+    private drawThreads(): void {
+        this.threadIds.reset();
 
-        if (isVisibleDot) {
-            super.invokeDrawVisibleDot(dot);
-        } else {
-            super.invokeDrawInvisibleDot(dot);
-        }
+        this.drawColumnsThreads();
+        this.drawRowsThreads();
     }
 
-    private drawLines(): void {
-        this.linesIds.reset();
+    private drawColumnsThreads(): void {
+        const visibleThreads: Array<GridThread> = [];
+        const invisibleThreads: Array<GridThread> = [];
 
-        this.drawColumnsLines();
-        this.drawRowsLines();
-    }
-
-    private drawColumnsLines(): void {
         for (let columnIdx = 0; columnIdx < this.allColumns; ++columnIdx) {
             const isVisibleColumn = columnIdx % 2 === 0;
-            const visibility = isVisibleColumn ? Visibility.Visible : Visibility.Invisible;
-            this.drawColumnLine(columnIdx, visibility);
+            if (isVisibleColumn) {
+                const visibleThread = this.createColumnThread(columnIdx, Visibility.Visible);
+                visibleThreads.push(visibleThread);
+            } else {
+                const invisibleThread = this.createColumnThread(columnIdx, Visibility.Invisible);
+                invisibleThreads.push(invisibleThread);
+            }
         }
+
+        super.invokeDrawVisibleThreads(visibleThreads);
+        super.invokeDrawInvisibleThreads(invisibleThreads);
     }
 
-    private drawColumnLine(columnIdx: number, visibility: Visibility): void {
+    private createColumnThread(columnIdx: number, visibility: Visibility): GridThread {
         const fromDotId = columnIdx.toString();
         const fromDot = this.dots.get(fromDotId)!;
 
@@ -217,21 +224,33 @@ export class GridCanvas extends GridCanvasBase implements IGridCanvas {
         const toStrDotId = toDotId.toString();
         const toDot = this.dots.get(toStrDotId)!;
 
-        const id = this.linesIds.next();
+        const id = this.threadIds.next();
         const dots = this.dotsUtility.ensureDots(fromDot, toDot);
-        const line = { id, from: dots.from, to: dots.to, width: this.lineWidth, visibility, color: this.lineColor }
-        this.drawLine(line);
+
+        const thread = { id, from: dots.from, to: dots.to, width: this.threadWidth, visibility, color: this.threadColor }
+        return thread;
     }
 
-    private drawRowsLines(): void {
+    private drawRowsThreads(): void {
+        const visibleThreads: Array<GridThread> = [];
+        const invisibleThreads: Array<GridThread> = [];
+
         for (let rowIdx = 0; rowIdx < this.allRows; ++rowIdx) {
             const isVisibleColumn = rowIdx % 2 === 0;
-            const visibility = isVisibleColumn ? Visibility.Visible : Visibility.Invisible;
-            this.drawRowLine(rowIdx, visibility);
+            if (isVisibleColumn) {
+                const visibleThread = this.createRowThread(rowIdx, Visibility.Visible);
+                visibleThreads.push(visibleThread);
+            } else {
+                const invisibleThread = this.createRowThread(rowIdx, Visibility.Invisible);
+                invisibleThreads.push(invisibleThread);
+            }
         }
+
+        super.invokeDrawVisibleThreads(visibleThreads);
+        super.invokeDrawInvisibleThreads(invisibleThreads);
     }
 
-    private drawRowLine(rowIdx: number, visibility: Visibility): void {
+    private createRowThread(rowIdx: number, visibility: Visibility): GridThread {
         const fromDotId = rowIdx * this.allColumns;
         const fromStrDotId = fromDotId.toString();
         const fromDot = this.dots.get(fromStrDotId)!;
@@ -240,19 +259,11 @@ export class GridCanvas extends GridCanvasBase implements IGridCanvas {
         const toStrDotId = toDotId.toString();
         const toDot = this.dots.get(toStrDotId)!;
 
-        const id = this.linesIds.next();
+        const id = this.threadIds.next();
         const dots = this.dotsUtility.ensureDots(fromDot, toDot);
-        const line = { id, from: dots.from, to: dots.to, width: this.lineWidth, visibility, color: this.lineColor }
-        this.drawLine(line);
-    }
 
-    private drawLine(line: GridLine): void {
-        const isVisibleLine = line.visibility === Visibility.Visible;
-        if (isVisibleLine) {
-            super.invokeDrawVisibleLine(line);
-        } else {
-            super.invokeDrawInvisibleLine(line);
-        }
+        const thread = { id, from: dots.from, to: dots.to, width: this.threadWidth, visibility, color: this.threadColor }
+        return thread;
     }
 
     private calculateSize(): void {

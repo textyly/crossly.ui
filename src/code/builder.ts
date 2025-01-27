@@ -15,11 +15,11 @@ export class CanvasBuilder {
         this.crosslyCanvasBuilder.withInputCanvas(inputHTMLElement);
 
         const gridDotsHTMLElement = this.buildGridDotsHTMLElement();
-        const gridLinesHTMLElement = this.buildGridLinesHTMLElement();
-        this.crosslyCanvasBuilder.withGridCanvas(gridDotsHTMLElement, gridLinesHTMLElement);
+        const gridThreadsHTMLElement = this.buildGridThreadsHTMLElement();
+        this.crosslyCanvasBuilder.withGridCanvas(gridDotsHTMLElement, gridThreadsHTMLElement);
 
-        const lineHTMLElement = this.buildStitchHTMLElement();
-        this.crosslyCanvasBuilder.withStitchCanvas(lineHTMLElement);
+        const stitchHTMLElement = this.buildStitchHTMLElement();
+        this.crosslyCanvasBuilder.withStitchCanvas(stitchHTMLElement);
 
         const cueHTMLElement = this.buildCueHTMLElement();
         this.crosslyCanvasBuilder.withCueCanvas(cueHTMLElement);
@@ -35,7 +35,7 @@ export class CanvasBuilder {
     }
 
     private buildInputHTMLElement(): HTMLElement {
-        const htmlSvgElement = document.getElementById("input") as HTMLElement;
+        const htmlSvgElement = document.getElementById("crossly") as HTMLElement;
         return htmlSvgElement;
     }
 
@@ -44,8 +44,8 @@ export class CanvasBuilder {
         return htmlCanvasElement;
     }
 
-    private buildGridLinesHTMLElement(): HTMLElement {
-        const htmlCanvasElement = document.getElementById("grid-lines") as HTMLElement;
+    private buildGridThreadsHTMLElement(): HTMLElement {
+        const htmlCanvasElement = document.getElementById("grid-threads") as HTMLElement;
         return htmlCanvasElement;
     }
 
