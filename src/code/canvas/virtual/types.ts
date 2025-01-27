@@ -59,6 +59,7 @@ export interface IStitchCanvas extends IVirtualCanvas<StitchCanvasConfig> {
 
 export interface ICueCanvas extends IVirtualCanvas<CueCanvasConfig> {
     onDrawDot(listener: DrawCueDotListener): VoidUnsubscribe;
+    onDrawDashDot(listener: DrawCueDotListener): VoidUnsubscribe;
     onRemoveDot(listener: RemoveCueDotListener): VoidUnsubscribe;
 
     onDrawThread(listener: DrawCueThreadListener): VoidUnsubscribe;

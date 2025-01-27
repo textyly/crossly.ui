@@ -10,6 +10,7 @@ import {
     IMessaging7,
     PublicChannels,
     IVoidMessaging,
+    IMessaging8,
 } from "./types.js";
 
 export class VoidMessaging extends Messaging implements IVoidMessaging {
@@ -145,5 +146,22 @@ export class Messaging7<Data1, Data2, Data3, Data4, Data5, Data6, Data7> extends
 
     public sendToChannel7(data: Data7): void {
         super.send(this.channel7, data);
+    }
+}
+
+export class Messaging8<Data1, Data2, Data3, Data4, Data5, Data6, Data7, Data8> extends Messaging7<Data1, Data2, Data3, Data4, Data5, Data6, Data7> implements IMessaging8<Data1, Data2, Data3, Data4, Data5, Data6, Data7, Data8> {
+    private readonly channel8 = PublicChannels.Channel8;
+
+    constructor() {
+        super();
+        super.create(this.channel8);
+    }
+
+    public listenOnChannel8(listener: Listener<Data8>): VoidUnsubscribe {
+        return super.on(this.channel8, listener);
+    }
+
+    public sendToChannel8(data: Data8): void {
+        super.send(this.channel8, data);
     }
 }

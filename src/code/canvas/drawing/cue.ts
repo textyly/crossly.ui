@@ -18,6 +18,9 @@ export class CueDrawingCanvas extends CanvasBase implements ICueDrawingCanvas {
     public subscribe(cueCanvas: ICueCanvas): void {
         const drawDotUn = cueCanvas.onDrawDot(this.handleDrawDot.bind(this));
         super.registerUn(drawDotUn);
+        
+        const drawDashDotUn = cueCanvas.onDrawDashDot(this.handleDrawDashDot.bind(this));
+        super.registerUn(drawDashDotUn);
 
         const removeDotUn = cueCanvas.onRemoveDot(this.handleRemoveDot.bind(this));
         super.registerUn(removeDotUn);
@@ -51,6 +54,14 @@ export class CueDrawingCanvas extends CanvasBase implements ICueDrawingCanvas {
         const id = dot.id;
 
         const svgDot = this.vectorDrawing.drawDot(dot);
+        this.svgDots.set(id, svgDot);
+    }
+
+    private handleDrawDashDot(event: DrawCueDotEvent): void {
+        const dot = event.dot;
+        const id = dot.id;
+
+        const svgDot = this.vectorDrawing.drawDashDot(dot);
         this.svgDots.set(id, svgDot);
     }
 

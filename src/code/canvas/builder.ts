@@ -29,8 +29,8 @@ export class CrosslyCanvasBuilder {
 
     public withInputCanvas(inputElement: HTMLElement): CrosslyCanvasBuilder {
         const inputCanvas = new InputCanvas(inputElement);
-        const inputCanvasThrottler = new InputCanvasThrottler(inputCanvas);
-        this.inputCanvas = inputCanvasThrottler;
+        // TODO: const inputCanvasThrottler = new InputCanvasThrottler(inputCanvas);
+        this.inputCanvas = inputCanvas;
         return this;
     }
 

@@ -11,19 +11,22 @@ export class VectorDrawing extends CanvasBase implements IVectorDrawing {
     }
 
     public drawDot(dot: Dot): SvgDot {
-        const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        const svgDot = this.createDot(dot);
+        this.svgCanvas.appendChild(svgDot);
+        return svgDot;
+    }
 
-        const cx = dot.x.toString();
-        const cy = dot.y.toString();
-        const r = dot.radius.toString();
+    public drawDashDot(dot: Dot): SvgDot {
+        const svgDot = this.createDot(dot);
+        const radius = dot.radius.toString();
 
-        circle.setAttribute("cx", cx);
-        circle.setAttribute("cy", cy);
-        circle.setAttribute("r", r);
-        circle.setAttribute("fill", dot.color);
+        svgDot.setAttribute("fill", "none");
+        svgDot.setAttribute("stroke-dasharray", "5,1");
+        svgDot.setAttribute("stroke", dot.color);
+        svgDot.setAttribute("stroke-width", radius);
 
-        this.svgCanvas.appendChild(circle);
-        return circle;
+        this.svgCanvas.appendChild(svgDot);
+        return svgDot;
     }
 
     public removeDot(dot: SvgDot): void {
@@ -55,6 +58,7 @@ export class VectorDrawing extends CanvasBase implements IVectorDrawing {
         const x2 = thread.to.x.toString();
         const y2 = thread.to.y.toString();
         const width = thread.width.toString();
+        const color = thread.color;
 
         svgLine.setAttribute("x1", x1);
         svgLine.setAttribute('y1', y1);
@@ -62,10 +66,26 @@ export class VectorDrawing extends CanvasBase implements IVectorDrawing {
         svgLine.setAttribute("x2", x2);
         svgLine.setAttribute("y2", y2);
 
-        svgLine.setAttribute("stroke", thread.color);
+        svgLine.setAttribute("stroke", color);
         svgLine.setAttribute("stroke-width", width);
 
         return svgLine;
+    }
+
+    private createDot(dot: Dot): SvgDot {
+        const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+
+        const cx = dot.x.toString();
+        const cy = dot.y.toString();
+        const radius = dot.radius.toString();
+        const color = dot.color;
+
+        circle.setAttribute("cx", cx);
+        circle.setAttribute("cy", cy);
+        circle.setAttribute("r", radius);
+        circle.setAttribute("fill", color);
+
+        return circle;
     }
 
     public override set size(value: Size) {
