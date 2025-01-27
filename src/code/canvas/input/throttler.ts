@@ -50,11 +50,11 @@ export class InputCanvasThrottler extends InputCanvasBase {
         const mouseMoveUn = this.inputCanvas.onMouseMove(this.handleMouseMove.bind(this));
         super.registerUn(mouseMoveUn);
 
-        const mouseLeftButtonDown = this.inputCanvas.onMouseLeftButtonDown(this.handleMouseLeftButtonDown.bind(this));
-        super.registerUn(mouseLeftButtonDown);
+        const mouseLeftButtonDownUn = this.inputCanvas.onMouseLeftButtonDown(this.handleMouseLeftButtonDown.bind(this));
+        super.registerUn(mouseLeftButtonDownUn);
 
-        const mouseLeftButtonUp = this.inputCanvas.onMouseLeftButtonUp(this.handleMouseLeftButtonUp.bind(this));
-        super.registerUn(mouseLeftButtonDown);
+        const mouseLeftButtonUpUn = this.inputCanvas.onMouseLeftButtonUp(this.handleMouseLeftButtonUp.bind(this));
+        super.registerUn(mouseLeftButtonUpUn);
 
         this.timerId = setInterval(this.handleTimer.bind(this), this.timerInterval);
     }

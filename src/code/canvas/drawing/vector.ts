@@ -18,12 +18,12 @@ export class VectorDrawing extends CanvasBase implements IVectorDrawing {
 
     public drawDashDot(dot: Dot): SvgDot {
         const svgDot = this.createDot(dot);
-        const radius = dot.radius.toString();
+        const width = (dot.radius / 2).toString();
 
         svgDot.setAttribute("fill", "none");
         svgDot.setAttribute("stroke-dasharray", "5,1");
         svgDot.setAttribute("stroke", dot.color);
-        svgDot.setAttribute("stroke-width", radius);
+        svgDot.setAttribute("stroke-width", width);
 
         this.svgCanvas.appendChild(svgDot);
         return svgDot;

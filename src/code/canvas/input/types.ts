@@ -11,22 +11,14 @@ export interface IInputCanvas extends ICanvas {
     onMouseLeftButtonDown(listener: MouseLeftButtonDownListener): VoidUnsubscribe;
     onMouseLeftButtonUp(listener: MouseLeftButtonUpListener): VoidUnsubscribe;
 
-    onTouchMove(listener: TouchMoveListener): VoidUnsubscribe;
-    onTouchStart(listener: TouchStartListener): VoidUnsubscribe;
-    onTouchEnd(listener: TouchEndListener): VoidUnsubscribe;
-
     onSizeChange(listener: SizeChangeListener): VoidUnsubscribe;
 }
 
 export enum HtmlCanvasEvents {
     WheelChange = "wheel",
-    MouseMove = "mousemove",
-    MouseDown = "mousedown",
-    MouseUp = "mouseup",
-
-    TouchMove = "touchmove",
-    TouchStart = "touchstart",
-    TouchEnd = "touchend",
+    MouseMove = "pointermove",
+    MouseDown = "pointerdown",
+    MouseUp = "pointerup",
 }
 
 export enum CanvasEventType {
@@ -58,15 +50,3 @@ export type ZoomOutListener = Listener<ZoomOutEvent>;
 
 export type MouseEventHandler = Listener<MouseEvent>;
 export type WheelChangeHandler = Listener<WheelEvent>;
-
-export type TouchEventHandler = Listener<TouchEvent>;
-
-export type PositionsEvent = { positions: Array<Position> };
-export type TouchMoveEvent = PositionsEvent;
-export type TouchMoveListener = Listener<TouchMoveEvent>;
-
-export type TouchStartEvent = PositionsEvent;
-export type TouchStartListener = Listener<TouchStartEvent>;
-
-export type TouchEndEvent = PositionsEvent;
-export type TouchEndListener = Listener<TouchEndEvent>;

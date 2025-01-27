@@ -2,7 +2,7 @@ import { StitchCanvasBase } from "./base.js";
 import { IGridCanvas, IStitchCanvas } from "../types.js";
 import { DotsUtility } from "../../../utilities/dots.js";
 import { Converter } from "../../../utilities/converter.js";
-import { IInputCanvas, MouseLeftButtonDownEvent, Position, TouchEndEvent, TouchStartEvent } from "../../input/types.js";
+import { IInputCanvas, MouseLeftButtonDownEvent, Position } from "../../input/types.js";
 import { CanvasSide, Id, StitchThread, SizeChangeEvent, GridDot, Size, StitchCanvasConfig } from "../../types.js";
 
 export class StitchCanvas extends StitchCanvasBase implements IStitchCanvas {
@@ -56,12 +56,6 @@ export class StitchCanvas extends StitchCanvasBase implements IStitchCanvas {
         const mouseLeftButtonDownUp = this.inputCanvas.onMouseLeftButtonUp(this.handleMouseButtonClick.bind(this));
         super.registerUn(mouseLeftButtonDownUp);
 
-        const touchStartUn = this.inputCanvas.onTouchStart(this.handleTouchClick.bind(this));
-        super.registerUn(touchStartUn);
-
-        const touchEndUn = this.inputCanvas.onTouchEnd(this.handleTouchClick.bind(this));
-        super.registerUn(touchEndUn);
-
         const sizeChangeUn = this.gridCanvas.onSizeChange(this.handleSizeChange.bind(this));
         super.registerUn(sizeChangeUn);
     }
@@ -79,29 +73,19 @@ export class StitchCanvas extends StitchCanvasBase implements IStitchCanvas {
         this.handleDotClick(position);
     }
 
-    private handleTouchClick(event: TouchStartEvent | TouchEndEvent): void {
-        const positions = event.positions;
-        for (const position of positions) {
-            const handled = this.handleDotClick(position);
-            if (handled) {
-                break;
-            }
-        }
-    }
-
     private handleSizeChange(event: SizeChangeEvent): void {
         const size = event.size;
         this.changeSize(size);
     }
 
-    private handleDotClick(position: Position): boolean {
+    private handleDotClick(position: Position): void {
         const currentlyClickedDot = this.gridCanvas.getDotByPosition(position);
         if (!currentlyClickedDot) {
-            return false;
+            return;
         }
 
         if (currentlyClickedDot.id === this.previousClickedDotId) {
-            return false;
+            return;
         }
 
         if (this.previousClickedDotId) {
@@ -112,7 +96,6 @@ export class StitchCanvas extends StitchCanvasBase implements IStitchCanvas {
 
         this.previousClickedDotId = currentlyClickedDot.id;
         this.changeSide();
-        return true;
     }
 
     private changeSize(size: Size): void {

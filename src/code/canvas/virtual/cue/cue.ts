@@ -2,7 +2,7 @@ import { CueCanvasBase } from "./base.js";
 import { ICueCanvas, IGridCanvas } from "../types.js";
 import { Converter } from "../../../utilities/converter.js";
 import { IdGenerator } from "../../../utilities/generator.js";
-import { IInputCanvas, MouseLeftButtonDownEvent, MouseMoveEvent, Position, TouchEndEvent, TouchMoveEvent, TouchStartEvent } from "../../input/types.js";
+import { IInputCanvas, MouseLeftButtonDownEvent, MouseMoveEvent, Position } from "../../input/types.js";
 import { CanvasSide, Id, CueThread, SizeChangeEvent, GridDot, Size, CueCanvasConfig } from "../../types.js";
 
 export class CueCanvas extends CueCanvasBase implements ICueCanvas {
@@ -63,15 +63,6 @@ export class CueCanvas extends CueCanvasBase implements ICueCanvas {
         const mouseLeftButtonDownUp = this.inputCanvas.onMouseLeftButtonUp(this.handleMouseButtonClick.bind(this));
         super.registerUn(mouseLeftButtonDownUp);
 
-        const touchMoveUn = this.inputCanvas.onTouchMove(this.handleTouchMove.bind(this));
-        super.registerUn(touchMoveUn);
-
-        const touchStartUn = this.inputCanvas.onTouchStart(this.handleTouchClick.bind(this));
-        super.registerUn(touchStartUn);
-
-        const touchEndUn = this.inputCanvas.onTouchEnd(this.handleTouchClick.bind(this));
-        super.registerUn(touchEndUn);
-
         const sizeChangeUn = this.gridCanvas.onSizeChange(this.handleSizeChange.bind(this));
         super.registerUn(sizeChangeUn);
     }
@@ -129,7 +120,7 @@ export class CueCanvas extends CueCanvasBase implements ICueCanvas {
         }
     }
 
-    private handleDotClick(position: Position): boolean {
+    private handleDotClick(position: Position): void {
         const clickedDot = this.gridCanvas.getDotByPosition(position);
 
         if (clickedDot && (clickedDot.id !== this.previouslyClickedDotId)) {
@@ -138,28 +129,12 @@ export class CueCanvas extends CueCanvasBase implements ICueCanvas {
             this.previouslyClickedDotId = clickedDot.id;
 
             if (this.currentThread) {
+                if (clickedDot) {
+                    this.removeHoveredDot(clickedDot);
+                    this.hoverDot(clickedDot);
+                }
                 super.invokeRemoveThread(this.currentThread);
                 this.currentThread = undefined;
-            }
-
-            return true;
-        }
-
-        return false;
-    }
-
-    private handleTouchMove(event: TouchMoveEvent): void {
-        const position = event.positions[0];
-        this.moveDot(position);
-        this.resizeThread(position);
-    }
-
-    private handleTouchClick(event: TouchStartEvent | TouchEndEvent): void {
-        const positions = event.positions;
-        for (const position of positions) {
-            const handled = this.handleDotClick(position);
-            if (handled) {
-                break;
             }
         }
     }
@@ -174,9 +149,13 @@ export class CueCanvas extends CueCanvasBase implements ICueCanvas {
 
         const hovered = { id: hoveredDot.id, x: hoveredDot.x, y: hoveredDot.y, radius: this.dotRadius, color: this.dotColor };
 
-        !this.previouslyClickedDotId || (this.currentSide === CanvasSide.Front)
-            ? super.invokeDrawDot(hovered)
-            : super.invokeDrawDashDot(hovered);
+        if (!this.previouslyClickedDotId) {
+            super.invokeDrawDashDot(hovered);
+        } else {
+            this.currentSide === CanvasSide.Front
+                ? super.invokeDrawDot(hovered)
+                : super.invokeDrawDashDot(hovered);
+        }
     }
 
     private removeHoveredDot(hoveredDot?: GridDot): void {

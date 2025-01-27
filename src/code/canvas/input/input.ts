@@ -5,7 +5,6 @@ import {
     IInputCanvas,
     MouseEventHandler,
     Position,
-    TouchEventHandler,
     WheelChangeHandler
 } from "./types.js";
 
@@ -16,10 +15,6 @@ export class InputCanvas extends InputCanvasBase implements IInputCanvas {
     private readonly mouseButtonDownHandler: MouseEventHandler;
     private readonly mouseButtonUpHandler: MouseEventHandler;
 
-    private readonly touchMoveHandler: TouchEventHandler;
-    private readonly touchStartHandler: TouchEventHandler;
-    private readonly touchEndHandler: TouchEventHandler;
-
     constructor(htmlElement: HTMLElement) {
         super();
 
@@ -29,10 +24,6 @@ export class InputCanvas extends InputCanvasBase implements IInputCanvas {
         this.mouseMoveHandler = this.handleMouseMove.bind(this);
         this.mouseButtonDownHandler = this.handleMouseButtonDown.bind(this);
         this.mouseButtonUpHandler = this.handleMouseButtonUp.bind(this);
-
-        this.touchMoveHandler = this.handleTouchMove.bind(this);
-        this.touchStartHandler = this.handleTouchStart.bind(this);
-        this.touchEndHandler = this.handleTouchEnd.bind(this);
 
         this.subscribe();
     }
@@ -52,9 +43,6 @@ export class InputCanvas extends InputCanvasBase implements IInputCanvas {
         this.htmlElement.removeEventListener(HtmlCanvasEvents.MouseDown, this.mouseButtonDownHandler);
         this.htmlElement.removeEventListener(HtmlCanvasEvents.MouseUp, this.mouseButtonUpHandler);
 
-        this.htmlElement.removeEventListener(HtmlCanvasEvents.TouchMove, this.touchMoveHandler);
-        this.htmlElement.removeEventListener(HtmlCanvasEvents.TouchStart, this.touchStartHandler);
-        this.htmlElement.removeEventListener(HtmlCanvasEvents.TouchEnd, this.touchEndHandler);
 
         super.dispose();
     }
@@ -65,9 +53,11 @@ export class InputCanvas extends InputCanvasBase implements IInputCanvas {
         this.htmlElement.addEventListener(HtmlCanvasEvents.MouseDown, this.mouseButtonDownHandler);
         this.htmlElement.addEventListener(HtmlCanvasEvents.MouseUp, this.mouseButtonUpHandler);
 
-        this.htmlElement.addEventListener(HtmlCanvasEvents.TouchMove, this.touchMoveHandler);
-        this.htmlElement.addEventListener(HtmlCanvasEvents.TouchStart, this.touchStartHandler);
-        this.htmlElement.addEventListener(HtmlCanvasEvents.TouchEnd, this.touchEndHandler);
+        this.htmlElement.addEventListener("touchmove", (e) => e.preventDefault());
+        this.htmlElement.addEventListener("touchstart", (e) => e.preventDefault());
+        this.htmlElement.addEventListener("touchend", (e) => e.preventDefault());
+
+
     }
 
     private handleWheelChange(event: WheelEvent): void {
@@ -101,46 +91,10 @@ export class InputCanvas extends InputCanvasBase implements IInputCanvas {
         }
     }
 
-    private handleTouchMove(event: TouchEvent): void {
-        const positions = this.getTouchPositions(event);
-        super.invokeTouchMove(positions);
-        event.preventDefault();
-    }
-
-    private handleTouchStart(event: TouchEvent): void {
-        const positions = this.getTouchPositions(event);
-        super.invokeTouchStart(positions);
-        event.preventDefault();
-    }
-
-    private handleTouchEnd(event: TouchEvent): void {
-        const positions = this.getTouchPositions(event);
-        super.invokeTouchEnd(positions);
-        event.preventDefault();
-    }
-
-    private getPosition(event: MouseEvent): Position {
+    private getPosition(event: MouseEvent | PointerEvent): Position {
         const rect = this.htmlElement.getBoundingClientRect();
         const x = event.clientX - rect.left;
         const y = event.clientY - rect.top;
         return { x, y };
-    }
-
-    private getTouchPositions(event: TouchEvent): Array<Position> {
-        const rect = this.htmlElement.getBoundingClientRect();
-        const positions: Array<Position> = [];
-
-        const touches = event.touches;
-        for (let touchIdX = 0; touchIdX < touches.length; ++touchIdX) {
-
-            const touch = touches[touchIdX];
-            const x = touch.clientX - rect.left;
-            const y = touch.clientY - rect.top;
-
-            const position = { x, y };
-            positions.push(position);
-        }
-
-        return positions;
     }
 }

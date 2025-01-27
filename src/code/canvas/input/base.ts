@@ -1,7 +1,7 @@
 import { CanvasBase } from "../base.js";
 import { VoidUnsubscribe } from "../../types.js";
-import { Messaging8 } from "../../messaging/impl.js";
-import { IMessaging8 } from "../../messaging/types.js";
+import { Messaging5 } from "../../messaging/impl.js";
+import { IMessaging5 } from "../../messaging/types.js";
 import {
     MouseLeftButtonDownEvent,
     MouseMoveEvent,
@@ -14,21 +14,15 @@ import {
     Position,
     MouseLeftButtonUpListener,
     MouseLeftButtonUpEvent,
-    TouchMoveEvent,
-    TouchStartEvent,
-    TouchMoveListener,
-    TouchStartListener,
-    TouchEndListener,
-    TouchEndEvent
 } from "./types.js";
 
 
 export abstract class InputCanvasBase extends CanvasBase {
-    private readonly messaging: IMessaging8<ZoomInEvent, ZoomOutEvent, MouseMoveEvent, MouseLeftButtonDownEvent, MouseLeftButtonUpEvent, TouchMoveEvent, TouchStartEvent, TouchEndEvent>;
+    private readonly messaging: IMessaging5<ZoomInEvent, ZoomOutEvent, MouseMoveEvent, MouseLeftButtonDownEvent, MouseLeftButtonUpEvent>;
 
     constructor() {
         super();
-        this.messaging = new Messaging8();
+        this.messaging = new Messaging5();
     }
 
     public onZoomIn(listener: ZoomInListener): VoidUnsubscribe {
@@ -49,18 +43,6 @@ export abstract class InputCanvasBase extends CanvasBase {
 
     public onMouseLeftButtonUp(listener: MouseLeftButtonUpListener): VoidUnsubscribe {
         return this.messaging.listenOnChannel5(listener);
-    }
-
-    public onTouchMove(listener: TouchMoveListener): VoidUnsubscribe {
-        return this.messaging.listenOnChannel6(listener);
-    }
-
-    public onTouchStart(listener: TouchStartListener): VoidUnsubscribe {
-        return this.messaging.listenOnChannel7(listener);
-    }
-
-    public onTouchEnd(listener: TouchEndListener): VoidUnsubscribe {
-        return this.messaging.listenOnChannel8(listener);
     }
 
     public override dispose(): void {
@@ -89,20 +71,5 @@ export abstract class InputCanvasBase extends CanvasBase {
     protected invokeMouseLeftButtonUp(position: Position): void {
         const event = { position };
         this.messaging.sendToChannel5(event);
-    }
-
-    protected invokeTouchMove(positions: Array<Position>): void {
-        const event = { positions };
-        this.messaging.sendToChannel6(event);
-    }
-
-    protected invokeTouchStart(positions: Array<Position>): void {
-        const event = { positions };
-        this.messaging.sendToChannel7(event);
-    }
-
-    protected invokeTouchEnd(positions: Array<Position>): void {
-        const event = { positions };
-        this.messaging.sendToChannel8(event);
     }
 }
