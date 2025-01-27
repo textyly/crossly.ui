@@ -11,8 +11,8 @@ export abstract class VirtualCanvasBase<TConfig extends CanvasConfig> extends Ca
 
     private _dotColor!: string;
     private _dotRadius!: number;
-    private _lineColor!: string;
-    private _lineWidth!: number;
+    private _threadColor!: string;
+    private _threadWidth!: number;
 
     constructor(config: TConfig) {
         super();
@@ -47,24 +47,24 @@ export abstract class VirtualCanvasBase<TConfig extends CanvasConfig> extends Ca
         }
     }
 
-    public get lineColor(): string {
-        return this._lineColor;
+    public get threadColor(): string {
+        return this._threadColor;
     }
 
-    public set lineColor(value: string) {
-        if (this._lineColor !== value) {
-            this._lineColor = value;
+    public set threadColor(value: string) {
+        if (this._threadColor !== value) {
+            this._threadColor = value;
             this.draw();
         }
     }
 
-    public get lineWidth(): number {
-        return this._lineWidth;
+    public get threadWidth(): number {
+        return this._threadWidth;
     }
 
-    public set lineWidth(value: number) {
-        if (this._lineWidth !== value) {
-            this._lineWidth = value;
+    public set threadWidth(value: number) {
+        if (this._threadWidth !== value) {
+            this._threadWidth = value;
             this.draw();
         }
     }
@@ -82,13 +82,13 @@ export abstract class VirtualCanvasBase<TConfig extends CanvasConfig> extends Ca
 
     protected zoomIn(): void {
         this._dotRadius += this.config.dot.radius.zoomStep;
-        this._lineWidth += this.config.line.width.zoomStep;
+        this._threadWidth += this.config.thread.width.zoomStep;
         this.draw();
     }
 
     protected zoomOut(): void {
         this._dotRadius -= this.config.dot.radius.zoomStep;
-        this._lineWidth -= this.config.line.width.zoomStep;
+        this._threadWidth -= this.config.thread.width.zoomStep;
         this.draw();
     }
 
@@ -101,8 +101,8 @@ export abstract class VirtualCanvasBase<TConfig extends CanvasConfig> extends Ca
         this._dotColor = dotConfig.color;
         this._dotRadius = dotConfig.radius.value;
 
-        const lineConfig = config.line;
-        this._lineColor = lineConfig.color;
-        this._lineWidth = lineConfig.width.value;
+        const threadConfig = config.thread;
+        this._threadColor = threadConfig.color;
+        this._threadWidth = threadConfig.width.value;
     }
 }

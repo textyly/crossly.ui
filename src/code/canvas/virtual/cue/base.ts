@@ -2,22 +2,22 @@ import { VirtualCanvasBase } from "../base.js";
 import { VoidUnsubscribe } from "../../../types.js";
 import { Messaging6 } from "../../../messaging/impl.js";
 import { IMessaging6 } from "../../../messaging/types.js";
-import { CueLine, CueDot, CueCanvasConfig } from "../../types.js";
+import { CueThread, CueDot, CueCanvasConfig } from "../../types.js";
 import {
-    DrawCueLineEvent,
-    DrawCueLineListener,
+    DrawCueThreadEvent,
+    DrawCueThreadListener,
     DrawCueDotEvent,
     DrawCueDotListener,
     RemoveCueDotEvent,
-    MoveCueLineEvent,
+    MoveCueThreadEvent,
     RemoveCueDotListener,
-    MoveCueLineListener,
-    RemoveCueLineEvent,
-    RemoveCueLineListener,
+    MoveCueThreadListener,
+    RemoveCueThreadEvent,
+    RemoveCueThreadListener,
 } from "../types.js";
 
 export abstract class CueCanvasBase extends VirtualCanvasBase<CueCanvasConfig> {
-    private readonly messaging: IMessaging6<DrawCueDotEvent, DrawCueLineEvent, RemoveCueDotEvent, MoveCueLineEvent, DrawCueLineEvent, RemoveCueLineEvent>;
+    private readonly messaging: IMessaging6<DrawCueDotEvent, DrawCueThreadEvent, RemoveCueDotEvent, MoveCueThreadEvent, DrawCueThreadEvent, RemoveCueThreadEvent>;
 
     constructor(config: CueCanvasConfig) {
         super(config);
@@ -28,7 +28,7 @@ export abstract class CueCanvasBase extends VirtualCanvasBase<CueCanvasConfig> {
         return this.messaging.listenOnChannel1(listener);
     }
 
-    public onDrawLine(listener: DrawCueLineListener): VoidUnsubscribe {
+    public onDrawThread(listener: DrawCueThreadListener): VoidUnsubscribe {
         return this.messaging.listenOnChannel2(listener);
     }
 
@@ -36,15 +36,15 @@ export abstract class CueCanvasBase extends VirtualCanvasBase<CueCanvasConfig> {
         return this.messaging.listenOnChannel3(listener);
     }
 
-    public onMoveLine(listener: MoveCueLineListener): VoidUnsubscribe {
+    public onMoveThread(listener: MoveCueThreadListener): VoidUnsubscribe {
         return this.messaging.listenOnChannel4(listener);
     }
 
-    public onDrawDashLine(listener: DrawCueLineListener): VoidUnsubscribe {
+    public onDrawDashThread(listener: DrawCueThreadListener): VoidUnsubscribe {
         return this.messaging.listenOnChannel5(listener);
     }
 
-    public onRemoveLine(listener: RemoveCueLineListener): VoidUnsubscribe {
+    public onRemoveThread(listener: RemoveCueThreadListener): VoidUnsubscribe {
         return this.messaging.listenOnChannel6(listener);
     }
 
@@ -58,9 +58,9 @@ export abstract class CueCanvasBase extends VirtualCanvasBase<CueCanvasConfig> {
         this.messaging.sendToChannel1(drawDotEvent);
     }
 
-    protected invokeDrawLine(line: CueLine): void {
-        const drawLineEvent = { line };
-        this.messaging.sendToChannel2(drawLineEvent);
+    protected invokeDrawThread(thread: CueThread): void {
+        const drawThreadEvent = { thread };
+        this.messaging.sendToChannel2(drawThreadEvent);
     }
 
     protected invokeRemoveDot(dot: CueDot): void {
@@ -68,18 +68,18 @@ export abstract class CueCanvasBase extends VirtualCanvasBase<CueCanvasConfig> {
         this.messaging.sendToChannel3(drawDotEvent);
     }
 
-    protected invokeMoveLine(line: CueLine): void {
-        const drawLineEvent = { line };
-        this.messaging.sendToChannel4(drawLineEvent);
+    protected invokeMoveThread(thread: CueThread): void {
+        const drawThreadEvent = { thread };
+        this.messaging.sendToChannel4(drawThreadEvent);
     }
 
-    protected invokeDrawDashLine(line: CueLine): void {
-        const drawLineEvent = { line };
-        this.messaging.sendToChannel5(drawLineEvent);
+    protected invokeDrawDashThread(thread: CueThread): void {
+        const drawThreadEvent = { thread };
+        this.messaging.sendToChannel5(drawThreadEvent);
     }
 
-    protected invokeRemoveLine(line: CueLine): void {
-        const drawLineEvent = { line };
-        this.messaging.sendToChannel6(drawLineEvent);
+    protected invokeRemoveThread(thread: CueThread): void {
+        const drawThreadEvent = { thread };
+        this.messaging.sendToChannel6(drawThreadEvent);
     }
 }

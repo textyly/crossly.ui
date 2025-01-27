@@ -1,9 +1,9 @@
 import { CanvasBase } from "../base.js";
 import { Id, SizeChangeEvent } from "../types.js";
-import { IDrawingCanvas, IRasterDrawing, IVectorDrawing, SvgLine } from "./types.js";
-import { DrawGridDotEvent, DrawGridLineEvent, IGridCanvas } from "../virtual/types.js";
+import { DrawGridDotsEvent, DrawGridThreadsEvent, IGridCanvas } from "../virtual/types.js";
+import { IGridDrawingCanvas, IRasterDrawing, IVectorDrawing, SvgLine } from "./types.js";
 
-export class GridDrawingCanvas extends CanvasBase implements IDrawingCanvas<IGridCanvas> {
+export class GridDrawingCanvas extends CanvasBase implements IGridDrawingCanvas {
     private readonly rasterDrawing: IRasterDrawing;
     private readonly vectorDrawing: IVectorDrawing;
     private readonly svgLines: Map<Id, SvgLine>;
@@ -16,11 +16,11 @@ export class GridDrawingCanvas extends CanvasBase implements IDrawingCanvas<IGri
     }
 
     public subscribe(gridCanvas: IGridCanvas): void {
-        const drawVisibleDotUn = gridCanvas.onDrawVisibleDot(this.handleDrawVisibleDot.bind(this));
-        super.registerUn(drawVisibleDotUn);
+        const drawVisibleDotsUn = gridCanvas.onDrawVisibleDots(this.handleDrawVisibleDots.bind(this));
+        super.registerUn(drawVisibleDotsUn);
 
-        const drawVisibleLineUn = gridCanvas.onDrawVisibleLine(this.handleDrawVisibleLine.bind(this));
-        super.registerUn(drawVisibleLineUn);
+        const drawVisibleThreadsUn = gridCanvas.onDrawVisibleThreads(this.handleDrawVisibleThreads.bind(this));
+        super.registerUn(drawVisibleThreadsUn);
 
         const redrawUn = gridCanvas.onRedraw(this.handleRedraw.bind(this));
         super.registerUn(redrawUn);
@@ -29,15 +29,18 @@ export class GridDrawingCanvas extends CanvasBase implements IDrawingCanvas<IGri
         super.registerUn(sizeChangeUn);
     }
 
-    private handleDrawVisibleDot(event: DrawGridDotEvent): void {
-        const dot = event.dot;
-        this.rasterDrawing.drawDot(dot);
+    private handleDrawVisibleDots(event: DrawGridDotsEvent): void {
+        const dots = event.dots;
+        this.rasterDrawing.drawDots(dots);
     }
 
-    private handleDrawVisibleLine(event: DrawGridLineEvent): void {
-        const line = event.line;
-        const svgLine = this.vectorDrawing.drawLine(line);
-        this.svgLines.set(line.id, svgLine);
+    private handleDrawVisibleThreads(event: DrawGridThreadsEvent): void {
+        const threads = event.threads;
+
+        threads.forEach((thread) => {
+            const svgLine = this.vectorDrawing.drawLine(thread);
+            this.svgLines.set(thread.id, svgLine);
+        });
     }
 
     private handleRedraw(): void {

@@ -1,7 +1,6 @@
-import { Size } from "../types.js";
 import { CanvasBase } from "../base.js";
 import { IRasterDrawing } from "./types.js";
-import { StitchDot, StitchLine } from "../types.js";
+import { Dot, Size, Thread } from "../types.js";
 
 export class RasterDrawing extends CanvasBase implements IRasterDrawing {
     private readonly rasterContext: CanvasRenderingContext2D;
@@ -11,26 +10,33 @@ export class RasterDrawing extends CanvasBase implements IRasterDrawing {
         this.rasterContext = rasterCanvas.getContext("2d")!;
     }
 
-    public drawDot(dot: StitchDot): void {
-        this.rasterContext.fillStyle = dot.color;
-
+    public drawDots(dots: Array<Dot>): void {
         this.rasterContext.beginPath();
-        this.rasterContext.arc(dot.x, dot.y, dot.radius, 0, Math.PI * 2);
+
+        dots.forEach((dot) => {
+            this.rasterContext.fillStyle = dot.color;
+
+            this.rasterContext.moveTo(dot.x, dot.y);
+            this.rasterContext.arc(dot.x, dot.y, dot.radius, 0, Math.PI * 2);
+        });
+
         this.rasterContext.fill();
-        this.rasterContext.closePath();
     }
 
-    public drawLine(line: StitchLine): void {
+    public drawLines(lines: Array<Thread<Dot>>): void {
         this.rasterContext.beginPath();
 
-        const from = line.from;
-        this.rasterContext.moveTo(from.x, from.y);
+        lines.forEach((line) => {
+            this.rasterContext.lineWidth = line.width;
+            this.rasterContext.strokeStyle = line.color;
 
-        const to = line.to;
-        this.rasterContext.lineTo(to.x, to.y);
+            const from = line.from;
+            this.rasterContext.moveTo(from.x, from.y);
 
-        this.rasterContext.lineWidth = line.width;
-        this.rasterContext.strokeStyle = line.color;
+            const to = line.to;
+            this.rasterContext.lineTo(to.x, to.y);
+        });
+
         this.rasterContext.stroke();
     }
 
