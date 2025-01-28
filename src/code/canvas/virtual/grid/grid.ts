@@ -15,7 +15,8 @@ export class GridCanvas extends GridCanvasBase implements IGridCanvas {
     private readonly dots: Map<Id, GridDot>;
 
     private _spacing!: number;
-    private _spacingZoomStep!: number;
+    private _spacingZoomInStep!: number;
+    private _spacingZoomOutStep!: number;
 
     private _visibleRows!: number;
     private _visibleColumns!: number;
@@ -37,7 +38,8 @@ export class GridCanvas extends GridCanvasBase implements IGridCanvas {
         // threads and dots are blurry if x and y are integers, that is why we add 0.5
         this._spacing = Math.floor(spacing) + 0.5;
 
-        this._spacingZoomStep = config.spacing.zoomStep;
+        this._spacingZoomInStep = config.spacing.zoomInStep;
+        this._spacingZoomOutStep = config.spacing.zoomOutStep;
 
         this._visibleRows = config.rows;
         this._visibleColumns = config.columns;
@@ -123,7 +125,10 @@ export class GridCanvas extends GridCanvasBase implements IGridCanvas {
     }
 
     private handleZoomIn(): void {
-        const spacing = this.spacing + this._spacingZoomStep;
+        const configSpacing = this.config.spacing;
+        const spacing = (this.spacing < configSpacing.value)
+            ? (this.spacing + this._spacingZoomOutStep)
+            : (this.spacing + this._spacingZoomInStep);
 
         // threads and dots are blurry if x and y are integers, that is why we add 0.5
         this._spacing = Math.floor(spacing) + 0.5;
@@ -131,7 +136,10 @@ export class GridCanvas extends GridCanvasBase implements IGridCanvas {
     }
 
     private handleZoomOut(): void {
-        const spacing = this.spacing - this._spacingZoomStep;
+        const configSpacing = this.config.spacing;
+        const spacing = (this.spacing > configSpacing.value)
+            ? (this.spacing - this._spacingZoomInStep)
+            : (this.spacing - this._spacingZoomOutStep);
 
         // threads and dots are blurry if x and y are integers, that is why we subtract 0.5
         this._spacing = Math.floor(spacing) - 0.5;

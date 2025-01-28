@@ -81,14 +81,30 @@ export abstract class VirtualCanvasBase<TConfig extends CanvasConfig> extends Ca
     public abstract draw(): void;
 
     protected zoomIn(): void {
-        this._dotRadius += this.config.dot.radius.zoomStep;
-        this._threadWidth += this.config.thread.width.zoomStep;
+        const configDotRadius = this.config.dot.radius;
+        this._dotRadius += (this._dotRadius < configDotRadius.value)
+            ? configDotRadius.zoomOutStep
+            : configDotRadius.zoomInStep;
+
+        const configThreadWidth = this.config.thread.width;
+        this._threadWidth += (this._threadWidth < configThreadWidth.value)
+            ? configThreadWidth.zoomOutStep
+            : configThreadWidth.zoomInStep;
+
         this.draw();
     }
 
     protected zoomOut(): void {
-        this._dotRadius -= this.config.dot.radius.zoomStep;
-        this._threadWidth -= this.config.thread.width.zoomStep;
+        const configDotRadius = this.config.dot.radius;
+        this._dotRadius -= (this._dotRadius > configDotRadius.value)
+            ? configDotRadius.zoomInStep
+            : configDotRadius.zoomOutStep;
+
+        const configThreadWidth = this.config.thread.width;
+        this._threadWidth -= (this.threadWidth > configThreadWidth.value)
+            ? configThreadWidth.zoomInStep
+            : configThreadWidth.zoomOutStep;
+
         this.draw();
     }
 
