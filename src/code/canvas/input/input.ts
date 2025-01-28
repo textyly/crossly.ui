@@ -1,9 +1,9 @@
 import { Size } from "../types.js";
 import { InputCanvasBase } from "./base.js";
 import {
-    HtmlCanvasEvents,
+    CanvasEventsType,
     IInputCanvas,
-    MouseEventHandler,
+    PointerEventHandler,
     Position,
     WheelChangeHandler
 } from "./types.js";
@@ -11,9 +11,9 @@ import {
 export class InputCanvas extends InputCanvasBase implements IInputCanvas {
     private readonly htmlElement: HTMLElement;
     private readonly wheelChangeHandler: WheelChangeHandler;
-    private readonly mouseMoveHandler: MouseEventHandler;
-    private readonly mouseButtonDownHandler: MouseEventHandler;
-    private readonly mouseButtonUpHandler: MouseEventHandler;
+    private readonly pointerMoveHandler: PointerEventHandler;
+    private readonly pointerHoldingDownHandler: PointerEventHandler;
+    private readonly pointerUpHandler: PointerEventHandler;
 
     constructor(htmlElement: HTMLElement) {
         super();
@@ -21,9 +21,9 @@ export class InputCanvas extends InputCanvasBase implements IInputCanvas {
         this.htmlElement = htmlElement;
 
         this.wheelChangeHandler = this.handleWheelChange.bind(this);
-        this.mouseMoveHandler = this.handleMouseMove.bind(this);
-        this.mouseButtonDownHandler = this.handleMouseButtonDown.bind(this);
-        this.mouseButtonUpHandler = this.handleMouseButtonUp.bind(this);
+        this.pointerMoveHandler = this.handlePointerMove.bind(this);
+        this.pointerHoldingDownHandler = this.handlePointerHoldingDown.bind(this);
+        this.pointerUpHandler = this.handlePointerUp.bind(this);
 
         this.subscribe();
     }
@@ -38,26 +38,39 @@ export class InputCanvas extends InputCanvasBase implements IInputCanvas {
     }
 
     public override dispose(): void {
-        this.htmlElement.removeEventListener(HtmlCanvasEvents.WheelChange, this.wheelChangeHandler);
-        this.htmlElement.removeEventListener(HtmlCanvasEvents.MouseMove, this.mouseMoveHandler);
-        this.htmlElement.removeEventListener(HtmlCanvasEvents.MouseDown, this.mouseButtonDownHandler);
-        this.htmlElement.removeEventListener(HtmlCanvasEvents.MouseUp, this.mouseButtonUpHandler);
+        this.htmlElement.removeEventListener(CanvasEventsType.WheelChange, this.wheelChangeHandler);
+        this.htmlElement.removeEventListener(CanvasEventsType.PointerMove, this.pointerMoveHandler);
+        this.htmlElement.removeEventListener(CanvasEventsType.PointerDown, this.pointerHoldingDownHandler);
+        this.htmlElement.removeEventListener(CanvasEventsType.PointerUp, this.pointerUpHandler);
 
 
         super.dispose();
     }
 
     private subscribe(): void {
-        this.htmlElement.addEventListener(HtmlCanvasEvents.WheelChange, this.wheelChangeHandler);
-        this.htmlElement.addEventListener(HtmlCanvasEvents.MouseMove, this.mouseMoveHandler);
-        this.htmlElement.addEventListener(HtmlCanvasEvents.MouseDown, this.mouseButtonDownHandler);
-        this.htmlElement.addEventListener(HtmlCanvasEvents.MouseUp, this.mouseButtonUpHandler);
+        this.htmlElement.addEventListener(CanvasEventsType.WheelChange, this.wheelChangeHandler);
+        this.htmlElement.addEventListener(CanvasEventsType.PointerMove, this.pointerMoveHandler);
+        this.htmlElement.addEventListener(CanvasEventsType.PointerDown, this.pointerHoldingDownHandler);
+        this.htmlElement.addEventListener(CanvasEventsType.PointerUp, this.pointerUpHandler);
 
-        this.htmlElement.addEventListener("touchmove", (e) => e.preventDefault());
-        this.htmlElement.addEventListener("touchstart", (e) => e.preventDefault());
-        this.htmlElement.addEventListener("touchend", (e) => e.preventDefault());
+        this.htmlElement.addEventListener("touchmove", (e) => {
 
+            const fingers = e.touches.length;
+            console.log(`touch move with ${fingers} finger`);
+            e.preventDefault();
+        });
 
+        this.htmlElement.addEventListener("touchstart", (e) => {
+            const fingers = e.touches.length;
+            console.log(`touch start with ${fingers} finger`);
+            e.preventDefault();
+        });
+
+        this.htmlElement.addEventListener("touchend", (e) => {
+            const fingers = e.touches.length;
+            console.log(`touch end with ${fingers} finger`);
+            e.preventDefault();
+        });
     }
 
     private handleWheelChange(event: WheelEvent): void {
@@ -68,30 +81,25 @@ export class InputCanvas extends InputCanvasBase implements IInputCanvas {
         }
     }
 
-    private handleMouseMove(event: MouseEvent): void {
+    private handlePointerMove(event: PointerEvent): void {
         const position = this.getPosition(event);
-        super.invokeMouseMove(position);
+        super.invokePointerMove(position);
     }
 
-    private handleMouseButtonDown(event: MouseEvent): void {
-        const position = this.getPosition(event);
-
-        const leftButton = 0;
-        if (event.button === leftButton) {
-            super.invokeMouseLeftButtonDown(position);
-        }
+    private handlePointerHoldingDown(event: PointerEvent): void {
+        // TODO: create ticket
     }
 
-    private handleMouseButtonUp(event: MouseEvent): void {
+    private handlePointerUp(event: PointerEvent): void {
         const position = this.getPosition(event);
 
         const leftButton = 0;
         if (event.button === leftButton) {
-            super.invokeMouseLeftButtonUp(position);
+            super.invokePointerUp(position);
         }
     }
 
-    private getPosition(event: MouseEvent | PointerEvent): Position {
+    private getPosition(event: PointerEvent | PointerEvent): Position {
         const rect = this.htmlElement.getBoundingClientRect();
         const x = event.clientX - rect.left;
         const y = event.clientY - rect.top;

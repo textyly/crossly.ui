@@ -2,7 +2,7 @@ import { CueCanvasBase } from "./base.js";
 import { ICueCanvas, IGridCanvas } from "../types.js";
 import { Converter } from "../../../utilities/converter.js";
 import { IdGenerator } from "../../../utilities/generator.js";
-import { IInputCanvas, MouseLeftButtonDownEvent, MouseMoveEvent, Position } from "../../input/types.js";
+import { IInputCanvas, PointerMoveEvent, PointerUpEvent, Position } from "../../input/types.js";
 import { CanvasSide, Id, CueThread, SizeChangeEvent, GridDot, Size, CueCanvasConfig } from "../../types.js";
 
 export class CueCanvas extends CueCanvasBase implements ICueCanvas {
@@ -54,14 +54,11 @@ export class CueCanvas extends CueCanvasBase implements ICueCanvas {
         const zoomOutUn = this.inputCanvas.onZoomOut(this.handleZoomOut.bind(this));
         super.registerUn(zoomOutUn);
 
-        const mouseMoveUn = this.inputCanvas.onMouseMove(this.handleMouseMove.bind(this));
-        super.registerUn(mouseMoveUn);
+        const pointerMoveUn = this.inputCanvas.onPointerMove(this.handlePointerMove.bind(this));
+        super.registerUn(pointerMoveUn);
 
-        const mouseLeftButtonDownUn = this.inputCanvas.onMouseLeftButtonDown(this.handleMouseButtonClick.bind(this));
-        super.registerUn(mouseLeftButtonDownUn);
-
-        const mouseLeftButtonDownUp = this.inputCanvas.onMouseLeftButtonUp(this.handleMouseButtonClick.bind(this));
-        super.registerUn(mouseLeftButtonDownUp);
+        const pointerUpUn = this.inputCanvas.onPointerUp(this.handlePointerUp.bind(this));
+        super.registerUn(pointerUpUn);
 
         const sizeChangeUn = this.gridCanvas.onSizeChange(this.handleSizeChange.bind(this));
         super.registerUn(sizeChangeUn);
@@ -75,13 +72,13 @@ export class CueCanvas extends CueCanvasBase implements ICueCanvas {
         super.zoomOut();
     }
 
-    private handleMouseMove(event: MouseMoveEvent): void {
+    private handlePointerMove(event: PointerMoveEvent): void {
         const position = event.position;
         this.moveDot(position);
         this.resizeThread(position);
     }
 
-    private handleMouseButtonClick(event: MouseLeftButtonDownEvent): void {
+    private handlePointerUp(event: PointerUpEvent): void {
         const position = event.position;
         this.handleDotClick(position);
     }
@@ -173,11 +170,11 @@ export class CueCanvas extends CueCanvasBase implements ICueCanvas {
         }
     }
 
-    private createThread(previousClickedDot: GridDot, currentMousePosition: Position, threadId: Id): CueThread {
+    private createThread(previousClickedDot: GridDot, currentPointerPosition: Position, threadId: Id): CueThread {
         const fromDot = this.converter.convertToCueDot(previousClickedDot, this.dotColor);
 
         const toDotId = this.ids.next();
-        const toDot = { ...currentMousePosition, id: toDotId, radius: this.dotRadius, color: this.dotColor };
+        const toDot = { ...currentPointerPosition, id: toDotId, radius: this.dotRadius, color: this.dotColor };
 
         const thread = { id: threadId, from: fromDot, to: toDot, width: this.threadWidth, color: this.threadColor };
         return thread;

@@ -4,7 +4,9 @@
         "knittyly",
         "textyly",
         "Unhover",
-        "Unhovered"
+        "Unhovered",
+        "zoomin",
+        "zoomout"
     ],
     "files.exclude": {
         "**/dist*": true,

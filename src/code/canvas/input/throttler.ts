@@ -2,11 +2,10 @@ import { Size } from "../types.js";
 import { InputCanvasBase } from "./base.js";
 import {
     CanvasEvent,
+    CanvasEventsType,
     IInputCanvas,
-    MouseMoveEvent,
-    CanvasEventType,
-    MouseLeftButtonDownEvent,
-    MouseLeftButtonUpEvent,
+    PointerMoveEvent,
+    PointerUpEvent,
 } from "./types.js";
 
 // TODO: all methods should have a common one
@@ -47,91 +46,72 @@ export class InputCanvasThrottler extends InputCanvasBase {
         const zoomOutUn = this.inputCanvas.onZoomOut(this.handleZoomOut.bind(this));
         super.registerUn(zoomOutUn);
 
-        const mouseMoveUn = this.inputCanvas.onMouseMove(this.handleMouseMove.bind(this));
-        super.registerUn(mouseMoveUn);
+        const pointerMoveUn = this.inputCanvas.onPointerMove(this.handlePointerMove.bind(this));
+        super.registerUn(pointerMoveUn);
 
-        const mouseLeftButtonDownUn = this.inputCanvas.onMouseLeftButtonDown(this.handleMouseLeftButtonDown.bind(this));
-        super.registerUn(mouseLeftButtonDownUn);
-
-        const mouseLeftButtonUpUn = this.inputCanvas.onMouseLeftButtonUp(this.handleMouseLeftButtonUp.bind(this));
-        super.registerUn(mouseLeftButtonUpUn);
+        const pointerUpUn = this.inputCanvas.onPointerUp(this.handlePointerUp.bind(this));
+        super.registerUn(pointerUpUn);
 
         this.timerId = setInterval(this.handleTimer.bind(this), this.timerInterval);
     }
 
     private handleZoomIn(): void {
         if (this.groupedEvents.length == 0) {
-            this.groupedEvents.push({ type: CanvasEventType.ZoomIn });
+            this.groupedEvents.push({ type: CanvasEventsType.ZoomIn });
         } else {
             const lastEvent = this.groupedEvents.pop()!;
 
-            if (lastEvent.type !== CanvasEventType.ZoomIn) {
+            if (lastEvent.type !== CanvasEventsType.ZoomIn) {
                 this.groupedEvents.push(lastEvent);
             }
 
-            this.groupedEvents.push({ type: CanvasEventType.ZoomIn });
+            this.groupedEvents.push({ type: CanvasEventsType.ZoomIn });
         }
     }
 
     private handleZoomOut(): void {
         if (this.groupedEvents.length == 0) {
-            this.groupedEvents.push({ type: CanvasEventType.ZoomOut });
+            this.groupedEvents.push({ type: CanvasEventsType.ZoomOut });
         } else {
             const lastEvent = this.groupedEvents.pop()!;
 
-            if (lastEvent.type !== CanvasEventType.ZoomOut) {
+            if (lastEvent.type !== CanvasEventsType.ZoomOut) {
                 this.groupedEvents.push(lastEvent);
             }
 
-            this.groupedEvents.push({ type: CanvasEventType.ZoomOut });
+            this.groupedEvents.push({ type: CanvasEventsType.ZoomOut });
         }
     }
 
-    private handleMouseMove(event: MouseMoveEvent): void {
+    private handlePointerMove(event: PointerMoveEvent): void {
         const position = event.position;
 
         if (this.groupedEvents.length == 0) {
-            this.groupedEvents.push({ type: CanvasEventType.MouseMove, value: position });
+            this.groupedEvents.push({ type: CanvasEventsType.PointerMove, value: position });
         } else {
             const lastEvent = this.groupedEvents.pop()!;
 
-            if (lastEvent.type !== CanvasEventType.MouseMove) {
+            if (lastEvent.type !== CanvasEventsType.PointerMove) {
                 this.groupedEvents.push(lastEvent);
             }
 
-            this.groupedEvents.push({ type: CanvasEventType.MouseMove, value: position });
+            this.groupedEvents.push({ type: CanvasEventsType.PointerMove, value: position });
         }
     }
 
-    private handleMouseLeftButtonDown(event: MouseLeftButtonDownEvent): void {
+    private handlePointerUp(event: PointerUpEvent): void {
         const position = event.position;
 
         if (this.groupedEvents.length == 0) {
-            this.groupedEvents.push({ type: CanvasEventType.MouseLeftButtonDown, value: position });
+            this.groupedEvents.push({ type: CanvasEventsType.PointerUp, value: position });
         } else {
             const lastEvent = this.groupedEvents.pop()!;
 
-            if (lastEvent.type !== CanvasEventType.MouseLeftButtonDown) {
+            if (lastEvent.type !== CanvasEventsType.PointerUp) {
                 this.groupedEvents.push(lastEvent);
             }
 
-            this.groupedEvents.push({ type: CanvasEventType.MouseLeftButtonDown, value: position });
-        }
-    }
-
-    private handleMouseLeftButtonUp(event: MouseLeftButtonUpEvent): void {
-        const position = event.position;
-
-        if (this.groupedEvents.length == 0) {
-            this.groupedEvents.push({ type: CanvasEventType.MouseLeftButtonUp, value: position });
-        } else {
-            const lastEvent = this.groupedEvents.pop()!;
-
-            if (lastEvent.type !== CanvasEventType.MouseLeftButtonUp) {
-                this.groupedEvents.push(lastEvent);
-            }
-
-            this.groupedEvents.push({ type: CanvasEventType.MouseLeftButtonUp, value: position });
+            this.groupedEvents.push({ type: CanvasEventsType.PointerUp, value: position });
         }
     }
 
@@ -149,24 +129,20 @@ export class InputCanvasThrottler extends InputCanvasBase {
         const position = event?.value!;
 
         switch (type) {
-            case CanvasEventType.ZoomIn: {
+            case CanvasEventsType.ZoomIn: {
                 super.invokeZoomIn();
                 break;
             }
-            case CanvasEventType.ZoomOut: {
+            case CanvasEventsType.ZoomOut: {
                 super.invokeZoomOut();
                 break;
             }
-            case CanvasEventType.MouseMove: {
-                super.invokeMouseMove(position);
+            case CanvasEventsType.PointerMove: {
+                super.invokePointerMove(position);
                 break;
             }
-            case CanvasEventType.MouseLeftButtonDown: {
-                super.invokeMouseLeftButtonDown(position);
-                break;
-            }
-            case CanvasEventType.MouseLeftButtonUp: {
-                super.invokeMouseLeftButtonUp(position);
+            case CanvasEventsType.PointerUp: {
+                super.invokePointerUp(position);
                 break;
             }
         }

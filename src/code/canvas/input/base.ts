@@ -3,22 +3,21 @@ import { VoidUnsubscribe } from "../../types.js";
 import { Messaging5 } from "../../messaging/impl.js";
 import { IMessaging5 } from "../../messaging/types.js";
 import {
-    MouseLeftButtonDownEvent,
-    MouseMoveEvent,
+    PointerMoveEvent,
     ZoomInListener,
     ZoomOutListener,
-    MouseMoveListener,
-    MouseLeftButtonDownListener,
+    PointerMoveListener,
     ZoomInEvent,
     ZoomOutEvent,
     Position,
-    MouseLeftButtonUpListener,
-    MouseLeftButtonUpEvent,
+    PointerDownListener,
+    PointerUpEvent,
+    PointerDownEvent,
 } from "./types.js";
 
 
 export abstract class InputCanvasBase extends CanvasBase {
-    private readonly messaging: IMessaging5<ZoomInEvent, ZoomOutEvent, MouseMoveEvent, MouseLeftButtonDownEvent, MouseLeftButtonUpEvent>;
+    private readonly messaging: IMessaging5<ZoomInEvent, ZoomOutEvent, PointerMoveEvent, PointerDownEvent, PointerUpEvent>;
 
     constructor() {
         super();
@@ -33,15 +32,15 @@ export abstract class InputCanvasBase extends CanvasBase {
         return this.messaging.listenOnChannel2(listener);
     }
 
-    public onMouseMove(listener: MouseMoveListener): VoidUnsubscribe {
+    public onPointerMove(listener: PointerMoveListener): VoidUnsubscribe {
         return this.messaging.listenOnChannel3(listener);
     }
 
-    public onMouseLeftButtonDown(listener: MouseLeftButtonDownListener): VoidUnsubscribe {
+    public onPointerHoldingDown(listener: PointerDownListener): VoidUnsubscribe {
         return this.messaging.listenOnChannel4(listener);
     }
 
-    public onMouseLeftButtonUp(listener: MouseLeftButtonUpListener): VoidUnsubscribe {
+    public onPointerUp(listener: PointerDownListener): VoidUnsubscribe {
         return this.messaging.listenOnChannel5(listener);
     }
 
@@ -58,17 +57,17 @@ export abstract class InputCanvasBase extends CanvasBase {
         this.messaging.sendToChannel2({});
     }
 
-    protected invokeMouseMove(position: Position): void {
+    protected invokePointerMove(position: Position): void {
         const event = { position };
         this.messaging.sendToChannel3(event);
     }
 
-    protected invokeMouseLeftButtonDown(position: Position): void {
+    protected invokePointerHoldingDown(position: Position): void {
         const event = { position };
         this.messaging.sendToChannel4(event);
     }
 
-    protected invokeMouseLeftButtonUp(position: Position): void {
+    protected invokePointerUp(position: Position): void {
         const event = { position };
         this.messaging.sendToChannel5(event);
     }

@@ -2,7 +2,7 @@ import { StitchCanvasBase } from "./base.js";
 import { IGridCanvas, IStitchCanvas } from "../types.js";
 import { DotsUtility } from "../../../utilities/dots.js";
 import { Converter } from "../../../utilities/converter.js";
-import { IInputCanvas, MouseLeftButtonDownEvent, Position } from "../../input/types.js";
+import { IInputCanvas, PointerUpEvent, Position } from "../../input/types.js";
 import { CanvasSide, Id, StitchThread, SizeChangeEvent, GridDot, Size, StitchCanvasConfig } from "../../types.js";
 
 export class StitchCanvas extends StitchCanvasBase implements IStitchCanvas {
@@ -50,11 +50,8 @@ export class StitchCanvas extends StitchCanvasBase implements IStitchCanvas {
         const zoomOutUn = this.inputCanvas.onZoomOut(this.handleZoomOut.bind(this));
         super.registerUn(zoomOutUn);
 
-        const mouseLeftButtonDownUn = this.inputCanvas.onMouseLeftButtonDown(this.handleMouseButtonClick.bind(this));
-        super.registerUn(mouseLeftButtonDownUn);
-
-        const mouseLeftButtonDownUp = this.inputCanvas.onMouseLeftButtonUp(this.handleMouseButtonClick.bind(this));
-        super.registerUn(mouseLeftButtonDownUp);
+        const pointerUpUn = this.inputCanvas.onPointerUp(this.handlePointerUp.bind(this));
+        super.registerUn(pointerUpUn);
 
         const sizeChangeUn = this.gridCanvas.onSizeChange(this.handleSizeChange.bind(this));
         super.registerUn(sizeChangeUn);
@@ -68,7 +65,7 @@ export class StitchCanvas extends StitchCanvasBase implements IStitchCanvas {
         super.zoomOut();
     }
 
-    private handleMouseButtonClick(event: MouseLeftButtonDownEvent): void {
+    private handlePointerUp(event: PointerUpEvent): void {
         const position = event.position;
         this.handleDotClick(position);
     }
