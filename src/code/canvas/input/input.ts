@@ -1,46 +1,29 @@
 import { Size } from "../types.js";
+import { TouchInput } from "./touch.js";
 import { InputCanvasBase } from "./base.js";
-import {
-    ActiveTouches,
-    CanvasEventsType,
-    IInputCanvas,
-    PointerEventHandler,
-    Position,
-    TouchEventHandler,
-    WheelChangeHandler
-} from "./types.js";
+import { CanvasEventsType, IInputCanvas, ITouchInput, PointerEventHandler, Position, WheelChangeHandler } from "./types.js";
 
 export class InputCanvas extends InputCanvasBase implements IInputCanvas {
     private readonly htmlElement: HTMLElement;
+    private readonly touchInput: ITouchInput;
+
     private readonly wheelChangeHandler: WheelChangeHandler;
     private readonly pointerMoveHandler: PointerEventHandler;
     private readonly pointerHoldingDownHandler: PointerEventHandler;
     private readonly pointerUpHandler: PointerEventHandler;
     private readonly pointerCancelHandler: PointerEventHandler;
 
-    private readonly touchStartHandler: TouchEventHandler;
-    private readonly touchEndHandler: TouchEventHandler;
-    private readonly touchMoveHandler: TouchEventHandler;
-    private readonly touchCancelHandler: TouchEventHandler;
-
-    private currentActiveTouches?: ActiveTouches;
-    private lastTouchTime?: number;
-
     constructor(htmlElement: HTMLElement) {
         super();
 
         this.htmlElement = htmlElement;
+        this.touchInput = new TouchInput(htmlElement);
 
         this.wheelChangeHandler = this.handleWheelChange.bind(this);
         this.pointerMoveHandler = this.handlePointerMove.bind(this);
         this.pointerHoldingDownHandler = this.handlePointerDown.bind(this);
         this.pointerUpHandler = this.handlePointerUp.bind(this);
         this.pointerCancelHandler = this.handlePointerCancel.bind(this);
-
-        this.touchStartHandler = this.handleTouchStart.bind(this);
-        this.touchEndHandler = this.handleTouchEnd.bind(this);
-        this.touchMoveHandler = this.handleTouchMove.bind(this);
-        this.touchCancelHandler = this.handleTouchCancel.bind(this);
 
         this.subscribe();
     }
@@ -61,25 +44,9 @@ export class InputCanvas extends InputCanvasBase implements IInputCanvas {
         this.htmlElement.removeEventListener(CanvasEventsType.PointerUp, this.pointerUpHandler);
         this.htmlElement.removeEventListener(CanvasEventsType.PointerCancel, this.pointerCancelHandler);
 
-        this.htmlElement.removeEventListener(CanvasEventsType.TouchStart, this.touchStartHandler);
-        this.htmlElement.removeEventListener(CanvasEventsType.TouchEnd, this.touchEndHandler);
-        this.htmlElement.removeEventListener(CanvasEventsType.TouchMove, this.touchMoveHandler);
-        this.htmlElement.removeEventListener(CanvasEventsType.TouchCancel, this.touchCancelHandler);
+        this.touchInput.dispose();
 
         super.dispose();
-    }
-
-    private get inZoom(): boolean {
-        if (this.currentActiveTouches) {
-            return true;
-        } else {
-            if (!this.lastTouchTime) {
-                return false;
-            } else {
-                const now = Date.now();
-                return (now - this.lastTouchTime) < 500;
-            }
-        }
     }
 
     private subscribe(): void {
@@ -89,22 +56,31 @@ export class InputCanvas extends InputCanvasBase implements IInputCanvas {
         this.htmlElement.addEventListener(CanvasEventsType.PointerUp, this.pointerUpHandler);
         this.htmlElement.addEventListener(CanvasEventsType.PointerCancel, this.pointerCancelHandler);
 
-        this.htmlElement.addEventListener(CanvasEventsType.TouchStart, this.touchStartHandler);
-        this.htmlElement.addEventListener(CanvasEventsType.TouchEnd, this.touchEndHandler);
-        this.htmlElement.addEventListener(CanvasEventsType.TouchMove, this.touchMoveHandler);
-        this.htmlElement.addEventListener(CanvasEventsType.TouchCancel, this.touchCancelHandler);
+        const touchZoomInUn = this.touchInput.onZoomIn(this.handleZoomIn.bind(this));
+        super.registerUn(touchZoomInUn);
+
+        const touchZoomOutUn = this.touchInput.onZoomOut(this.handleZoomOut.bind(this));
+        super.registerUn(touchZoomOutUn);
     }
 
     private handleWheelChange(event: WheelEvent): void {
         if (event.ctrlKey) {
             const deltaY = event.deltaY;
-            deltaY < 0 ? super.invokeZoomIn() : super.invokeZoomOut();
+            deltaY < 0 ? this.handleZoomIn() : this.handleZoomOut();
             event.preventDefault();
         }
     }
 
+    private handleZoomIn(): void {
+        super.invokeZoomIn();
+    }
+
+    private handleZoomOut(): void {
+        super.invokeZoomOut();
+    }
+
     private handlePointerMove(event: PointerEvent): void {
-        if (this.inZoom) {
+        if (this.touchInput.inZoomMode) {
             return;
         }
 
@@ -118,7 +94,7 @@ export class InputCanvas extends InputCanvasBase implements IInputCanvas {
     }
 
     private handlePointerUp(event: PointerEvent): void {
-        if (this.inZoom) {
+        if (this.touchInput.inZoomMode) {
             return;
         }
 
@@ -132,74 +108,10 @@ export class InputCanvas extends InputCanvasBase implements IInputCanvas {
     private handlePointerCancel(event: PointerEvent): void {
     }
 
-    private handleTouchStart(event: TouchEvent): void {
-        const touches = event.touches;
-        if (touches.length > 1) {
-            this.handleMultipleTouches(touches[0], touches[1]);
-        }
-        event.preventDefault();
-    }
-
-    private handleTouchEnd(event: TouchEvent): void {
-        this.removeMultipleTouches();
-        event.preventDefault();
-    }
-
-    private handleTouchMove(event: TouchEvent): void {
-        const touches = event.touches;
-        if (touches.length > 1) {
-            this.handleMultipleTouches(touches[0], touches[1]);
-        } else {
-            this.removeMultipleTouches();
-        }
-        event.preventDefault();
-    }
-
-    private handleTouchCancel(event: TouchEvent): void {
-        this.removeMultipleTouches();
-        event.preventDefault();
-    }
-
-    private handleMultipleTouches(touch1: Touch, touch2: Touch): void {
-        if (this.currentActiveTouches) {
-            // TODO: zoomin, zoomout
-            const currentDistance = this.calculateDistance(touch1, touch2);
-            const distanceDelta = currentDistance - this.currentActiveTouches.currentDistance;
-            const isZoomIn = distanceDelta > 0;
-
-            if (Math.abs(distanceDelta) > 10) {
-                if (isZoomIn) {
-                    super.invokeZoomIn();
-                } else {
-                    super.invokeZoomOut();
-                }
-                this.currentActiveTouches.currentDistance = currentDistance;
-            }
-        } else {
-            const newActiveTouches = {
-                currentDistance: this.calculateDistance(touch1, touch2)
-            }
-            this.currentActiveTouches = newActiveTouches;
-        }
-        this.lastTouchTime = Date.now();
-    }
-
-    private removeMultipleTouches(): void {
-        if (this.currentActiveTouches) {
-            this.currentActiveTouches = undefined;
-        }
-    }
-
     private getPosition(event: PointerEvent): Position {
         const rect = this.htmlElement.getBoundingClientRect();
         const x = event.clientX - rect.left;
         const y = event.clientY - rect.top;
         return { x, y };
-    }
-
-    private calculateDistance(finger1: Touch, finger2: Touch) {
-        const dx = finger1.clientX - finger2.clientX;
-        const dy = finger1.clientY - finger2.clientY;
-        return Math.sqrt(dx * dx + dy * dy);
     }
 }
