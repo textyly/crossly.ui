@@ -18,7 +18,7 @@ export class CueDrawingCanvas extends CanvasBase implements ICueDrawingCanvas {
     public subscribe(cueCanvas: ICueCanvas): void {
         const drawDotUn = cueCanvas.onDrawDot(this.handleDrawDot.bind(this));
         super.registerUn(drawDotUn);
-        
+
         const drawDashDotUn = cueCanvas.onDrawDashDot(this.handleDrawDashDot.bind(this));
         super.registerUn(drawDashDotUn);
 
@@ -52,7 +52,6 @@ export class CueDrawingCanvas extends CanvasBase implements ICueDrawingCanvas {
     private handleDrawDot(event: DrawCueDotEvent): void {
         const dot = event.dot;
         const id = dot.id;
-
         const svgDot = this.vectorDrawing.drawDot(dot);
         this.svgDots.set(id, svgDot);
     }
@@ -68,18 +67,14 @@ export class CueDrawingCanvas extends CanvasBase implements ICueDrawingCanvas {
     private handleRemoveDot(event: RemoveCueDotEvent): void {
         const dot = event.dot;
         const id = dot.id;
-
-        if (this.svgDots.has(id)) {
-            const svgDot = this.svgDots.get(id);
-            this.vectorDrawing.removeDot(svgDot!);
-            this.svgDots.delete(id);
-        }
+        const svgDot = this.svgDots.get(id);
+        this.vectorDrawing.removeDot(svgDot!);
+        this.svgDots.delete(id);
     }
 
     private handleDrawThread(event: DrawCueThreadEvent): void {
         const thread = event.thread;
         const id = thread.id;
-
         const svgLine = this.vectorDrawing.drawLine(thread);
         this.svgLines.set(id, svgLine);
     }
@@ -87,17 +82,13 @@ export class CueDrawingCanvas extends CanvasBase implements ICueDrawingCanvas {
     private handleMoveThread(event: DrawCueThreadEvent): void {
         const thread = event.thread;
         const id = thread.id;
-
-        if (this.svgLines.has(id)) {
-            const svgLine = this.svgLines.get(id);
-            this.vectorDrawing.moveLine(thread, svgLine!);
-        }
+        const svgLine = this.svgLines.get(id);
+        this.vectorDrawing.moveLine(thread, svgLine!);
     }
 
     private handleDrawDashThread(event: DrawCueThreadEvent): void {
         const thread = event.thread;
         const id = thread.id;
-
         const svgLine = this.vectorDrawing.drawDashLine(thread);
         this.svgLines.set(id, svgLine);
     }
@@ -105,12 +96,9 @@ export class CueDrawingCanvas extends CanvasBase implements ICueDrawingCanvas {
     private handleRemoveThread(event: RemoveCueThreadEvent): void {
         const thread = event.thread;
         const id = thread.id;
-
-        if (this.svgLines.has(id)) {
-            const svgLine = this.svgLines.get(id);
-            this.vectorDrawing.removeLine(svgLine!);
-            this.svgLines.delete(id);
-        }
+        const svgLine = this.svgLines.get(id);
+        this.vectorDrawing.removeLine(svgLine!);
+        this.svgLines.delete(id);
     }
 
     private handleRedraw(): void {

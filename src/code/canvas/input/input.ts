@@ -87,6 +87,9 @@ export class InputCanvas extends InputCanvasBase implements IInputCanvas {
     }
 
     private handlePointerDown(event: PointerEvent): void {
+        if (this.touchInput.inZoomMode) {
+            return;
+        }
         // TODO:
         // super.invokePointerHoldingDown();
     }

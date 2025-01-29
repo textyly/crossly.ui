@@ -102,7 +102,6 @@ export class CueCanvas extends CueCanvasBase implements ICueCanvas {
 
     private resizeThread(position: Position): void {
         const previousClickedDot = this.gridCanvas.getDotById(this.previouslyClickedDotId!);
-
         if (!previousClickedDot) {
             return;
         }
@@ -118,18 +117,24 @@ export class CueCanvas extends CueCanvasBase implements ICueCanvas {
     }
 
     private handleDotClick(position: Position): void {
-        const clickedDot = this.gridCanvas.getDotByPosition(position);
+        const currentlyClickedDot = this.gridCanvas.getDotByPosition(position);
+        const previouslyClickedDot = this.gridCanvas.getDotById(this.previouslyClickedDotId!);
+        const previouslyHoveredDot = this.gridCanvas.getDotById(this.previouslyHoveredDotId!);
 
-        if (clickedDot && (clickedDot.id !== this.previouslyClickedDotId)) {
+        // 1. check wether used has clicked on the dot and it is not the same as before
+        if (currentlyClickedDot && (currentlyClickedDot.id !== previouslyClickedDot?.id)) {
 
-            this.currentSide = this.currentSide === CanvasSide.Front ? CanvasSide.Back : CanvasSide.Front;
-            this.previouslyClickedDotId = clickedDot.id;
+            this.previouslyClickedDotId = currentlyClickedDot.id;
 
+            // 2. change canvas side
+            this.changeSide();
+
+            // handle dot logic
+            this.removeHoveredDot(previouslyHoveredDot);
+            this.hoverDot(currentlyClickedDot);
+
+            // handle thread logic
             if (this.currentThread) {
-                if (clickedDot) {
-                    this.removeHoveredDot(clickedDot);
-                    this.hoverDot(clickedDot);
-                }
                 super.invokeRemoveThread(this.currentThread);
                 this.currentThread = undefined;
             }
@@ -139,6 +144,10 @@ export class CueCanvas extends CueCanvasBase implements ICueCanvas {
     private changeSize(size: Size): void {
         super.size = size;
         this.draw();
+    }
+
+    private changeSide(): void {
+        this.currentSide = this.currentSide === CanvasSide.Front ? CanvasSide.Back : CanvasSide.Front;
     }
 
     private hoverDot(hoveredDot: GridDot): void {
