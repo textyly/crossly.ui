@@ -151,8 +151,6 @@ export class CueCanvas extends CueCanvasBase implements ICueCanvas {
     }
 
     private hoverDot(hoveredDot: GridDot): void {
-        this.previouslyHoveredDotId = hoveredDot.id;
-
         const hovered = { id: hoveredDot.id, x: hoveredDot.x, y: hoveredDot.y, radius: this.dotRadius, color: this.dotColor };
 
         if (!this.previouslyClickedDotId) {
@@ -162,6 +160,8 @@ export class CueCanvas extends CueCanvasBase implements ICueCanvas {
                 ? super.invokeDrawDot(hovered)
                 : super.invokeDrawDashDot(hovered);
         }
+
+        this.previouslyHoveredDotId = hoveredDot.id;
     }
 
     private removeHoveredDot(hoveredDot?: GridDot): void {
