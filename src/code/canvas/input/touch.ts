@@ -60,11 +60,7 @@ export class TouchInput implements ITouchInput {
     }
 
     public dispose(): void {
-        this.htmlElement.removeEventListener(CanvasEventsType.TouchStart, this.touchStartHandler);
-        this.htmlElement.removeEventListener(CanvasEventsType.TouchEnd, this.touchEndHandler);
-        this.htmlElement.removeEventListener(CanvasEventsType.TouchMove, this.touchMoveHandler);
-        this.htmlElement.removeEventListener(CanvasEventsType.TouchCancel, this.touchCancelHandler);
-
+        this.unsubscribe();
         this.messaging.dispose();
     }
 
@@ -73,6 +69,13 @@ export class TouchInput implements ITouchInput {
         this.htmlElement.addEventListener(CanvasEventsType.TouchEnd, this.touchEndHandler);
         this.htmlElement.addEventListener(CanvasEventsType.TouchMove, this.touchMoveHandler);
         this.htmlElement.addEventListener(CanvasEventsType.TouchCancel, this.touchCancelHandler);
+    }
+
+    private unsubscribe(): void {
+        this.htmlElement.removeEventListener(CanvasEventsType.TouchStart, this.touchStartHandler);
+        this.htmlElement.removeEventListener(CanvasEventsType.TouchEnd, this.touchEndHandler);
+        this.htmlElement.removeEventListener(CanvasEventsType.TouchMove, this.touchMoveHandler);
+        this.htmlElement.removeEventListener(CanvasEventsType.TouchCancel, this.touchCancelHandler);
     }
 
     private handleTouchStart(event: TouchEvent): void {

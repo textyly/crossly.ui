@@ -11,7 +11,6 @@ export class InputCanvas extends InputCanvasBase implements IInputCanvas {
     private readonly pointerMoveHandler: PointerEventHandler;
     private readonly pointerHoldingDownHandler: PointerEventHandler;
     private readonly pointerUpHandler: PointerEventHandler;
-    private readonly pointerCancelHandler: PointerEventHandler;
 
     constructor(htmlElement: HTMLElement) {
         super();
@@ -23,7 +22,6 @@ export class InputCanvas extends InputCanvasBase implements IInputCanvas {
         this.pointerMoveHandler = this.handlePointerMove.bind(this);
         this.pointerHoldingDownHandler = this.handlePointerDown.bind(this);
         this.pointerUpHandler = this.handlePointerUp.bind(this);
-        this.pointerCancelHandler = this.handlePointerCancel.bind(this);
 
         this.subscribe();
     }
@@ -38,14 +36,8 @@ export class InputCanvas extends InputCanvasBase implements IInputCanvas {
     }
 
     public override dispose(): void {
-        this.htmlElement.removeEventListener(CanvasEventsType.WheelChange, this.wheelChangeHandler);
-        this.htmlElement.removeEventListener(CanvasEventsType.PointerMove, this.pointerMoveHandler);
-        this.htmlElement.removeEventListener(CanvasEventsType.PointerDown, this.pointerHoldingDownHandler);
-        this.htmlElement.removeEventListener(CanvasEventsType.PointerUp, this.pointerUpHandler);
-        this.htmlElement.removeEventListener(CanvasEventsType.PointerCancel, this.pointerCancelHandler);
-
+        this.unsubscribe();
         this.touchInput.dispose();
-
         super.dispose();
     }
 
@@ -54,13 +46,19 @@ export class InputCanvas extends InputCanvasBase implements IInputCanvas {
         this.htmlElement.addEventListener(CanvasEventsType.PointerMove, this.pointerMoveHandler);
         this.htmlElement.addEventListener(CanvasEventsType.PointerDown, this.pointerHoldingDownHandler);
         this.htmlElement.addEventListener(CanvasEventsType.PointerUp, this.pointerUpHandler);
-        this.htmlElement.addEventListener(CanvasEventsType.PointerCancel, this.pointerCancelHandler);
 
         const touchZoomInUn = this.touchInput.onZoomIn(this.handleZoomIn.bind(this));
         super.registerUn(touchZoomInUn);
 
         const touchZoomOutUn = this.touchInput.onZoomOut(this.handleZoomOut.bind(this));
         super.registerUn(touchZoomOutUn);
+    }
+
+    private unsubscribe(): void {
+        this.htmlElement.removeEventListener(CanvasEventsType.WheelChange, this.wheelChangeHandler);
+        this.htmlElement.removeEventListener(CanvasEventsType.PointerMove, this.pointerMoveHandler);
+        this.htmlElement.removeEventListener(CanvasEventsType.PointerDown, this.pointerHoldingDownHandler);
+        this.htmlElement.removeEventListener(CanvasEventsType.PointerUp, this.pointerUpHandler);
     }
 
     private handleWheelChange(event: WheelEvent): void {
@@ -103,9 +101,6 @@ export class InputCanvas extends InputCanvasBase implements IInputCanvas {
         if (event.button === leftButton) {
             super.invokePointerUp(position);
         }
-    }
-
-    private handlePointerCancel(event: PointerEvent): void {
     }
 
     private getPosition(event: PointerEvent): Position {
