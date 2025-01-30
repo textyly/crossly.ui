@@ -3,6 +3,7 @@ import { Listener, VoidUnsubscribe } from "../../types";
 
 export type CanvasEvent = { type: CanvasEventsType, value?: Position };
 export type ActiveTouches = { currentDistance: number };
+export type VisibleArea = { left: number; top: number; width: number; height: number; };
 
 export interface IInputCanvas extends ICanvas {
     onZoomIn(listener: ZoomInListener): VoidUnsubscribe;
@@ -13,6 +14,7 @@ export interface IInputCanvas extends ICanvas {
     onPointerHoldingDown(listener: PointerDownListener): VoidUnsubscribe;
 
     onSizeChange(listener: SizeChangeListener): VoidUnsubscribe;
+    onVisibleAreaChange(listener: VisibleAreaChangeListener): VoidUnsubscribe;
 }
 
 export interface ITouchInput extends IDisposable {
@@ -53,6 +55,9 @@ export type ZoomInListener = Listener<ZoomInEvent>;
 
 export type ZoomOutEvent = {};
 export type ZoomOutListener = Listener<ZoomOutEvent>;
+
+export type VisibleAreaChangeEvent = { area: VisibleArea };
+export type VisibleAreaChangeListener = Listener<VisibleAreaChangeEvent>;
 
 export type PointerEventHandler = Listener<PointerEvent>;
 export type TouchEventHandler = Listener<TouchEvent>;

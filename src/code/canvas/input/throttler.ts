@@ -9,7 +9,7 @@ import {
 } from "./types.js";
 
 // TODO: all methods should have a common one
-export class InputCanvasThrottler extends InputCanvasBase {
+export class InputCanvasThrottler extends InputCanvasBase implements IInputCanvas {
     private readonly inputCanvas: IInputCanvas;
 
     private groupedEvents: Array<CanvasEvent>;
