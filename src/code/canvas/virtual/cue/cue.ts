@@ -26,6 +26,7 @@ export class CueCanvas extends CueCanvasBase implements ICueCanvas {
 
         this.ids = new IdGenerator();
         this.converter = new Converter();
+
         this.currentSide = CanvasSide.Back;
 
         this.subscribe();

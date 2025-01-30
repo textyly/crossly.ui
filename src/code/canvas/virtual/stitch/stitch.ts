@@ -23,8 +23,9 @@ export class StitchCanvas extends StitchCanvasBase implements IStitchCanvas {
 
         this.converter = new Converter();
         this.dotsUtility = new DotsUtility();
-        this.currentSide = CanvasSide.Back;
+
         this.threads = [];
+        this.currentSide = CanvasSide.Back;
 
         this.subscribe();
     }
@@ -40,6 +41,7 @@ export class StitchCanvas extends StitchCanvasBase implements IStitchCanvas {
     }
 
     private redraw(): void {
+        this.createThreads();
         this.drawThreads();
     }
 
@@ -86,7 +88,7 @@ export class StitchCanvas extends StitchCanvasBase implements IStitchCanvas {
         }
 
         if (this.previousClickedDotId) {
-            const recreated = this.createThread(this.previousClickedDotId, currentlyClickedDot.id, this.threadWidth, this.currentSide, this.threadColor);
+            const recreated = this.createThread(this.previousClickedDotId, currentlyClickedDot.id, this.currentSide);
             this.threads.push(recreated);
             this.drawThread(recreated);
         }
@@ -95,27 +97,35 @@ export class StitchCanvas extends StitchCanvasBase implements IStitchCanvas {
         this.changeSide();
     }
 
-    private changeSize(size: Size): void {
-        super.size = size;
-        this.draw();
-    }
-
-    private drawThreads(): Array<StitchThread> {
+    private createThreads(): void {
         const copy = this.threads;
         this.threads = [];
 
         copy.forEach((thread) => {
-            const recreated = this.createThread(thread.from.id, thread.to.id, this.threadWidth, thread.side, this.threadColor);
+            const recreated = this.createThread(thread.from.id, thread.to.id, thread.side);
             this.threads.push(recreated);
         });
+    }
 
+    private createThread(fromId: string, toId: string, side: CanvasSide): StitchThread {
+        const fromGridDot = this.gridCanvas.getDotById(fromId);
+        const toGridDot = this.gridCanvas.getDotById(toId);
+
+        const dots = this.dotsUtility.ensureDots(fromGridDot, toGridDot);
+
+        const from = this.converter.convertToStitchDot(dots.from, this.dotColor, side);
+        const to = this.converter.convertToStitchDot(dots.to, this.dotColor, side);
+
+        const thread = { from, to, side, width: this.threadWidth, color: this.threadColor };
+        return thread;
+    }
+
+    private drawThreads(): void {
         const frontThreads = this.threads.filter((thread) => thread.side === CanvasSide.Front);
         super.invokeDrawFrontThreads(frontThreads);
 
         const backThreads = this.threads.filter((thread) => thread.side === CanvasSide.Back);
         super.invokeDrawBackThreads(backThreads);
-
-        return this.threads;
     }
 
     private drawThread(thread: StitchThread): void {
@@ -126,17 +136,9 @@ export class StitchCanvas extends StitchCanvasBase implements IStitchCanvas {
         }
     }
 
-    private createThread(fromId: string, toId: string, width: number, side: CanvasSide, color: string): StitchThread {
-        const fromGridDot = this.gridCanvas.getDotById(fromId);
-        const toGridDot = this.gridCanvas.getDotById(toId);
-
-        const dots = this.dotsUtility.ensureDots(fromGridDot, toGridDot);
-
-        const from = this.converter.convertToStitchDot(dots.from, this.dotColor, side);
-        const to = this.converter.convertToStitchDot(dots.to, this.dotColor, side);
-
-        const thread = { from: from, to: to, width, side, color };
-        return thread;
+    private changeSize(size: Size): void {
+        super.size = size;
+        this.draw();
     }
 
     private changeSide(): void {
