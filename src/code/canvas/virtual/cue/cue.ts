@@ -12,8 +12,8 @@ export class CueCanvas extends CueCanvasBase implements ICueCanvas {
     private readonly ids: IdGenerator;
     private readonly converter: Converter;
 
-    private currentThread?: CueThread;
     private currentSide: CanvasSide;
+    private currentThread?: CueThread;
 
     private previouslyClickedDotId?: Id;
     private previouslyHoveredDotId?: Id;
@@ -39,11 +39,11 @@ export class CueCanvas extends CueCanvasBase implements ICueCanvas {
         this.ids.reset();
 
         const previouslyHovered = this.gridCanvas.getDotById(this.previouslyHoveredDotId!);
-        this.removeHoveredDot(previouslyHovered);
+        this.removeDot(previouslyHovered);
 
         if (this.currentThread) {
             const position = this.currentThread.to;
-            this.resizeThread(position);
+            this.createOrResizeThread(position);
         }
     }
 
@@ -75,12 +75,12 @@ export class CueCanvas extends CueCanvasBase implements ICueCanvas {
     private handlePointerMove(event: PointerMoveEvent): void {
         const position = event.position;
         this.moveDot(position);
-        this.resizeThread(position);
+        this.createOrResizeThread(position);
     }
 
     private handlePointerUp(event: PointerUpEvent): void {
         const position = event.position;
-        this.handleDotClick(position);
+        this.clickDot(position);
     }
 
     private handleSizeChange(event: SizeChangeEvent): void {
@@ -93,61 +93,35 @@ export class CueCanvas extends CueCanvasBase implements ICueCanvas {
         const previouslyHovered = this.gridCanvas.getDotById(this.previouslyHoveredDotId!);
 
         if (!currentlyHovered) {
-            this.removeHoveredDot(previouslyHovered);
+            this.removeDot(previouslyHovered);
         } else if (currentlyHovered.id !== previouslyHovered?.id) {
-            this.removeHoveredDot(previouslyHovered);
+            this.removeDot(previouslyHovered);
             this.hoverDot(currentlyHovered);
         }
     }
 
-    private resizeThread(position: Position): void {
-        const previousClickedDot = this.gridCanvas.getDotById(this.previouslyClickedDotId!);
-        if (!previousClickedDot) {
-            return;
-        }
-
-        if (this.currentThread) {
-            this.currentThread = this.createThread(previousClickedDot, position, this.currentThread.id);
-            super.invokeMoveThread(this.currentThread);
-        } else {
-            const threadId = this.ids.next();
-            this.currentThread = this.createThread(previousClickedDot, position, threadId);
-            this.drawThread(this.currentThread);
-        }
-    }
-
-    private handleDotClick(position: Position): void {
+    private clickDot(position: Position): void {
         const currentlyClickedDot = this.gridCanvas.getDotByPosition(position);
         const previouslyClickedDot = this.gridCanvas.getDotById(this.previouslyClickedDotId!);
         const previouslyHoveredDot = this.gridCanvas.getDotById(this.previouslyHoveredDotId!);
 
-        // 1. check wether used has clicked on the dot and it is not the same as before
+        // 1. check weather user has clicked on a dot and it is not the same as before
         if (currentlyClickedDot && (currentlyClickedDot.id !== previouslyClickedDot?.id)) {
 
+            // 2. set the new clicked dot
             this.previouslyClickedDotId = currentlyClickedDot.id;
 
-            // 2. change canvas side
+            // 3. change canvas side
             this.changeSide();
 
-            // handle dot logic
-            this.removeHoveredDot(previouslyHoveredDot);
+            // 4. handle dot logic, remove previously hovered dot and hover the clicked one
+            this.removeDot(previouslyHoveredDot);
             this.hoverDot(currentlyClickedDot);
 
-            // handle thread logic
-            if (this.currentThread) {
-                super.invokeRemoveThread(this.currentThread);
-                this.currentThread = undefined;
-            }
+            // 5. handle thread logic, remove previously drawn thread and draw a new one
+            this.removeThread();
+            this.createOrResizeThread(position);
         }
-    }
-
-    private changeSize(size: Size): void {
-        super.size = size;
-        this.draw();
-    }
-
-    private changeSide(): void {
-        this.currentSide = this.currentSide === CanvasSide.Front ? CanvasSide.Back : CanvasSide.Front;
     }
 
     private hoverDot(hoveredDot: GridDot): void {
@@ -164,18 +138,26 @@ export class CueCanvas extends CueCanvasBase implements ICueCanvas {
         this.previouslyHoveredDotId = hoveredDot.id;
     }
 
-    private removeHoveredDot(hoveredDot?: GridDot): void {
+    private removeDot(hoveredDot?: GridDot): void {
         if (hoveredDot) {
             super.invokeRemoveDot(hoveredDot);
             this.previouslyHoveredDotId = undefined;
         }
     }
 
-    private drawThread(thread: CueThread): void {
-        if (this.currentSide === CanvasSide.Front) {
-            super.invokeDrawThread(thread);
+    private createOrResizeThread(position: Position): void {
+        const previousClickedDot = this.gridCanvas.getDotById(this.previouslyClickedDotId!);
+        if (!previousClickedDot) {
+            return;
+        }
+
+        if (this.currentThread) {
+            this.currentThread = this.createThread(previousClickedDot, position, this.currentThread.id);
+            super.invokeMoveThread(this.currentThread);
         } else {
-            super.invokeDrawDashThread(thread);
+            const threadId = this.ids.next();
+            this.currentThread = this.createThread(previousClickedDot, position, threadId);
+            this.drawThread(this.currentThread);
         }
     }
 
@@ -187,5 +169,29 @@ export class CueCanvas extends CueCanvasBase implements ICueCanvas {
 
         const thread = { id: threadId, from: fromDot, to: toDot, width: this.threadWidth, color: this.threadColor };
         return thread;
+    }
+
+    private drawThread(thread: CueThread): void {
+        if (this.currentSide === CanvasSide.Front) {
+            super.invokeDrawThread(thread);
+        } else {
+            super.invokeDrawDashThread(thread);
+        }
+    }
+
+    private removeThread(): void {
+        if (this.currentThread) {
+            super.invokeRemoveThread(this.currentThread);
+            this.currentThread = undefined;
+        }
+    }
+
+    private changeSize(size: Size): void {
+        super.size = size;
+        this.draw();
+    }
+
+    private changeSide(): void {
+        this.currentSide = this.currentSide === CanvasSide.Front ? CanvasSide.Back : CanvasSide.Front;
     }
 }
