@@ -18,7 +18,7 @@ export type CanvasConfig = {
     thread: ThreadConfig
 };
 
-export type ZoomItemConfig = { value: number; zoomStep: number; };
+export type ZoomItemConfig = { value: number; zoomInStep: number; zoomOutStep: number };
 export type DotConfig = { color: string; radius: ZoomItemConfig; };
 export type ThreadConfig = { color: string; width: ZoomItemConfig; };
 export type SpacingConfig = ZoomItemConfig;
@@ -27,6 +27,7 @@ export type GridCanvasConfig = CanvasConfig & {
     columns: number;
     rows: number;
     spacing: SpacingConfig;
+    dotMatchDistance: ZoomItemConfig;
 }
 
 export type CrosslyCanvasConfig = {

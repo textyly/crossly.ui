@@ -1,73 +1,115 @@
 import { Size } from "../types.js";
+import { TouchInput } from "./touch.js";
 import { InputCanvasBase } from "./base.js";
-import { HtmlCanvasEvents, MouseEventHandler, Position, WheelChangeHandler, WheelEvent } from "./types.js";
+import { CanvasEventsType, IInputCanvas, ITouchInput, PointerEventHandler, Position, WheelChangeHandler } from "./types.js";
 
-export class InputCanvas extends InputCanvasBase {
+export class InputCanvas extends InputCanvasBase implements IInputCanvas {
     private readonly htmlElement: HTMLElement;
+    private readonly touchInput: ITouchInput;
+
     private readonly wheelChangeHandler: WheelChangeHandler;
-    private readonly mouseMoveHandler: MouseEventHandler;
-    private readonly mouseButtonDownHandler: MouseEventHandler;
+    private readonly pointerMoveHandler: PointerEventHandler;
+    private readonly pointerHoldingDownHandler: PointerEventHandler;
+    private readonly pointerUpHandler: PointerEventHandler;
 
     constructor(htmlElement: HTMLElement) {
         super();
 
         this.htmlElement = htmlElement;
+        this.touchInput = new TouchInput(htmlElement);
 
         this.wheelChangeHandler = this.handleWheelChange.bind(this);
-        this.mouseMoveHandler = this.handleMouseMove.bind(this);
-        this.mouseButtonDownHandler = this.handleMouseButtonDown.bind(this)
+        this.pointerMoveHandler = this.handlePointerMove.bind(this);
+        this.pointerHoldingDownHandler = this.handlePointerDown.bind(this);
+        this.pointerUpHandler = this.handlePointerUp.bind(this);
 
         this.subscribe();
     }
 
     public override set size(value: Size) {
         super.size = value;
-        const width = value.width.toString();
-        const height = value.height.toString();
+        const width = value.width.toString() + "px";
+        const height = value.height.toString() + "px";
 
-        this.htmlElement.style.width = width + "px";
-        this.htmlElement.style.height = height + "px";
+        this.htmlElement.style.width = width;
+        this.htmlElement.style.height = height;
     }
 
     public override dispose(): void {
-        this.htmlElement.removeEventListener(HtmlCanvasEvents.WheelChange, this.wheelChangeHandler);
-        this.htmlElement.removeEventListener(HtmlCanvasEvents.MouseMove, this.mouseMoveHandler);
-        this.htmlElement.removeEventListener(HtmlCanvasEvents.MouseDown, this.mouseButtonDownHandler);
+        this.unsubscribe();
+        this.touchInput.dispose();
         super.dispose();
     }
 
-    private getPosition(event: MouseEvent): Position {
-        const rect = this.htmlElement.getBoundingClientRect();
-        const x = event.clientX - rect.left;
-        const y = event.clientY - rect.top;
-        return { x, y };
+    private subscribe(): void {
+        this.htmlElement.addEventListener(CanvasEventsType.WheelChange, this.wheelChangeHandler);
+        this.htmlElement.addEventListener(CanvasEventsType.PointerMove, this.pointerMoveHandler);
+        this.htmlElement.addEventListener(CanvasEventsType.PointerDown, this.pointerHoldingDownHandler);
+        this.htmlElement.addEventListener(CanvasEventsType.PointerUp, this.pointerUpHandler);
+
+        const touchZoomInUn = this.touchInput.onZoomIn(this.handleZoomIn.bind(this));
+        super.registerUn(touchZoomInUn);
+
+        const touchZoomOutUn = this.touchInput.onZoomOut(this.handleZoomOut.bind(this));
+        super.registerUn(touchZoomOutUn);
     }
 
-    private subscribe(): void {
-        this.htmlElement.addEventListener(HtmlCanvasEvents.WheelChange, this.wheelChangeHandler);
-        this.htmlElement.addEventListener(HtmlCanvasEvents.MouseMove, this.mouseMoveHandler);
-        this.htmlElement.addEventListener(HtmlCanvasEvents.MouseDown, this.mouseButtonDownHandler);
+    private unsubscribe(): void {
+        this.htmlElement.removeEventListener(CanvasEventsType.WheelChange, this.wheelChangeHandler);
+        this.htmlElement.removeEventListener(CanvasEventsType.PointerMove, this.pointerMoveHandler);
+        this.htmlElement.removeEventListener(CanvasEventsType.PointerDown, this.pointerHoldingDownHandler);
+        this.htmlElement.removeEventListener(CanvasEventsType.PointerUp, this.pointerUpHandler);
     }
 
     private handleWheelChange(event: WheelEvent): void {
         if (event.ctrlKey) {
             const deltaY = event.deltaY;
-            deltaY < 0 ? super.invokeZoomIn() : super.invokeZoomOut();
+            deltaY < 0 ? this.handleZoomIn() : this.handleZoomOut();
             event.preventDefault();
         }
     }
 
-    private handleMouseMove(event: MouseEvent): void {
-        const position = this.getPosition(event);
-        super.invokeMouseMove(position);
+    private handleZoomIn(): void {
+        super.invokeZoomIn();
     }
 
-    private handleMouseButtonDown(event: MouseEvent): void {
-        const position = this.getPosition(event);
+    private handleZoomOut(): void {
+        super.invokeZoomOut();
+    }
 
+    private handlePointerMove(event: PointerEvent): void {
+        if (this.touchInput.inZoomMode) {
+            return;
+        }
+
+        const position = this.getPosition(event);
+        super.invokePointerMove(position);
+    }
+
+    private handlePointerDown(event: PointerEvent): void {
+        if (this.touchInput.inZoomMode) {
+            return;
+        }
+        // TODO:
+        // super.invokePointerHoldingDown();
+    }
+
+    private handlePointerUp(event: PointerEvent): void {
+        if (this.touchInput.inZoomMode) {
+            return;
+        }
+
+        const position = this.getPosition(event);
         const leftButton = 0;
         if (event.button === leftButton) {
-            super.invokeMouseLeftButtonDown(position);
+            super.invokePointerUp(position);
         }
+    }
+
+    private getPosition(event: PointerEvent): Position {
+        const rect = this.htmlElement.getBoundingClientRect();
+        const x = event.clientX - rect.left;
+        const y = event.clientY - rect.top;
+        return { x, y };
     }
 }

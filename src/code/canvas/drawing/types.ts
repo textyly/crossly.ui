@@ -25,6 +25,7 @@ export interface IRasterDrawing extends ICanvas {
 
 export interface IVectorDrawing extends ICanvas {
     drawDot(dot: Dot): SvgDot;
+    drawDashDot(dot: Dot): SvgDot;
     removeDot(dot: SvgDot): void;
 
     drawLine(thread: Thread<Dot>): SvgLine;

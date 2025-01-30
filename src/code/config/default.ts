@@ -8,20 +8,28 @@ export class ConfigFactory {
             rows: 30,
             spacing: {
                 value: 25,
-                zoomStep: 0.5
+                zoomInStep: 0.5,
+                zoomOutStep: 0.5
             },
             dot: {
                 color: "#9fa19f",
                 radius: {
                     value: 2,
-                    zoomStep: 0.1
+                    zoomInStep: 0.2,
+                    zoomOutStep: 0.1
                 }
+            },
+            dotMatchDistance: {
+                value: 4, // twice as dot radius, so that it is easier to click on a dot
+                zoomInStep: 0.7, // spacing zoomInStep + dot radius zoomInStep (for better touch support)
+                zoomOutStep: 0.1
             },
             thread: {
                 color: "#d2d4d2",
                 width: {
                     value: 1,
-                    zoomStep: 0.05
+                    zoomInStep: 0.1,
+                    zoomOutStep: 0.05
                 }
             }
         };
@@ -31,14 +39,16 @@ export class ConfigFactory {
                 color: "gray",
                 radius: {
                     value: 2,
-                    zoomStep: 0.1
+                    zoomInStep: 0.2,
+                    zoomOutStep: 0.1
                 },
             },
             thread: {
                 color: "gray",
                 width: {
                     value: 5,
-                    zoomStep: 0.25
+                    zoomInStep: 0.3,
+                    zoomOutStep: 0.3
                 }
             }
         };
@@ -48,14 +58,16 @@ export class ConfigFactory {
                 color: "gray",
                 radius: {
                     value: 4,
-                    zoomStep: 0.1
+                    zoomInStep: 0.4,
+                    zoomOutStep: 0.2
                 },
             },
             thread: {
                 color: "gray",
                 width: {
-                    value: 2,
-                    zoomStep: 0.05
+                    value: 5,
+                    zoomInStep: 0.3,
+                    zoomOutStep: 0.3
                 }
             }
         };

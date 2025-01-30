@@ -34,13 +34,13 @@ export interface IVirtualCanvas<TConfig> extends ICanvas {
 
 
 export interface IGridCanvas extends IVirtualCanvas<GridCanvasConfig> {
-    get spacing(): number;
-
     get rows(): number;
     set rows(value: number);
 
     get columns(): number;
     set columns(value: number);
+
+    get spacing(): number;
 
     getDotById(id: string): GridDot | undefined;
     getDotByPosition(position: Position): GridDot | undefined;
@@ -59,6 +59,7 @@ export interface IStitchCanvas extends IVirtualCanvas<StitchCanvasConfig> {
 
 export interface ICueCanvas extends IVirtualCanvas<CueCanvasConfig> {
     onDrawDot(listener: DrawCueDotListener): VoidUnsubscribe;
+    onDrawDashDot(listener: DrawCueDotListener): VoidUnsubscribe;
     onRemoveDot(listener: RemoveCueDotListener): VoidUnsubscribe;
 
     onDrawThread(listener: DrawCueThreadListener): VoidUnsubscribe;
@@ -68,7 +69,7 @@ export interface ICueCanvas extends IVirtualCanvas<CueCanvasConfig> {
 }
 
 export interface IDotMatcher {
-    match(dot: GridDot, position: Position): boolean;
+    match(dot: GridDot, position: Position, dotMatchDistance: number): boolean;
 }
 
 export type DrawGridDotsEvent = { dots: Array<GridDot> };
