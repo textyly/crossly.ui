@@ -113,7 +113,7 @@ export class GridCanvas extends GridCanvasBase implements IGridCanvas {
         this._spacingZoomOutStep = this.config.spacing.zoomOutStep;
 
 
-        const dotMatchDistance = this.config.dotMatchDistance;
+        const dotMatchDistance = this.config.dot.dotMatchDistance;
         this._dotMatchDistance = dotMatchDistance.value;
         this._dotMatchDistanceZoomInStep = dotMatchDistance.zoomInStep;
         this._dotMatchDistanceZoomOutStep = dotMatchDistance.zoomOutStep;
@@ -288,7 +288,7 @@ export class GridCanvas extends GridCanvasBase implements IGridCanvas {
     }
 
     private zoomInDotMatchDistance(): void {
-        const configDotMatchDistance = this.config.dotMatchDistance;
+        const configDotMatchDistance = this.config.dot.dotMatchDistance;
         const dotMatchDistance = (this._dotMatchDistance < configDotMatchDistance.value)
             ? (this._dotMatchDistance + this._dotMatchDistanceZoomOutStep)
             : (this._dotMatchDistance + this._dotMatchDistanceZoomInStep);
@@ -308,7 +308,7 @@ export class GridCanvas extends GridCanvasBase implements IGridCanvas {
     }
 
     private zoomOutDotMatchDistance(): void {
-        const configDotMatchDistance = this.config.dotMatchDistance;
+        const configDotMatchDistance = this.config.dot.dotMatchDistance;
         const dotMatchDistance = (this._dotMatchDistance > configDotMatchDistance.value)
             ? (this._dotMatchDistance - this._dotMatchDistanceZoomInStep)
             : (this._dotMatchDistance - this._dotMatchDistanceZoomOutStep);

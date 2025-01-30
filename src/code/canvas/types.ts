@@ -27,7 +27,7 @@ export type GridCanvasConfig = CanvasConfig & {
     columns: number;
     rows: number;
     spacing: SpacingConfig;
-    dotMatchDistance: ZoomItemConfig;
+    dot: { dotMatchDistance: ZoomItemConfig }
 }
 
 export type CrosslyCanvasConfig = {
