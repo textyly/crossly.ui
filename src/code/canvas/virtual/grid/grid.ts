@@ -26,11 +26,11 @@ export class GridCanvas extends GridCanvasBase implements IGridCanvas {
 
         this.inputCanvas = inputCanvas;
         this.dotMatcher = dotMatcher;
-        this.dotsUtility = new DotsUtility();
 
-        this.threadIds = new IdGenerator();
-        this.dotsIds = new IdGenerator();
         this.dots = new Map();
+        this.dotsIds = new IdGenerator();
+        this.threadIds = new IdGenerator();
+        this.dotsUtility = new DotsUtility();
 
         // make space for invisible dots, respectively invisible rows and columns
         const spacing = config.spacing.value / 2;
@@ -112,7 +112,7 @@ export class GridCanvas extends GridCanvasBase implements IGridCanvas {
     private redraw(): void {
         this.createDots();
         this.calculateSize();
-        this.drawThreads();
+        this.createAndDrawThreads();
         this.drawDots();
     }
 
@@ -198,14 +198,14 @@ export class GridCanvas extends GridCanvasBase implements IGridCanvas {
         super.invokeDrawInvisibleDots(invisibleDots);
     }
 
-    private drawThreads(): void {
+    private createAndDrawThreads(): void {
         this.threadIds.reset();
 
-        this.drawColumnsThreads();
-        this.drawRowsThreads();
+        this.createAndDrawColumnsThreads();
+        this.createAndDrawRowsThreads();
     }
 
-    private drawColumnsThreads(): void {
+    private createAndDrawColumnsThreads(): void {
         const visibleThreads: Array<GridThread> = [];
         const invisibleThreads: Array<GridThread> = [];
 
@@ -239,7 +239,7 @@ export class GridCanvas extends GridCanvasBase implements IGridCanvas {
         return thread;
     }
 
-    private drawRowsThreads(): void {
+    private createAndDrawRowsThreads(): void {
         const visibleThreads: Array<GridThread> = [];
         const invisibleThreads: Array<GridThread> = [];
 
