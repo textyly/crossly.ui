@@ -22,6 +22,11 @@ export class StitchDrawingCanvas extends CanvasBase implements IStitchDrawingCan
         super.registerUn(sizeChangeUn);
     }
 
+    public override dispose(): void {
+        this.clear();
+        super.dispose();
+    }
+
     private handleDrawFrontThreads(event: DrawStitchThreadsEvent): void {
         const threads = event.threads;
 
@@ -33,12 +38,16 @@ export class StitchDrawingCanvas extends CanvasBase implements IStitchDrawingCan
     }
 
     private handleRedraw(): void {
-        this.rasterDrawing.clear();
+        this.clear();
     }
 
     private handleSizeChange(event: SizeChangeEvent): void {
         const size = event.size;
         super.size = size;
         this.rasterDrawing.size = size;
+    }
+
+    private clear(): void {
+        this.rasterDrawing.clear();
     }
 }

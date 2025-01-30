@@ -9,6 +9,8 @@ import { StitchDrawingCanvas } from "./drawing/stitch.js";
 import { InputCanvasThrottler } from "./input/throttler.js";
 import { CrosslyCanvasConfig, ICrosslyCanvas } from "./types.js";
 import { ICueDrawingCanvas, IGridDrawingCanvas, IStitchDrawingCanvas } from "./drawing/types.js";
+import { VirtualRasterDrawing } from "./drawing/virtual/raster.js";
+import { VirtualVectorDrawing } from "./drawing/virtual/vector.js";
 
 export class CrosslyCanvasBuilder {
     private config!: CrosslyCanvasConfig;
@@ -36,20 +38,26 @@ export class CrosslyCanvasBuilder {
 
     public withGridCanvas(gridDotsCanvasElement: HTMLCanvasElement, gridThreadsSvgElement: HTMLElement): CrosslyCanvasBuilder {
         const rasterDrawing = new RasterDrawing(gridDotsCanvasElement);
+        const virtualRasterDrawing = new VirtualRasterDrawing(rasterDrawing);
+
         const vectorDrawing = new VectorDrawing(gridThreadsSvgElement);
-        this.gridDrawingCanvas = new GridDrawingCanvas(rasterDrawing, vectorDrawing);
+        const virtualVectorDrawing = new VirtualVectorDrawing(vectorDrawing);
+
+        this.gridDrawingCanvas = new GridDrawingCanvas(virtualRasterDrawing, virtualVectorDrawing);
         return this;
     }
 
     public withStitchCanvas(stitchCanvasElement: HTMLCanvasElement): CrosslyCanvasBuilder {
         const rasterDrawing = new RasterDrawing(stitchCanvasElement);
-        this.stitchDrawingCanvas = new StitchDrawingCanvas(rasterDrawing);
+        const virtualRasterDrawing = new VirtualRasterDrawing(rasterDrawing);
+        this.stitchDrawingCanvas = new StitchDrawingCanvas(virtualRasterDrawing);
         return this;
     }
 
     public withCueCanvas(cueSvgElement: HTMLElement): CrosslyCanvasBuilder {
         const vectorDrawing = new VectorDrawing(cueSvgElement);
-        this.cueDrawingCanvas = new CueDrawingCanvas(vectorDrawing);
+        const virtualVectorDrawing = new VirtualVectorDrawing(vectorDrawing);
+        this.cueDrawingCanvas = new CueDrawingCanvas(virtualVectorDrawing);
         return this;
     }
 }

@@ -1,7 +1,7 @@
 import { CanvasBase } from "../base.js";
 import { Id, SizeChangeEvent } from "../types.js";
-import { DrawGridDotsEvent, DrawGridThreadsEvent, IGridCanvas } from "../virtual/types.js";
 import { IGridDrawingCanvas, IRasterDrawing, IVectorDrawing, SvgLine } from "./types.js";
+import { DrawGridDotsEvent, DrawGridThreadsEvent, IGridCanvas } from "../virtual/types.js";
 
 export class GridDrawingCanvas extends CanvasBase implements IGridDrawingCanvas {
     private readonly rasterDrawing: IRasterDrawing;
@@ -29,6 +29,11 @@ export class GridDrawingCanvas extends CanvasBase implements IGridDrawingCanvas 
         super.registerUn(sizeChangeUn);
     }
 
+    public override dispose(): void {
+        this.clear();
+        super.dispose();
+    }
+
     private handleDrawVisibleDots(event: DrawGridDotsEvent): void {
         const dots = event.dots;
         this.rasterDrawing.drawDots(dots);
@@ -44,7 +49,7 @@ export class GridDrawingCanvas extends CanvasBase implements IGridDrawingCanvas 
     }
 
     private handleRedraw(): void {
-        this.svgLines.forEach((line) => this.vectorDrawing.removeLine(line));
+        this.clear();
     }
 
     private handleSizeChange(event: SizeChangeEvent): void {
@@ -53,5 +58,10 @@ export class GridDrawingCanvas extends CanvasBase implements IGridDrawingCanvas 
 
         this.rasterDrawing.size = size;
         this.vectorDrawing.size = size;
+    }
+
+    private clear(): void {
+        this.rasterDrawing.clear();
+        this.svgLines.forEach((line) => this.vectorDrawing.removeLine(line));
     }
 }

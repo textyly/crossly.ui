@@ -49,7 +49,7 @@ export abstract class CanvasBase implements ICanvas {
         this.uns.push(func);
     }
 
-    private invokeSizeChange(size: Size): void {
+    protected invokeSizeChange(size: Size): void {
         const event = { size };
         this.msg.sendToChannel1(event);
     }

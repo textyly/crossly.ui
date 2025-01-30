@@ -23,17 +23,17 @@ export class RasterDrawing extends CanvasBase implements IRasterDrawing {
         this.context.fill();
     }
 
-    public drawLines(lines: Array<Thread<Dot>>): void {
+    public drawLines(threads: Array<Thread<Dot>>): void {
         this.context.beginPath();
 
-        lines.forEach((line) => {
-            this.context.lineWidth = line.width;
-            this.context.strokeStyle = line.color;
+        threads.forEach((thread) => {
+            this.context.lineWidth = thread.width;
+            this.context.strokeStyle = thread.color;
 
-            const from = line.from;
+            const from = thread.from;
             this.context.moveTo(from.x, from.y);
 
-            const to = line.to;
+            const to = thread.to;
             this.context.lineTo(to.x, to.y);
         });
 
