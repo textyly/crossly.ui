@@ -18,6 +18,10 @@ export class GridCanvas extends GridCanvasBase implements IGridCanvas {
     private _spacingZoomInStep!: number;
     private _spacingZoomOutStep!: number;
 
+    private _dotMatchDistance!: number;
+    private _dotMatchDistanceZoomInStep!: number;
+    private _dotMatchDistanceZoomOutStep!: number;
+
     private _visibleRows!: number;
     private _visibleColumns!: number;
 
@@ -32,27 +36,8 @@ export class GridCanvas extends GridCanvasBase implements IGridCanvas {
         this.threadIds = new IdGenerator();
         this.dotsUtility = new DotsUtility();
 
-        // make space for invisible dots, respectively invisible rows and columns
-        const spacing = config.spacing.value / 2;
-
-        // threads and dots are blurry if x and y are integers, that is why we add 0.5
-        this._spacing = Math.floor(spacing) + 0.5;
-
-        this._spacingZoomInStep = config.spacing.zoomInStep;
-        this._spacingZoomOutStep = config.spacing.zoomOutStep;
-
-        this._visibleRows = config.rows;
-        this._visibleColumns = config.columns;
-
+        this.initialize();
         this.subscribe();
-    }
-
-    public get spacing(): number {
-        return this._spacing;
-    }
-
-    public get spacingZoomStep(): number {
-        return this.spacingZoomStep;
     }
 
     public get rows(): number {
@@ -77,6 +62,10 @@ export class GridCanvas extends GridCanvasBase implements IGridCanvas {
         }
     }
 
+    public get spacing(): number {
+        return this._spacing;
+    }
+
     private get allRows(): number {
         const invisibleRows = this._visibleRows - 1;
         const all = this._visibleRows + invisibleRows;
@@ -99,21 +88,38 @@ export class GridCanvas extends GridCanvasBase implements IGridCanvas {
     }
 
     public getDotByPosition(position: Position): GridDot | undefined {
+        let match: GridDot | undefined = undefined;
         const dots = this.dots.values();
 
         for (const dot of dots) {
-            const match = this.dotMatcher.match(dot, position);
-            if (match) {
-                return dot;
+
+            const hasMatch = this.dotMatcher.match(dot, position, this._dotMatchDistance);
+            if (hasMatch) {
+                match = dot;
+                break;
             }
         }
+
+        return match;
     }
 
-    private redraw(): void {
-        this.createDots();
-        this.calculateSize();
-        this.createAndDrawThreads();
-        this.drawDots();
+    private initialize(): void {
+        // make space for invisible dots, respectively invisible rows and columns
+        const spacing = this.config.spacing.value / 2;
+
+        // threads and dots are blurry if x and y are integers, that is why we add 0.5
+        this._spacing = Math.floor(spacing) + 0.5;
+        this._spacingZoomInStep = this.config.spacing.zoomInStep;
+        this._spacingZoomOutStep = this.config.spacing.zoomOutStep;
+
+
+        const dotMatchDistance = this.config.dotMatchDistance;
+        this._dotMatchDistance = dotMatchDistance.value;
+        this._dotMatchDistanceZoomInStep = dotMatchDistance.zoomInStep;
+        this._dotMatchDistanceZoomOutStep = dotMatchDistance.zoomOutStep;
+
+        this._visibleRows = this.config.rows;
+        this._visibleColumns = this.config.columns;
     }
 
     private subscribe(): void {
@@ -124,25 +130,22 @@ export class GridCanvas extends GridCanvasBase implements IGridCanvas {
         super.registerUn(zoomOutUn);
     }
 
-    private handleZoomIn(): void {
-        const configSpacing = this.config.spacing;
-        const spacing = (this.spacing < configSpacing.value)
-            ? (this.spacing + this._spacingZoomOutStep)
-            : (this.spacing + this._spacingZoomInStep);
+    private redraw(): void {
+        this.createDots();
+        this.calculateSize();
+        this.createAndDrawThreads();
+        this.drawDots();
+    }
 
-        // threads and dots are blurry if x and y are integers, that is why we add 0.5
-        this._spacing = Math.floor(spacing) + 0.5;
+    private handleZoomIn(): void {
+        this.zoomInSpacing();
+        this.zoomInDotMatchDistance();
         super.zoomIn();
     }
 
     private handleZoomOut(): void {
-        const configSpacing = this.config.spacing;
-        const spacing = (this.spacing > configSpacing.value)
-            ? (this.spacing - this._spacingZoomInStep)
-            : (this.spacing - this._spacingZoomOutStep);
-
-        // threads and dots are blurry if x and y are integers, that is why we subtract 0.5
-        this._spacing = Math.floor(spacing) - 0.5;
+        this.zoomOutSpacing();
+        this.zoomOutDotMatchDistance();
         super.zoomOut();
     }
 
@@ -272,6 +275,46 @@ export class GridCanvas extends GridCanvasBase implements IGridCanvas {
 
         const thread = { id, from: dots.from, to: dots.to, width: this.threadWidth, visibility, color: this.threadColor }
         return thread;
+    }
+
+    private zoomInSpacing(): void {
+        const configSpacing = this.config.spacing;
+        const spacing = (this.spacing < configSpacing.value)
+            ? (this.spacing + this._spacingZoomOutStep)
+            : (this.spacing + this._spacingZoomInStep);
+
+        // threads and dots are blurry if x and y are integers, that is why we add 0.5
+        this._spacing = Math.floor(spacing) + 0.5;
+    }
+
+    private zoomInDotMatchDistance(): void {
+        const configDotMatchDistance = this.config.dotMatchDistance;
+        const dotMatchDistance = (this._dotMatchDistance < configDotMatchDistance.value)
+            ? (this._dotMatchDistance + this._dotMatchDistanceZoomOutStep)
+            : (this._dotMatchDistance + this._dotMatchDistanceZoomInStep);
+
+        this._dotMatchDistance = dotMatchDistance;
+    }
+
+    private zoomOutSpacing(): void {
+        // zoom in spacing
+        const configSpacing = this.config.spacing;
+        const spacing = (this.spacing > configSpacing.value)
+            ? (this.spacing - this._spacingZoomInStep)
+            : (this.spacing - this._spacingZoomOutStep);
+
+        // threads and dots are blurry if x and y are integers, that is why we subtract 0.5
+        this._spacing = Math.floor(spacing) - 0.5;
+    }
+
+    private zoomOutDotMatchDistance(): void {
+        const configDotMatchDistance = this.config.dotMatchDistance;
+        const dotMatchDistance = (this._dotMatchDistance > configDotMatchDistance.value)
+            ? (this._dotMatchDistance - this._dotMatchDistanceZoomInStep)
+            : (this._dotMatchDistance - this._dotMatchDistanceZoomOutStep);
+
+        this._dotMatchDistance = dotMatchDistance;
+
     }
 
     private calculateSize(): void {

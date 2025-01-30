@@ -90,14 +90,14 @@ export class CueCanvas extends CueCanvasBase implements ICueCanvas {
     }
 
     private moveDot(position: Position): void {
-        const currentlyHovered = this.gridCanvas.getDotByPosition(position);
-        const previouslyHovered = this.gridCanvas.getDotById(this.previouslyHoveredDotId!);
+        const currentlyHoveredDot = this.gridCanvas.getDotByPosition(position);
+        const previouslyHoveredDot = this.gridCanvas.getDotById(this.previouslyHoveredDotId!);
 
-        if (!currentlyHovered) {
-            this.removeDot(previouslyHovered);
-        } else if (currentlyHovered.id !== previouslyHovered?.id) {
-            this.removeDot(previouslyHovered);
-            this.hoverDot(currentlyHovered);
+        if (!currentlyHoveredDot) {
+            this.removeDot(previouslyHoveredDot);
+        } else if (currentlyHoveredDot.id !== previouslyHoveredDot?.id) {
+            this.removeDot(previouslyHoveredDot);
+            this.hoverDot(currentlyHoveredDot);
         }
     }
 

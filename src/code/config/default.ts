@@ -19,6 +19,11 @@ export class ConfigFactory {
                     zoomOutStep: 0.1
                 }
             },
+            dotMatchDistance: {
+                value: 4, // twice as dot radius, so that it is easier to click on a dot
+                zoomInStep: 0.7, // spacing zoomInStep + dot radius zoomInStep (for better touch support)
+                zoomOutStep: 0.1
+            },
             thread: {
                 color: "#d2d4d2",
                 width: {
