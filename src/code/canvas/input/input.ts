@@ -1,7 +1,7 @@
 import { Size } from "../types.js";
 import { TouchInput } from "./touch.js";
 import { InputCanvasBase } from "./base.js";
-import { CanvasEventsType, IInputCanvas, ITouchInput, PointerEventHandler, Position, WheelChangeHandler } from "./types.js";
+import { CanvasEventType, IInputCanvas, ITouchInput, PointerEventHandler, Position, WheelChangeHandler } from "./types.js";
 
 export class InputCanvas extends InputCanvasBase implements IInputCanvas {
     private readonly htmlElement: HTMLElement;
@@ -42,10 +42,10 @@ export class InputCanvas extends InputCanvasBase implements IInputCanvas {
     }
 
     private subscribe(): void {
-        this.htmlElement.addEventListener(CanvasEventsType.WheelChange, this.wheelChangeHandler);
-        this.htmlElement.addEventListener(CanvasEventsType.PointerMove, this.pointerMoveHandler);
-        this.htmlElement.addEventListener(CanvasEventsType.PointerDown, this.pointerHoldingDownHandler);
-        this.htmlElement.addEventListener(CanvasEventsType.PointerUp, this.pointerUpHandler);
+        this.htmlElement.addEventListener(CanvasEventType.WheelChange, this.wheelChangeHandler);
+        this.htmlElement.addEventListener(CanvasEventType.PointerMove, this.pointerMoveHandler);
+        this.htmlElement.addEventListener(CanvasEventType.PointerDown, this.pointerHoldingDownHandler);
+        this.htmlElement.addEventListener(CanvasEventType.PointerUp, this.pointerUpHandler);
 
         const touchZoomInUn = this.touchInput.onZoomIn(this.handleZoomIn.bind(this));
         super.registerUn(touchZoomInUn);
@@ -55,10 +55,10 @@ export class InputCanvas extends InputCanvasBase implements IInputCanvas {
     }
 
     private unsubscribe(): void {
-        this.htmlElement.removeEventListener(CanvasEventsType.WheelChange, this.wheelChangeHandler);
-        this.htmlElement.removeEventListener(CanvasEventsType.PointerMove, this.pointerMoveHandler);
-        this.htmlElement.removeEventListener(CanvasEventsType.PointerDown, this.pointerHoldingDownHandler);
-        this.htmlElement.removeEventListener(CanvasEventsType.PointerUp, this.pointerUpHandler);
+        this.htmlElement.removeEventListener(CanvasEventType.WheelChange, this.wheelChangeHandler);
+        this.htmlElement.removeEventListener(CanvasEventType.PointerMove, this.pointerMoveHandler);
+        this.htmlElement.removeEventListener(CanvasEventType.PointerDown, this.pointerHoldingDownHandler);
+        this.htmlElement.removeEventListener(CanvasEventType.PointerUp, this.pointerUpHandler);
     }
 
     private handleWheelChange(event: WheelEvent): void {

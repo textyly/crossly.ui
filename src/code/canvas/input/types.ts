@@ -1,7 +1,7 @@
 import { ICanvas, IDisposable, SizeChangeListener } from "../types";
 import { Listener, VoidUnsubscribe } from "../../types";
 
-export type CanvasEvent = { type: CanvasEventsType, value?: Position };
+export type CanvasEvent = { type: CanvasEventType, value?: Position };
 export type ActiveTouches = { currentDistance: number };
 
 export interface IInputCanvas extends ICanvas {
@@ -10,7 +10,7 @@ export interface IInputCanvas extends ICanvas {
 
     onPointerMove(listener: PointerMoveListener): VoidUnsubscribe;
     onPointerUp(listener: PointerUpListener): VoidUnsubscribe;
-    onPointerHoldingDown(listener: PointerDownListener): VoidUnsubscribe;
+    onPointerDown(listener: PointerDownListener): VoidUnsubscribe;
 
     onSizeChange(listener: SizeChangeListener): VoidUnsubscribe;
 }
@@ -22,7 +22,7 @@ export interface ITouchInput extends IDisposable {
     onZoomOut(listener: ZoomOutListener): VoidUnsubscribe
 }
 
-export enum CanvasEventsType {
+export enum CanvasEventType {
     WheelChange = "wheel",
     ZoomIn = "zoomin",
     ZoomOut = "zoomout",

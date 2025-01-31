@@ -3,7 +3,7 @@ import { Messaging2 } from "../../messaging/impl.js";
 import { IMessaging2 } from "../../messaging/types.js";
 import {
     ActiveTouches,
-    CanvasEventsType,
+    CanvasEventType,
     ITouchInput,
     TouchEventHandler,
     ZoomInEvent,
@@ -65,17 +65,17 @@ export class TouchInput implements ITouchInput {
     }
 
     private subscribe(): void {
-        this.htmlElement.addEventListener(CanvasEventsType.TouchStart, this.touchStartHandler);
-        this.htmlElement.addEventListener(CanvasEventsType.TouchEnd, this.touchEndHandler);
-        this.htmlElement.addEventListener(CanvasEventsType.TouchMove, this.touchMoveHandler);
-        this.htmlElement.addEventListener(CanvasEventsType.TouchCancel, this.touchCancelHandler);
+        this.htmlElement.addEventListener(CanvasEventType.TouchStart, this.touchStartHandler);
+        this.htmlElement.addEventListener(CanvasEventType.TouchEnd, this.touchEndHandler);
+        this.htmlElement.addEventListener(CanvasEventType.TouchMove, this.touchMoveHandler);
+        this.htmlElement.addEventListener(CanvasEventType.TouchCancel, this.touchCancelHandler);
     }
 
     private unsubscribe(): void {
-        this.htmlElement.removeEventListener(CanvasEventsType.TouchStart, this.touchStartHandler);
-        this.htmlElement.removeEventListener(CanvasEventsType.TouchEnd, this.touchEndHandler);
-        this.htmlElement.removeEventListener(CanvasEventsType.TouchMove, this.touchMoveHandler);
-        this.htmlElement.removeEventListener(CanvasEventsType.TouchCancel, this.touchCancelHandler);
+        this.htmlElement.removeEventListener(CanvasEventType.TouchStart, this.touchStartHandler);
+        this.htmlElement.removeEventListener(CanvasEventType.TouchEnd, this.touchEndHandler);
+        this.htmlElement.removeEventListener(CanvasEventType.TouchMove, this.touchMoveHandler);
+        this.htmlElement.removeEventListener(CanvasEventType.TouchCancel, this.touchCancelHandler);
     }
 
     private handleTouchStart(event: TouchEvent): void {

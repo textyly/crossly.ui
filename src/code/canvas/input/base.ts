@@ -36,7 +36,7 @@ export abstract class InputCanvasBase extends CanvasBase {
         return this.messaging.listenOnChannel3(listener);
     }
 
-    public onPointerHoldingDown(listener: PointerDownListener): VoidUnsubscribe {
+    public onPointerDown(listener: PointerDownListener): VoidUnsubscribe {
         return this.messaging.listenOnChannel4(listener);
     }
 
