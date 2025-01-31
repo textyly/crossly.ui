@@ -1,6 +1,6 @@
 import { CanvasBase } from "../base.js";
 import { IRasterDrawing } from "./types.js";
-import { Dot, Size, Thread } from "../types.js";
+import { Dot, Bounds, Thread } from "../types.js";
 
 export class RasterDrawing extends CanvasBase implements IRasterDrawing {
     private readonly context: CanvasRenderingContext2D;
@@ -44,8 +44,12 @@ export class RasterDrawing extends CanvasBase implements IRasterDrawing {
         this.context.clearRect(0, 0, this.rasterCanvas.clientWidth, this.rasterCanvas.clientWidth);
     }
 
-    public override set size(value: Size) {
-        super.size = value;
+    public override set bounds(value: Bounds) {
+        super.bounds = value;
+        console.log(`raster: ${JSON.stringify(value)}`);
+
+        this.rasterCanvas.style.left = value.x + "px";
+        this.rasterCanvas.style.top = value.y + "px";
         this.rasterCanvas.width = value.width;
         this.rasterCanvas.height = value.height;
     }

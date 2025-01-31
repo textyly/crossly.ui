@@ -1,5 +1,5 @@
 import { CanvasBase } from "../base.js";
-import { Dot, Size, Thread } from "../types.js";
+import { Dot, Bounds, Thread } from "../types.js";
 import { IVectorDrawing, SvgDot, SvgLine } from "./types.js";
 
 export class VectorDrawing extends CanvasBase implements IVectorDrawing {
@@ -88,11 +88,17 @@ export class VectorDrawing extends CanvasBase implements IVectorDrawing {
         return circle;
     }
 
-    public override set size(value: Size) {
-        super.size = value;
+    public override set bounds(value: Bounds) {
+        super.bounds = value;
+        console.log(`raster: ${JSON.stringify(value)}`);
+
+        const x = value.x + "px";
+        const y = value.y + "px";
         const width = value.width.toString();
         const height = value.height.toString();
 
+        this.svgCanvas.style.left = x;
+        this.svgCanvas.style.top = y;
         this.svgCanvas.setAttribute("width", width);
         this.svgCanvas.setAttribute("height", height);
     }

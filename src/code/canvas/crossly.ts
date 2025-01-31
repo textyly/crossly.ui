@@ -5,7 +5,7 @@ import { GridCanvas } from "./virtual/grid/grid.js";
 import { DotMatcher } from "./virtual/grid/matcher.js";
 import { StitchCanvas } from "./virtual/stitch/stitch.js";
 import { ICueCanvas, IGridCanvas, IStitchCanvas } from "./virtual/types.js";
-import { CrosslyCanvasConfig, ICrosslyCanvas, SizeChangeEvent } from "./types.js";
+import { CrosslyCanvasConfig, ICrosslyCanvas, BoundsChangeEvent } from "./types.js";
 import { ICueDrawingCanvas, IDrawingCanvas, IGridDrawingCanvas, IStitchDrawingCanvas } from "./drawing/types.js";
 
 export class CrosslyCanvas extends CanvasBase implements ICrosslyCanvas {
@@ -63,8 +63,8 @@ export class CrosslyCanvas extends CanvasBase implements ICrosslyCanvas {
         this.gridCanvas = new GridCanvas(this.configuration.grid, this.inputCanvas, dotMatcher);
         this.gridDrawingCanvas.subscribe(this.gridCanvas);
 
-        const sizeChangeUn = this.gridCanvas.onSizeChange(this.handleSizeChange.bind(this));
-        super.registerUn(sizeChangeUn);
+        const bondsChangeUn = this.gridCanvas.onBoundsChange(this.handleBoundsChange.bind(this));
+        super.registerUn(bondsChangeUn);
     }
 
     private initializeStitchCanvas(stitchDrawingCanvas: IStitchDrawingCanvas): void {
@@ -79,10 +79,10 @@ export class CrosslyCanvas extends CanvasBase implements ICrosslyCanvas {
         this.cueDrawingCanvas.subscribe(this.cueCanvas);
     }
 
-    private handleSizeChange(event: SizeChangeEvent): void {
-        const size = event.size;
-        super.size = size;
-        this.inputCanvas.size = size;
+    private handleBoundsChange(event: BoundsChangeEvent): void {
+        const bounds = event.bounds;
+        super.bounds = bounds;
+        this.inputCanvas.bounds = bounds;
     }
 
     private disposeCueCanvas(): void {

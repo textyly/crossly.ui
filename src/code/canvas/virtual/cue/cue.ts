@@ -3,7 +3,7 @@ import { ICueCanvas, IGridCanvas } from "../types.js";
 import { Converter } from "../../../utilities/converter.js";
 import { IdGenerator } from "../../../utilities/generator.js";
 import { IInputCanvas, PointerMoveEvent, PointerUpEvent, Position } from "../../input/types.js";
-import { CanvasSide, Id, CueThread, SizeChangeEvent, GridDot, Size, CueCanvasConfig } from "../../types.js";
+import { CanvasSide, Id, CueThread, BoundsChangeEvent, GridDot, Bounds, CueCanvasConfig } from "../../types.js";
 
 export class CueCanvas extends CueCanvasBase implements ICueCanvas {
     private readonly inputCanvas: IInputCanvas;
@@ -61,8 +61,8 @@ export class CueCanvas extends CueCanvasBase implements ICueCanvas {
         const pointerUpUn = this.inputCanvas.onPointerUp(this.handlePointerUp.bind(this));
         super.registerUn(pointerUpUn);
 
-        const sizeChangeUn = this.gridCanvas.onSizeChange(this.handleSizeChange.bind(this));
-        super.registerUn(sizeChangeUn);
+        const boundsChangeUn = this.gridCanvas.onBoundsChange(this.handleBoundsChange.bind(this));
+        super.registerUn(boundsChangeUn);
     }
 
     private handleZoomIn(): void {
@@ -84,9 +84,9 @@ export class CueCanvas extends CueCanvasBase implements ICueCanvas {
         this.clickDot(position);
     }
 
-    private handleSizeChange(event: SizeChangeEvent): void {
-        const size = event.size;
-        this.changeSize(size);
+    private handleBoundsChange(event: BoundsChangeEvent): void {
+        const bounds = event.bounds;
+        this.changeBounds(bounds);
     }
 
     private moveDot(position: Position): void {
@@ -187,8 +187,8 @@ export class CueCanvas extends CueCanvasBase implements ICueCanvas {
         }
     }
 
-    private changeSize(size: Size): void {
-        super.size = size;
+    private changeBounds(bounds: Bounds): void {
+        super.bounds = bounds;
         this.draw();
     }
 

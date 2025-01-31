@@ -1,5 +1,5 @@
 import { CanvasBase } from "../base.js";
-import { Id, SizeChangeEvent } from "../types.js";
+import { Id, BoundsChangeEvent } from "../types.js";
 import { IGridDrawingCanvas, IRasterDrawing, IVectorDrawing, SvgLine } from "./types.js";
 import { DrawGridDotsEvent, DrawGridThreadsEvent, IGridCanvas } from "../virtual/types.js";
 
@@ -25,8 +25,8 @@ export class GridDrawingCanvas extends CanvasBase implements IGridDrawingCanvas 
         const redrawUn = gridCanvas.onRedraw(this.handleRedraw.bind(this));
         super.registerUn(redrawUn);
 
-        const sizeChangeUn = gridCanvas.onSizeChange(this.handleSizeChange.bind(this));
-        super.registerUn(sizeChangeUn);
+        const boundsChangeUn = gridCanvas.onBoundsChange(this.handleBoundsChange.bind(this));
+        super.registerUn(boundsChangeUn);
     }
 
     public override dispose(): void {
@@ -52,12 +52,12 @@ export class GridDrawingCanvas extends CanvasBase implements IGridDrawingCanvas 
         this.clear();
     }
 
-    private handleSizeChange(event: SizeChangeEvent): void {
-        const size = event.size;
-        super.size = size;
+    private handleBoundsChange(event: BoundsChangeEvent): void {
+        const bounds = event.bounds;
+        super.bounds = bounds;
 
-        this.rasterDrawing.size = size;
-        this.vectorDrawing.size = size;
+        this.rasterDrawing.bounds = bounds;
+        this.vectorDrawing.bounds = bounds;
     }
 
     private clear(): void {

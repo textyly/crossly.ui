@@ -1,4 +1,4 @@
-import { Size } from "../types.js";
+import { Bounds } from "../types.js";
 import { InputCanvasBase } from "./base.js";
 import {
     CanvasEvent,
@@ -29,9 +29,9 @@ export class InputCanvasThrottler extends InputCanvasBase implements IInputCanva
         this.subscribe();
     }
 
-    public override set size(value: Size) {
-        super.size = value;
-        this.inputCanvas.size = value;
+    public override set bounds(value: Bounds) {
+        super.bounds = value;
+        this.inputCanvas.bounds = value;
     }
 
     public override dispose(): void {

@@ -132,7 +132,7 @@ export class GridCanvas extends GridCanvasBase implements IGridCanvas {
 
     private redraw(): void {
         this.createDots();
-        this.calculateSize();
+        this.calculateBounds();
         this.createAndDrawThreads();
         this.drawDots();
     }
@@ -317,11 +317,13 @@ export class GridCanvas extends GridCanvasBase implements IGridCanvas {
 
     }
 
-    private calculateSize(): void {
+    private calculateBounds(): void {
         // TODO: check this calculations whether they can become simpler
+        const x = this.bounds.x;
+        const y = this.bounds.y;
         const width = this.spacing + (this.allColumns * this.dotRadius) + ((this.allColumns - 1) * this.spacing);
         const height = this.spacing + (this.allRows * this.dotRadius) + ((this.allRows - 1) * this.spacing);
 
-        this.size = { width, height };
+        this.bounds = { x, y, width, height };
     }
 }

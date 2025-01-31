@@ -1,6 +1,6 @@
 import { Listener, VoidUnsubscribe } from "../types";
 
-export type Size = { width: number, height: number };
+export type Bounds = { x: number, y: number, width: number, height: number };
 export type Id = string;
 
 export type Dot = { id: Id, x: number, y: number, radius: number, color: string };
@@ -44,10 +44,10 @@ export interface IDisposable {
 }
 
 export interface ICanvas extends IDisposable {
-    get size(): Size;
-    set size(value: Size);
+    get bounds(): Bounds;
+    set bounds(value: Bounds);
 
-    onSizeChange(listener: SizeChangeListener): VoidUnsubscribe;
+    onBoundsChange(listener: BoundsChangeListener): VoidUnsubscribe;
 }
 
 export interface ICrosslyCanvas extends ICanvas {
@@ -66,5 +66,5 @@ export enum Visibility {
     Invisible,
 }
 
-export type SizeChangeEvent = { size: Size };
-export type SizeChangeListener = Listener<SizeChangeEvent>;
+export type BoundsChangeEvent = { bounds: Bounds };
+export type BoundsChangeListener = Listener<BoundsChangeEvent>;

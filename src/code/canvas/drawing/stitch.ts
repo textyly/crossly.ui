@@ -1,5 +1,5 @@
 import { CanvasBase } from "../base.js";
-import { Dot, SizeChangeEvent } from "../types.js";
+import { Dot, BoundsChangeEvent } from "../types.js";
 import { IRasterDrawing, IStitchDrawingCanvas } from "./types.js";
 import { DrawStitchThreadsEvent, IStitchCanvas } from "../virtual/types.js";
 
@@ -18,8 +18,8 @@ export class StitchDrawingCanvas extends CanvasBase implements IStitchDrawingCan
         const redrawUn = stitchCanvas.onRedraw(this.handleRedraw.bind(this));
         super.registerUn(redrawUn);
 
-        const sizeChangeUn = stitchCanvas.onSizeChange(this.handleSizeChange.bind(this));
-        super.registerUn(sizeChangeUn);
+        const boundsChangeUn = stitchCanvas.onBoundsChange(this.handleBoundsChange.bind(this));
+        super.registerUn(boundsChangeUn);
     }
 
     public override dispose(): void {
@@ -41,10 +41,10 @@ export class StitchDrawingCanvas extends CanvasBase implements IStitchDrawingCan
         this.clear();
     }
 
-    private handleSizeChange(event: SizeChangeEvent): void {
-        const size = event.size;
-        super.size = size;
-        this.rasterDrawing.size = size;
+    private handleBoundsChange(event: BoundsChangeEvent): void {
+        const bounds = event.bounds;
+        super.bounds = bounds;
+        this.rasterDrawing.bounds = bounds;
     }
 
     private clear(): void {

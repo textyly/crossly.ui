@@ -1,4 +1,4 @@
-import { Size } from "../types.js";
+import { Bounds } from "../types.js";
 import { TouchInput } from "./touch.js";
 import { InputCanvasBase } from "./base.js";
 import {
@@ -33,8 +33,8 @@ export class InputCanvas extends InputCanvasBase implements IInputCanvas {
         this.subscribe();
     }
 
-    public override set size(value: Size) {
-        super.size = value;
+    public override set bounds(value: Bounds) {
+        super.bounds = value;
         const width = ((window.innerWidth / 10) * 9.8) + "px"; //value.width.toString() + "px";
         const height = ((window.innerHeight / 10) * 9.3) + "px"; //value.height.toString() + "px";
 

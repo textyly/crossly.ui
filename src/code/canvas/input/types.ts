@@ -1,4 +1,4 @@
-import { ICanvas, IDisposable, SizeChangeListener } from "../types";
+import { ICanvas, IDisposable, BoundsChangeListener } from "../types";
 import { Listener, VoidUnsubscribe } from "../../types";
 
 export type CanvasEvent = { type: CanvasEventType, value?: Position };
@@ -12,7 +12,7 @@ export interface IInputCanvas extends ICanvas {
     onPointerUp(listener: PointerUpListener): VoidUnsubscribe;
     onPointerDown(listener: PointerDownListener): VoidUnsubscribe;
 
-    onSizeChange(listener: SizeChangeListener): VoidUnsubscribe;
+    onBoundsChange(listener: BoundsChangeListener): VoidUnsubscribe;
 }
 
 export interface ITouchInput extends IDisposable {

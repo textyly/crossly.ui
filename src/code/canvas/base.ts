@@ -1,12 +1,14 @@
 import { VoidUnsubscribe } from "../types.js";
 import { Messaging1 } from "../messaging/impl.js";
 import { IMessaging1 } from "../messaging/types.js";
-import { ICanvas, Size, SizeChangeEvent, SizeChangeListener } from "./types.js";
+import { ICanvas, Bounds, BoundsChangeEvent, BoundsChangeListener } from "./types.js";
 
 export abstract class CanvasBase implements ICanvas {
     private readonly uns: Array<VoidUnsubscribe>;
-    private readonly msg: IMessaging1<SizeChangeEvent>;
+    private readonly msg: IMessaging1<BoundsChangeEvent>;
 
+    private x: number;
+    private y: number;
     private width: number;
     private height: number;
 
@@ -14,25 +16,29 @@ export abstract class CanvasBase implements ICanvas {
         this.uns = new Array<VoidUnsubscribe>;
         this.msg = new Messaging1();
 
+        this.x = 0;
+        this.y = 0;
         this.width = 0;
         this.height = 0;
     }
 
-    public get size(): Size {
-        const size = { width: this.width, height: this.height };
-        return size;
+    public get bounds(): Bounds {
+        const bounds = { x: this.x, y: this.y, width: this.width, height: this.height };
+        return bounds;
     }
 
-    public set size(value: Size) {
-        const currentWidth = this.width;
-        const currentHeight = this.height;
+    public set bounds(value: Bounds) {
+        const newX = value.x;
+        const newY = value.y;
         const newWidth = value.width;
         const newHeight = value.height;
 
-        if (currentWidth !== newWidth || currentHeight !== newHeight) {
+        if (this.x !== newX || this.y !== newY, this.width !== newWidth || this.height !== newHeight) {
+            this.x = newX;
+            this.y - newY;
             this.width = newWidth;
             this.height = newHeight;
-            this.invokeSizeChange(value);
+            this.invokeBoundsChange(value);
         }
     }
 
@@ -41,7 +47,7 @@ export abstract class CanvasBase implements ICanvas {
         this.msg.dispose();
     }
 
-    public onSizeChange(listener: SizeChangeListener): VoidUnsubscribe {
+    public onBoundsChange(listener: BoundsChangeListener): VoidUnsubscribe {
         return this.msg.listenOnChannel1(listener);
     }
 
@@ -49,8 +55,8 @@ export abstract class CanvasBase implements ICanvas {
         this.uns.push(func);
     }
 
-    protected invokeSizeChange(size: Size): void {
-        const event = { size };
+    protected invokeBoundsChange(bounds: Bounds): void {
+        const event = { bounds };
         this.msg.sendToChannel1(event);
     }
 }

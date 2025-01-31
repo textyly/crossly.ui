@@ -1,5 +1,5 @@
 import { CanvasBase } from "../base.js";
-import { Id, SizeChangeEvent } from "../types.js";
+import { Id, BoundsChangeEvent } from "../types.js";
 import { ICueDrawingCanvas, IVectorDrawing, SvgDot, SvgLine } from "./types.js";
 import { DrawCueDotEvent, DrawCueThreadEvent, ICueCanvas, RemoveCueDotEvent, RemoveCueThreadEvent } from "../virtual/types.js";
 
@@ -40,8 +40,8 @@ export class CueDrawingCanvas extends CanvasBase implements ICueDrawingCanvas {
         const redrawUn = cueCanvas.onRedraw(this.handleRedraw.bind(this));
         super.registerUn(redrawUn);
 
-        const sizeChangeUn = cueCanvas.onSizeChange(this.handleSizeChange.bind(this));
-        super.registerUn(sizeChangeUn);
+        const boundsChangeUn = cueCanvas.onBoundsChange(this.handleBoundsChange.bind(this));
+        super.registerUn(boundsChangeUn);
     }
 
     public override dispose(): void {
@@ -107,10 +107,10 @@ export class CueDrawingCanvas extends CanvasBase implements ICueDrawingCanvas {
         this.clear();
     }
 
-    private handleSizeChange(event: SizeChangeEvent): void {
-        const size = event.size;
-        super.size = size;
-        this.vectorDrawing.size = size;
+    private handleBoundsChange(event: BoundsChangeEvent): void {
+        const bounds = event.bounds;
+        super.bounds = bounds;
+        this.vectorDrawing.bounds = bounds;
     }
 
     private clear(): void {

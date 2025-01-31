@@ -1,6 +1,6 @@
 import { CanvasBase } from "../../base.js";
 import { IInputCanvas } from "../../input/types.js";
-import { Dot, Size, Thread } from "../../types.js";
+import { Dot, Bounds, Thread } from "../../types.js";
 import { IVectorDrawing, SvgDot, SvgLine } from "../types.js";
 
 export class VirtualVectorDrawing extends CanvasBase implements IVectorDrawing {
@@ -44,8 +44,8 @@ export class VirtualVectorDrawing extends CanvasBase implements IVectorDrawing {
         super.dispose();
     }
 
-    protected override invokeSizeChange(size: Size): void {
-        super.invokeSizeChange(size);
-        this.vectorDrawing.size = size;
+    protected override invokeBoundsChange(bounds: Bounds): void {
+        super.invokeBoundsChange(bounds);
+        this.vectorDrawing.bounds = bounds;
     }
 }
