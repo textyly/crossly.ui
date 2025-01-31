@@ -35,7 +35,7 @@ export abstract class CanvasBase implements ICanvas {
 
         if (this.x !== newX || this.y !== newY, this.width !== newWidth || this.height !== newHeight) {
             this.x = newX;
-            this.y - newY;
+            this.y = newY;
             this.width = newWidth;
             this.height = newHeight;
             this.invokeBoundsChange(value);

@@ -3,7 +3,7 @@ import { IDotMatcher, IGridCanvas } from "../types.js";
 import { DotsUtility } from "../../../utilities/dots.js";
 import { IInputCanvas, Position } from "../../input/types.js";
 import { IdGenerator } from "../../../utilities/generator.js";
-import { Visibility, Id, GridDot, GridThread, GridCanvasConfig } from "../../types.js";
+import { Visibility, Id, GridDot, GridThread, GridCanvasConfig, Bounds } from "../../types.js";
 
 export class GridCanvas extends GridCanvasBase implements IGridCanvas {
     private readonly inputCanvas: IInputCanvas;
@@ -183,8 +183,8 @@ export class GridCanvas extends GridCanvasBase implements IGridCanvas {
     }
 
     private crateDot(dotIdx: number, rowIdx: number, visibility: Visibility): GridDot {
-        const x = (dotIdx * this.spacing) + this.spacing;
-        const y = (rowIdx * this.spacing) + this.spacing;
+        const x = this.bounds.x + (dotIdx * this.spacing);
+        const y = this.bounds.y + (rowIdx * this.spacing);
 
         const id = this.dotsIds.next();
         const dot = { id, x, y, radius: this.dotRadius, visibility, color: this.dotColor };

@@ -1,5 +1,5 @@
 import { CanvasBase } from "../base.js";
-import { CanvasConfig } from "../types.js";
+import { Bounds, CanvasConfig } from "../types.js";
 import { IVirtualCanvas } from "./types.js";
 import { VoidMessaging } from "../../messaging/impl.js";
 import { IVoidMessaging } from "../../messaging/types.js";
