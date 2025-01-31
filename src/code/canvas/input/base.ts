@@ -62,7 +62,7 @@ export abstract class InputCanvasBase extends CanvasBase {
         this.messaging.sendToChannel3(event);
     }
 
-    protected invokePointerHoldingDown(position: Position): void {
+    protected invokePointerDown(position: Position): void {
         const event = { position };
         this.messaging.sendToChannel4(event);
     }

@@ -1,7 +1,14 @@
 import { Size } from "../types.js";
 import { TouchInput } from "./touch.js";
 import { InputCanvasBase } from "./base.js";
-import { CanvasEventType, IInputCanvas, ITouchInput, PointerEventHandler, Position, WheelChangeHandler } from "./types.js";
+import {
+    CanvasEventType,
+    IInputCanvas,
+    ITouchInput,
+    PointerEventHandler,
+    Position,
+    WheelChangeHandler
+} from "./types.js";
 
 export class InputCanvas extends InputCanvasBase implements IInputCanvas {
     private readonly htmlElement: HTMLElement;
@@ -90,8 +97,9 @@ export class InputCanvas extends InputCanvasBase implements IInputCanvas {
         if (this.touchInput.inZoomMode) {
             return;
         }
-        // TODO:
-        // super.invokePointerHoldingDown();
+
+        const position = this.getPosition(event);
+        super.invokePointerDown(position);
     }
 
     private handlePointerUp(event: PointerEvent): void {
