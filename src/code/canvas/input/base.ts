@@ -1,7 +1,7 @@
 import { CanvasBase } from "../base.js";
 import { VoidUnsubscribe } from "../../types.js";
-import { Messaging5, Messaging6 } from "../../messaging/impl.js";
-import { IMessaging5, IMessaging6 } from "../../messaging/types.js";
+import { Messaging5 } from "../../messaging/impl.js";
+import { IMessaging5 } from "../../messaging/types.js";
 import {
     PointerMoveEvent,
     ZoomInListener,
@@ -13,18 +13,15 @@ import {
     PointerDownListener,
     PointerUpEvent,
     PointerDownEvent,
-    VisibleAreaChangeEvent,
-    VisibleAreaChangeListener,
-    VisibleArea,
 } from "./types.js";
 
 
 export abstract class InputCanvasBase extends CanvasBase {
-    private readonly messaging: IMessaging6<ZoomInEvent, ZoomOutEvent, PointerMoveEvent, PointerDownEvent, PointerUpEvent, VisibleAreaChangeEvent>;
+    private readonly messaging: IMessaging5<ZoomInEvent, ZoomOutEvent, PointerMoveEvent, PointerDownEvent, PointerUpEvent>;
 
     constructor() {
         super();
-        this.messaging = new Messaging6();
+        this.messaging = new Messaging5();
     }
 
     public onZoomIn(listener: ZoomInListener): VoidUnsubscribe {
@@ -45,10 +42,6 @@ export abstract class InputCanvasBase extends CanvasBase {
 
     public onPointerUp(listener: PointerDownListener): VoidUnsubscribe {
         return this.messaging.listenOnChannel5(listener);
-    }
-
-    public onVisibleAreaChange(listener: VisibleAreaChangeListener): VoidUnsubscribe {
-        return this.messaging.listenOnChannel6(listener);
     }
 
     public override dispose(): void {
@@ -77,10 +70,5 @@ export abstract class InputCanvasBase extends CanvasBase {
     protected invokePointerUp(position: Position): void {
         const event = { position };
         this.messaging.sendToChannel5(event);
-    }
-
-    protected invokeVisibleAreaChange(area: VisibleArea): void {
-        const event = { area };
-        this.messaging.sendToChannel6(event);
     }
 }

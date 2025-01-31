@@ -32,16 +32,16 @@ export class CrosslyCanvasBuilder {
     public withInputCanvas(inputElement: HTMLElement): CrosslyCanvasBuilder {
         const inputCanvas = new InputCanvas(inputElement);
         const inputCanvasThrottler = new InputCanvasThrottler(inputCanvas);
-        this.inputCanvas = inputCanvas;
+        this.inputCanvas = inputCanvasThrottler;
         return this;
     }
 
     public withGridCanvas(gridDotsCanvasElement: HTMLCanvasElement, gridThreadsSvgElement: HTMLElement): CrosslyCanvasBuilder {
         const rasterDrawing = new RasterDrawing(gridDotsCanvasElement);
-        const virtualRasterDrawing = new VirtualRasterDrawing(this.inputCanvas, rasterDrawing);
+        const virtualRasterDrawing = new VirtualRasterDrawing(rasterDrawing);
 
         const vectorDrawing = new VectorDrawing(gridThreadsSvgElement);
-        const virtualVectorDrawing = new VirtualVectorDrawing(this.inputCanvas, vectorDrawing);
+        const virtualVectorDrawing = new VirtualVectorDrawing(vectorDrawing);
 
         this.gridDrawingCanvas = new GridDrawingCanvas(virtualRasterDrawing, virtualVectorDrawing);
         return this;
@@ -49,14 +49,14 @@ export class CrosslyCanvasBuilder {
 
     public withStitchCanvas(stitchCanvasElement: HTMLCanvasElement): CrosslyCanvasBuilder {
         const rasterDrawing = new RasterDrawing(stitchCanvasElement);
-        const virtualRasterDrawing = new VirtualRasterDrawing(this.inputCanvas, rasterDrawing);
+        const virtualRasterDrawing = new VirtualRasterDrawing(rasterDrawing);
         this.stitchDrawingCanvas = new StitchDrawingCanvas(virtualRasterDrawing);
         return this;
     }
 
     public withCueCanvas(cueSvgElement: HTMLElement): CrosslyCanvasBuilder {
         const vectorDrawing = new VectorDrawing(cueSvgElement);
-        const virtualVectorDrawing = new VirtualVectorDrawing(this.inputCanvas, vectorDrawing);
+        const virtualVectorDrawing = new VirtualVectorDrawing(vectorDrawing);
         this.cueDrawingCanvas = new CueDrawingCanvas(virtualVectorDrawing);
         return this;
     }

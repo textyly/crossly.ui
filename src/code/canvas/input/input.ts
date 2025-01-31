@@ -28,8 +28,8 @@ export class InputCanvas extends InputCanvasBase implements IInputCanvas {
 
     public override set size(value: Size) {
         super.size = value;
-        const width = value.width.toString() + "px";
-        const height = value.height.toString() + "px";
+        const width = ((window.innerWidth / 10) * 9.8) + "px"; //value.width.toString() + "px";
+        const height = ((window.innerHeight / 10) * 9.3) + "px"; //value.height.toString() + "px";
 
         this.htmlElement.style.width = width;
         this.htmlElement.style.height = height;
@@ -108,8 +108,8 @@ export class InputCanvas extends InputCanvasBase implements IInputCanvas {
 
     private getPosition(event: PointerEvent): Position {
         const rect = this.htmlElement.getBoundingClientRect();
-        const x = event.clientX - rect.left;
-        const y = event.clientY - rect.top;
+        const x = event.layerX;
+        const y = event.layerY;
         return { x, y };
     }
 }

@@ -4,14 +4,11 @@ import { Dot, Size, Thread } from "../../types.js";
 import { IVectorDrawing, SvgDot, SvgLine } from "../types.js";
 
 export class VirtualVectorDrawing extends CanvasBase implements IVectorDrawing {
-    private readonly inputCanvas: IInputCanvas;
     private readonly vectorDrawing: IVectorDrawing;
 
-    constructor(inputCanvas: IInputCanvas, vectorDrawing: IVectorDrawing) {
+    constructor(vectorDrawing: IVectorDrawing) {
         super();
-        this.inputCanvas = inputCanvas;
         this.vectorDrawing = vectorDrawing;
-        this.subscribe();
     }
 
     public drawDot(dot: Dot): SvgDot {
@@ -50,11 +47,5 @@ export class VirtualVectorDrawing extends CanvasBase implements IVectorDrawing {
     protected override invokeSizeChange(size: Size): void {
         super.invokeSizeChange(size);
         this.vectorDrawing.size = size;
-    }
-
-    private subscribe(): void {
-        this.inputCanvas.onVisibleAreaChange((event) => {
-            // TODO:
-        });
     }
 }

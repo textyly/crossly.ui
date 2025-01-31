@@ -4,14 +4,11 @@ import { Dot, Size, Thread } from "../../types.js";
 import { IRasterDrawing } from "../types.js";
 
 export class VirtualRasterDrawing extends CanvasBase implements IRasterDrawing {
-    private readonly inputCanvas: IInputCanvas;
     private readonly rasterDrawing: IRasterDrawing;
 
-    constructor(inputCanvas: IInputCanvas, rasterDrawing: IRasterDrawing) {
+    constructor(rasterDrawing: IRasterDrawing) {
         super();
-        this.inputCanvas = inputCanvas;
         this.rasterDrawing = rasterDrawing;
-        this.subscribe();
     }
 
     public drawDots(dots: Array<Dot>): void {
@@ -34,11 +31,5 @@ export class VirtualRasterDrawing extends CanvasBase implements IRasterDrawing {
     protected override invokeSizeChange(size: Size): void {
         super.invokeSizeChange(size);
         this.rasterDrawing.size = size;
-    }
-
-    private subscribe(): void {
-        this.inputCanvas.onVisibleAreaChange((event) => {
-            // TODO:
-        });
     }
 }
