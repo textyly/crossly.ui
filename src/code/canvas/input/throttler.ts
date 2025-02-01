@@ -24,7 +24,7 @@ export class InputCanvasThrottler extends InputCanvasBase implements IInputCanva
         this.inputCanvas = inputCanvas;
 
         this.groupedEvents = [];
-        this.timerInterval = 70; // TODO: outside!!!
+        this.timerInterval = 50; // TODO: outside!!!
 
         this.subscribe();
     }
@@ -70,21 +70,39 @@ export class InputCanvasThrottler extends InputCanvasBase implements IInputCanva
     }
 
     private handlePointerMove(event: PointerMoveEvent): void {
-        const eventType = CanvasEventType.PointerMove;
-        const position = event.position;
-        this.addEvent(eventType, position);
+        const type = CanvasEventType.PointerMove;
+        const value = event.position;
+        const e = { type, value };
+        this.invokeEvent(e);
+
+        // TODO: does not work well
+        // const eventType = CanvasEventType.PointerMove;
+        // const position = event.position;
+        // this.addEvent(eventType, position);
     }
 
     private handlePointerUp(event: PointerUpEvent): void {
-        const eventType = CanvasEventType.PointerUp;
-        const position = event.position;
-        this.addEvent(eventType, position);
+        const type = CanvasEventType.PointerUp;
+        const value = event.position;
+        const e = { type, value };
+        this.invokeEvent(e);
+
+        // TODO: does not work well
+        // const eventType = CanvasEventType.PointerUp;
+        // const position = event.position;
+        // this.addEvent(eventType, position);
     }
 
     private handlePointerDown(event: PointerDownEvent): void {
-        const eventType = CanvasEventType.PointerDown;
-        const position = event.position;
-        this.addEvent(eventType, position);
+        const type = CanvasEventType.PointerDown;
+        const value = event.position;
+        const e = { type, value };
+        this.invokeEvent(e);
+
+        // TODO: does not work well
+        // const eventType = CanvasEventType.PointerDown;
+        // const position = event.position;
+        // this.addEvent(eventType, position);
     }
 
     private handleTimer(): void {

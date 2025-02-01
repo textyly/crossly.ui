@@ -1,5 +1,5 @@
 import { StitchCanvasBase } from "./base.js";
-import { IGridCanvas, IStitchCanvas } from "../types.js";
+import { DrawGridDotsEvent, IGridCanvas, IStitchCanvas } from "../types.js";
 import { DotsUtility } from "../../../utilities/dots.js";
 import { Converter } from "../../../utilities/converter.js";
 import { IInputCanvas, PointerUpEvent, Position } from "../../input/types.js";
@@ -57,6 +57,9 @@ export class StitchCanvas extends StitchCanvasBase implements IStitchCanvas {
 
         const boundsChangeUn = this.gridCanvas.onBoundsChange(this.handleBoundsChange.bind(this));
         super.registerUn(boundsChangeUn);
+
+        const drawVisibleDotsUn = this.gridCanvas.onDrawVisibleDots(this.handleDrawVisibleDots.bind(this));
+        super.registerUn(drawVisibleDotsUn);
     }
 
     private handleZoomIn(): void {
@@ -73,8 +76,11 @@ export class StitchCanvas extends StitchCanvasBase implements IStitchCanvas {
     }
 
     private handleBoundsChange(event: BoundsChangeEvent): void {
-        const bounds = event.bounds;
-        this.changeBounds(bounds);
+        super.bounds = event.bounds;
+    }
+
+    private handleDrawVisibleDots(event: DrawGridDotsEvent): void {
+        this.draw();
     }
 
     private handleDotClick(position: Position): void {
@@ -134,11 +140,6 @@ export class StitchCanvas extends StitchCanvasBase implements IStitchCanvas {
         } else {
             super.invokeDrawBackThreads([thread]);
         }
-    }
-
-    private changeBounds(bounds: Bounds): void {
-        super.bounds = bounds;
-        this.draw();
     }
 
     private changeSide(): void {

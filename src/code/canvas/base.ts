@@ -33,7 +33,7 @@ export abstract class CanvasBase implements ICanvas {
         const newWidth = value.width;
         const newHeight = value.height;
 
-        if (this.x !== newX || this.y !== newY, this.width !== newWidth || this.height !== newHeight) {
+        if (this.x !== newX || this.y !== newY || this.width !== newWidth || this.height !== newHeight) {
             this.x = newX;
             this.y = newY;
             this.width = newWidth;

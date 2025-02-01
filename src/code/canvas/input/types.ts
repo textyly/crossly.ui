@@ -8,9 +8,10 @@ export interface IInputCanvas extends ICanvas {
     onZoomIn(listener: ZoomInListener): VoidUnsubscribe;
     onZoomOut(listener: ZoomOutListener): VoidUnsubscribe;
 
-    onPointerMove(listener: PointerMoveListener): VoidUnsubscribe;
     onPointerUp(listener: PointerUpListener): VoidUnsubscribe;
     onPointerDown(listener: PointerDownListener): VoidUnsubscribe;
+    onPointerMove(listener: PointerMoveListener): VoidUnsubscribe;
+    // TODO: pointer leave
 
     onBoundsChange(listener: BoundsChangeListener): VoidUnsubscribe;
 }

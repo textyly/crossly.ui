@@ -90,16 +90,15 @@ export class VectorDrawing extends CanvasBase implements IVectorDrawing {
 
     public override set bounds(value: Bounds) {
         super.bounds = value;
-        console.log(`raster: ${JSON.stringify(value)}`);
 
-        const x = value.x + "px";
-        const y = value.y + "px";
-        const width = value.width.toString();
-        const height = value.height.toString();
+        const minWidth = ((window.innerWidth / 10) * 9.8);
+        const minHeight = ((window.innerHeight / 10) * 9.3);
 
-        this.svgCanvas.style.left = x;
-        this.svgCanvas.style.top = y;
-        this.svgCanvas.setAttribute("width", width);
-        this.svgCanvas.setAttribute("height", height);
+        const width = Math.max(minWidth, value.width);
+        const height = Math.max(minHeight, value.height);
+
+        this.svgCanvas.style.transform = `translate(${value.x}px, ${value.y}px, ${width}px, ${height}px)`;
+        this.svgCanvas.setAttribute("width", width.toString());
+        this.svgCanvas.setAttribute("height", height.toString());
     }
 }

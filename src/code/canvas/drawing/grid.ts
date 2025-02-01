@@ -49,6 +49,7 @@ export class GridDrawingCanvas extends CanvasBase implements IGridDrawingCanvas 
     }
 
     private handleRedraw(): void {
+        console.log(`grid redraw`);
         this.clear();
     }
 

@@ -38,6 +38,7 @@ export class StitchDrawingCanvas extends CanvasBase implements IStitchDrawingCan
     }
 
     private handleRedraw(): void {
+        console.log(`stitch redraw`);
         this.clear();
     }
 

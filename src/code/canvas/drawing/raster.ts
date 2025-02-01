@@ -46,11 +46,16 @@ export class RasterDrawing extends CanvasBase implements IRasterDrawing {
 
     public override set bounds(value: Bounds) {
         super.bounds = value;
-        console.log(`raster: ${JSON.stringify(value)}`);
 
-        this.rasterCanvas.style.left = value.x + "px";
-        this.rasterCanvas.style.top = value.y + "px";
-        this.rasterCanvas.width = value.width;
-        this.rasterCanvas.height = value.height;
+        const minWidth = ((window.innerWidth / 10) * 9.8);
+        const minHeight = ((window.innerHeight / 10) * 9.3);
+
+        const width = Math.max(minWidth, value.width);
+        const height = Math.max(minHeight, value.height);
+
+        this.rasterCanvas.style.transform = `translate(${value.x}px, ${value.y}px, ${width}px, ${height}px)`;
+
+        this.rasterCanvas.width = width;
+        this.rasterCanvas.height = height;
     }
 }

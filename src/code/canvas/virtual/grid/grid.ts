@@ -14,6 +14,9 @@ export class GridCanvas extends GridCanvasBase implements IGridCanvas {
     private readonly dotsIds: IdGenerator;
     private readonly dots: Map<Id, GridDot>;
 
+    private pointerDownHeldPosition?: Position;
+    private isPointerDownHeld: boolean;
+
     private _spacing!: number;
     private _spacingZoomInStep!: number;
     private _spacingZoomOutStep!: number;
@@ -35,6 +38,8 @@ export class GridCanvas extends GridCanvasBase implements IGridCanvas {
         this.dotsIds = new IdGenerator();
         this.threadIds = new IdGenerator();
         this.dotsUtility = new DotsUtility();
+
+        this.isPointerDownHeld = false;
 
         this.initialize();
         this.subscribe();
@@ -107,8 +112,7 @@ export class GridCanvas extends GridCanvasBase implements IGridCanvas {
         // make space for invisible dots, respectively invisible rows and columns
         const spacing = this.config.spacing.value / 2;
 
-        // threads and dots are blurry if x and y are integers, that is why we add 0.5
-        this._spacing = Math.floor(spacing) + 0.5;
+        this._spacing = spacing
         this._spacingZoomInStep = this.config.spacing.zoomInStep;
         this._spacingZoomOutStep = this.config.spacing.zoomOutStep;
 
@@ -128,11 +132,45 @@ export class GridCanvas extends GridCanvasBase implements IGridCanvas {
 
         const zoomOutUn = this.inputCanvas.onZoomOut(this.handleZoomOut.bind(this));
         super.registerUn(zoomOutUn);
+
+        this.inputCanvas.onPointerDown(() => {
+            this.isPointerDownHeld = true;
+        });
+
+        this.inputCanvas.onPointerUp(() => {
+            this.isPointerDownHeld = false;
+            this.pointerDownHeldPosition = undefined;
+        });
+
+        this.inputCanvas.onPointerMove((event) => {
+            if (this.isPointerDownHeld) {
+                const position = event.position;
+
+                if (this.pointerDownHeldPosition) {
+                    const diffX = position.x - this.pointerDownHeldPosition.x;
+                    const diffY = position.y - this.pointerDownHeldPosition.y;
+
+                    const x = this.bounds.x + diffX;
+                    const y = this.bounds.y + diffY;
+                    const width = this.bounds.width;
+                    const height = this.bounds.height;
+
+                    const bounds = { x, y, width, height };
+
+                    super.bounds = bounds;
+                    this.draw();
+                }
+
+
+                this.pointerDownHeldPosition = position;
+
+            }
+        });
     }
 
     private redraw(): void {
-        this.createDots();
         this.calculateBounds();
+        this.createDots();
         this.createAndDrawThreads();
         this.drawDots();
     }
@@ -283,8 +321,7 @@ export class GridCanvas extends GridCanvasBase implements IGridCanvas {
             ? (this.spacing + this._spacingZoomOutStep)
             : (this.spacing + this._spacingZoomInStep);
 
-        // threads and dots are blurry if x and y are integers, that is why we add 0.5
-        this._spacing = Math.floor(spacing) + 0.5;
+        this._spacing = spacing;
     }
 
     private zoomInDotMatchDistance(): void {
@@ -303,8 +340,7 @@ export class GridCanvas extends GridCanvasBase implements IGridCanvas {
             ? (this.spacing - this._spacingZoomInStep)
             : (this.spacing - this._spacingZoomOutStep);
 
-        // threads and dots are blurry if x and y are integers, that is why we subtract 0.5
-        this._spacing = Math.floor(spacing) - 0.5;
+        this._spacing = spacing;
     }
 
     private zoomOutDotMatchDistance(): void {
