@@ -87,6 +87,21 @@ export class InputCanvasThrottler extends InputCanvasBase implements IInputCanva
         this.addEvent(eventType, position);
     }
 
+    private addEvent(eventType: CanvasEventType, position?: Position,): void {
+        const events = this.groupedEvents;
+
+        if (events.length !== 0) {
+            const lastEvent = events.pop()!;
+
+            if (lastEvent.type !== eventType) {
+                events.push(lastEvent);
+            }
+        }
+
+        const currentEvent = { type: eventType, value: position };
+        events.push(currentEvent);
+    }
+
     private handleTimer(): void {
         this.invokeEvents();
     }
@@ -122,20 +137,5 @@ export class InputCanvasThrottler extends InputCanvasBase implements IInputCanva
                 break;
             }
         }
-    }
-
-    private addEvent(eventType: CanvasEventType, position?: Position,): void {
-        const events = this.groupedEvents;
-
-        if (events.length !== 0) {
-            const lastEvent = events.pop()!;
-
-            if (lastEvent.type !== eventType) {
-                events.push(lastEvent);
-            }
-        }
-
-        const currentEvent = { type: eventType, value: position };
-        events.push(currentEvent);
     }
 }

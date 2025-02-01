@@ -3,7 +3,7 @@ import { IDotMatcher, IGridCanvas } from "../types.js";
 import { DotsUtility } from "../../../utilities/dots.js";
 import { IInputCanvas, Position } from "../../input/types.js";
 import { IdGenerator } from "../../../utilities/generator.js";
-import { Visibility, Id, GridDot, GridThread, GridCanvasConfig, Bounds } from "../../types.js";
+import { Visibility, Id, GridDot, GridThread, GridCanvasConfig } from "../../types.js";
 
 export class GridCanvas extends GridCanvasBase implements IGridCanvas {
     private readonly inputCanvas: IInputCanvas;
@@ -14,6 +14,7 @@ export class GridCanvas extends GridCanvasBase implements IGridCanvas {
     private readonly dotsIds: IdGenerator;
     private readonly dots: Map<Id, GridDot>;
 
+    private firstMove?: Position;
     private pointerDownHeldPosition?: Position;
     private isPointerDownHeld: boolean;
 
@@ -140,6 +141,7 @@ export class GridCanvas extends GridCanvasBase implements IGridCanvas {
         this.inputCanvas.onPointerUp(() => {
             this.isPointerDownHeld = false;
             this.pointerDownHeldPosition = undefined;
+            this.firstMove = undefined;
         });
 
         this.inputCanvas.onPointerMove((event) => {
@@ -157,10 +159,12 @@ export class GridCanvas extends GridCanvasBase implements IGridCanvas {
 
                     const bounds = { x, y, width, height };
 
-                    super.bounds = bounds;
-                    this.draw();
+                    if (Math.abs(this.bounds.x - x) > 5 || Math.abs(this.bounds.y - y) > 5 || this.firstMove) {
+                        super.bounds = bounds;
+                        this.draw();
+                        this.firstMove = position;
+                    }
                 }
-
 
                 this.pointerDownHeldPosition = position;
 
