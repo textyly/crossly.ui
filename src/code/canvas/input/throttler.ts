@@ -24,7 +24,7 @@ export class InputCanvasThrottler extends InputCanvasBase implements IInputCanva
         this.inputCanvas = inputCanvas;
 
         this.groupedEvents = [];
-        this.timerInterval = 50; // TODO: outside!!!
+        this.timerInterval = 20; // TODO: outside!!!
 
         this.subscribe();
     }
@@ -70,39 +70,21 @@ export class InputCanvasThrottler extends InputCanvasBase implements IInputCanva
     }
 
     private handlePointerMove(event: PointerMoveEvent): void {
-        const type = CanvasEventType.PointerMove;
-        const value = event.position;
-        const e = { type, value };
-        this.invokeEvent(e);
-
-        // TODO: does not work well
-        // const eventType = CanvasEventType.PointerMove;
-        // const position = event.position;
-        // this.addEvent(eventType, position);
+        const eventType = CanvasEventType.PointerMove;
+        const position = event.position;
+        this.addEvent(eventType, position);
     }
 
     private handlePointerUp(event: PointerUpEvent): void {
-        const type = CanvasEventType.PointerUp;
-        const value = event.position;
-        const e = { type, value };
-        this.invokeEvent(e);
-
-        // TODO: does not work well
-        // const eventType = CanvasEventType.PointerUp;
-        // const position = event.position;
-        // this.addEvent(eventType, position);
+        const eventType = CanvasEventType.PointerUp;
+        const position = event.position;
+        this.addEvent(eventType, position);
     }
 
     private handlePointerDown(event: PointerDownEvent): void {
-        const type = CanvasEventType.PointerDown;
-        const value = event.position;
-        const e = { type, value };
-        this.invokeEvent(e);
-
-        // TODO: does not work well
-        // const eventType = CanvasEventType.PointerDown;
-        // const position = event.position;
-        // this.addEvent(eventType, position);
+        const eventType = CanvasEventType.PointerDown;
+        const position = event.position;
+        this.addEvent(eventType, position);
     }
 
     private handleTimer(): void {
@@ -143,16 +125,17 @@ export class InputCanvasThrottler extends InputCanvasBase implements IInputCanva
     }
 
     private addEvent(eventType: CanvasEventType, position?: Position,): void {
-        if (this.groupedEvents.length == 0) {
-            this.groupedEvents.push({ type: eventType, value: position });
-        } else {
-            const lastEvent = this.groupedEvents.pop()!;
+        const events = this.groupedEvents;
+
+        if (events.length !== 0) {
+            const lastEvent = events.pop()!;
 
             if (lastEvent.type !== eventType) {
-                this.groupedEvents.push(lastEvent);
+                events.push(lastEvent);
             }
-
-            this.groupedEvents.push({ type: eventType, value: position });
         }
+
+        const currentEvent = { type: eventType, value: position };
+        events.push(currentEvent);
     }
 }
