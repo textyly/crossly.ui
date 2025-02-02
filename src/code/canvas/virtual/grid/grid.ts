@@ -1,8 +1,8 @@
 import { GridCanvasBase } from "./base.js";
 import { IDotMatcher, IGridCanvas } from "../types.js";
 import { DotsUtility } from "../../../utilities/dots.js";
-import { IInputCanvas, Position } from "../../input/types.js";
 import { IdGenerator } from "../../../utilities/generator.js";
+import { IInputCanvas, MoveEvent, Position } from "../../input/types.js";
 import { Visibility, Id, GridDot, GridThread, GridCanvasConfig } from "../../types.js";
 
 export class GridCanvas extends GridCanvasBase implements IGridCanvas {
@@ -13,10 +13,6 @@ export class GridCanvas extends GridCanvasBase implements IGridCanvas {
     private readonly threadIds: IdGenerator;
     private readonly dotsIds: IdGenerator;
     private readonly dots: Map<Id, GridDot>;
-
-    private firstMove?: Position;
-    private pointerDownHeldPosition?: Position;
-    private isPointerDownHeld: boolean;
 
     private _spacing!: number;
     private _spacingZoomInStep!: number;
@@ -39,8 +35,6 @@ export class GridCanvas extends GridCanvasBase implements IGridCanvas {
         this.dotsIds = new IdGenerator();
         this.threadIds = new IdGenerator();
         this.dotsUtility = new DotsUtility();
-
-        this.isPointerDownHeld = false;
 
         this.initialize();
         this.subscribe();
@@ -134,42 +128,8 @@ export class GridCanvas extends GridCanvasBase implements IGridCanvas {
         const zoomOutUn = this.inputCanvas.onZoomOut(this.handleZoomOut.bind(this));
         super.registerUn(zoomOutUn);
 
-        this.inputCanvas.onPointerDown(() => {
-            this.isPointerDownHeld = true;
-        });
-
-        this.inputCanvas.onPointerUp(() => {
-            this.isPointerDownHeld = false;
-            this.pointerDownHeldPosition = undefined;
-            this.firstMove = undefined;
-        });
-
-        this.inputCanvas.onPointerMove((event) => {
-            if (this.isPointerDownHeld) {
-                const position = event.position;
-
-                if (this.pointerDownHeldPosition) {
-                    const diffX = position.x - this.pointerDownHeldPosition.x;
-                    const diffY = position.y - this.pointerDownHeldPosition.y;
-
-                    const x = this.bounds.x + diffX;
-                    const y = this.bounds.y + diffY;
-                    const width = this.bounds.width;
-                    const height = this.bounds.height;
-
-                    const bounds = { x, y, width, height };
-
-                    if (Math.abs(this.bounds.x - x) > 5 || Math.abs(this.bounds.y - y) > 5 || this.firstMove) {
-                        super.bounds = bounds;
-                        this.draw();
-                        this.firstMove = position;
-                    }
-                }
-
-                this.pointerDownHeldPosition = position;
-
-            }
-        });
+        const moveUn = this.inputCanvas.onMove(this.handleMove.bind(this));
+        super.registerUn(moveUn);
     }
 
     private redraw(): void {
@@ -189,6 +149,17 @@ export class GridCanvas extends GridCanvasBase implements IGridCanvas {
         this.zoomOutSpacing();
         this.zoomOutDotMatchDistance();
         super.zoomOut();
+    }
+
+    private handleMove(event: MoveEvent): void {
+        const position = event.position;
+        const x = position.x;
+        const y = position.y;
+        const width = this.bounds.width;
+        const height = this.bounds.height;
+
+        super.bounds = { x, y, width, height };
+        this.draw();
     }
 
     private createDots(): void {

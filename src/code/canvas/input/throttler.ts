@@ -4,7 +4,7 @@ import {
     CanvasEvent,
     CanvasEventType,
     IInputCanvas,
-    PointerDownEvent,
+    MoveEvent,
     PointerMoveEvent,
     PointerUpEvent,
     Position,
@@ -24,7 +24,7 @@ export class InputCanvasThrottler extends InputCanvasBase implements IInputCanva
         this.inputCanvas = inputCanvas;
 
         this.groupedEvents = [];
-        this.timerInterval = 20; // TODO: outside!!!
+        this.timerInterval = 30; // TODO: outside!!!
 
         this.subscribe();
     }
@@ -47,14 +47,14 @@ export class InputCanvasThrottler extends InputCanvasBase implements IInputCanva
         const zoomOutUn = this.inputCanvas.onZoomOut(this.handleZoomOut.bind(this));
         super.registerUn(zoomOutUn);
 
+        const moveUn = this.inputCanvas.onMove(this.handleMove.bind(this));
+        super.registerUn(moveUn);
+
         const pointerMoveUn = this.inputCanvas.onPointerMove(this.handlePointerMove.bind(this));
         super.registerUn(pointerMoveUn);
 
         const pointerUpUn = this.inputCanvas.onPointerUp(this.handlePointerUp.bind(this));
         super.registerUn(pointerUpUn);
-
-        const pointerDownUn = this.inputCanvas.onPointerDown(this.handlePointerDown.bind(this));
-        super.registerUn(pointerDownUn);
 
         this.timerId = setInterval(this.handleTimer.bind(this), this.timerInterval);
     }
@@ -69,6 +69,12 @@ export class InputCanvasThrottler extends InputCanvasBase implements IInputCanva
         this.addEvent(eventType);
     }
 
+    private handleMove(event: MoveEvent): void {
+        const eventType = CanvasEventType.Move;
+        const position = event.position;
+        this.addEvent(eventType, position);
+    }
+
     private handlePointerMove(event: PointerMoveEvent): void {
         const eventType = CanvasEventType.PointerMove;
         const position = event.position;
@@ -77,12 +83,6 @@ export class InputCanvasThrottler extends InputCanvasBase implements IInputCanva
 
     private handlePointerUp(event: PointerUpEvent): void {
         const eventType = CanvasEventType.PointerUp;
-        const position = event.position;
-        this.addEvent(eventType, position);
-    }
-
-    private handlePointerDown(event: PointerDownEvent): void {
-        const eventType = CanvasEventType.PointerDown;
         const position = event.position;
         this.addEvent(eventType, position);
     }
@@ -124,16 +124,17 @@ export class InputCanvasThrottler extends InputCanvasBase implements IInputCanva
                 super.invokeZoomOut();
                 break;
             }
+            case CanvasEventType.Move: {
+                console.log(`throttled move: ${JSON.stringify(position)}`);
+                super.invokeMove(position);
+                break;
+            }
             case CanvasEventType.PointerMove: {
                 super.invokePointerMove(position);
                 break;
             }
             case CanvasEventType.PointerUp: {
                 super.invokePointerUp(position);
-                break;
-            }
-            case CanvasEventType.PointerDown: {
-                super.invokePointerDown(position);
                 break;
             }
         }

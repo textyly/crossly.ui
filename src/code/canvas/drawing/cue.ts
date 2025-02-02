@@ -103,7 +103,6 @@ export class CueDrawingCanvas extends CanvasBase implements ICueDrawingCanvas {
     }
 
     private handleRedraw(): void {
-        console.log(`cue redraw`);
         this.svgDots.forEach((dot) => this.vectorDrawing.removeDot(dot));
         this.svgLines.forEach((line) => this.vectorDrawing.removeLine(line));
         this.clear();

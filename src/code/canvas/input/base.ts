@@ -12,12 +12,14 @@ import {
     Position,
     PointerDownListener,
     PointerUpEvent,
-    PointerDownEvent,
+    IInputCanvas,
+    MoveEvent,
+    MoveListener,
 } from "./types.js";
 
 
-export abstract class InputCanvasBase extends CanvasBase {
-    private readonly messaging: IMessaging5<ZoomInEvent, ZoomOutEvent, PointerMoveEvent, PointerDownEvent, PointerUpEvent>;
+export abstract class InputCanvasBase extends CanvasBase implements IInputCanvas {
+    private readonly messaging: IMessaging5<ZoomInEvent, ZoomOutEvent, PointerMoveEvent, MoveEvent, PointerUpEvent>;
 
     constructor() {
         super();
@@ -36,7 +38,7 @@ export abstract class InputCanvasBase extends CanvasBase {
         return this.messaging.listenOnChannel3(listener);
     }
 
-    public onPointerDown(listener: PointerDownListener): VoidUnsubscribe {
+    public onMove(listener: MoveListener): VoidUnsubscribe {
         return this.messaging.listenOnChannel4(listener);
     }
 
@@ -62,7 +64,7 @@ export abstract class InputCanvasBase extends CanvasBase {
         this.messaging.sendToChannel3(event);
     }
 
-    protected invokePointerDown(position: Position): void {
+    protected invokeMove(position: Position): void {
         const event = { position };
         this.messaging.sendToChannel4(event);
     }
