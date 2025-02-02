@@ -17,9 +17,9 @@ export class InputCanvas extends InputCanvasBase {
     private readonly moveInput: MoveInput;
 
     private readonly wheelChangeHandler: WheelChangeHandler;
+    private readonly pointerUpHandler: PointerEventHandler;
     private readonly pointerMoveHandler: PointerEventHandler;
     private readonly pointerDownHandler: PointerEventHandler;
-    private readonly pointerUpHandler: PointerEventHandler;
 
     constructor(htmlElement: HTMLElement) {
         super();
@@ -29,15 +29,16 @@ export class InputCanvas extends InputCanvasBase {
         this.moveInput = new MoveInput(htmlElement, this.touchInput);
 
         this.wheelChangeHandler = this.handleWheelChange.bind(this);
+        this.pointerUpHandler = this.handlePointerUp.bind(this);
         this.pointerMoveHandler = this.handlePointerMove.bind(this);
         this.pointerDownHandler = this.handlePointerDown.bind(this);
-        this.pointerUpHandler = this.handlePointerUp.bind(this);
 
         this.subscribe();
     }
 
     public override set bounds(value: Bounds) {
         super.bounds = value;
+        this.touchInput.bounds = value;
         this.moveInput.bounds = value;
 
         const width = ((window.innerWidth / 10) * 9.8) + "px";
@@ -98,21 +99,8 @@ export class InputCanvas extends InputCanvasBase {
         super.invokeZoomOut();
     }
 
-    private handlePointerMove(event: PointerEvent): void {
-        if (this.touchInput.inZoomMode) {
-            return;
-        }
-
-        const position = this.getPosition(event);
-        super.invokePointerMove(position);
-    }
-
-    private handlePointerDown(event: PointerEvent): void {
-        if (this.touchInput.inZoomMode) {
-            return;
-        }
-
-        // TODO: create move held event
+    private handleMove(event: MoveEvent): void {
+        super.invokeMove(event.position);
     }
 
     private handlePointerUp(event: PointerEvent): void {
@@ -131,8 +119,21 @@ export class InputCanvas extends InputCanvasBase {
         }
     }
 
-    private handleMove(event: MoveEvent): void {
-        super.invokeMove(event.position);
+    private handlePointerMove(event: PointerEvent): void {
+        if (this.touchInput.inZoomMode) {
+            return;
+        }
+
+        const position = this.getPosition(event);
+        super.invokePointerMove(position);
+    }
+
+    private handlePointerDown(event: PointerEvent): void {
+        if (this.touchInput.inZoomMode) {
+            return;
+        }
+
+        // TODO: create move held event
     }
 
     // TODO: extract in different class since more than one classes are using it

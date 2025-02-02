@@ -6,10 +6,10 @@ import { IMessaging1 } from "../../messaging/types.js";
 import {
     Position,
     MoveEvent,
+    ITouchInput,
     MoveListener,
     CanvasEventType,
     PointerEventHandler,
-    ITouchInput,
 } from "./types.js";
 
 export class MoveInput extends CanvasBase {
@@ -22,7 +22,7 @@ export class MoveInput extends CanvasBase {
     private readonly pointerMoveHandler: PointerEventHandler;
     private readonly pointerDownHandler: PointerEventHandler;
 
-    private firstMove?: Position;
+    private currentMove?: Position;
     private isPointerDownHeld: boolean;
     private pointerDownHeldPosition?: Position;
 
@@ -40,12 +40,12 @@ export class MoveInput extends CanvasBase {
         this.isPointerDownHeld = false;
     }
 
-    public get inMoveMode(): boolean {
-        return !this.firstMove;
-    }
-
     public override set bounds(value: Bounds) {
         super.bounds = value;
+    }
+
+    public get inMoveMode(): boolean {
+        return !this.currentMove;
     }
 
     public onMove(listener: MoveListener): VoidUnsubscribe {
@@ -76,7 +76,7 @@ export class MoveInput extends CanvasBase {
 
         this.isPointerDownHeld = false;
         this.pointerDownHeldPosition = undefined;
-        this.firstMove = undefined;
+        this.currentMove = undefined;
     }
 
     private handlePointerMove(event: PointerEvent): void {
@@ -91,15 +91,15 @@ export class MoveInput extends CanvasBase {
                 const diffX = position.x - this.pointerDownHeldPosition.x;
                 const diffY = position.y - this.pointerDownHeldPosition.y;
 
-                const bounds = this.firstMove ?? super.bounds;
+                const bounds = this.currentMove ?? super.bounds;
 
                 const x = bounds.x + diffX;
                 const y = bounds.y + diffY;
 
-                if (Math.abs(bounds.x - x) > 5 || Math.abs(bounds.y - y) > 5 || this.firstMove) {
+                if (Math.abs(bounds.x - x) > 5 || Math.abs(bounds.y - y) > 5 || this.currentMove) {
                     const newPosition = { x, y };
                     this.invokeMove(newPosition);
-                    this.firstMove = newPosition;
+                    this.currentMove = newPosition;
                 }
             }
 

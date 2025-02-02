@@ -1,3 +1,5 @@
+import { Bounds } from "../types.js";
+import { CanvasBase } from "../base.js";
 import { VoidUnsubscribe } from "../../types.js";
 import { Messaging2 } from "../../messaging/impl.js";
 import { IMessaging2 } from "../../messaging/types.js";
@@ -12,7 +14,7 @@ import {
     TouchEventHandler,
 } from "./types.js";
 
-export class TouchInput implements ITouchInput {
+export class TouchInput extends CanvasBase implements ITouchInput {
     private readonly messaging: IMessaging2<ZoomInEvent, ZoomOutEvent>;
 
     private readonly htmlElement: HTMLElement;
@@ -25,6 +27,8 @@ export class TouchInput implements ITouchInput {
     private lastTouchTime?: number;
 
     constructor(htmlElement: HTMLElement) {
+        super();
+
         this.htmlElement = htmlElement;
         this.messaging = new Messaging2();
 
@@ -32,6 +36,10 @@ export class TouchInput implements ITouchInput {
         this.touchEndHandler = this.handleTouchEnd.bind(this);
         this.touchMoveHandler = this.handleTouchMove.bind(this);
         this.touchCancelHandler = this.handleTouchCancel.bind(this);
+    }
+
+    public override set bounds(value: Bounds) {
+        super.bounds = value;
     }
 
     public get inZoomMode(): boolean {

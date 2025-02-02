@@ -17,7 +17,7 @@ export interface IInputCanvas extends ICanvas {
     onBoundsChange(listener: BoundsChangeListener): VoidUnsubscribe;
 }
 
-export interface ITouchInput extends IDisposable {
+export interface ITouchInput extends ICanvas {
     get inZoomMode(): boolean;
 
     subscribe(): void;
