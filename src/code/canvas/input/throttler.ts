@@ -110,7 +110,6 @@ export class InputCanvasThrottler extends InputCanvasBase {
                 break;
             }
             case CanvasEventType.Move: {
-                console.log(`throttled move: ${JSON.stringify(position)}`);
                 super.invokeMove(position);
                 break;
             }
