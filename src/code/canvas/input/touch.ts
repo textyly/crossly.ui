@@ -86,30 +86,46 @@ export class TouchInput extends CanvasBase implements ITouchInput {
 
     private handleTouchStart(event: TouchEvent): void {
         const touches = event.touches;
-        if (touches.length > 1) {
-            this.handleMultipleTouches(touches[0], touches[1]);
-        }
+        this.startZoom(touches);
+
         event.preventDefault();
     }
 
     private handleTouchMove(event: TouchEvent): void {
         const touches = event.touches;
+        this.zoom(touches);
+
+        event.preventDefault();
+    }
+
+    private handleTouchEnd(event: TouchEvent): void {
+        this.stopZoom();
+
+        event.preventDefault();
+    }
+
+    private handleTouchCancel(event: TouchEvent): void {
+        this.stopZoom();
+
+        event.preventDefault();
+    }
+
+    private startZoom(touches: TouchList): void {
+        if (touches.length > 1) {
+            this.handleMultipleTouches(touches[0], touches[1]);
+        }
+    }
+
+    private zoom(touches: TouchList): void {
         if (touches.length > 1) {
             this.handleMultipleTouches(touches[0], touches[1]);
         } else {
             this.removeMultipleTouches();
         }
-        event.preventDefault();
     }
 
-    private handleTouchEnd(event: TouchEvent): void {
+    private stopZoom(): void {
         this.removeMultipleTouches();
-        event.preventDefault();
-    }
-
-    private handleTouchCancel(event: TouchEvent): void {
-        this.removeMultipleTouches();
-        event.preventDefault();
     }
 
     private handleMultipleTouches(touch1: Touch, touch2: Touch): void {

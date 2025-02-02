@@ -23,9 +23,8 @@ export class MoveInput extends CanvasBase implements IMoveInput {
     private readonly pointerMoveHandler: PointerEventHandler;
     private readonly pointerDownHandler: PointerEventHandler;
 
-    private currentMove?: Position;
-    private isPointerDownHeld: boolean;
-    private pointerDownHeldPosition?: Position;
+    private lastCanvasPos?: Position;
+    private lastPointerPos?: Position;
 
     constructor(htmlElement: HTMLElement, touchInput: ITouchInput) {
         super();
@@ -37,8 +36,6 @@ export class MoveInput extends CanvasBase implements IMoveInput {
         this.pointerUpHandler = this.handlePointerUp.bind(this);
         this.pointerMoveHandler = this.handlePointerMove.bind(this);
         this.pointerDownHandler = this.handlePointerDown.bind(this);
-
-        this.isPointerDownHeld = false;
     }
 
     public override set bounds(value: Bounds) {
@@ -46,7 +43,7 @@ export class MoveInput extends CanvasBase implements IMoveInput {
     }
 
     public get inMoveMode(): boolean {
-        return !this.currentMove;
+        return !this.lastCanvasPos;
     }
 
     public onMove(listener: MoveListener): VoidUnsubscribe {
@@ -70,14 +67,13 @@ export class MoveInput extends CanvasBase implements IMoveInput {
         this.htmlElement.removeEventListener(CanvasEventType.PointerDown, this.pointerDownHandler);
     }
 
-    private handlePointerUp(event: PointerEvent): void {
+    private handlePointerDown(event: PointerEvent): void {
         if (this.touchInput.inZoomMode) {
             return;
         }
 
-        this.isPointerDownHeld = false;
-        this.pointerDownHeldPosition = undefined;
-        this.currentMove = undefined;
+        const position = this.getPosition(event);
+        this.startMove(position);
     }
 
     private handlePointerMove(event: PointerEvent): void {
@@ -86,40 +82,56 @@ export class MoveInput extends CanvasBase implements IMoveInput {
         }
 
         const position = this.getPosition(event);
-
-        // TODO: check whether this logic can be simplified!!!
-        if (this.isPointerDownHeld) {
-            if (this.pointerDownHeldPosition) {
-                const diffX = position.x - this.pointerDownHeldPosition.x;
-                const diffY = position.y - this.pointerDownHeldPosition.y;
-
-                const bounds = this.currentMove ?? super.bounds;
-
-                const x = bounds.x + diffX;
-                const y = bounds.y + diffY;
-
-                if (Math.abs(bounds.x - x) > 5 || Math.abs(bounds.y - y) > 5 || this.currentMove) {
-                    const newPosition = { x, y };
-                    this.invokeMove(newPosition);
-                    this.currentMove = newPosition;
-                }
-            }
-
-            this.pointerDownHeldPosition = position;
-        }
+        this.move(position);
     }
 
-    private handlePointerDown(event: PointerEvent): void {
+    private handlePointerUp(event: PointerEvent): void {
         if (this.touchInput.inZoomMode) {
             return;
         }
 
-        this.isPointerDownHeld = true;
+        this.stopMove();
     }
 
     private invokeMove(position: Position): void {
         const event = { position };
         this.messaging.sendToChannel1(event);
+    }
+
+    private startMove(position: Position): void {
+        this.lastPointerPos = position;
+    }
+
+    private move(position: Position): void {
+        if (this.lastPointerPos) {
+            // 1. calculate the diff between last pointer position and the current one
+            const diffX = position.x - this.lastPointerPos.x;
+            const diffY = position.y - this.lastPointerPos.y;
+
+            const pos = this.lastCanvasPos ?? super.bounds;
+
+            // 2. calculate the new canvas position
+            const x = Math.abs(pos.x + diffX);
+            const y = Math.abs(pos.y + diffY);
+
+            // 3. check whether there is enough difference to start moving (filter some small moving request cause it might not be intended)
+            const ignoreUntil = 5; // TODO: config
+            const hasEnoughDiff = (ignoreUntil < x) || (ignoreUntil < y);
+
+            if (hasEnoughDiff || this.lastCanvasPos) {
+
+                // 4. invoke canvas move
+                const newPosition = { x, y };
+                this.invokeMove(newPosition);
+                this.lastCanvasPos = newPosition;
+            }
+            this.lastPointerPos = position;
+        }
+    }
+
+    private stopMove(): void {
+        this.lastCanvasPos = undefined;
+        this.lastPointerPos = undefined;
     }
 
     // TODO: extract in different class since more than one classes are using it
