@@ -1,48 +1,47 @@
 import { Bounds } from "../types.js";
+import { MoveInput } from "./move.js";
 import { TouchInput } from "./touch.js";
 import { InputCanvasBase } from "./base.js";
 import {
-    CanvasEventType,
-    ITouchInput,
-    PointerEventHandler,
     Position,
-    WheelChangeHandler
+    MoveEvent,
+    ITouchInput,
+    CanvasEventType,
+    WheelChangeHandler,
+    PointerEventHandler,
 } from "./types.js";
 
 export class InputCanvas extends InputCanvasBase {
     private readonly htmlElement: HTMLElement;
     private readonly touchInput: ITouchInput;
+    private readonly moveInput: MoveInput;
 
     private readonly wheelChangeHandler: WheelChangeHandler;
     private readonly pointerMoveHandler: PointerEventHandler;
     private readonly pointerDownHandler: PointerEventHandler;
     private readonly pointerUpHandler: PointerEventHandler;
 
-    private firstMove?: Position;
-    private pointerDownHeldPosition?: Position;
-    private isPointerDownHeld: boolean;
-
     constructor(htmlElement: HTMLElement) {
         super();
 
         this.htmlElement = htmlElement;
         this.touchInput = new TouchInput(htmlElement);
+        this.moveInput = new MoveInput(htmlElement, this.touchInput);
 
         this.wheelChangeHandler = this.handleWheelChange.bind(this);
         this.pointerMoveHandler = this.handlePointerMove.bind(this);
         this.pointerDownHandler = this.handlePointerDown.bind(this);
         this.pointerUpHandler = this.handlePointerUp.bind(this);
 
-        this.isPointerDownHeld = false;
-
         this.subscribe();
     }
 
     public override set bounds(value: Bounds) {
         super.bounds = value;
+        this.moveInput.bounds = value;
 
-        const width = ((window.innerWidth / 10) * 9.8) + "px"; //value.width.toString() + "px";
-        const height = ((window.innerHeight / 10) * 9.3) + "px"; //value.height.toString() + "px";
+        const width = ((window.innerWidth / 10) * 9.8) + "px";
+        const height = ((window.innerHeight / 10) * 9.3) + "px";
 
         this.htmlElement.style.width = width;
         this.htmlElement.style.height = height;
@@ -50,7 +49,10 @@ export class InputCanvas extends InputCanvasBase {
 
     public override dispose(): void {
         this.unsubscribe();
+
+        this.moveInput.dispose();
         this.touchInput.dispose();
+
         super.dispose();
     }
 
@@ -65,6 +67,12 @@ export class InputCanvas extends InputCanvasBase {
 
         const touchZoomOutUn = this.touchInput.onZoomOut(this.handleZoomOut.bind(this));
         super.registerUn(touchZoomOutUn);
+
+        const moveUn = this.moveInput.onMove(this.handleMove.bind(this));
+        super.registerUn(moveUn);
+
+        this.touchInput.subscribe();
+        this.moveInput.subscribe();
     }
 
     private unsubscribe(): void {
@@ -95,29 +103,7 @@ export class InputCanvas extends InputCanvasBase {
             return;
         }
 
-
         const position = this.getPosition(event);
-
-        if (this.isPointerDownHeld) {
-            if (this.pointerDownHeldPosition) {
-                const diffX = position.x - this.pointerDownHeldPosition.x;
-                const diffY = position.y - this.pointerDownHeldPosition.y;
-
-                const bounds = this.firstMove ?? super.bounds;
-
-                const x = bounds.x + diffX;
-                const y = bounds.y + diffY;
-
-                if (Math.abs(bounds.x - x) > 5 || Math.abs(bounds.y - y) > 5 || this.firstMove) {
-                    const newPosition = { x, y };
-                    super.invokeMove(newPosition);
-                    this.firstMove = newPosition;
-                }
-            }
-
-            this.pointerDownHeldPosition = position;
-        }
-
         super.invokePointerMove(position);
     }
 
@@ -126,7 +112,7 @@ export class InputCanvas extends InputCanvasBase {
             return;
         }
 
-        this.isPointerDownHeld = true;
+        // TODO: create move held event
     }
 
     private handlePointerUp(event: PointerEvent): void {
@@ -134,19 +120,22 @@ export class InputCanvas extends InputCanvasBase {
             return;
         }
 
-        if (!this.pointerDownHeldPosition) {
-            const position = this.getPosition(event);
-            const leftButton = 0;
-            if (event.button === leftButton) {
-                super.invokePointerUp(position);
-            }
+        if (!this.moveInput.inMoveMode) {
+            return;
         }
 
-        this.isPointerDownHeld = false;
-        this.pointerDownHeldPosition = undefined;
-        this.firstMove = undefined;
+        const position = this.getPosition(event);
+        const leftButton = 0;
+        if (event.button === leftButton) {
+            super.invokePointerUp(position);
+        }
     }
 
+    private handleMove(event: MoveEvent): void {
+        super.invokeMove(event.position);
+    }
+
+    // TODO: extract in different class since more than one classes are using it
     private getPosition(event: PointerEvent): Position {
         const x = event.layerX;
         const y = event.layerY;

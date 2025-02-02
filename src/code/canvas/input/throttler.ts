@@ -1,22 +1,22 @@
 import { Bounds } from "../types.js";
 import { InputCanvasBase } from "./base.js";
 import {
-    CanvasEvent,
-    CanvasEventType,
-    IInputCanvas,
-    MoveEvent,
-    PointerMoveEvent,
-    PointerUpEvent,
     Position,
+    MoveEvent,
+    CanvasEvent,
+    IInputCanvas,
+    PointerUpEvent,
+    CanvasEventType,
+    PointerMoveEvent,
 } from "./types.js";
 
-export class InputCanvasThrottler extends InputCanvasBase implements IInputCanvas {
+export class InputCanvasThrottler extends InputCanvasBase {
     private readonly inputCanvas: IInputCanvas;
 
-    private groupedEvents: Array<CanvasEvent>;
-
-    private timerInterval: number;
     private timerId?: number;
+    private timerInterval: number;
+
+    private groupedEvents: Array<CanvasEvent>;
 
     constructor(inputCanvas: IInputCanvas) {
         super();
@@ -87,21 +87,6 @@ export class InputCanvasThrottler extends InputCanvasBase implements IInputCanva
         this.addEvent(eventType, position);
     }
 
-    private addEvent(eventType: CanvasEventType, position?: Position,): void {
-        const events = this.groupedEvents;
-
-        if (events.length !== 0) {
-            const lastEvent = events.pop()!;
-
-            if (lastEvent.type !== eventType) {
-                events.push(lastEvent);
-            }
-        }
-
-        const currentEvent = { type: eventType, value: position };
-        events.push(currentEvent);
-    }
-
     private handleTimer(): void {
         this.invokeEvents();
     }
@@ -138,5 +123,21 @@ export class InputCanvasThrottler extends InputCanvasBase implements IInputCanva
                 break;
             }
         }
+    }
+
+    private addEvent(eventType: CanvasEventType, position?: Position,): void {
+        // extract the algorithm in a different class
+        const events = this.groupedEvents;
+
+        if (events.length !== 0) {
+            const lastEvent = events.pop()!;
+
+            if (lastEvent.type !== eventType) {
+                events.push(lastEvent);
+            }
+        }
+
+        const currentEvent = { type: eventType, value: position };
+        events.push(currentEvent);
     }
 }

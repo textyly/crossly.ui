@@ -2,14 +2,14 @@ import { VoidUnsubscribe } from "../../types.js";
 import { Messaging2 } from "../../messaging/impl.js";
 import { IMessaging2 } from "../../messaging/types.js";
 import {
-    ActiveTouches,
-    CanvasEventType,
-    ITouchInput,
-    TouchEventHandler,
     ZoomInEvent,
-    ZoomInListener,
+    ITouchInput,
     ZoomOutEvent,
-    ZoomOutListener
+    ActiveTouches,
+    ZoomInListener,
+    ZoomOutListener,
+    CanvasEventType,
+    TouchEventHandler,
 } from "./types.js";
 
 export class TouchInput implements ITouchInput {
@@ -32,8 +32,6 @@ export class TouchInput implements ITouchInput {
         this.touchEndHandler = this.handleTouchEnd.bind(this);
         this.touchMoveHandler = this.handleTouchMove.bind(this);
         this.touchCancelHandler = this.handleTouchCancel.bind(this);
-
-        this.subscribe();
     }
 
     public get inZoomMode(): boolean {
@@ -59,22 +57,22 @@ export class TouchInput implements ITouchInput {
         return this.messaging.listenOnChannel2(listener);
     }
 
+    public subscribe(): void {
+        this.htmlElement.addEventListener(CanvasEventType.TouchStart, this.touchStartHandler);
+        this.htmlElement.addEventListener(CanvasEventType.TouchMove, this.touchMoveHandler);
+        this.htmlElement.addEventListener(CanvasEventType.TouchEnd, this.touchEndHandler);
+        this.htmlElement.addEventListener(CanvasEventType.TouchCancel, this.touchCancelHandler);
+    }
+
     public dispose(): void {
         this.unsubscribe();
         this.messaging.dispose();
     }
 
-    private subscribe(): void {
-        this.htmlElement.addEventListener(CanvasEventType.TouchStart, this.touchStartHandler);
-        this.htmlElement.addEventListener(CanvasEventType.TouchEnd, this.touchEndHandler);
-        this.htmlElement.addEventListener(CanvasEventType.TouchMove, this.touchMoveHandler);
-        this.htmlElement.addEventListener(CanvasEventType.TouchCancel, this.touchCancelHandler);
-    }
-
     private unsubscribe(): void {
         this.htmlElement.removeEventListener(CanvasEventType.TouchStart, this.touchStartHandler);
-        this.htmlElement.removeEventListener(CanvasEventType.TouchEnd, this.touchEndHandler);
         this.htmlElement.removeEventListener(CanvasEventType.TouchMove, this.touchMoveHandler);
+        this.htmlElement.removeEventListener(CanvasEventType.TouchEnd, this.touchEndHandler);
         this.htmlElement.removeEventListener(CanvasEventType.TouchCancel, this.touchCancelHandler);
     }
 
@@ -86,11 +84,6 @@ export class TouchInput implements ITouchInput {
         event.preventDefault();
     }
 
-    private handleTouchEnd(event: TouchEvent): void {
-        this.removeMultipleTouches();
-        event.preventDefault();
-    }
-
     private handleTouchMove(event: TouchEvent): void {
         const touches = event.touches;
         if (touches.length > 1) {
@@ -98,6 +91,11 @@ export class TouchInput implements ITouchInput {
         } else {
             this.removeMultipleTouches();
         }
+        event.preventDefault();
+    }
+
+    private handleTouchEnd(event: TouchEvent): void {
+        this.removeMultipleTouches();
         event.preventDefault();
     }
 
@@ -126,6 +124,7 @@ export class TouchInput implements ITouchInput {
             }
             this.currentActiveTouches = newActiveTouches;
         }
+
         this.lastTouchTime = Date.now();
     }
 

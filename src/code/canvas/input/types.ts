@@ -20,6 +20,8 @@ export interface IInputCanvas extends ICanvas {
 export interface ITouchInput extends IDisposable {
     get inZoomMode(): boolean;
 
+    subscribe(): void;
+
     onZoomIn(listener: ZoomInListener): VoidUnsubscribe;
     onZoomOut(listener: ZoomOutListener): VoidUnsubscribe
 }
