@@ -6,13 +6,14 @@ import { IMessaging1 } from "../../messaging/types.js";
 import {
     Position,
     MoveEvent,
+    IMoveInput,
     ITouchInput,
     MoveListener,
     CanvasEventType,
     PointerEventHandler,
 } from "./types.js";
 
-export class MoveInput extends CanvasBase {
+export class MoveInput extends CanvasBase implements IMoveInput {
     private readonly messaging: IMessaging1<MoveEvent>;
 
     private readonly htmlElement: HTMLElement;
@@ -86,6 +87,7 @@ export class MoveInput extends CanvasBase {
 
         const position = this.getPosition(event);
 
+        // TODO: check whether this logic can be simplified!!!
         if (this.isPointerDownHeld) {
             if (this.pointerDownHeldPosition) {
                 const diffX = position.x - this.pointerDownHeldPosition.x;
@@ -120,6 +122,7 @@ export class MoveInput extends CanvasBase {
         this.messaging.sendToChannel1(event);
     }
 
+    // TODO: extract in different class since more than one classes are using it
     private getPosition(event: PointerEvent): Position {
         const x = event.layerX;
         const y = event.layerY;

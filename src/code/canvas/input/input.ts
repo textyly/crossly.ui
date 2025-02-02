@@ -5,6 +5,7 @@ import { InputCanvasBase } from "./base.js";
 import {
     Position,
     MoveEvent,
+    IMoveInput,
     ITouchInput,
     CanvasEventType,
     WheelChangeHandler,
@@ -14,7 +15,7 @@ import {
 export class InputCanvas extends InputCanvasBase {
     private readonly htmlElement: HTMLElement;
     private readonly touchInput: ITouchInput;
-    private readonly moveInput: MoveInput;
+    private readonly moveInput: IMoveInput;
 
     private readonly wheelChangeHandler: WheelChangeHandler;
     private readonly pointerUpHandler: PointerEventHandler;

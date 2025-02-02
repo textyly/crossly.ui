@@ -15,12 +15,12 @@ export class ConfigFactory {
                 color: "#9fa19f",
                 radius: {
                     value: 2,
-                    zoomInStep: 0.2,
+                    zoomInStep: 0.1,
                     zoomOutStep: 0.1
                 },
                 dotMatchDistance: {
                     value: 4, // twice as dot radius, so that it is easier to click on a dot
-                    zoomInStep: 0.7, // spacing zoomInStep + dot radius zoomInStep (for better touch support)
+                    zoomInStep: 0.5, // spacing zoomInStep + dot radius zoomInStep (for better touch support)
                     zoomOutStep: 0.1
                 }
             },
@@ -39,7 +39,7 @@ export class ConfigFactory {
                 color: "gray",
                 radius: {
                     value: 2,
-                    zoomInStep: 0.2,
+                    zoomInStep: 0.1,
                     zoomOutStep: 0.1
                 },
             },
@@ -47,8 +47,8 @@ export class ConfigFactory {
                 color: "gray",
                 width: {
                     value: 5,
-                    zoomInStep: 0.3,
-                    zoomOutStep: 0.3
+                    zoomInStep: 0.2,
+                    zoomOutStep: 0.2
                 }
             }
         };
@@ -58,7 +58,7 @@ export class ConfigFactory {
                 color: "gray",
                 radius: {
                     value: 4,
-                    zoomInStep: 0.4,
+                    zoomInStep: 0.2,
                     zoomOutStep: 0.2
                 },
             },
@@ -66,8 +66,8 @@ export class ConfigFactory {
                 color: "gray",
                 width: {
                     value: 5,
-                    zoomInStep: 0.3,
-                    zoomOutStep: 0.3
+                    zoomInStep: 0.2,
+                    zoomOutStep: 0.2
                 }
             }
         };

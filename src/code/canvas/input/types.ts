@@ -26,6 +26,14 @@ export interface ITouchInput extends ICanvas {
     onZoomOut(listener: ZoomOutListener): VoidUnsubscribe
 }
 
+export interface IMoveInput extends ICanvas {
+    get inMoveMode(): boolean;
+
+    subscribe(): void;
+
+    onMove(listener: MoveListener): VoidUnsubscribe;
+}
+
 export enum CanvasEventType {
     WheelChange = "wheel",
     ZoomIn = "zoomin",
