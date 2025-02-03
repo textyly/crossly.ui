@@ -1,8 +1,8 @@
 import { CanvasBase } from "../base.js";
-import { IRasterDrawing } from "./types.js";
+import { IRasterDrawingCanvas } from "./types.js";
 import { Dot, Bounds, Thread } from "../types.js";
 
-export class RasterDrawing extends CanvasBase implements IRasterDrawing {
+export class RasterDrawingCanvas extends CanvasBase implements IRasterDrawingCanvas {
     private readonly context: CanvasRenderingContext2D;
 
     constructor(private rasterCanvas: HTMLCanvasElement) {
@@ -47,14 +47,12 @@ export class RasterDrawing extends CanvasBase implements IRasterDrawing {
     public override set bounds(value: Bounds) {
         super.bounds = value;
 
-        const minWidth = ((window.innerWidth / 10) * 9.8);
-        const minHeight = ((window.innerHeight / 10) * 9.3);
+        const x = value.x;
+        const y = value.y;
+        const width = value.width;
+        const height = value.height;
 
-        const width = Math.max(minWidth, value.width);
-        const height = Math.max(minHeight, value.height);
-
-        this.rasterCanvas.style.transform = `translate(${value.x}px, ${value.y}px, ${width}px, ${height}px)`;
-
+        this.rasterCanvas.style.transform = `translate(${x}px, ${y}px, ${width}px, ${height}px)`;
         this.rasterCanvas.width = width;
         this.rasterCanvas.height = height;
     }

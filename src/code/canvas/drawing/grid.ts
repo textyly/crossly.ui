@@ -1,18 +1,20 @@
 import { CanvasBase } from "../base.js";
-import { Id, BoundsChangeEvent } from "../types.js";
-import { IGridDrawingCanvas, IRasterDrawing, IVectorDrawing, SvgLine } from "./types.js";
+import { Id, BoundsChangeEvent, GridThread } from "../types.js";
 import { DrawGridDotsEvent, DrawGridThreadsEvent, IGridCanvas } from "../virtual/types.js";
+import { IGridDrawingCanvas, IRasterVirtualDrawingCanvas, IVectorVirtualDrawingCanvas } from "./types.js";
 
 export class GridDrawingCanvas extends CanvasBase implements IGridDrawingCanvas {
-    private readonly rasterDrawing: IRasterDrawing;
-    private readonly vectorDrawing: IVectorDrawing;
-    private readonly svgLines: Map<Id, SvgLine>;
+    private readonly rasterVirtualDrawing: IRasterVirtualDrawingCanvas;
+    private readonly vectorVirtualDrawing: IVectorVirtualDrawingCanvas;
+    
+    private readonly threads: Map<Id, GridThread>;
 
-    constructor(rasterDrawing: IRasterDrawing, vectorDrawing: IVectorDrawing) {
+    constructor(rasterVirtualDrawing: IRasterVirtualDrawingCanvas, vectorVirtualDrawing: IVectorVirtualDrawingCanvas) {
         super();
-        this.rasterDrawing = rasterDrawing;
-        this.vectorDrawing = vectorDrawing;
-        this.svgLines = new Map<Id, SvgLine>();
+        this.rasterVirtualDrawing = rasterVirtualDrawing;
+        this.vectorVirtualDrawing = vectorVirtualDrawing;
+        
+        this.threads = new Map<Id, GridThread>();
     }
 
     public subscribe(gridCanvas: IGridCanvas): void {
@@ -36,15 +38,15 @@ export class GridDrawingCanvas extends CanvasBase implements IGridDrawingCanvas 
 
     private handleDrawVisibleDots(event: DrawGridDotsEvent): void {
         const dots = event.dots;
-        this.rasterDrawing.drawDots(dots);
+        this.rasterVirtualDrawing.drawDots(dots);
     }
 
     private handleDrawVisibleThreads(event: DrawGridThreadsEvent): void {
         const threads = event.threads;
 
         threads.forEach((thread) => {
-            const svgLine = this.vectorDrawing.drawLine(thread);
-            this.svgLines.set(thread.id, svgLine);
+            this.vectorVirtualDrawing.drawLine(thread.id, thread);
+            this.threads.set(thread.id, thread);
         });
     }
 
@@ -56,12 +58,15 @@ export class GridDrawingCanvas extends CanvasBase implements IGridDrawingCanvas 
         const bounds = event.bounds;
         super.bounds = bounds;
 
-        this.rasterDrawing.bounds = bounds;
-        this.vectorDrawing.bounds = bounds;
+        this.rasterVirtualDrawing.bounds = bounds;
+        this.vectorVirtualDrawing.bounds = bounds;
     }
 
     private clear(): void {
-        this.rasterDrawing.clear();
-        this.svgLines.forEach((line) => this.vectorDrawing.removeLine(line));
+        this.rasterVirtualDrawing.clear();
+
+        this.threads.forEach((thread) => {
+            this.vectorVirtualDrawing.removeLine(thread.id);
+        });
     }
 }

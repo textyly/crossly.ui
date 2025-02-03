@@ -1,8 +1,8 @@
 import { CanvasBase } from "../base.js";
 import { Dot, Bounds, Thread } from "../types.js";
-import { IVectorDrawing, SvgDot, SvgLine } from "./types.js";
+import { IVectorDrawingCanvas, SvgDot, SvgLine } from "./types.js";
 
-export class VectorDrawing extends CanvasBase implements IVectorDrawing {
+export class VectorDrawingCanvas extends CanvasBase implements IVectorDrawingCanvas {
     private readonly svgCanvas: HTMLElement;
 
     constructor(svgCanvas: HTMLElement) {
@@ -91,14 +91,13 @@ export class VectorDrawing extends CanvasBase implements IVectorDrawing {
     public override set bounds(value: Bounds) {
         super.bounds = value;
 
-        const minWidth = ((window.innerWidth / 10) * 9.8);
-        const minHeight = ((window.innerHeight / 10) * 9.3);
+        const x = value.x.toString();
+        const y = value.y.toString();
+        const width = value.width.toString();
+        const height = value.height.toString();
 
-        const width = Math.max(minWidth, value.width);
-        const height = Math.max(minHeight, value.height);
-
-        this.svgCanvas.style.transform = `translate(${value.x}px, ${value.y}px, ${width}px, ${height}px)`;
-        this.svgCanvas.setAttribute("width", width.toString());
-        this.svgCanvas.setAttribute("height", height.toString());
+        this.svgCanvas.style.transform = `translate(${x}px, ${y}px, ${width}px, ${height}px)`;
+        this.svgCanvas.setAttribute("width", width);
+        this.svgCanvas.setAttribute("height", height);
     }
 }

@@ -1,18 +1,20 @@
 import { CanvasBase } from "../base.js";
-import { Id, BoundsChangeEvent } from "../types.js";
-import { ICueDrawingCanvas, IVectorDrawing, SvgDot, SvgLine } from "./types.js";
+import { Id, BoundsChangeEvent, CueDot, CueThread } from "../types.js";
+import { ICueDrawingCanvas, IVectorVirtualDrawingCanvas } from "./types.js";
 import { DrawCueDotEvent, DrawCueThreadEvent, ICueCanvas, RemoveCueDotEvent, RemoveCueThreadEvent } from "../virtual/types.js";
 
 export class CueDrawingCanvas extends CanvasBase implements ICueDrawingCanvas {
-    private readonly vectorDrawing: IVectorDrawing;
-    private readonly svgDots: Map<Id, SvgDot>;
-    private readonly svgLines: Map<Id, SvgLine>;
+    private readonly vectorVirtualDrawing: IVectorVirtualDrawingCanvas;
 
-    constructor(vectorDrawing: IVectorDrawing) {
+    private readonly dots: Map<Id, CueDot>;
+    private readonly threads: Map<Id, CueThread>;
+
+    constructor(vectorVirtualDrawing: IVectorVirtualDrawingCanvas) {
         super();
-        this.vectorDrawing = vectorDrawing;
-        this.svgDots = new Map<Id, SvgDot>();
-        this.svgLines = new Map<Id, SvgLine>();
+        this.vectorVirtualDrawing = vectorVirtualDrawing;
+
+        this.dots = new Map<Id, CueDot>();
+        this.threads = new Map<Id, CueThread>();
     }
 
     public subscribe(cueCanvas: ICueCanvas): void {
@@ -52,70 +54,78 @@ export class CueDrawingCanvas extends CanvasBase implements ICueDrawingCanvas {
     private handleDrawDot(event: DrawCueDotEvent): void {
         const dot = event.dot;
         const id = dot.id;
-        const svgDot = this.vectorDrawing.drawDot(dot);
-        this.svgDots.set(id, svgDot);
+
+        this.vectorVirtualDrawing.drawDot(dot);
+        this.dots.set(id, dot);
     }
 
     private handleDrawDashDot(event: DrawCueDotEvent): void {
         const dot = event.dot;
         const id = dot.id;
-        
 
-        const svgDot = this.vectorDrawing.drawDashDot(dot);
-        this.svgDots.set(id, svgDot);
+        this.vectorVirtualDrawing.drawDashDot(dot);
+        this.dots.set(id, dot);
     }
 
     private handleRemoveDot(event: RemoveCueDotEvent): void {
-        const dot = event.dot;
-        const id = dot.id;
-        const svgDot = this.svgDots.get(id);
-        this.vectorDrawing.removeDot(svgDot!);
-        this.svgDots.delete(id);
+        const id = event.dot.id;
+
+        this.vectorVirtualDrawing.removeDot(id);
+        this.dots.delete(id);
     }
 
     private handleDrawThread(event: DrawCueThreadEvent): void {
         const thread = event.thread;
         const id = thread.id;
-        const svgLine = this.vectorDrawing.drawLine(thread);
-        this.svgLines.set(id, svgLine);
+
+        this.vectorVirtualDrawing.drawLine(id, thread);
+        this.threads.set(id, thread);
     }
 
     private handleMoveThread(event: DrawCueThreadEvent): void {
         const thread = event.thread;
         const id = thread.id;
-        const svgLine = this.svgLines.get(id);
-        this.vectorDrawing.moveLine(thread, svgLine!);
+
+        this.vectorVirtualDrawing.moveLine(id, thread);
     }
 
     private handleDrawDashThread(event: DrawCueThreadEvent): void {
         const thread = event.thread;
         const id = thread.id;
-        const svgLine = this.vectorDrawing.drawDashLine(thread);
-        this.svgLines.set(id, svgLine);
+
+        this.vectorVirtualDrawing.drawDashLine(id, thread);
+        this.threads.set(id, thread);
     }
 
     private handleRemoveThread(event: RemoveCueThreadEvent): void {
         const thread = event.thread;
         const id = thread.id;
-        const svgLine = this.svgLines.get(id);
-        this.vectorDrawing.removeLine(svgLine!);
-        this.svgLines.delete(id);
+
+        this.vectorVirtualDrawing.removeLine(id);
+        this.threads.delete(id);
     }
 
     private handleRedraw(): void {
-        this.svgDots.forEach((dot) => this.vectorDrawing.removeDot(dot));
-        this.svgLines.forEach((line) => this.vectorDrawing.removeLine(line));
+        this.dots.forEach((dot) => {
+            this.vectorVirtualDrawing.removeDot(dot.id);
+        });
+
+        this.threads.forEach((thread) => {
+            this.vectorVirtualDrawing.removeLine(thread.id);
+        });
+
         this.clear();
     }
 
     private handleBoundsChange(event: BoundsChangeEvent): void {
         const bounds = event.bounds;
         super.bounds = bounds;
-        this.vectorDrawing.bounds = bounds;
+
+        this.vectorVirtualDrawing.bounds = bounds;
     }
 
     private clear(): void {
-        this.svgDots.clear();
-        this.svgLines.clear();
+        this.dots.clear();
+        this.threads.clear();
     }
 }
