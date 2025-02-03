@@ -8,6 +8,7 @@ export class RasterVirtualDrawingCanvas extends CanvasBase implements IRasterDra
     constructor(rasterDrawingCanvas: IRasterDrawingCanvas) {
         super();
         this.rasterDrawingCanvas = rasterDrawingCanvas;
+        this.resizeRasterDrawingCanvas();
     }
 
     public drawDots(dots: Array<Dot>): void {
@@ -31,10 +32,9 @@ export class RasterVirtualDrawingCanvas extends CanvasBase implements IRasterDra
 
     protected override invokeBoundsChange(bounds: Bounds): void {
         super.invokeBoundsChange(bounds);
-        this.resizeRasterDrawingCanvas(bounds);
     }
 
-    private resizeRasterDrawingCanvas(bounds: Bounds): void {
+    private resizeRasterDrawingCanvas(): void {
         // do not allow raster canvas to resize outside of the client visible area
         const x = 0;
         const y = 0;
@@ -44,11 +44,24 @@ export class RasterVirtualDrawingCanvas extends CanvasBase implements IRasterDra
         this.rasterDrawingCanvas.bounds = { x, y, width, height };
     }
 
-    private isVisibleDot(dot: Dot): boolean {
-        return true;
-    }
+    // TODO: extract in a different class
 
     private isVisibleLine(thread: Thread<Dot>): boolean {
-        return true;
+        const isFromVisible = this.isVisibleDot(thread.from);
+        const isToVisible = this.isVisibleDot(thread.to);
+
+        return isFromVisible || isToVisible;
+    }
+
+    private isVisibleDot(dot: Dot): boolean {
+        const canvasX = this.rasterDrawingCanvas.bounds.x;
+        const canvasY = this.rasterDrawingCanvas.bounds.y;
+        const canvasWidth = this.rasterDrawingCanvas.bounds.width;
+        const canvasHeight = this.rasterDrawingCanvas.bounds.height;
+
+        const isVisibleByX = dot.x >= canvasX && dot.x <= canvasWidth;
+        const isVisibleByY = dot.y >= canvasY && dot.y <= canvasHeight;
+
+        return isVisibleByX && isVisibleByY;
     }
 }

@@ -11,6 +11,7 @@ export class VectorVirtualDrawingCanvas extends CanvasBase implements IVectorVir
     constructor(vectorDrawingCanvas: IVectorDrawingCanvas) {
         super();
         this.vectorDrawingCanvas = vectorDrawingCanvas;
+        this.resizeVectorDrawingCanvas();
 
         this.svgDots = new Map<Id, SvgDot>();
         this.svgLines = new Map<Id, SvgLine>();
@@ -99,10 +100,9 @@ export class VectorVirtualDrawingCanvas extends CanvasBase implements IVectorVir
 
     protected override invokeBoundsChange(bounds: Bounds): void {
         super.invokeBoundsChange(bounds);
-        this.resizeVectorDrawingCanvas(bounds);
     }
 
-    private resizeVectorDrawingCanvas(bounds: Bounds): void {
+    private resizeVectorDrawingCanvas(): void {
         // do not allow vector canvas to resize outside of the client visible area
         const x = 0;
         const y = 0;
@@ -112,11 +112,24 @@ export class VectorVirtualDrawingCanvas extends CanvasBase implements IVectorVir
         this.vectorDrawingCanvas.bounds = { x, y, width, height };
     }
 
-    private isVisibleDot(dot: Dot): boolean {
-        return true;
-    }
+    // TODO: extract in a different class
 
     private isVisibleLine(thread: Thread<Dot>): boolean {
-        return true;
+        const isFromVisible = this.isVisibleDot(thread.from);
+        const isToVisible = this.isVisibleDot(thread.to);
+
+        return isFromVisible || isToVisible;
+    }
+
+    private isVisibleDot(dot: Dot): boolean {
+        const canvasX = this.vectorDrawingCanvas.bounds.x;
+        const canvasY = this.vectorDrawingCanvas.bounds.y;
+        const canvasWidth = this.vectorDrawingCanvas.bounds.width;
+        const canvasHeight = this.vectorDrawingCanvas.bounds.height;
+
+        const isVisibleByX = dot.x >= canvasX && dot.x <= canvasWidth;
+        const isVisibleByY = dot.y >= canvasY && dot.y <= canvasHeight;
+
+        return isVisibleByX && isVisibleByY;
     }
 }

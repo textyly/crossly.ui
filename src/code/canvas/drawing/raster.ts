@@ -10,6 +10,23 @@ export class RasterDrawingCanvas extends CanvasBase implements IRasterDrawingCan
         this.context = rasterCanvas.getContext("2d")!;
     }
 
+    public override get bounds(): Bounds {
+        return super.bounds;
+    }
+
+    public override set bounds(value: Bounds) {
+        super.bounds = value;
+
+        const x = value.x;
+        const y = value.y;
+        const width = value.width;
+        const height = value.height;
+
+        this.rasterCanvas.style.transform = `translate(${x}px, ${y}px, ${width}px, ${height}px)`;
+        this.rasterCanvas.width = width;
+        this.rasterCanvas.height = height;
+    }
+
     public drawDots(dots: Array<Dot>): void {
         this.context.beginPath();
 
@@ -42,18 +59,5 @@ export class RasterDrawingCanvas extends CanvasBase implements IRasterDrawingCan
 
     public clear(): void {
         this.context.clearRect(0, 0, this.rasterCanvas.clientWidth, this.rasterCanvas.clientWidth);
-    }
-
-    public override set bounds(value: Bounds) {
-        super.bounds = value;
-
-        const x = value.x;
-        const y = value.y;
-        const width = value.width;
-        const height = value.height;
-
-        this.rasterCanvas.style.transform = `translate(${x}px, ${y}px, ${width}px, ${height}px)`;
-        this.rasterCanvas.width = width;
-        this.rasterCanvas.height = height;
     }
 }

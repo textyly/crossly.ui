@@ -85,11 +85,9 @@ export class InputCanvas extends InputCanvasBase {
     }
 
     private handleWheelChange(event: WheelEvent): void {
-        if (event.ctrlKey) {
-            const deltaY = event.deltaY;
-            deltaY < 0 ? this.handleZoomIn() : this.handleZoomOut();
-            event.preventDefault();
-        }
+        const deltaY = event.deltaY;
+        deltaY < 0 ? this.handleZoomIn() : this.handleZoomOut();
+        event.preventDefault();
     }
 
     private handleZoomIn(): void {
