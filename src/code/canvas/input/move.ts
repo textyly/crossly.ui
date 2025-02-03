@@ -108,15 +108,15 @@ export class MoveInput extends CanvasBase implements IMoveInput {
             const diffX = position.x - this.lastPointerPos.x;
             const diffY = position.y - this.lastPointerPos.y;
 
-            const pos = this.lastCanvasPos ?? super.bounds;
+            const lastCanvasPos = this.lastCanvasPos ?? super.bounds;
 
             // 2. calculate the new canvas position
-            const newX = pos.x + diffX;
-            const newY = pos.y + diffY;
+            const newX = lastCanvasPos.x + diffX;
+            const newY = lastCanvasPos.y + diffY;
 
             // 3. check whether there is enough difference to start moving (filter some small moving request cause it might not be intended)
             const ignoreUntil = 5; // TODO: config
-            const hasEnoughDiff = (ignoreUntil < Math.abs(newX)) || (ignoreUntil < Math.abs(newY));
+            const hasEnoughDiff = (ignoreUntil < Math.abs(diffX)) || (ignoreUntil < Math.abs(diffY));
 
             if (hasEnoughDiff || this.lastCanvasPos) {
                 // 4. invoke canvas move
