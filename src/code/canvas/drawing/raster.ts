@@ -58,6 +58,6 @@ export class RasterDrawingCanvas extends CanvasBase implements IRasterDrawingCan
     }
 
     public clear(): void {
-        this.context.clearRect(0, 0, this.rasterCanvas.clientWidth, this.rasterCanvas.clientWidth);
+        this.context.clearRect(0, 0, this.rasterCanvas.clientWidth, this.rasterCanvas.clientHeight);
     }
 }
