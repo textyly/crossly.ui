@@ -1,13 +1,30 @@
 import { CanvasBase } from "../base.js";
-import { Dot, Size, Thread } from "../types.js";
-import { IVectorDrawing, SvgDot, SvgLine } from "./types.js";
+import { Dot, Bounds, Thread } from "../types.js";
+import { IVectorDrawingCanvas, SvgDot, SvgLine } from "./types.js";
 
-export class VectorDrawing extends CanvasBase implements IVectorDrawing {
+export class VectorDrawingCanvas extends CanvasBase implements IVectorDrawingCanvas {
     private readonly svgCanvas: HTMLElement;
 
     constructor(svgCanvas: HTMLElement) {
         super();
         this.svgCanvas = svgCanvas;
+    }
+
+    public override get bounds(): Bounds {
+        return super.bounds;
+    }
+
+    public override set bounds(value: Bounds) {
+        super.bounds = value;
+
+        const x = value.x.toString();
+        const y = value.y.toString();
+        const width = value.width.toString();
+        const height = value.height.toString();
+
+        this.svgCanvas.style.transform = `translate(${x}px, ${y}px, ${width}px, ${height}px)`;
+        this.svgCanvas.setAttribute("width", width);
+        this.svgCanvas.setAttribute("height", height);
     }
 
     public drawDot(dot: Dot): SvgDot {
@@ -86,14 +103,5 @@ export class VectorDrawing extends CanvasBase implements IVectorDrawing {
         circle.setAttribute("fill", color);
 
         return circle;
-    }
-
-    public override set size(value: Size) {
-        super.size = value;
-        const width = value.width.toString();
-        const height = value.height.toString();
-
-        this.svgCanvas.setAttribute("width", width);
-        this.svgCanvas.setAttribute("height", height);
     }
 }

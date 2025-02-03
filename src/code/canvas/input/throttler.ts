@@ -1,21 +1,22 @@
-import { Size } from "../types.js";
+import { Bounds } from "../types.js";
 import { InputCanvasBase } from "./base.js";
 import {
+    Position,
+    MoveEvent,
     CanvasEvent,
-    CanvasEventsType,
     IInputCanvas,
-    PointerMoveEvent,
     PointerUpEvent,
+    CanvasEventType,
+    PointerMoveEvent,
 } from "./types.js";
 
-// TODO: all methods should have a common one
 export class InputCanvasThrottler extends InputCanvasBase {
     private readonly inputCanvas: IInputCanvas;
 
-    private groupedEvents: Array<CanvasEvent>;
-
-    private timerInterval: number;
     private timerId?: number;
+    private timerInterval: number;
+
+    private groupedEvents: Array<CanvasEvent>;
 
     constructor(inputCanvas: IInputCanvas) {
         super();
@@ -23,19 +24,19 @@ export class InputCanvasThrottler extends InputCanvasBase {
         this.inputCanvas = inputCanvas;
 
         this.groupedEvents = [];
-        this.timerInterval = 50; // TODO: outside!!!
+        this.timerInterval = 30; // TODO: outside!!!
 
         this.subscribe();
     }
 
-    public override set size(value: Size) {
-        super.size = value;
-        this.inputCanvas.size = value;
+    public override set bounds(value: Bounds) {
+        super.bounds = value;
+        this.inputCanvas.bounds = value;
     }
 
     public override dispose(): void {
         clearInterval(this.timerId);
-        this.handleEvents();
+        this.invokeEvents();
         super.dispose();
     }
 
@@ -45,6 +46,9 @@ export class InputCanvasThrottler extends InputCanvasBase {
 
         const zoomOutUn = this.inputCanvas.onZoomOut(this.handleZoomOut.bind(this));
         super.registerUn(zoomOutUn);
+
+        const moveUn = this.inputCanvas.onMove(this.handleMove.bind(this));
+        super.registerUn(moveUn);
 
         const pointerMoveUn = this.inputCanvas.onPointerMove(this.handlePointerMove.bind(this));
         super.registerUn(pointerMoveUn);
@@ -56,95 +60,83 @@ export class InputCanvasThrottler extends InputCanvasBase {
     }
 
     private handleZoomIn(): void {
-        if (this.groupedEvents.length == 0) {
-            this.groupedEvents.push({ type: CanvasEventsType.ZoomIn });
-        } else {
-            const lastEvent = this.groupedEvents.pop()!;
-
-            if (lastEvent.type !== CanvasEventsType.ZoomIn) {
-                this.groupedEvents.push(lastEvent);
-            }
-
-            this.groupedEvents.push({ type: CanvasEventsType.ZoomIn });
-        }
+        const eventType = CanvasEventType.ZoomIn;
+        this.addEvent(eventType);
     }
 
     private handleZoomOut(): void {
-        if (this.groupedEvents.length == 0) {
-            this.groupedEvents.push({ type: CanvasEventsType.ZoomOut });
-        } else {
-            const lastEvent = this.groupedEvents.pop()!;
+        const eventType = CanvasEventType.ZoomOut;
+        this.addEvent(eventType);
+    }
 
-            if (lastEvent.type !== CanvasEventsType.ZoomOut) {
-                this.groupedEvents.push(lastEvent);
-            }
-
-            this.groupedEvents.push({ type: CanvasEventsType.ZoomOut });
-        }
+    private handleMove(event: MoveEvent): void {
+        const eventType = CanvasEventType.Move;
+        const position = event.position;
+        this.addEvent(eventType, position);
     }
 
     private handlePointerMove(event: PointerMoveEvent): void {
+        const eventType = CanvasEventType.PointerMove;
         const position = event.position;
-
-        if (this.groupedEvents.length == 0) {
-            this.groupedEvents.push({ type: CanvasEventsType.PointerMove, value: position });
-        } else {
-            const lastEvent = this.groupedEvents.pop()!;
-
-            if (lastEvent.type !== CanvasEventsType.PointerMove) {
-                this.groupedEvents.push(lastEvent);
-            }
-
-            this.groupedEvents.push({ type: CanvasEventsType.PointerMove, value: position });
-        }
+        this.addEvent(eventType, position);
     }
 
     private handlePointerUp(event: PointerUpEvent): void {
+        const eventType = CanvasEventType.PointerUp;
         const position = event.position;
-
-        if (this.groupedEvents.length == 0) {
-            this.groupedEvents.push({ type: CanvasEventsType.PointerUp, value: position });
-        } else {
-            const lastEvent = this.groupedEvents.pop()!;
-
-            if (lastEvent.type !== CanvasEventsType.PointerUp) {
-                this.groupedEvents.push(lastEvent);
-            }
-
-            this.groupedEvents.push({ type: CanvasEventsType.PointerUp, value: position });
-        }
+        this.addEvent(eventType, position);
     }
 
     private handleTimer(): void {
-        this.handleEvents();
+        this.invokeEvents();
     }
 
-    private handleEvents(): void {
-        this.groupedEvents.forEach((event) => this.handleEvent(event));
+    private invokeEvents(): void {
+        this.groupedEvents.forEach((event) => this.invokeEvent(event));
         this.groupedEvents = [];
     }
 
-    private handleEvent(event: CanvasEvent): void {
+    private invokeEvent(event: CanvasEvent): void {
         const type = event?.type!;
         const position = event?.value!;
 
         switch (type) {
-            case CanvasEventsType.ZoomIn: {
+            case CanvasEventType.ZoomIn: {
                 super.invokeZoomIn();
                 break;
             }
-            case CanvasEventsType.ZoomOut: {
+            case CanvasEventType.ZoomOut: {
                 super.invokeZoomOut();
                 break;
             }
-            case CanvasEventsType.PointerMove: {
+            case CanvasEventType.Move: {
+                super.invokeMove(position);
+                break;
+            }
+            case CanvasEventType.PointerMove: {
                 super.invokePointerMove(position);
                 break;
             }
-            case CanvasEventsType.PointerUp: {
+            case CanvasEventType.PointerUp: {
                 super.invokePointerUp(position);
                 break;
             }
         }
+    }
+
+    private addEvent(eventType: CanvasEventType, position?: Position,): void {
+        // extract the algorithm in a different class
+        const events = this.groupedEvents;
+
+        if (events.length !== 0) {
+            const lastEvent = events.pop()!;
+
+            if (lastEvent.type !== eventType) {
+                events.push(lastEvent);
+            }
+        }
+
+        const currentEvent = { type: eventType, value: position };
+        events.push(currentEvent);
     }
 }

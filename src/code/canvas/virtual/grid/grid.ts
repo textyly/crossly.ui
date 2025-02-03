@@ -1,8 +1,8 @@
 import { GridCanvasBase } from "./base.js";
 import { IDotMatcher, IGridCanvas } from "../types.js";
 import { DotsUtility } from "../../../utilities/dots.js";
-import { IInputCanvas, Position } from "../../input/types.js";
 import { IdGenerator } from "../../../utilities/generator.js";
+import { IInputCanvas, MoveEvent, Position } from "../../input/types.js";
 import { Visibility, Id, GridDot, GridThread, GridCanvasConfig } from "../../types.js";
 
 export class GridCanvas extends GridCanvasBase implements IGridCanvas {
@@ -107,13 +107,12 @@ export class GridCanvas extends GridCanvasBase implements IGridCanvas {
         // make space for invisible dots, respectively invisible rows and columns
         const spacing = this.config.spacing.value / 2;
 
-        // threads and dots are blurry if x and y are integers, that is why we add 0.5
-        this._spacing = Math.floor(spacing) + 0.5;
+        this._spacing = spacing
         this._spacingZoomInStep = this.config.spacing.zoomInStep;
         this._spacingZoomOutStep = this.config.spacing.zoomOutStep;
 
 
-        const dotMatchDistance = this.config.dotMatchDistance;
+        const dotMatchDistance = this.config.dot.dotMatchDistance;
         this._dotMatchDistance = dotMatchDistance.value;
         this._dotMatchDistanceZoomInStep = dotMatchDistance.zoomInStep;
         this._dotMatchDistanceZoomOutStep = dotMatchDistance.zoomOutStep;
@@ -128,11 +127,14 @@ export class GridCanvas extends GridCanvasBase implements IGridCanvas {
 
         const zoomOutUn = this.inputCanvas.onZoomOut(this.handleZoomOut.bind(this));
         super.registerUn(zoomOutUn);
+
+        const moveUn = this.inputCanvas.onMove(this.handleMove.bind(this));
+        super.registerUn(moveUn);
     }
 
     private redraw(): void {
+        this.calculateBounds();
         this.createDots();
-        this.calculateSize();
         this.createAndDrawThreads();
         this.drawDots();
     }
@@ -147,6 +149,17 @@ export class GridCanvas extends GridCanvasBase implements IGridCanvas {
         this.zoomOutSpacing();
         this.zoomOutDotMatchDistance();
         super.zoomOut();
+    }
+
+    private handleMove(event: MoveEvent): void {
+        const position = event.position;
+        const x = position.x;
+        const y = position.y;
+        const width = this.bounds.width;
+        const height = this.bounds.height;
+
+        super.bounds = { x, y, width, height };
+        this.draw();
     }
 
     private createDots(): void {
@@ -183,8 +196,8 @@ export class GridCanvas extends GridCanvasBase implements IGridCanvas {
     }
 
     private crateDot(dotIdx: number, rowIdx: number, visibility: Visibility): GridDot {
-        const x = (dotIdx * this.spacing) + this.spacing;
-        const y = (rowIdx * this.spacing) + this.spacing;
+        const x = this.bounds.x + (dotIdx * this.spacing);
+        const y = this.bounds.y + (rowIdx * this.spacing);
 
         const id = this.dotsIds.next();
         const dot = { id, x, y, radius: this.dotRadius, visibility, color: this.dotColor };
@@ -283,12 +296,11 @@ export class GridCanvas extends GridCanvasBase implements IGridCanvas {
             ? (this.spacing + this._spacingZoomOutStep)
             : (this.spacing + this._spacingZoomInStep);
 
-        // threads and dots are blurry if x and y are integers, that is why we add 0.5
-        this._spacing = Math.floor(spacing) + 0.5;
+        this._spacing = spacing;
     }
 
     private zoomInDotMatchDistance(): void {
-        const configDotMatchDistance = this.config.dotMatchDistance;
+        const configDotMatchDistance = this.config.dot.dotMatchDistance;
         const dotMatchDistance = (this._dotMatchDistance < configDotMatchDistance.value)
             ? (this._dotMatchDistance + this._dotMatchDistanceZoomOutStep)
             : (this._dotMatchDistance + this._dotMatchDistanceZoomInStep);
@@ -303,12 +315,11 @@ export class GridCanvas extends GridCanvasBase implements IGridCanvas {
             ? (this.spacing - this._spacingZoomInStep)
             : (this.spacing - this._spacingZoomOutStep);
 
-        // threads and dots are blurry if x and y are integers, that is why we subtract 0.5
-        this._spacing = Math.floor(spacing) - 0.5;
+        this._spacing = spacing;
     }
 
     private zoomOutDotMatchDistance(): void {
-        const configDotMatchDistance = this.config.dotMatchDistance;
+        const configDotMatchDistance = this.config.dot.dotMatchDistance;
         const dotMatchDistance = (this._dotMatchDistance > configDotMatchDistance.value)
             ? (this._dotMatchDistance - this._dotMatchDistanceZoomInStep)
             : (this._dotMatchDistance - this._dotMatchDistanceZoomOutStep);
@@ -317,11 +328,13 @@ export class GridCanvas extends GridCanvasBase implements IGridCanvas {
 
     }
 
-    private calculateSize(): void {
+    private calculateBounds(): void {
         // TODO: check this calculations whether they can become simpler
+        const x = this.bounds.x;
+        const y = this.bounds.y;
         const width = this.spacing + (this.allColumns * this.dotRadius) + ((this.allColumns - 1) * this.spacing);
         const height = this.spacing + (this.allRows * this.dotRadius) + ((this.allRows - 1) * this.spacing);
 
-        this.size = { width, height };
+        this.bounds = { x, y, width, height };
     }
 }

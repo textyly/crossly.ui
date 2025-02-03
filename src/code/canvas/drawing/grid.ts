@@ -1,18 +1,20 @@
 import { CanvasBase } from "../base.js";
-import { Id, SizeChangeEvent } from "../types.js";
+import { Id, BoundsChangeEvent, GridThread } from "../types.js";
 import { DrawGridDotsEvent, DrawGridThreadsEvent, IGridCanvas } from "../virtual/types.js";
-import { IGridDrawingCanvas, IRasterDrawing, IVectorDrawing, SvgLine } from "./types.js";
+import { IGridDrawingCanvas, IRasterVirtualDrawingCanvas, IVectorVirtualDrawingCanvas } from "./types.js";
 
 export class GridDrawingCanvas extends CanvasBase implements IGridDrawingCanvas {
-    private readonly rasterDrawing: IRasterDrawing;
-    private readonly vectorDrawing: IVectorDrawing;
-    private readonly svgLines: Map<Id, SvgLine>;
+    private readonly rasterVirtualDrawing: IRasterVirtualDrawingCanvas;
+    private readonly vectorVirtualDrawing: IVectorVirtualDrawingCanvas;
+    
+    private readonly threads: Map<Id, GridThread>;
 
-    constructor(rasterDrawing: IRasterDrawing, vectorDrawing: IVectorDrawing) {
+    constructor(rasterVirtualDrawing: IRasterVirtualDrawingCanvas, vectorVirtualDrawing: IVectorVirtualDrawingCanvas) {
         super();
-        this.rasterDrawing = rasterDrawing;
-        this.vectorDrawing = vectorDrawing;
-        this.svgLines = new Map<Id, SvgLine>();
+        this.rasterVirtualDrawing = rasterVirtualDrawing;
+        this.vectorVirtualDrawing = vectorVirtualDrawing;
+        
+        this.threads = new Map<Id, GridThread>();
     }
 
     public subscribe(gridCanvas: IGridCanvas): void {
@@ -25,33 +27,46 @@ export class GridDrawingCanvas extends CanvasBase implements IGridDrawingCanvas 
         const redrawUn = gridCanvas.onRedraw(this.handleRedraw.bind(this));
         super.registerUn(redrawUn);
 
-        const sizeChangeUn = gridCanvas.onSizeChange(this.handleSizeChange.bind(this));
-        super.registerUn(sizeChangeUn);
+        const boundsChangeUn = gridCanvas.onBoundsChange(this.handleBoundsChange.bind(this));
+        super.registerUn(boundsChangeUn);
+    }
+
+    public override dispose(): void {
+        this.clear();
+        super.dispose();
     }
 
     private handleDrawVisibleDots(event: DrawGridDotsEvent): void {
         const dots = event.dots;
-        this.rasterDrawing.drawDots(dots);
+        this.rasterVirtualDrawing.drawDots(dots);
     }
 
     private handleDrawVisibleThreads(event: DrawGridThreadsEvent): void {
         const threads = event.threads;
 
         threads.forEach((thread) => {
-            const svgLine = this.vectorDrawing.drawLine(thread);
-            this.svgLines.set(thread.id, svgLine);
+            this.vectorVirtualDrawing.drawLine(thread.id, thread);
+            this.threads.set(thread.id, thread);
         });
     }
 
     private handleRedraw(): void {
-        this.svgLines.forEach((line) => this.vectorDrawing.removeLine(line));
+        this.clear();
     }
 
-    private handleSizeChange(event: SizeChangeEvent): void {
-        const size = event.size;
-        super.size = size;
+    private handleBoundsChange(event: BoundsChangeEvent): void {
+        const bounds = event.bounds;
+        super.bounds = bounds;
 
-        this.rasterDrawing.size = size;
-        this.vectorDrawing.size = size;
+        this.rasterVirtualDrawing.bounds = bounds;
+        this.vectorVirtualDrawing.bounds = bounds;
+    }
+
+    private clear(): void {
+        this.rasterVirtualDrawing.clear();
+
+        this.threads.forEach((thread) => {
+            this.vectorVirtualDrawing.removeLine(thread.id);
+        });
     }
 }

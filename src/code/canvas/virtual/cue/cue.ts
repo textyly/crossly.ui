@@ -1,9 +1,9 @@
 import { CueCanvasBase } from "./base.js";
-import { ICueCanvas, IGridCanvas } from "../types.js";
+import { DrawGridDotsEvent, ICueCanvas, IGridCanvas } from "../types.js";
 import { Converter } from "../../../utilities/converter.js";
 import { IdGenerator } from "../../../utilities/generator.js";
 import { IInputCanvas, PointerMoveEvent, PointerUpEvent, Position } from "../../input/types.js";
-import { CanvasSide, Id, CueThread, SizeChangeEvent, GridDot, Size, CueCanvasConfig } from "../../types.js";
+import { CanvasSide, Id, CueThread, BoundsChangeEvent, GridDot, Bounds, CueCanvasConfig } from "../../types.js";
 
 export class CueCanvas extends CueCanvasBase implements ICueCanvas {
     private readonly inputCanvas: IInputCanvas;
@@ -61,8 +61,11 @@ export class CueCanvas extends CueCanvasBase implements ICueCanvas {
         const pointerUpUn = this.inputCanvas.onPointerUp(this.handlePointerUp.bind(this));
         super.registerUn(pointerUpUn);
 
-        const sizeChangeUn = this.gridCanvas.onSizeChange(this.handleSizeChange.bind(this));
-        super.registerUn(sizeChangeUn);
+        const boundsChangeUn = this.gridCanvas.onBoundsChange(this.handleBoundsChange.bind(this));
+        super.registerUn(boundsChangeUn);
+
+        const drawVisibleDotsUn = this.gridCanvas.onDrawVisibleDots(this.handleDrawVisibleDots.bind(this));
+        super.registerUn(drawVisibleDotsUn);
     }
 
     private handleZoomIn(): void {
@@ -84,9 +87,12 @@ export class CueCanvas extends CueCanvasBase implements ICueCanvas {
         this.clickDot(position);
     }
 
-    private handleSizeChange(event: SizeChangeEvent): void {
-        const size = event.size;
-        this.changeSize(size);
+    private handleBoundsChange(event: BoundsChangeEvent): void {
+        this.bounds = event.bounds;
+    }
+
+    private handleDrawVisibleDots(event: DrawGridDotsEvent): void {
+        this.draw();
     }
 
     private moveDot(position: Position): void {
@@ -185,11 +191,6 @@ export class CueCanvas extends CueCanvasBase implements ICueCanvas {
             super.invokeRemoveThread(this.currentThread);
             this.currentThread = undefined;
         }
-    }
-
-    private changeSize(size: Size): void {
-        super.size = size;
-        this.draw();
     }
 
     private changeSide(): void {

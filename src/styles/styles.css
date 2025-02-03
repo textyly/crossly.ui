@@ -1,5 +1,9 @@
 body {
-  margin: 0;
+  overflow: hidden;
+}
+
+.container {
+  overflow: hidden;
 }
 
 #grid-threads {
@@ -31,8 +35,8 @@ body {
 }
 
 #crossly {
-  position: absolute;
-  top: 0;
-  left: 0;
+  position: relative;
+  overflow: auto;
+  border: 1px solid #ccc;
   z-index: 5;
 }

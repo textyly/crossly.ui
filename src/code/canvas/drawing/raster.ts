@@ -1,13 +1,30 @@
 import { CanvasBase } from "../base.js";
-import { IRasterDrawing } from "./types.js";
-import { Dot, Size, Thread } from "../types.js";
+import { IRasterDrawingCanvas } from "./types.js";
+import { Dot, Bounds, Thread } from "../types.js";
 
-export class RasterDrawing extends CanvasBase implements IRasterDrawing {
+export class RasterDrawingCanvas extends CanvasBase implements IRasterDrawingCanvas {
     private readonly context: CanvasRenderingContext2D;
 
     constructor(private rasterCanvas: HTMLCanvasElement) {
         super();
         this.context = rasterCanvas.getContext("2d")!;
+    }
+
+    public override get bounds(): Bounds {
+        return super.bounds;
+    }
+
+    public override set bounds(value: Bounds) {
+        super.bounds = value;
+
+        const x = value.x;
+        const y = value.y;
+        const width = value.width;
+        const height = value.height;
+
+        this.rasterCanvas.style.transform = `translate(${x}px, ${y}px, ${width}px, ${height}px)`;
+        this.rasterCanvas.width = width;
+        this.rasterCanvas.height = height;
     }
 
     public drawDots(dots: Array<Dot>): void {
@@ -23,17 +40,17 @@ export class RasterDrawing extends CanvasBase implements IRasterDrawing {
         this.context.fill();
     }
 
-    public drawLines(lines: Array<Thread<Dot>>): void {
+    public drawLines(threads: Array<Thread<Dot>>): void {
         this.context.beginPath();
 
-        lines.forEach((line) => {
-            this.context.lineWidth = line.width;
-            this.context.strokeStyle = line.color;
+        threads.forEach((thread) => {
+            this.context.lineWidth = thread.width;
+            this.context.strokeStyle = thread.color;
 
-            const from = line.from;
+            const from = thread.from;
             this.context.moveTo(from.x, from.y);
 
-            const to = line.to;
+            const to = thread.to;
             this.context.lineTo(to.x, to.y);
         });
 
@@ -42,11 +59,5 @@ export class RasterDrawing extends CanvasBase implements IRasterDrawing {
 
     public clear(): void {
         this.context.clearRect(0, 0, this.rasterCanvas.clientWidth, this.rasterCanvas.clientWidth);
-    }
-
-    public override set size(value: Size) {
-        super.size = value;
-        this.rasterCanvas.width = value.width;
-        this.rasterCanvas.height = value.height;
     }
 }
