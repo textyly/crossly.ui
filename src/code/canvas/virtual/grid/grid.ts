@@ -143,8 +143,8 @@ export class GridCanvas extends GridCanvasBase implements IGridCanvas {
 
     private redraw(): void {
         this.calculateBounds();
-        this.createDots();
-        //this.createAndDrawThreads();
+        this.createAndDrawDots();
+        this.createAndDrawThreads();
     }
 
     private handleZoomIn(): void {
@@ -170,7 +170,7 @@ export class GridCanvas extends GridCanvasBase implements IGridCanvas {
         this.draw();
     }
 
-    private createDots(): void {
+    private createAndDrawDots(): void {
         this.dotsX = [];
         this.dotsY = [];
         const visible: { id: number, x: number, y: number }[] = [];
@@ -237,20 +237,20 @@ export class GridCanvas extends GridCanvasBase implements IGridCanvas {
         super.invokeDrawInvisibleThreads(invisibleThreads);
     }
 
-    private createColumnThread(columnIdx: number, visibility: Visibility): GridThread {
-        const fromDotId = columnIdx;
-        const fromDot = undefined!; //this.dots.get(fromDotId)!;
+    private createColumnThread(fromDotIndex: number, visibility: Visibility): GridThread {
+        const fromDotX = this.dotsX[fromDotIndex]!;
+        const fromDotY = this.dotsY[fromDotIndex]!;
 
-        const toDotId = this.allColumns * (this.allRows - 1) + (columnIdx);
-        const toDot = undefined!; //this.dots.get(toDotId)!;
+        const toDoIndex = this.allColumns * (this.allRows - 1) + (fromDotIndex);
+        const toDotX = this.dotsX[toDoIndex]!;
+        const toDotY = this.dotsY[toDoIndex]!;
 
         const id = this.threadIds.next();
-        const dots = this.dotsUtility.ensureDots(fromDot, toDot);
 
-        const f: GridDot = { id: fromDotId, ...dots.from };
-        const t: GridDot = { id: toDotId, ...dots.to };
+        const from: GridDot = { id: fromDotIndex, x: fromDotX, y: fromDotY };
+        const to: GridDot = { id: toDoIndex, x: toDotX, y: toDotY };
 
-        const thread = { id, from: f, to: t, width: this.threadWidth, visibility, color: this.threadColor }
+        const thread = { id, from, to, width: this.threadWidth, visibility, color: this.threadColor }
         return thread;
     }
 
@@ -274,20 +274,19 @@ export class GridCanvas extends GridCanvasBase implements IGridCanvas {
     }
 
     private createRowThread(rowIdx: number, visibility: Visibility): GridThread {
-        const fromDotId = rowIdx * this.allColumns;
-        const fromDot = undefined!; //this.dots.get(fromDotId)!;
+        const fromDotIndex = rowIdx * this.allColumns;
+        const fromDotX = this.dotsX[fromDotIndex]!;
+        const fromDotY = this.dotsY[fromDotIndex]!;
 
-        const toDotId = (rowIdx * this.allColumns) + (this.allColumns - 1);
-        const toDot = undefined!; // this.dots.get(toDotId)!;
+        const toDotIndex = (rowIdx * this.allColumns) + (this.allColumns - 1);
+        const toDotX = this.dotsX[toDotIndex]!;
+        const toDotY = this.dotsY[toDotIndex]!;
 
         const id = this.threadIds.next();
-        const dots = this.dotsUtility.ensureDots(fromDot, toDot);
+        const from: GridDot = { id: fromDotIndex, x: fromDotX, y: fromDotY };
+        const to: GridDot = { id: toDotIndex, x: toDotX, y: toDotY };
 
-
-        const f: GridDot = { id: fromDotId, ...dots.from };
-        const t: GridDot = { id: toDotId, ...dots.to };
-
-        const thread = { id, from: f, to: t, width: this.threadWidth, visibility, color: this.threadColor }
+        const thread = { id, from, to, width: this.threadWidth, visibility, color: this.threadColor }
         return thread;
     }
 
