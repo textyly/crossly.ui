@@ -4,8 +4,8 @@ export class ConfigFactory {
     public create(): CrosslyCanvasConfig {
 
         const gridConfig: GridCanvasConfig = {
-            columns: 10,
-            rows: 10,
+            columns: 300,
+            rows: 300,
             spacing: {
                 value: 25,
                 zoomInStep: 0.5,
@@ -19,8 +19,8 @@ export class ConfigFactory {
                     zoomOutStep: 0.1
                 },
                 dotMatchDistance: {
-                    value: 4, // twice as dot radius, so that it is easier to click on a dot
-                    zoomInStep: 0.5, // spacing zoomInStep + dot radius zoomInStep (for better touch support)
+                    value: 4,
+                    zoomInStep: 0.2,
                     zoomOutStep: 0.1
                 }
             },
@@ -59,7 +59,7 @@ export class ConfigFactory {
                 radius: {
                     value: 4,
                     zoomInStep: 0.2,
-                    zoomOutStep: 0.2
+                    zoomOutStep: 0.1
                 },
             },
             thread: {
