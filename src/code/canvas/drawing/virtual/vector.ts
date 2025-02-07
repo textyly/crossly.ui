@@ -17,22 +17,22 @@ export class VectorVirtualDrawingCanvas extends CanvasBase implements IVectorVir
         this.svgLines = new Map<Id, SvgLine>();
     }
 
-    public drawDot(dot: Dot): void {
+    public drawDot(dot: Dot, radius: number, color: string): void {
         const isVisibleDot = this.isVisibleDot(dot);
         if (!isVisibleDot) {
             this.svgDots.set(dot.id, undefined);
         } else {
-            const svgDot = this.vectorDrawingCanvas.drawDot(dot);
+            const svgDot = this.vectorDrawingCanvas.drawDot(dot, radius, color);
             this.svgDots.set(dot.id, svgDot);
         }
     }
 
-    public drawDashDot(dot: Dot): void {
+    public drawDashDot(dot: Dot, radius: number, color: string): void {
         const isVisibleDot = this.isVisibleDot(dot);
         if (!isVisibleDot) {
             this.svgDots.set(dot.id, undefined);
         } else {
-            const svgDot = this.vectorDrawingCanvas.drawDashDot(dot);
+            const svgDot = this.vectorDrawingCanvas.drawDashDot(dot, radius, color);
             this.svgDots.set(dot.id, svgDot);
         }
     }

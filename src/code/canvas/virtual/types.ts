@@ -42,7 +42,7 @@ export interface IGridCanvas extends IVirtualCanvas<GridCanvasConfig> {
 
     get spacing(): number;
 
-    getDotById(id: string): GridDot | undefined;
+    getDotById(id: number): GridDot | undefined;
     getDotByPosition(position: Position): GridDot | undefined;
 
     onDrawVisibleDots(listener: DrawGridDotsListener): VoidUnsubscribe;
@@ -69,10 +69,10 @@ export interface ICueCanvas extends IVirtualCanvas<CueCanvasConfig> {
 }
 
 export interface IDotMatcher {
-    match(dot: GridDot, position: Position, dotMatchDistance: number): boolean;
+    match(dotX: number, dotY: number, position: Position, dotMatchDistance: number): boolean;
 }
 
-export type DrawGridDotsEvent = { dots: Array<GridDot> };
+export type DrawGridDotsEvent = { dots: Array<GridDot>, dotRadius: number, dotColor: string };
 export type DrawGridDotsListener = Listener<DrawGridDotsEvent>;
 
 export type DrawGridThreadsEvent = { threads: Array<GridThread> };
@@ -81,10 +81,10 @@ export type DrawGridThreadsListener = Listener<DrawGridThreadsEvent>;
 export type DrawStitchDotEvent = { dot: StitchDot };
 export type DrawStitchDotListener = Listener<DrawStitchDotEvent>;
 
-export type DrawStitchThreadsEvent = { threads: Array<StitchThread> };
+export type DrawStitchThreadsEvent = { threads: Array<StitchThread>, dotRadius: number };
 export type DrawStitchThreadsListener = Listener<DrawStitchThreadsEvent>;
 
-export type DrawCueDotEvent = { dot: CueDot };
+export type DrawCueDotEvent = { dot: CueDot, dotRadius: number, dotColor: string };
 export type DrawCueDotListener = Listener<DrawCueDotEvent>;
 
 export type DrawCueThreadEvent = { thread: CueThread };

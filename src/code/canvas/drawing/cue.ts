@@ -55,7 +55,7 @@ export class CueDrawingCanvas extends CanvasBase implements ICueDrawingCanvas {
         const dot = event.dot;
         const id = dot.id;
 
-        this.vectorVirtualDrawing.drawDot(dot);
+        this.vectorVirtualDrawing.drawDot(dot, event.dotRadius, event.dotColor);
         this.dots.set(id, dot);
     }
 
@@ -63,7 +63,7 @@ export class CueDrawingCanvas extends CanvasBase implements ICueDrawingCanvas {
         const dot = event.dot;
         const id = dot.id;
 
-        this.vectorVirtualDrawing.drawDashDot(dot);
+        this.vectorVirtualDrawing.drawDashDot(dot, event.dotRadius, event.dotColor);
         this.dots.set(id, dot);
     }
 

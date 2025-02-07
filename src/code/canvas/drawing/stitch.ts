@@ -30,10 +30,11 @@ export class StitchDrawingCanvas extends CanvasBase implements IStitchDrawingCan
     private handleDrawFrontThreads(event: DrawStitchThreadsEvent): void {
         const threads = event.threads;
 
-        const dots: Array<Dot> = [];
-        threads.forEach((thread) => dots.push(thread.from, thread.to));
+        threads.forEach((thread) => {
+            this.rasterVirtualDrawing.drawDots([thread.from, thread.to], event.dotRadius, thread.color);
+        });
 
-        this.rasterVirtualDrawing.drawDots(dots);
+        
         this.rasterVirtualDrawing.drawLines(threads);
     }
 

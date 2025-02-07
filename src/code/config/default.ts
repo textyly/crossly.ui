@@ -4,8 +4,8 @@ export class ConfigFactory {
     public create(): CrosslyCanvasConfig {
 
         const gridConfig: GridCanvasConfig = {
-            columns: 30,
-            rows: 30,
+            columns: 300,
+            rows: 300,
             spacing: {
                 value: 25,
                 zoomInStep: 0.5,

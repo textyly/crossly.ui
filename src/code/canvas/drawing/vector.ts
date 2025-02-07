@@ -27,19 +27,19 @@ export class VectorDrawingCanvas extends CanvasBase implements IVectorDrawingCan
         this.svgCanvas.setAttribute("height", height);
     }
 
-    public drawDot(dot: Dot): SvgDot {
-        const svgDot = this.createDot(dot);
+    public drawDot(dot: Dot, radius: number, color: string): SvgDot {
+        const svgDot = this.createDot(dot, radius, color);
         this.svgCanvas.appendChild(svgDot);
         return svgDot;
     }
 
-    public drawDashDot(dot: Dot): SvgDot {
-        const svgDot = this.createDot(dot);
-        const width = (dot.radius / 2).toString();
+    public drawDashDot(dot: Dot, radius: number, color: string): SvgDot {
+        const svgDot = this.createDot(dot, radius, color);
+        const width = (radius / 2).toString();
 
         svgDot.setAttribute("fill", "none");
         svgDot.setAttribute("stroke-dasharray", "5,1");
-        svgDot.setAttribute("stroke", dot.color);
+        svgDot.setAttribute("stroke", color);
         svgDot.setAttribute("stroke-width", width);
 
         this.svgCanvas.appendChild(svgDot);
@@ -89,17 +89,15 @@ export class VectorDrawingCanvas extends CanvasBase implements IVectorDrawingCan
         return svgLine;
     }
 
-    private createDot(dot: Dot): SvgDot {
+    private createDot(dot: Dot, radius: number, color: string): SvgDot {
         const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
 
         const cx = dot.x.toString();
         const cy = dot.y.toString();
-        const radius = dot.radius.toString();
-        const color = dot.color;
 
         circle.setAttribute("cx", cx);
         circle.setAttribute("cy", cy);
-        circle.setAttribute("r", radius);
+        circle.setAttribute("r", radius.toString());
         circle.setAttribute("fill", color);
 
         return circle;

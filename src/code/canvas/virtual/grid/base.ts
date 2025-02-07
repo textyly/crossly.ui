@@ -34,13 +34,13 @@ export abstract class GridCanvasBase extends VirtualCanvasBase<GridCanvasConfig>
         super.dispose();
     }
 
-    protected invokeDrawVisibleDots(dots: Array<GridDot>): void {
-        const drawDotEvent = { dots };
+    protected invokeDrawVisibleDots(dots: Array<GridDot>, dotRadius: number, dotColor: string): void {
+        const drawDotEvent = { dots, dotRadius, dotColor };
         this.messaging.sendToChannel1(drawDotEvent);
     }
 
-    protected invokeDrawInvisibleDots(dots: Array<GridDot>): void {
-        const drawDotEvent = { dots };
+    protected invokeDrawInvisibleDots(dots: Array<GridDot>, dotRadius: number, dotColor: string): void {
+        const drawDotEvent = { dots, dotRadius, dotColor };
         this.messaging.sendToChannel2(drawDotEvent);
     }
 

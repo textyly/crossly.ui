@@ -135,11 +135,11 @@ export class CueCanvas extends CueCanvasBase implements ICueCanvas {
         const hovered = { id: hoveredDot.id, x: hoveredDot.x, y: hoveredDot.y, radius: this.dotRadius, color: this.dotColor };
 
         if (!this.previouslyClickedDotId) {
-            super.invokeDrawDashDot(hovered);
+            super.invokeDrawDashDot(hovered, this.dotRadius, this.dotColor);
         } else {
             this.currentSide === CanvasSide.Front
-                ? super.invokeDrawDot(hovered)
-                : super.invokeDrawDashDot(hovered);
+                ? super.invokeDrawDot(hovered, this.dotRadius, this.dotColor)
+                : super.invokeDrawDashDot(hovered, this.dotRadius, this.dotColor);
         }
 
         this.previouslyHoveredDotId = hoveredDot.id;
@@ -169,7 +169,7 @@ export class CueCanvas extends CueCanvasBase implements ICueCanvas {
     }
 
     private createThread(previousClickedDot: GridDot, currentPointerPosition: Position, threadId: Id): CueThread {
-        const fromDot = this.converter.convertToCueDot(previousClickedDot, this.dotColor);
+        const fromDot = this.converter.convertToCueDot(previousClickedDot);
 
         const toDotId = this.ids.next();
         const toDot = { ...currentPointerPosition, id: toDotId, radius: this.dotRadius, color: this.dotColor };

@@ -3,16 +3,18 @@ import { IDotMatcher, IGridCanvas } from "../types.js";
 import { DotsUtility } from "../../../utilities/dots.js";
 import { IdGenerator } from "../../../utilities/generator.js";
 import { IInputCanvas, MoveEvent, Position } from "../../input/types.js";
-import { Visibility, Id, GridDot, GridThread, GridCanvasConfig } from "../../types.js";
+import { Visibility, GridDot, GridThread, GridCanvasConfig } from "../../types.js";
 
 export class GridCanvas extends GridCanvasBase implements IGridCanvas {
     private readonly inputCanvas: IInputCanvas;
     private readonly dotMatcher: IDotMatcher;
-    private readonly dotsUtility: DotsUtility<GridDot>;
+    private readonly dotsUtility: DotsUtility<{ x: number, y: number }>;
 
+    private readonly dotsIds: IdGenerator
     private readonly threadIds: IdGenerator;
-    private readonly dotsIds: IdGenerator;
-    private readonly dots: Map<Id, GridDot>;
+
+    private dotsX: Array<number>;
+    private dotsY: Array<number>;
 
     private _spacing!: number;
     private _spacingZoomInStep!: number;
@@ -31,7 +33,9 @@ export class GridCanvas extends GridCanvasBase implements IGridCanvas {
         this.inputCanvas = inputCanvas;
         this.dotMatcher = dotMatcher;
 
-        this.dots = new Map();
+        this.dotsX = new Array<number>();
+        this.dotsY = new Array<number>();
+
         this.dotsIds = new IdGenerator();
         this.threadIds = new IdGenerator();
         this.dotsUtility = new DotsUtility();
@@ -83,24 +87,30 @@ export class GridCanvas extends GridCanvasBase implements IGridCanvas {
         this.redraw();
     }
 
-    public getDotById(id: string): GridDot | undefined {
-        return this.dots.get(id);
+    public getDotById(id: number): GridDot | undefined {
+        if (id) {
+            const x = this.dotsX[id];
+            const y = this.dotsY[id];
+            return { id, x, y };
+        }
+        // const pos = this.dots.get(Number(id));
+        // if (pos) {
+        //     return { id, ...pos };
+        // }
     }
 
     public getDotByPosition(position: Position): GridDot | undefined {
-        let match: GridDot | undefined = undefined;
-        const dots = this.dots.values();
 
-        for (const dot of dots) {
+        for (let index = 0; index < this.dotsX.length; ++index) {
+            const x = this.dotsX[index];
+            const y = this.dotsY[index];
 
-            const hasMatch = this.dotMatcher.match(dot, position, this._dotMatchDistance);
+            const hasMatch = this.dotMatcher.match(x, y, position, this._dotMatchDistance);
             if (hasMatch) {
-                match = dot;
-                break;
+                return { id: index, x, y };
             }
-        }
 
-        return match;
+        }
     }
 
     private initialize(): void {
@@ -110,7 +120,6 @@ export class GridCanvas extends GridCanvasBase implements IGridCanvas {
         this._spacing = spacing
         this._spacingZoomInStep = this.config.spacing.zoomInStep;
         this._spacingZoomOutStep = this.config.spacing.zoomOutStep;
-
 
         const dotMatchDistance = this.config.dot.dotMatchDistance;
         this._dotMatchDistance = dotMatchDistance.value;
@@ -135,8 +144,7 @@ export class GridCanvas extends GridCanvasBase implements IGridCanvas {
     private redraw(): void {
         this.calculateBounds();
         this.createDots();
-        this.createAndDrawThreads();
-        this.drawDots();
+        //this.createAndDrawThreads();
     }
 
     private handleZoomIn(): void {
@@ -163,55 +171,44 @@ export class GridCanvas extends GridCanvasBase implements IGridCanvas {
     }
 
     private createDots(): void {
-        this.dotsIds.reset();
-        this.dots.clear();
+        this.dotsX = [];
+        this.dotsY = [];
+        const visible: { id: number, x: number, y: number }[] = [];
+
+        const bounds = this.bounds;
+        const spacing = this.spacing;
+        const allColumns = this.allColumns;
 
         for (let rowIdx = 0; rowIdx < this.allRows; ++rowIdx) {
-            this.createRowDots(rowIdx, this.allColumns);
+            const isVisibleRow = rowIdx % 2 == 0;
+            if (isVisibleRow) {
+                for (let dotIdx = 0; dotIdx < allColumns; ++dotIdx) {
+                    const visibility = dotIdx % 2 == 0 ? Visibility.Visible : Visibility.Invisible;
+                    const x = bounds.x + (dotIdx * spacing);
+                    const y = bounds.y + (rowIdx * spacing);
+
+                    if (visibility === Visibility.Visible) {
+                        const id = this.dotsX.length;
+                        visible.push({ id, x, y });
+                    }
+
+                    this.dotsX.push(x);
+                    this.dotsY.push(y);
+
+                }
+            } else {
+                for (let dotIdx = 0; dotIdx < allColumns; ++dotIdx) {
+                    const x = bounds.x + (dotIdx * spacing);
+                    const y = bounds.y + (rowIdx * spacing);
+
+                    this.dotsX.push(x);
+                    this.dotsY.push(y);
+                }
+            }
         }
-    }
 
-    private createRowDots(rowIdx: number, dotsNumber: number): void {
-        const isVisibleRow = rowIdx % 2 == 0;
-        if (isVisibleRow) {
-            this.createVisibleDots(rowIdx, dotsNumber);
-        } else {
-            this.createInvisibleDots(rowIdx, dotsNumber);
-        }
-    }
 
-    private createVisibleDots(rowIdx: number, dotsNumber: number): void {
-        for (let dotIdx = 0; dotIdx < dotsNumber; ++dotIdx) {
-            const isVisibleDot = dotIdx % 2 == 0 ? Visibility.Visible : Visibility.Invisible;
-            const dot = this.crateDot(dotIdx, rowIdx, isVisibleDot);
-            this.dots.set(dot.id, dot);
-        }
-    }
-
-    private createInvisibleDots(rowIdx: number, dotsNumber: number): void {
-        for (let dotIdx = 0; dotIdx < dotsNumber; ++dotIdx) {
-            const dot = this.crateDot(dotIdx, rowIdx, Visibility.Invisible);
-            this.dots.set(dot.id, dot);
-        }
-    }
-
-    private crateDot(dotIdx: number, rowIdx: number, visibility: Visibility): GridDot {
-        const x = this.bounds.x + (dotIdx * this.spacing);
-        const y = this.bounds.y + (rowIdx * this.spacing);
-
-        const id = this.dotsIds.next();
-        const dot = { id, x, y, radius: this.dotRadius, visibility, color: this.dotColor };
-        return dot;
-    }
-
-    private drawDots(): void {
-        const allDots = [...this.dots.values()];
-
-        const visibleDots = allDots.filter((d) => d.visibility === Visibility.Visible);
-        super.invokeDrawVisibleDots(visibleDots);
-
-        const invisibleDots = allDots.filter((d) => d.visibility === Visibility.Invisible);
-        super.invokeDrawInvisibleDots(invisibleDots);
+        super.invokeDrawVisibleDots(visible, this.dotRadius, this.dotColor);
     }
 
     private createAndDrawThreads(): void {
@@ -241,17 +238,19 @@ export class GridCanvas extends GridCanvasBase implements IGridCanvas {
     }
 
     private createColumnThread(columnIdx: number, visibility: Visibility): GridThread {
-        const fromDotId = columnIdx.toString();
-        const fromDot = this.dots.get(fromDotId)!;
+        const fromDotId = columnIdx;
+        const fromDot = undefined!; //this.dots.get(fromDotId)!;
 
         const toDotId = this.allColumns * (this.allRows - 1) + (columnIdx);
-        const toStrDotId = toDotId.toString();
-        const toDot = this.dots.get(toStrDotId)!;
+        const toDot = undefined!; //this.dots.get(toDotId)!;
 
         const id = this.threadIds.next();
         const dots = this.dotsUtility.ensureDots(fromDot, toDot);
 
-        const thread = { id, from: dots.from, to: dots.to, width: this.threadWidth, visibility, color: this.threadColor }
+        const f: GridDot = { id: fromDotId, ...dots.from };
+        const t: GridDot = { id: toDotId, ...dots.to };
+
+        const thread = { id, from: f, to: t, width: this.threadWidth, visibility, color: this.threadColor }
         return thread;
     }
 
@@ -276,17 +275,19 @@ export class GridCanvas extends GridCanvasBase implements IGridCanvas {
 
     private createRowThread(rowIdx: number, visibility: Visibility): GridThread {
         const fromDotId = rowIdx * this.allColumns;
-        const fromStrDotId = fromDotId.toString();
-        const fromDot = this.dots.get(fromStrDotId)!;
+        const fromDot = undefined!; //this.dots.get(fromDotId)!;
 
         const toDotId = (rowIdx * this.allColumns) + (this.allColumns - 1);
-        const toStrDotId = toDotId.toString();
-        const toDot = this.dots.get(toStrDotId)!;
+        const toDot = undefined!; // this.dots.get(toDotId)!;
 
         const id = this.threadIds.next();
         const dots = this.dotsUtility.ensureDots(fromDot, toDot);
 
-        const thread = { id, from: dots.from, to: dots.to, width: this.threadWidth, visibility, color: this.threadColor }
+
+        const f: GridDot = { id: fromDotId, ...dots.from };
+        const t: GridDot = { id: toDotId, ...dots.to };
+
+        const thread = { id, from: f, to: t, width: this.threadWidth, visibility, color: this.threadColor }
         return thread;
     }
 

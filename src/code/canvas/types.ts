@@ -1,10 +1,10 @@
 import { Listener, VoidUnsubscribe } from "../types";
 
 export type Bounds = { x: number, y: number, width: number, height: number };
-export type Id = string;
+export type Id = number;
 
-export type Dot = { id: Id, x: number, y: number, radius: number, color: string };
-export type GridDot = Dot & { visibility: Visibility };
+export type Dot = { id: Id, x: number, y: number };
+export type GridDot = Dot;
 export type StitchDot = Dot & { side: CanvasSide };
 export type CueDot = Dot;
 

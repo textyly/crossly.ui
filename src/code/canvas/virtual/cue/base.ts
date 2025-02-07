@@ -57,13 +57,13 @@ export abstract class CueCanvasBase extends VirtualCanvasBase<CueCanvasConfig> {
         super.dispose();
     }
 
-    protected invokeDrawDot(dot: CueDot): void {
-        const drawDotEvent = { dot };
+    protected invokeDrawDot(dot: CueDot, dotRadius: number, dotColor: string): void {
+        const drawDotEvent = { dot, dotRadius, dotColor };
         this.messaging.sendToChannel1(drawDotEvent);
     }
 
-    protected invokeDrawDashDot(dot: CueDot): void {
-        const drawDotEvent = { dot };
+    protected invokeDrawDashDot(dot: CueDot, dotRadius: number, dotColor: string): void {
+        const drawDotEvent = { dot, dotRadius, dotColor };
         this.messaging.sendToChannel2(drawDotEvent);
     }
 

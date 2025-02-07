@@ -113,14 +113,14 @@ export class StitchCanvas extends StitchCanvasBase implements IStitchCanvas {
         });
     }
 
-    private createThread(fromId: string, toId: string, side: CanvasSide): StitchThread {
+    private createThread(fromId: number, toId: number, side: CanvasSide): StitchThread {
         const fromGridDot = this.gridCanvas.getDotById(fromId);
         const toGridDot = this.gridCanvas.getDotById(toId);
 
         const dots = this.dotsUtility.ensureDots(fromGridDot, toGridDot);
 
-        const from = this.converter.convertToStitchDot(dots.from, this.dotColor, side);
-        const to = this.converter.convertToStitchDot(dots.to, this.dotColor, side);
+        const from = this.converter.convertToStitchDot(dots.from, side);
+        const to = this.converter.convertToStitchDot(dots.to, side);
 
         const thread = { from, to, side, width: this.threadWidth, color: this.threadColor };
         return thread;
@@ -128,17 +128,17 @@ export class StitchCanvas extends StitchCanvasBase implements IStitchCanvas {
 
     private drawThreads(): void {
         const frontThreads = this.threads.filter((thread) => thread.side === CanvasSide.Front);
-        super.invokeDrawFrontThreads(frontThreads);
+        super.invokeDrawFrontThreads(frontThreads, this.dotRadius);
 
         const backThreads = this.threads.filter((thread) => thread.side === CanvasSide.Back);
-        super.invokeDrawBackThreads(backThreads);
+        super.invokeDrawBackThreads(backThreads, this.dotRadius);
     }
 
     private drawThread(thread: StitchThread): void {
         if (thread.side == CanvasSide.Front) {
-            super.invokeDrawFrontThreads([thread]);
+            super.invokeDrawFrontThreads([thread], this.dotRadius);
         } else {
-            super.invokeDrawBackThreads([thread]);
+            super.invokeDrawBackThreads([thread], this.dotRadius);
         }
     }
 

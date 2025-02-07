@@ -11,9 +11,9 @@ export class RasterVirtualDrawingCanvas extends CanvasBase implements IRasterDra
         this.resizeRasterDrawingCanvas();
     }
 
-    public drawDots(dots: Array<Dot>): void {
+    public drawDots(dots: Array<Dot>, dotRadius: number, dotColor: string): void {
         const visibleDots = dots.filter((dot) => this.isVisibleDot(dot));
-        this.rasterDrawingCanvas.drawDots(visibleDots);
+        this.rasterDrawingCanvas.drawDots(visibleDots, dotRadius, dotColor);
     }
 
     public drawLines(threads: Array<Thread<Dot>>): void {

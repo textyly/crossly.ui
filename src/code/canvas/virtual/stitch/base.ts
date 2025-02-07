@@ -26,13 +26,13 @@ export abstract class StitchCanvasBase extends VirtualCanvasBase<CueCanvasConfig
         super.dispose();
     }
 
-    protected invokeDrawFrontThreads(threads: Array<StitchThread>): void {
-        const drawThreadsEvent = { threads };
+    protected invokeDrawFrontThreads(threads: Array<StitchThread>, dotRadius: number): void {
+        const drawThreadsEvent = { threads, dotRadius };
         this.messaging.sendToChannel1(drawThreadsEvent);
     }
 
-    protected invokeDrawBackThreads(threads: Array<StitchThread>): void {
-        const drawThreadsEvent = { threads };
+    protected invokeDrawBackThreads(threads: Array<StitchThread>, dotRadius: number): void {
+        const drawThreadsEvent = { threads, dotRadius};
         this.messaging.sendToChannel2(drawThreadsEvent);
     }
 }

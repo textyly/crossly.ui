@@ -27,14 +27,14 @@ export class RasterDrawingCanvas extends CanvasBase implements IRasterDrawingCan
         this.rasterCanvas.height = height;
     }
 
-    public drawDots(dots: Array<Dot>): void {
+    public drawDots(dots: Array<Dot>, radius: number, color: string): void {
         this.context.beginPath();
 
         dots.forEach((dot) => {
-            this.context.fillStyle = dot.color;
+            this.context.fillStyle = color;
 
             this.context.moveTo(dot.x, dot.y);
-            this.context.arc(dot.x, dot.y, dot.radius, 0, Math.PI * 2);
+            this.context.arc(dot.x, dot.y, radius, 0, Math.PI * 2);
         });
 
         this.context.fill();
