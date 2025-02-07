@@ -93,7 +93,7 @@ export class StitchCanvas extends StitchCanvasBase implements IStitchCanvas {
             return;
         }
 
-        if (this.previousClickedDotId) {
+        if (this.previousClickedDotId !== undefined) {
             const recreated = this.createThread(this.previousClickedDotId, currentlyClickedDot.id, this.currentSide);
             this.threads.push(recreated);
             this.drawThread(recreated);

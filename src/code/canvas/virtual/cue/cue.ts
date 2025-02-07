@@ -134,7 +134,7 @@ export class CueCanvas extends CueCanvasBase implements ICueCanvas {
     private hoverDot(hoveredDot: GridDot): void {
         const hovered = { id: hoveredDot.id, x: hoveredDot.x, y: hoveredDot.y, radius: this.dotRadius, color: this.dotColor };
 
-        if (!this.previouslyClickedDotId) {
+        if (this.previouslyClickedDotId === undefined) {
             super.invokeDrawDashDot(hovered, this.dotRadius, this.dotColor);
         } else {
             this.currentSide === CanvasSide.Front

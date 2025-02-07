@@ -87,16 +87,12 @@ export class GridCanvas extends GridCanvasBase implements IGridCanvas {
         this.redraw();
     }
 
-    public getDotById(id: number): GridDot | undefined {
-        if (id) {
+    public getDotById(id: number | undefined): GridDot | undefined {
+        if (id !== undefined) {
             const x = this.dotsX[id];
             const y = this.dotsY[id];
             return { id, x, y };
         }
-        // const pos = this.dots.get(Number(id));
-        // if (pos) {
-        //     return { id, ...pos };
-        // }
     }
 
     public getDotByPosition(position: Position): GridDot | undefined {
