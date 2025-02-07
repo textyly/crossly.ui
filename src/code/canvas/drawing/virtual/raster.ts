@@ -17,8 +17,7 @@ export class RasterVirtualDrawingCanvas extends CanvasBase implements IRasterDra
     }
 
     public drawLines(threads: Array<Thread<Dot>>): void {
-        const visibleLines = threads.filter((thread) => this.isVisibleLine(thread));
-        this.rasterDrawingCanvas.drawLines(visibleLines);
+        this.rasterDrawingCanvas.drawLines(threads);
     }
 
     public clear(): void {
@@ -45,14 +44,6 @@ export class RasterVirtualDrawingCanvas extends CanvasBase implements IRasterDra
     }
 
     // TODO: extract in a different class
-
-    private isVisibleLine(thread: Thread<Dot>): boolean {
-        const isFromVisible = this.isVisibleDot(thread.from);
-        const isToVisible = this.isVisibleDot(thread.to);
-
-        return isFromVisible || isToVisible;
-    }
-
     private isVisibleDot(dot: Dot): boolean {
         const canvasX = this.rasterDrawingCanvas.bounds.x;
         const canvasY = this.rasterDrawingCanvas.bounds.y;

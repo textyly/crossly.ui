@@ -50,23 +50,13 @@ export class VectorVirtualDrawingCanvas extends CanvasBase implements IVectorVir
     }
 
     public drawLine(id: Id, thread: Thread<Dot>): void {
-        const isVisibleLine = this.isVisibleLine(thread);
-        if (!isVisibleLine) {
-            this.svgLines.set(id, undefined);
-        } else {
-            const svgLine = this.vectorDrawingCanvas.drawLine(thread);
-            this.svgLines.set(id, svgLine);
-        }
+        const svgLine = this.vectorDrawingCanvas.drawLine(thread);
+        this.svgLines.set(id, svgLine);
     }
 
     public drawDashLine(id: Id, thread: Thread<Dot>): void {
-        const isVisibleLine = this.isVisibleLine(thread);
-        if (!isVisibleLine) {
-            this.svgLines.set(id, undefined);
-        } else {
-            const svgLine = this.vectorDrawingCanvas.drawDashLine(thread);
-            this.svgLines.set(id, svgLine);
-        }
+        const svgLine = this.vectorDrawingCanvas.drawDashLine(thread);
+        this.svgLines.set(id, svgLine);
     }
 
     public moveLine(id: Id, thread: Thread<Dot>): void {
@@ -113,14 +103,6 @@ export class VectorVirtualDrawingCanvas extends CanvasBase implements IVectorVir
     }
 
     // TODO: extract in a different class
-
-    private isVisibleLine(thread: Thread<Dot>): boolean {
-        const isFromVisible = this.isVisibleDot(thread.from);
-        const isToVisible = this.isVisibleDot(thread.to);
-
-        return isFromVisible || isToVisible;
-    }
-
     private isVisibleDot(dot: Dot): boolean {
         const canvasX = this.vectorDrawingCanvas.bounds.x;
         const canvasY = this.vectorDrawingCanvas.bounds.y;
