@@ -37,9 +37,7 @@ export class GridDrawingCanvas extends CanvasBase implements IGridDrawingCanvas 
     }
 
     private handleDrawVisibleDots(event: DrawGridDotsEvent): void {
-        const dotsX = event.dotsX;
-        const dotsY = event.dotsY;
-        this.rasterVirtualDrawing.drawDots(dotsX, dotsY, event.dotRadius, event.dotColor);
+        this.rasterVirtualDrawing.drawDots(event.dotsX, event.dotsY, event.dotRadius, event.dotColor);
     }
 
     private handleDrawVisibleThreads(event: DrawGridThreadsEvent): void {

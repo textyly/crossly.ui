@@ -92,12 +92,11 @@ export class GridCanvas extends GridCanvasBase implements IGridCanvas {
         const dotsX = this.dotsX;
         const dotsY = this.dotsY;
         const dotMatchDistance = this._dotMatchDistance;
+        const dotsLength = this.dotsX.length;
 
-        for (let index = 0; index < this.dotsX.length; ++index) {
+        for (let index = 0; index < dotsLength; ++index) {
 
-            // TODO: check this!!!
             const distance = Math.sqrt((position.x - dotsX[index]) ** 2 + (position.y - dotsY[index]) ** 2);
-            // =======
 
             if (distance <= dotMatchDistance) {
                 return { id: index, x: dotsX[index], y: dotsY[index] };
@@ -174,19 +173,25 @@ export class GridCanvas extends GridCanvasBase implements IGridCanvas {
         const dotsY = this.dotsY;
 
         // do not touch `this` or dynamic property in the loops for performance reasons!!!
-        let index = 0;
-        for (let rowIdx = 0; rowIdx < allRows; ++rowIdx) {
-            for (let dotIdx = 0; dotIdx < allColumns; ++dotIdx) {
-                if (hasItems) {
+        if (hasItems) {
+            let index = 0;
+            for (let rowIdx = 0; rowIdx < allRows; rowIdx++) {
+                for (let dotIdx = 0; dotIdx < allColumns; dotIdx++) {
                     dotsX[index] = bounds.x + (dotIdx * spacing);
                     dotsY[index] = bounds.y + (rowIdx * spacing);
-                } else {
+                    index++;
+                }
+            }
+        } else {
+            for (let rowIdx = 0; rowIdx < allRows; rowIdx++) {
+                for (let dotIdx = 0; dotIdx < allColumns; dotIdx++) {
                     dotsX.push(bounds.x + (dotIdx * spacing));
                     dotsY.push(bounds.y + (rowIdx * spacing));
                 }
-                index++;
             }
+
         }
+
 
         super.invokeDrawVisibleDots(this.dotsX, this.dotsY, this.dotRadius, this.dotColor);
     }

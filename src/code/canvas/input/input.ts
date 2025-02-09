@@ -123,6 +123,10 @@ export class InputCanvas extends InputCanvasBase {
             return;
         }
 
+        if (!this.moveInput.inMoveMode) {
+            return;
+        }
+
         const position = this.getPosition(event);
         super.invokePointerMove(position);
     }
