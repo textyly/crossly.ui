@@ -72,7 +72,7 @@ export interface IDotMatcher {
     match(dotX: number, dotY: number, position: Position, dotMatchDistance: number): boolean;
 }
 
-export type DrawGridDotsEvent = { dots: Array<GridDot>, dotRadius: number, dotColor: string };
+export type DrawGridDotsEvent = { dotsX: Array<number>, dotsY: Array<number>, dotRadius: number, dotColor: string };
 export type DrawGridDotsListener = Listener<DrawGridDotsEvent>;
 
 export type DrawGridThreadsEvent = { threads: Array<GridThread> };

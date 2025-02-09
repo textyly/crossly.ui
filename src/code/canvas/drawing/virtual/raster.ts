@@ -11,9 +11,31 @@ export class RasterVirtualDrawingCanvas extends CanvasBase implements IRasterDra
         this.resizeRasterDrawingCanvas();
     }
 
-    public drawDots(dots: Array<Dot>, dotRadius: number, dotColor: string): void {
-        const visibleDots = dots.filter((dot) => this.isVisibleDot(dot));
-        this.rasterDrawingCanvas.drawDots(visibleDots, dotRadius, dotColor);
+    public drawDots(dotsX: Array<number>, dotsY: Array<number>, dotRadius: number, dotColor: string): void {
+        const visibleDotsX = new Array<number>();
+        const visibleDotsY = new Array<number>();
+
+        const canvasX = this.rasterDrawingCanvas.bounds.x;
+        const canvasY = this.rasterDrawingCanvas.bounds.y;
+        const canvasWidth = this.rasterDrawingCanvas.bounds.width;
+        const canvasHeight = this.rasterDrawingCanvas.bounds.height;
+
+        // do not touch `this` or dynamic property in the loop for performance reasons!!!
+        for (let index = 0; index < dotsX.length; index++) {
+            const x = dotsX[index];
+            const y = dotsY[index];
+
+            const isVisibleByX = x >= canvasX && x <= canvasWidth;
+            if (isVisibleByX) {
+                const isVisibleByY = y >= canvasY && y <= canvasHeight;
+                if (isVisibleByY) {
+                    visibleDotsX.push(x);
+                    visibleDotsY.push(y);
+                }
+            }
+        }
+
+        this.rasterDrawingCanvas.drawDots(visibleDotsX, visibleDotsY, dotRadius, dotColor);
     }
 
     public drawLines(threads: Array<Thread<Dot>>): void {
@@ -41,18 +63,5 @@ export class RasterVirtualDrawingCanvas extends CanvasBase implements IRasterDra
         const height = ((window.innerHeight / 10) * 9.3);
 
         this.rasterDrawingCanvas.bounds = { x, y, width, height };
-    }
-
-    // TODO: extract in a different class
-    private isVisibleDot(dot: Dot): boolean {
-        const canvasX = this.rasterDrawingCanvas.bounds.x;
-        const canvasY = this.rasterDrawingCanvas.bounds.y;
-        const canvasWidth = this.rasterDrawingCanvas.bounds.width;
-        const canvasHeight = this.rasterDrawingCanvas.bounds.height;
-
-        const isVisibleByX = dot.x >= canvasX && dot.x <= canvasWidth;
-        const isVisibleByY = dot.y >= canvasY && dot.y <= canvasHeight;
-
-        return isVisibleByX && isVisibleByY;
     }
 }
