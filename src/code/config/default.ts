@@ -1,16 +1,26 @@
-import { CrosslyCanvasConfig, CueCanvasConfig, GridCanvasConfig, StitchCanvasConfig } from "../canvas/types.js";
+import { CanvasConfig, CrosslyCanvasConfig, SpacingConfig, ZoomItemConfig } from "../canvas/types.js";
 
 export class ConfigFactory {
     public create(): CrosslyCanvasConfig {
+        const columns = 300;
+        const rows = 300;
 
-        const gridConfig: GridCanvasConfig = {
-            columns: 300,
-            rows: 300,
-            spacing: {
-                value: 25,
-                zoomInStep: 0.5,
-                zoomOutStep: 0.5
-            },
+        const spacing: SpacingConfig = {
+            value: 25,
+            zoomInStep: 0.5,
+            zoomOutStep: 0.5
+        }
+
+        const dotMatchDistance: ZoomItemConfig = {
+            value: 4,
+            zoomInStep: 0.2,
+            zoomOutStep: 0.1
+        }
+
+        const gridConfig: CanvasConfig = {
+            columns,
+            rows,
+            spacing,
             dot: {
                 color: "#9fa19f",
                 radius: {
@@ -18,11 +28,7 @@ export class ConfigFactory {
                     zoomInStep: 0.1,
                     zoomOutStep: 0.1
                 },
-                dotMatchDistance: {
-                    value: 4,
-                    zoomInStep: 0.2,
-                    zoomOutStep: 0.1
-                }
+                dotMatchDistance
             },
             thread: {
                 color: "#d2d4d2",
@@ -34,7 +40,10 @@ export class ConfigFactory {
             }
         };
 
-        const stitchConfig: StitchCanvasConfig = {
+        const stitchConfig: CanvasConfig = {
+            columns,
+            rows,
+            spacing,
             dot: {
                 color: "gray",
                 radius: {
@@ -42,6 +51,7 @@ export class ConfigFactory {
                     zoomInStep: 0.1,
                     zoomOutStep: 0.1
                 },
+                dotMatchDistance
             },
             thread: {
                 color: "gray",
@@ -53,7 +63,10 @@ export class ConfigFactory {
             }
         };
 
-        const cueConfig: CueCanvasConfig = {
+        const cueConfig: CanvasConfig = {
+            columns,
+            rows,
+            spacing,
             dot: {
                 color: "gray",
                 radius: {
@@ -61,6 +74,7 @@ export class ConfigFactory {
                     zoomInStep: 0.2,
                     zoomOutStep: 0.1
                 },
+                dotMatchDistance
             },
             thread: {
                 color: "gray",

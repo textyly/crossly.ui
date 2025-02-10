@@ -3,8 +3,8 @@ import { IInputCanvas } from "./input/types.js";
 import { CueCanvas } from "./virtual/cue/cue.js";
 import { GridCanvas } from "./virtual/grid/grid.js";
 import { StitchCanvas } from "./virtual/stitch/stitch.js";
+import { CrosslyCanvasConfig, ICrosslyCanvas, Bounds } from "./types.js";
 import { ICueCanvas, IGridCanvas, IStitchCanvas } from "./virtual/types.js";
-import { CrosslyCanvasConfig, ICrosslyCanvas, BoundsChangeEvent, Bounds } from "./types.js";
 import { ICueDrawingCanvas, IGridDrawingCanvas, IStitchDrawingCanvas } from "./drawing/types.js";
 
 export class CrosslyCanvas extends CanvasBase implements ICrosslyCanvas {
@@ -28,7 +28,6 @@ export class CrosslyCanvas extends CanvasBase implements ICrosslyCanvas {
         cueDrawingCanvas: ICueDrawingCanvas) {
 
         super();
-
         this.config = config;
         this.inputCanvas = inputCanvas;
         this.initializeGridCanvas(gridDrawingCanvas);

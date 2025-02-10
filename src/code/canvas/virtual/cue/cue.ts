@@ -2,8 +2,8 @@ import { CueCanvasBase } from "./base.js";
 import { Converter } from "../../../utilities/converter.js";
 import { IdGenerator } from "../../../utilities/generator.js";
 import { DrawGridDotsEvent, ICueCanvas, IGridCanvas } from "../types.js";
-import { IInputCanvas, PointerMoveEvent, PointerUpEvent, Position } from "../../input/types.js";
-import { CanvasSide, Id, CueThread, BoundsChangeEvent, GridDot, CueCanvasConfig } from "../../types.js";
+import { IInputCanvas, MoveEvent, PointerMoveEvent, PointerUpEvent, Position } from "../../input/types.js";
+import { CanvasSide, Id, CueThread, BoundsChangeEvent, GridDot, CanvasConfig } from "../../types.js";
 
 export class CueCanvas extends CueCanvasBase implements ICueCanvas {
     private readonly inputCanvas: IInputCanvas;
@@ -18,7 +18,7 @@ export class CueCanvas extends CueCanvasBase implements ICueCanvas {
     private previouslyClickedDotId?: Id;
     private previouslyHoveredDotId?: Id;
 
-    constructor(config: CueCanvasConfig, inputCanvas: IInputCanvas, gridCanvas: IGridCanvas) {
+    constructor(config: CanvasConfig, inputCanvas: IInputCanvas, gridCanvas: IGridCanvas) {
         super(config);
 
         this.inputCanvas = inputCanvas;
@@ -38,6 +38,7 @@ export class CueCanvas extends CueCanvasBase implements ICueCanvas {
 
     private redraw(): void {
         this.ids.reset();
+        this.calculateVirtualBounds();
 
         const previouslyHovered = this.gridCanvas.getDotById(this.previouslyHoveredDotId!);
         this.removeDot(previouslyHovered);
@@ -55,14 +56,14 @@ export class CueCanvas extends CueCanvasBase implements ICueCanvas {
         const zoomOutUn = this.inputCanvas.onZoomOut(this.handleZoomOut.bind(this));
         super.registerUn(zoomOutUn);
 
+        const moveUn = this.inputCanvas.onMove(this.handleMove.bind(this));
+        super.registerUn(moveUn);
+
         const pointerMoveUn = this.inputCanvas.onPointerMove(this.handlePointerMove.bind(this));
         super.registerUn(pointerMoveUn);
 
         const pointerUpUn = this.inputCanvas.onPointerUp(this.handlePointerUp.bind(this));
         super.registerUn(pointerUpUn);
-
-        const virtualBoundsChangeUn = this.gridCanvas.onVirtualBoundsChange(this.handleVirtualBoundsChange.bind(this));
-        super.registerUn(virtualBoundsChangeUn);
 
         const drawDosUn = this.gridCanvas.onDrawDots(this.handleDrawDots.bind(this));
         super.registerUn(drawDosUn);
@@ -76,6 +77,11 @@ export class CueCanvas extends CueCanvasBase implements ICueCanvas {
         super.zoomOut();
     }
 
+    private handleMove(event: MoveEvent): void {
+        const difference = event.difference;
+        super.move(difference);
+    }
+
     private handlePointerMove(event: PointerMoveEvent): void {
         const position = event.position;
         this.moveDot(position);
@@ -85,10 +91,6 @@ export class CueCanvas extends CueCanvasBase implements ICueCanvas {
     private handlePointerUp(event: PointerUpEvent): void {
         const position = event.position;
         this.clickDot(position);
-    }
-
-    private handleVirtualBoundsChange(event: BoundsChangeEvent): void {
-        this.virtualBounds = event.bounds;
     }
 
     private handleDrawDots(event: DrawGridDotsEvent): void {

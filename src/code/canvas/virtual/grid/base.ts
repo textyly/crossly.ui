@@ -2,7 +2,7 @@ import { VirtualCanvasBase } from "../base.js";
 import { VoidUnsubscribe } from "../../../types.js";
 import { Messaging2 } from "../../../messaging/impl.js";
 import { IMessaging2 } from "../../../messaging/types.js";
-import { GridCanvasConfig, GridThread } from "../../types.js";
+import { CanvasConfig, GridThread } from "../../types.js";
 import {
     DrawGridDotsEvent,
     DrawGridDotsListener,
@@ -10,10 +10,10 @@ import {
     DrawGridThreadsListener
 } from "../types.js";
 
-export abstract class GridCanvasBase extends VirtualCanvasBase<GridCanvasConfig> {
+export abstract class GridCanvasBase extends VirtualCanvasBase<CanvasConfig> {
     private readonly messaging: IMessaging2<DrawGridDotsEvent, DrawGridThreadsEvent>;
 
-    constructor(config: GridCanvasConfig) {
+    constructor(config: CanvasConfig) {
         super(config);
         this.messaging = new Messaging2();
     }

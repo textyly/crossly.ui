@@ -14,8 +14,11 @@ export type StitchThread = Thread<StitchDot> & { side: CanvasSide };
 export type CueThread = Thread<CueDot> & { id: Id };
 
 export type CanvasConfig = {
-    dot: DotConfig,
-    thread: ThreadConfig
+    dot: DotConfig & { dotMatchDistance: ZoomItemConfig }; //TODO: remove  dotMatchDistance
+    thread: ThreadConfig;
+    columns: number;
+    rows: number;
+    spacing: SpacingConfig;
 };
 
 export type ZoomItemConfig = { value: number; zoomInStep: number; zoomOutStep: number };
@@ -23,21 +26,12 @@ export type DotConfig = { color: string; radius: ZoomItemConfig; };
 export type ThreadConfig = { color: string; width: ZoomItemConfig; };
 export type SpacingConfig = ZoomItemConfig;
 
-export type GridCanvasConfig = CanvasConfig & {
-    columns: number;
-    rows: number;
-    spacing: SpacingConfig;
-    dot: { dotMatchDistance: ZoomItemConfig }
-}
 
 export type CrosslyCanvasConfig = {
-    grid: GridCanvasConfig,
-    stitch: StitchCanvasConfig,
-    cue: CueCanvasConfig
+    grid: CanvasConfig,
+    stitch: CanvasConfig,
+    cue: CanvasConfig
 };
-
-export type StitchCanvasConfig = CanvasConfig;
-export type CueCanvasConfig = CanvasConfig;
 
 export interface IDisposable {
     dispose(): void;

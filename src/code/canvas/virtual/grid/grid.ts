@@ -2,44 +2,19 @@ import { IGridCanvas } from "../types.js";
 import { GridCanvasBase } from "./base.js";
 import { IdGenerator } from "../../../utilities/generator.js";
 import { IInputCanvas, MoveEvent, Position } from "../../input/types.js";
-import { Visibility, GridDot, GridThread, GridCanvasConfig } from "../../types.js";
+import { Visibility, GridDot, GridThread, CanvasConfig } from "../../types.js";
 
 export class GridCanvas extends GridCanvasBase implements IGridCanvas {
     private readonly inputCanvas: IInputCanvas;
     private readonly threadIds: IdGenerator;
 
-    private _allDotsY: Array<number>;
-    private _allDotsX: Array<number>;
-
-    private _visibleDotsY!: number;
-    private _visibleDotsX!: number;
-
-    private _dotsSpacing!: number;
-    private _dotMatchDistance!: number;
-
-    constructor(config: GridCanvasConfig, inputCanvas: IInputCanvas) {
+    constructor(config: CanvasConfig, inputCanvas: IInputCanvas) {
         super(config);
 
         this.inputCanvas = inputCanvas;
-
-        this._allDotsY = new Array<number>();
-        this._allDotsX = new Array<number>();
         this.threadIds = new IdGenerator();
 
-        this.initialize();
         this.subscribe();
-    }
-
-    private get allDotsY(): number {
-        const invisibleRows = this._visibleDotsY - 1;
-        const all = this._visibleDotsY + invisibleRows;
-        return all;
-    }
-
-    private get allDotsX(): number {
-        const invisibleColumns = this._visibleDotsX - 1;
-        const all = this._visibleDotsX + invisibleColumns;
-        return all;
     }
 
     public draw(): void {
@@ -69,17 +44,8 @@ export class GridCanvas extends GridCanvasBase implements IGridCanvas {
                 return { id: index, x: dotsX[index], y: dotsY[index] };
             }
         }
+
     }
-
-    private initialize(): void {
-        // make space for invisible dots, respectively invisible rows and columns
-        this._dotsSpacing = this.config.spacing.value / 2;
-        this._dotMatchDistance = this.config.dot.dotMatchDistance.value;
-
-        this._visibleDotsY = this.config.rows;
-        this._visibleDotsX = this.config.columns;
-    }
-
     private subscribe(): void {
         const zoomInUn = this.inputCanvas.onZoomIn(this.handleZoomIn.bind(this));
         super.registerUn(zoomInUn);
@@ -98,26 +64,16 @@ export class GridCanvas extends GridCanvasBase implements IGridCanvas {
     }
 
     private handleZoomIn(): void {
-        this.zoomInSpacing();
-        this.zoomInDotMatchDistance();
         super.zoomIn();
     }
 
     private handleZoomOut(): void {
-        this.zoomOutSpacing();
-        this.zoomOutDotMatchDistance();
         super.zoomOut();
     }
 
     private handleMove(event: MoveEvent): void {
         const difference = event.difference;
-        const x = this.virtualBounds.x + difference.x;
-        const y = this.virtualBounds.y + difference.y;
-        const width = this.virtualBounds.width;
-        const height = this.virtualBounds.height;
-
-        super.virtualBounds = { x, y, width, height };
-        this.draw();
+        super.move(difference);
     }
 
     private createAndDrawDots(): void {
@@ -261,52 +217,5 @@ export class GridCanvas extends GridCanvasBase implements IGridCanvas {
 
         const thread = { id, from, to, width: this._threadWidth, visibility, color: this._threadColor }
         return thread;
-    }
-
-    private zoomInSpacing(): void {
-        const configSpacing = this.config.spacing;
-        const spacing = (this._dotsSpacing < configSpacing.value)
-            ? (this._dotsSpacing + this.config.spacing.zoomOutStep)
-            : (this._dotsSpacing + this.config.spacing.zoomInStep);
-
-        this._dotsSpacing = spacing;
-    }
-
-    private zoomInDotMatchDistance(): void {
-        const configDotMatchDistance = this.config.dot.dotMatchDistance;
-        const dotMatchDistance = (this._dotMatchDistance < configDotMatchDistance.value)
-            ? (this._dotMatchDistance + this.config.dot.dotMatchDistance.zoomOutStep)
-            : (this._dotMatchDistance + this.config.dot.dotMatchDistance.zoomInStep);
-
-        this._dotMatchDistance = dotMatchDistance;
-    }
-
-    private zoomOutSpacing(): void {
-        // zoom in spacing
-        const configSpacing = this.config.spacing;
-        const spacing = (this._dotsSpacing > configSpacing.value)
-            ? (this._dotsSpacing - this.config.spacing.zoomInStep)
-            : (this._dotsSpacing - this.config.spacing.zoomOutStep);
-
-        this._dotsSpacing = spacing;
-    }
-
-    private zoomOutDotMatchDistance(): void {
-        const configDotMatchDistance = this.config.dot.dotMatchDistance;
-        const dotMatchDistance = (this._dotMatchDistance > configDotMatchDistance.value)
-            ? (this._dotMatchDistance - this.config.dot.dotMatchDistance.zoomInStep)
-            : (this._dotMatchDistance - this.config.dot.dotMatchDistance.zoomOutStep);
-
-        this._dotMatchDistance = dotMatchDistance;
-
-    }
-
-    private calculateVirtualBounds(): void {
-        const x = this.virtualBounds.x;
-        const y = this.virtualBounds.y;
-        const width = this._dotsSpacing + ((this._visibleDotsX - 1) * this._dotsSpacing);
-        const height = this._dotsSpacing + ((this._visibleDotsY - 1) * this._dotsSpacing);
-
-        this.virtualBounds = { x, y, width, height };
     }
 }

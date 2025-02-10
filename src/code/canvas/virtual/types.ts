@@ -9,9 +9,7 @@ import {
     CueThread,
     GridThread,
     StitchThread,
-    CueCanvasConfig,
-    GridCanvasConfig,
-    StitchCanvasConfig,
+    CanvasConfig,
     BoundsChangeListener,
 } from "../types.js";
 
@@ -26,7 +24,7 @@ export interface IVirtualCanvas<TConfig> extends ICanvas {
 }
 
 
-export interface IGridCanvas extends IVirtualCanvas<GridCanvasConfig> {
+export interface IGridCanvas extends IVirtualCanvas<CanvasConfig> {
     getDotById(id: number): GridDot | undefined;
     getDotByPosition(position: Position): GridDot | undefined;
 
@@ -34,11 +32,11 @@ export interface IGridCanvas extends IVirtualCanvas<GridCanvasConfig> {
     onDrawThreads(listener: DrawGridThreadsListener): VoidUnsubscribe;
 }
 
-export interface IStitchCanvas extends IVirtualCanvas<StitchCanvasConfig> {
+export interface IStitchCanvas extends IVirtualCanvas<CanvasConfig> {
     onDrawThreads(listener: DrawStitchThreadsListener): VoidUnsubscribe;
 }
 
-export interface ICueCanvas extends IVirtualCanvas<CueCanvasConfig> {
+export interface ICueCanvas extends IVirtualCanvas<CanvasConfig> {
     onDrawDot(listener: DrawCueDotListener): VoidUnsubscribe;
     onDrawDashDot(listener: DrawCueDotListener): VoidUnsubscribe;
     onRemoveDot(listener: RemoveCueDotListener): VoidUnsubscribe;

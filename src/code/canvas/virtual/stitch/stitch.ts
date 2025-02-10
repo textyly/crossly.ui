@@ -2,14 +2,14 @@ import { StitchCanvasBase } from "./base.js";
 import { DotsUtility } from "../../../utilities/dots.js";
 import { Converter } from "../../../utilities/converter.js";
 import { DrawGridDotsEvent, IGridCanvas, IStitchCanvas } from "../types.js";
-import { IInputCanvas, PointerUpEvent, Position } from "../../input/types.js";
+import { IInputCanvas, MoveEvent, PointerUpEvent, Position } from "../../input/types.js";
 import {
     Id,
     GridDot,
     CanvasSide,
     StitchThread,
+    CanvasConfig,
     BoundsChangeEvent,
-    StitchCanvasConfig
 } from "../../types.js";
 
 export class StitchCanvas extends StitchCanvasBase implements IStitchCanvas {
@@ -22,7 +22,7 @@ export class StitchCanvas extends StitchCanvasBase implements IStitchCanvas {
     private currentSide: CanvasSide;
     private previousClickedDotId?: Id;
 
-    constructor(config: StitchCanvasConfig, inputCanvas: IInputCanvas, gridCanvas: IGridCanvas) {
+    constructor(config: CanvasConfig, inputCanvas: IInputCanvas, gridCanvas: IGridCanvas) {
         super(config);
 
         this.inputCanvas = inputCanvas;
@@ -48,6 +48,7 @@ export class StitchCanvas extends StitchCanvasBase implements IStitchCanvas {
     }
 
     private redraw(): void {
+        this.calculateVirtualBounds();
         this.createThreads();
         this.drawThreads();
     }
@@ -59,11 +60,11 @@ export class StitchCanvas extends StitchCanvasBase implements IStitchCanvas {
         const zoomOutUn = this.inputCanvas.onZoomOut(this.handleZoomOut.bind(this));
         super.registerUn(zoomOutUn);
 
+        const moveUn = this.inputCanvas.onMove(this.handleMove.bind(this));
+        super.registerUn(moveUn);
+
         const pointerUpUn = this.inputCanvas.onPointerUp(this.handlePointerUp.bind(this));
         super.registerUn(pointerUpUn);
-
-        const virtualBoundsChangeUn = this.gridCanvas.onVirtualBoundsChange(this.handleVirtualBoundsChange.bind(this));
-        super.registerUn(virtualBoundsChangeUn);
 
         const drawDotsUn = this.gridCanvas.onDrawDots(this.handleDrawDots.bind(this));
         super.registerUn(drawDotsUn);
@@ -77,13 +78,14 @@ export class StitchCanvas extends StitchCanvasBase implements IStitchCanvas {
         super.zoomOut();
     }
 
+    private handleMove(event: MoveEvent): void {
+        const difference = event.difference;
+        super.move(difference);
+    }
+
     private handlePointerUp(event: PointerUpEvent): void {
         const position = event.position;
         this.handleDotClick(position);
-    }
-
-    private handleVirtualBoundsChange(event: BoundsChangeEvent): void {
-        super.virtualBounds = event.bounds;
     }
 
     private handleDrawDots(event: DrawGridDotsEvent): void {
