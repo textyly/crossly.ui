@@ -57,18 +57,18 @@ export class CrosslyCanvas extends CanvasBase implements ICrosslyCanvas {
     }
 
     protected override invokeBoundsChange(bounds: Bounds): void {
+        super.invokeBoundsChange(bounds);
+
         this.gridCanvas.bounds = bounds;
         this.stitchCanvas.bounds = bounds;
         this.cueCanvas.bounds = bounds;
+        this.inputCanvas.bounds = bounds;
     }
 
     private initializeGridCanvas(dotDrawingCanvas: IGridDrawingCanvas): void {
         this.gridDrawingCanvas = dotDrawingCanvas;
         this.gridCanvas = new GridCanvas(this.configuration.grid, this.inputCanvas);
         this.gridDrawingCanvas.subscribe(this.gridCanvas);
-
-        const bondsChangeUn = this.gridCanvas.onBoundsChange(this.handleBoundsChange.bind(this));
-        super.registerUn(bondsChangeUn);
     }
 
     private initializeStitchCanvas(stitchDrawingCanvas: IStitchDrawingCanvas): void {
@@ -81,13 +81,6 @@ export class CrosslyCanvas extends CanvasBase implements ICrosslyCanvas {
         this.cueDrawingCanvas = cueDrawingCanvas;
         this.cueCanvas = new CueCanvas(this.configuration.cue, this.inputCanvas, this.gridCanvas);
         this.cueDrawingCanvas.subscribe(this.cueCanvas);
-    }
-
-    private handleBoundsChange(event: BoundsChangeEvent): void {
-        const bounds = event.bounds;
-
-        super.bounds = bounds;
-        this.inputCanvas.bounds = bounds;
     }
 
     private disposeCueCanvas(): void {
