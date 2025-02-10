@@ -2,14 +2,15 @@ import { CanvasBase } from "../base.js";
 import { IVirtualCanvas } from "./types.js";
 import { Messaging1 } from "../../messaging/impl.js";
 import { IMessaging1 } from "../../messaging/types.js";
+import { Position } from "../input/types.js";
 import { VoidListener, VoidUnsubscribe } from "../../types.js";
 import {
+    Dot,
     Bounds,
     CanvasConfig,
     BoundsChangeEvent,
     BoundsChangeListener,
 } from "../types.js";
-import { MoveEvent, Position } from "../input/types.js";
 
 export abstract class VirtualCanvasBase<TConfig extends CanvasConfig> extends CanvasBase implements IVirtualCanvas<TConfig> {
     private readonly configuration: Readonly<TConfig>;
@@ -146,23 +147,21 @@ export abstract class VirtualCanvasBase<TConfig extends CanvasConfig> extends Ca
         this.virtualBounds = { x, y, width, height };
     }
 
-    // protected getDotByPosition(position: Position): Dot | undefined {
-    //     // TODO: 
-    //     const spacing = 25 / 2;
+    protected getDotByPosition(position: Position): Dot | undefined {
+        const closestDotX = position.x / this._dotsSpacing;
+        const dotX = Math.round(closestDotX);
 
-    //     const closestDotX = position.x / spacing;
-    //     const dotX = Math.round(closestDotX);
+        const closestDotY = position.y / this._dotsSpacing;
+        const dotY = Math.round(closestDotY);
 
-    //     const closestDotY = position.y / spacing;
-    //     const dotY = Math.round(closestDotY);
+        const x = dotX * this._dotsSpacing;
+        const y = dotY * this._dotsSpacing;
 
-    //     const x = dotX * spacing;
-    //     const y = dotY * spacing;
+        // test whether it is outside of the virtualBounds and return undefined 
 
-    //     // test whether it is outside of the virtualBounds and return undefined 
-
-    //     return { x, y };
-    // }
+        // TODO: remove id!!!
+        return { id: 0, x, y };
+    }
 
     private zoomInSpacing(): void {
         const configSpacing = this.config.spacing;
