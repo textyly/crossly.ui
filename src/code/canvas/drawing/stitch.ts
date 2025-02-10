@@ -12,8 +12,8 @@ export class StitchDrawingCanvas extends CanvasBase implements IStitchDrawingCan
     }
 
     public subscribe(stitchCanvas: IStitchCanvas): void {
-        const drawFrontThreadsUn = stitchCanvas.onDrawFrontThreads(this.handleDrawFrontThreads.bind(this));
-        super.registerUn(drawFrontThreadsUn);
+        const drawThreadsUn = stitchCanvas.onDrawThreads(this.handleDrawThreads.bind(this));
+        super.registerUn(drawThreadsUn);
 
         const redrawUn = stitchCanvas.onRedraw(this.handleRedraw.bind(this));
         super.registerUn(redrawUn);
@@ -27,7 +27,7 @@ export class StitchDrawingCanvas extends CanvasBase implements IStitchDrawingCan
         super.dispose();
     }
 
-    private handleDrawFrontThreads(event: DrawStitchThreadsEvent): void {
+    private handleDrawThreads(event: DrawStitchThreadsEvent): void {
         const threads = event.threads;
 
         threads.forEach((thread) => {

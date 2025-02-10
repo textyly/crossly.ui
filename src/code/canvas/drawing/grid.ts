@@ -18,11 +18,11 @@ export class GridDrawingCanvas extends CanvasBase implements IGridDrawingCanvas 
     }
 
     public subscribe(gridCanvas: IGridCanvas): void {
-        const drawVisibleDotsUn = gridCanvas.onDrawVisibleDots(this.handleDrawVisibleDots.bind(this));
-        super.registerUn(drawVisibleDotsUn);
+        const drawDotsUn = gridCanvas.onDrawDots(this.handleDrawDots.bind(this));
+        super.registerUn(drawDotsUn);
 
-        const drawVisibleThreadsUn = gridCanvas.onDrawVisibleThreads(this.handleDrawVisibleThreads.bind(this));
-        super.registerUn(drawVisibleThreadsUn);
+        const drawThreadsUn = gridCanvas.onDrawThreads(this.handleDrawThreads.bind(this));
+        super.registerUn(drawThreadsUn);
 
         const redrawUn = gridCanvas.onRedraw(this.handleRedraw.bind(this));
         super.registerUn(redrawUn);
@@ -36,11 +36,11 @@ export class GridDrawingCanvas extends CanvasBase implements IGridDrawingCanvas 
         super.dispose();
     }
 
-    private handleDrawVisibleDots(event: DrawGridDotsEvent): void {
+    private handleDrawDots(event: DrawGridDotsEvent): void {
         this.rasterVirtualDrawing.drawDots(event.dotsX, event.dotsY, event.dotRadius, event.dotColor);
     }
 
-    private handleDrawVisibleThreads(event: DrawGridThreadsEvent): void {
+    private handleDrawThreads(event: DrawGridThreadsEvent): void {
         const threads = event.threads;
 
         threads.forEach((thread) => {

@@ -1,9 +1,16 @@
 import { StitchCanvasBase } from "./base.js";
-import { DrawGridDotsEvent, IGridCanvas, IStitchCanvas } from "../types.js";
 import { DotsUtility } from "../../../utilities/dots.js";
 import { Converter } from "../../../utilities/converter.js";
+import { DrawGridDotsEvent, IGridCanvas, IStitchCanvas } from "../types.js";
 import { IInputCanvas, PointerUpEvent, Position } from "../../input/types.js";
-import { CanvasSide, Id, StitchThread, BoundsChangeEvent, GridDot, Bounds, StitchCanvasConfig } from "../../types.js";
+import {
+    Id,
+    GridDot,
+    CanvasSide,
+    StitchThread,
+    BoundsChangeEvent,
+    StitchCanvasConfig
+} from "../../types.js";
 
 export class StitchCanvas extends StitchCanvasBase implements IStitchCanvas {
     private readonly inputCanvas: IInputCanvas;
@@ -58,7 +65,7 @@ export class StitchCanvas extends StitchCanvasBase implements IStitchCanvas {
         const boundsChangeUn = this.gridCanvas.onBoundsChange(this.handleBoundsChange.bind(this));
         super.registerUn(boundsChangeUn);
 
-        const drawVisibleDotsUn = this.gridCanvas.onDrawVisibleDots(this.handleDrawVisibleDots.bind(this));
+        const drawVisibleDotsUn = this.gridCanvas.onDrawDots(this.handleDrawVisibleDots.bind(this));
         super.registerUn(drawVisibleDotsUn);
     }
 
@@ -128,17 +135,12 @@ export class StitchCanvas extends StitchCanvasBase implements IStitchCanvas {
 
     private drawThreads(): void {
         const frontThreads = this.threads.filter((thread) => thread.side === CanvasSide.Front);
-        super.invokeDrawFrontThreads(frontThreads, this.dotRadius);
-
-        const backThreads = this.threads.filter((thread) => thread.side === CanvasSide.Back);
-        super.invokeDrawBackThreads(backThreads, this.dotRadius);
+        super.invokeDrawThreads(frontThreads, this.dotRadius);
     }
 
     private drawThread(thread: StitchThread): void {
         if (thread.side == CanvasSide.Front) {
-            super.invokeDrawFrontThreads([thread], this.dotRadius);
-        } else {
-            super.invokeDrawBackThreads([thread], this.dotRadius);
+            super.invokeDrawThreads([thread], this.dotRadius);
         }
     }
 

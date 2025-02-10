@@ -25,48 +25,20 @@ export abstract class VirtualCanvasBase<TConfig extends CanvasConfig> extends Ca
         return this.configuration;
     }
 
-    public get dotColor(): string {
+    protected get dotColor(): string {
         return this._dotColor;
     }
 
-    public set dotColor(value: string) {
-        if (this._dotColor !== value) {
-            this._dotColor = value;
-            this.draw();
-        }
-    }
-
-    public get dotRadius(): number {
+    protected get dotRadius(): number {
         return this._dotRadius;
     }
 
-    public set dotRadius(value: number) {
-        if (this._dotRadius !== value) {
-            this._dotRadius = value;
-            this.draw();
-        }
-    }
-
-    public get threadColor(): string {
+    protected get threadColor(): string {
         return this._threadColor;
     }
 
-    public set threadColor(value: string) {
-        if (this._threadColor !== value) {
-            this._threadColor = value;
-            this.draw();
-        }
-    }
-
-    public get threadWidth(): number {
+    protected get threadWidth(): number {
         return this._threadWidth;
-    }
-
-    public set threadWidth(value: number) {
-        if (this._threadWidth !== value) {
-            this._threadWidth = value;
-            this.draw();
-        }
     }
 
     public onRedraw(listener: VoidListener): VoidUnsubscribe {

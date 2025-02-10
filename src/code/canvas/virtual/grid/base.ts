@@ -1,32 +1,29 @@
 import { VirtualCanvasBase } from "../base.js";
 import { VoidUnsubscribe } from "../../../types.js";
-import { Messaging4 } from "../../../messaging/impl.js";
-import { IMessaging4 } from "../../../messaging/types.js";
-import { GridCanvasConfig, GridDot, GridThread } from "../../types.js";
-import { DrawGridDotsEvent, DrawGridDotsListener, DrawGridThreadsEvent, DrawGridThreadsListener } from "../types.js";
+import { Messaging2 } from "../../../messaging/impl.js";
+import { IMessaging2 } from "../../../messaging/types.js";
+import { GridCanvasConfig, GridThread } from "../../types.js";
+import {
+    DrawGridDotsEvent,
+    DrawGridDotsListener,
+    DrawGridThreadsEvent,
+    DrawGridThreadsListener
+} from "../types.js";
 
 export abstract class GridCanvasBase extends VirtualCanvasBase<GridCanvasConfig> {
-    private readonly messaging: IMessaging4<DrawGridDotsEvent, DrawGridDotsEvent, DrawGridThreadsEvent, DrawGridThreadsEvent>;
+    private readonly messaging: IMessaging2<DrawGridDotsEvent, DrawGridThreadsEvent>;
 
     constructor(config: GridCanvasConfig) {
         super(config);
-        this.messaging = new Messaging4();
+        this.messaging = new Messaging2();
     }
 
-    public onDrawVisibleDots(listener: DrawGridDotsListener): VoidUnsubscribe {
+    public onDrawDots(listener: DrawGridDotsListener): VoidUnsubscribe {
         return this.messaging.listenOnChannel1(listener);
     }
 
-    public onDrawInvisibleDots(listener: DrawGridDotsListener): VoidUnsubscribe {
+    public onDrawThreads(listener: DrawGridThreadsListener): VoidUnsubscribe {
         return this.messaging.listenOnChannel2(listener);
-    }
-
-    public onDrawVisibleThreads(listener: DrawGridThreadsListener): VoidUnsubscribe {
-        return this.messaging.listenOnChannel3(listener);
-    }
-
-    public onDrawInvisibleThreads(listener: DrawGridThreadsListener): VoidUnsubscribe {
-        return this.messaging.listenOnChannel4(listener);
     }
 
     public override dispose(): void {
@@ -34,23 +31,13 @@ export abstract class GridCanvasBase extends VirtualCanvasBase<GridCanvasConfig>
         super.dispose();
     }
 
-    protected invokeDrawVisibleDots(dotsX: Array<number>, dotsY: Array<number>, dotRadius: number, dotColor: string): void {
+    protected invokeDrawDots(dotsX: Array<number>, dotsY: Array<number>, dotRadius: number, dotColor: string): void {
         const drawDotEvent = { dotsX, dotsY, dotRadius, dotColor };
         this.messaging.sendToChannel1(drawDotEvent);
     }
 
-    protected invokeDrawInvisibleDots(dotsX: Array<number>, dotsY: Array<number>, dotRadius: number, dotColor: string): void {
-        const drawDotEvent = { dotsX, dotsY, dotRadius, dotColor };
-        this.messaging.sendToChannel2(drawDotEvent);
-    }
-
-    protected invokeDrawVisibleThreads(threads: Array<GridThread>): void {
+    protected invokeDrawThreads(threads: Array<GridThread>): void {
         const drawThreadsEvent = { threads };
-        this.messaging.sendToChannel3(drawThreadsEvent);
-    }
-
-    protected invokeDrawInvisibleThreads(threads: Array<GridThread>): void {
-        const drawThreadsEvent = { threads };
-        this.messaging.sendToChannel4(drawThreadsEvent);
+        this.messaging.sendToChannel2(drawThreadsEvent);
     }
 } 

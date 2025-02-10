@@ -64,7 +64,7 @@ export class CueCanvas extends CueCanvasBase implements ICueCanvas {
         const boundsChangeUn = this.gridCanvas.onBoundsChange(this.handleBoundsChange.bind(this));
         super.registerUn(boundsChangeUn);
 
-        const drawVisibleDotsUn = this.gridCanvas.onDrawVisibleDots(this.handleDrawVisibleDots.bind(this));
+        const drawVisibleDotsUn = this.gridCanvas.onDrawDots(this.handleDrawVisibleDots.bind(this));
         super.registerUn(drawVisibleDotsUn);
     }
 

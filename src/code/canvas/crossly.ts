@@ -2,7 +2,6 @@ import { CanvasBase } from "./base.js";
 import { IInputCanvas } from "./input/types.js";
 import { CueCanvas } from "./virtual/cue/cue.js";
 import { GridCanvas } from "./virtual/grid/grid.js";
-import { DotMatcher } from "./virtual/grid/matcher.js";
 import { StitchCanvas } from "./virtual/stitch/stitch.js";
 import { ICueCanvas, IGridCanvas, IStitchCanvas } from "./virtual/types.js";
 import { CrosslyCanvasConfig, ICrosslyCanvas, BoundsChangeEvent, Bounds } from "./types.js";
@@ -63,8 +62,7 @@ export class CrosslyCanvas extends CanvasBase implements ICrosslyCanvas {
 
     private initializeGridCanvas(dotDrawingCanvas: IGridDrawingCanvas): void {
         this.gridDrawingCanvas = dotDrawingCanvas;
-        const dotMatcher = new DotMatcher();
-        this.gridCanvas = new GridCanvas(this.configuration.grid, this.inputCanvas, dotMatcher);
+        this.gridCanvas = new GridCanvas(this.configuration.grid, this.inputCanvas);
         this.gridDrawingCanvas.subscribe(this.gridCanvas);
 
         const bondsChangeUn = this.gridCanvas.onBoundsChange(this.handleBoundsChange.bind(this));
