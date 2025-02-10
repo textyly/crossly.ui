@@ -5,16 +5,10 @@ import { IGridDrawingCanvas, IRasterDrawingCanvas, IVectorDrawingCanvas, SvgLine
 
 export class GridDrawingCanvas extends CanvasBase implements IGridDrawingCanvas {
     private readonly rasterDrawing: IRasterDrawingCanvas;
-    private readonly vectorDrawing: IVectorDrawingCanvas;
 
-    private readonly svgLines: Map<Id, SvgLine>;
-
-    constructor(rasterDrawing: IRasterDrawingCanvas, vectorDrawing: IVectorDrawingCanvas) {
+    constructor(rasterDrawing: IRasterDrawingCanvas) {
         super();
         this.rasterDrawing = rasterDrawing;
-        this.vectorDrawing = vectorDrawing;
-
-        this.svgLines = new Map<Id, SvgLine>();
     }
 
     public subscribe(gridCanvas: IGridCanvas): void {
@@ -54,14 +48,9 @@ export class GridDrawingCanvas extends CanvasBase implements IGridDrawingCanvas 
         super.bounds = bounds;
 
         this.rasterDrawing.bounds = bounds;
-        this.vectorDrawing.bounds = bounds;
     }
 
     private clear(): void {
         this.rasterDrawing.clear();
-
-        this.svgLines.forEach((line) => {
-            this.vectorDrawing.removeLine(line);
-        });
     }
 }

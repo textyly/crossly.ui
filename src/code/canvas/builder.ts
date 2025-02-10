@@ -36,8 +36,7 @@ export class CrosslyCanvasBuilder {
 
     public withGridCanvas(gridDotsCanvasElement: HTMLCanvasElement, gridThreadsSvgElement: HTMLElement): CrosslyCanvasBuilder {
         const rasterDrawingCanvas = new RasterDrawingCanvas(gridDotsCanvasElement);
-        const vectorDrawingCanvas = new VectorDrawingCanvas(gridThreadsSvgElement);
-        this.gridDrawingCanvas = new GridDrawingCanvas(rasterDrawingCanvas, vectorDrawingCanvas);
+        this.gridDrawingCanvas = new GridDrawingCanvas(rasterDrawingCanvas);
         return this;
     }
 
