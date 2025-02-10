@@ -17,11 +17,6 @@ export class GridCanvas extends GridCanvasBase implements IGridCanvas {
         this.subscribe();
     }
 
-    public draw(): void {
-        super.invokeRedraw();
-        this.redraw();
-    }
-
     public getDotById(id: number | undefined): GridDot | undefined {
         if (id !== undefined) {
             const x = this._allDotsX[id];
@@ -57,8 +52,7 @@ export class GridCanvas extends GridCanvasBase implements IGridCanvas {
         super.registerUn(moveUn);
     }
 
-    private redraw(): void {
-        this.calculateVirtualBounds();
+    protected override redraw(): void {
         this.createAndDrawDots();
         this.createAndDrawThreads();
     }
@@ -78,7 +72,7 @@ export class GridCanvas extends GridCanvasBase implements IGridCanvas {
 
     private createAndDrawDots(): void {
         const hasItems = this._allDotsX.length > 0;
-        const bounds = this.virtualBounds;
+        const virtualBounds = this.virtualBounds;
         const spacing = this._dotsSpacing;
 
         const allRows = this.allDotsY;
@@ -100,8 +94,8 @@ export class GridCanvas extends GridCanvasBase implements IGridCanvas {
                 for (let dotX = 0; dotX < allColumns; dotX++) {
                     const isVisibleColumn = dotX % 2 === 0;
 
-                    const x = bounds.x + (dotX * spacing);
-                    const y = bounds.y + (dotY * spacing);
+                    const x = virtualBounds.x + (dotX * spacing);
+                    const y = virtualBounds.y + (dotY * spacing);
 
                     dotsX[index] = x;
                     dotsY[index] = y;
@@ -127,8 +121,8 @@ export class GridCanvas extends GridCanvasBase implements IGridCanvas {
                 const isVisibleRow = dotY % 2 === 0;
                 for (let dotX = 0; dotX < allColumns; dotX++) {
                     const isVisibleColumn = dotX % 2 === 0;
-                    const x = bounds.x + (dotX * spacing);
-                    const y = bounds.y + (dotY * spacing);
+                    const x = virtualBounds.x + (dotX * spacing);
+                    const y = virtualBounds.y + (dotY * spacing);
 
                     dotsX.push(x);
                     dotsY.push(y);

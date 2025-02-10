@@ -92,8 +92,11 @@ export class InputCanvasThrottler extends InputCanvasBase {
     }
 
     private invokeEvents(): void {
-        this.groupedEvents.forEach((event) => this.invokeEvent(event));
-        this.groupedEvents = [];
+        try {
+            this.groupedEvents.forEach((event) => this.invokeEvent(event));
+        } finally {
+            this.groupedEvents = [];
+        }
     }
 
     private invokeEvent(event: CanvasEvent): void {

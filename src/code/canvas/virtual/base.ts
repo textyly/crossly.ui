@@ -100,7 +100,13 @@ export abstract class VirtualCanvasBase<TConfig extends CanvasConfig> extends Ca
         super.dispose();
     }
 
-    public abstract draw(): void;
+    public draw(): void {
+        this.invokeRedraw();
+        this.calculateVirtualBounds();
+        this.redraw();
+    }
+
+    protected abstract redraw(): void;
 
     protected zoomIn(): void {
         this.zoomInSpacing();
@@ -141,10 +147,12 @@ export abstract class VirtualCanvasBase<TConfig extends CanvasConfig> extends Ca
     protected calculateVirtualBounds(): void {
         const x = this.virtualBounds.x;
         const y = this.virtualBounds.y;
-        const width = this._dotsSpacing + ((this._visibleDotsX - 1) * this._dotsSpacing);
-        const height = this._dotsSpacing + ((this._visibleDotsY - 1) * this._dotsSpacing);
+        const width = (this.allDotsX - 1) * this._dotsSpacing;
+        const height = (this.allDotsY - 1) * this._dotsSpacing;
 
         this.virtualBounds = { x, y, width, height };
+
+        // console.log(`new vb: ${JSON.stringify(this.virtualBounds)}`);
     }
 
     protected getDotByPosition(position: Position): Dot | undefined {
@@ -157,10 +165,18 @@ export abstract class VirtualCanvasBase<TConfig extends CanvasConfig> extends Ca
         const x = dotX * this._dotsSpacing;
         const y = dotY * this._dotsSpacing;
 
-        // test whether it is outside of the virtualBounds and return undefined 
+        // console.log(`x: ${x}, y: ${y}, vb: ${JSON.stringify(this.virtualBounds)}`);
 
-        // TODO: remove id!!!
-        return { id: 0, x, y };
+        const isInVirtualX = x >= this.virtualBounds.x && x <= this.virtualBounds.width;
+        const isInVirtualY = y >= this.virtualBounds.y && y <= this.virtualBounds.height;
+        const isInVirtualBounds = isInVirtualX && isInVirtualY;
+
+        // console.log(`isInVirtualBounds: ${isInVirtualBounds}`);
+
+        if (isInVirtualBounds) {
+            // TODO: remove id!!!
+            return { id: 0, x, y };
+        }
     }
 
     private zoomInSpacing(): void {

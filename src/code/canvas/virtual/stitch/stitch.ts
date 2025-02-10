@@ -37,18 +37,12 @@ export class StitchCanvas extends StitchCanvasBase implements IStitchCanvas {
         this.subscribe();
     }
 
-    public draw(): void {
-        this.invokeRedraw();
-        this.redraw();
-    }
-
     public override dispose(): void {
         this.threads = [];
         super.dispose();
     }
 
-    private redraw(): void {
-        this.calculateVirtualBounds();
+    protected override redraw(): void {
         this.createThreads();
         this.drawThreads();
     }
@@ -65,9 +59,6 @@ export class StitchCanvas extends StitchCanvasBase implements IStitchCanvas {
 
         const pointerUpUn = this.inputCanvas.onPointerUp(this.handlePointerUp.bind(this));
         super.registerUn(pointerUpUn);
-
-        const drawDotsUn = this.gridCanvas.onDrawDots(this.handleDrawDots.bind(this));
-        super.registerUn(drawDotsUn);
     }
 
     private handleZoomIn(): void {
@@ -86,10 +77,6 @@ export class StitchCanvas extends StitchCanvasBase implements IStitchCanvas {
     private handlePointerUp(event: PointerUpEvent): void {
         const position = event.position;
         this.handleDotClick(position);
-    }
-
-    private handleDrawDots(event: DrawGridDotsEvent): void {
-        this.draw();
     }
 
     private handleDotClick(position: Position): void {

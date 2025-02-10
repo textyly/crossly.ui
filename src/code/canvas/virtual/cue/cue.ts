@@ -32,20 +32,20 @@ export class CueCanvas extends CueCanvasBase implements ICueCanvas {
         this.subscribe();
     }
 
-    public override draw(): void {
-        this.redraw();
-    }
-
-    private redraw(): void {
+    protected override redraw(): void {
         this.ids.reset();
-        this.calculateVirtualBounds();
 
-        const previouslyHovered = this.gridCanvas.getDotById(this.previouslyHoveredDotId!);
-        this.removeDot(previouslyHovered);
+        this.previouslyHoveredDotId = undefined;
 
         if (this.currentThread) {
-            const position = this.currentThread.to;
-            this.createOrResizeThread(position);
+            // TODO: super messy code!!!
+            const from = this.currentThread.from;
+            const to = this.currentThread.to;
+
+            this.currentThread = undefined;
+
+            const id = this.ids.next();
+            this.createCurrentThread(from, to, id);
         }
     }
 
@@ -64,9 +64,6 @@ export class CueCanvas extends CueCanvasBase implements ICueCanvas {
 
         const pointerUpUn = this.inputCanvas.onPointerUp(this.handlePointerUp.bind(this));
         super.registerUn(pointerUpUn);
-
-        const drawDosUn = this.gridCanvas.onDrawDots(this.handleDrawDots.bind(this));
-        super.registerUn(drawDosUn);
     }
 
     private handleZoomIn(): void {
@@ -93,18 +90,14 @@ export class CueCanvas extends CueCanvasBase implements ICueCanvas {
         this.clickDot(position);
     }
 
-    private handleDrawDots(event: DrawGridDotsEvent): void {
-        this.draw();
-    }
-
     private moveDot(position: Position): void {
         const currentlyHoveredDot = this.gridCanvas.getDotByPosition(position);
-        console.log(`x: ${currentlyHoveredDot?.x}, y: ${currentlyHoveredDot?.y}`);
+        // console.log(`x: ${currentlyHoveredDot?.x}, y: ${currentlyHoveredDot?.y}`);
 
         const previouslyHoveredDot = this.gridCanvas.getDotById(this.previouslyHoveredDotId!);
 
         const test = super.getDotByPosition(position);
-        console.log(`newX: ${test?.x}, newY: ${test?.y}`);
+        // console.log(`newX: ${test?.x}, newY: ${test?.y}`);
 
         if (!currentlyHoveredDot) {
             this.removeDot(previouslyHoveredDot);
@@ -133,7 +126,7 @@ export class CueCanvas extends CueCanvasBase implements ICueCanvas {
             this.hoverDot(currentlyClickedDot);
 
             // 5. handle thread logic, remove previously drawn thread and draw a new one
-            this.removeThread();
+            this.removeCurrentThread();
             this.createOrResizeThread(position);
         }
     }
@@ -166,16 +159,16 @@ export class CueCanvas extends CueCanvasBase implements ICueCanvas {
         }
 
         if (this.currentThread) {
-            this.currentThread = this.createThread(previousClickedDot, position, this.currentThread.id);
+            this.currentThread = this.createCurrentThread(previousClickedDot, position, this.currentThread.id);
             super.invokeMoveThread(this.currentThread);
         } else {
             const threadId = this.ids.next();
-            this.currentThread = this.createThread(previousClickedDot, position, threadId);
+            this.currentThread = this.createCurrentThread(previousClickedDot, position, threadId);
             this.drawThread(this.currentThread);
         }
     }
 
-    private createThread(previousClickedDot: GridDot, currentPointerPosition: Position, threadId: Id): CueThread {
+    private createCurrentThread(previousClickedDot: GridDot, currentPointerPosition: Position, threadId: Id): CueThread {
         const fromDot = this.converter.convertToCueDot(previousClickedDot);
 
         const toDotId = this.ids.next();
@@ -193,7 +186,7 @@ export class CueCanvas extends CueCanvasBase implements ICueCanvas {
         }
     }
 
-    private removeThread(): void {
+    private removeCurrentThread(): void {
         if (this.currentThread) {
             super.invokeRemoveThread(this.currentThread);
             this.currentThread = undefined;
