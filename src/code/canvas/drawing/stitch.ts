@@ -1,14 +1,14 @@
 import { CanvasBase } from "../base.js";
-import { Dot, BoundsChangeEvent } from "../types.js";
+import { BoundsChangeEvent } from "../types.js";
+import { IRasterDrawingCanvas, IStitchDrawingCanvas } from "./types.js";
 import { DrawStitchThreadsEvent, IStitchCanvas } from "../virtual/types.js";
-import { IStitchDrawingCanvas, IRasterVirtualDrawingCanvas } from "./types.js";
 
 export class StitchDrawingCanvas extends CanvasBase implements IStitchDrawingCanvas {
-    private readonly rasterVirtualDrawing: IRasterVirtualDrawingCanvas;
+    private readonly rasterDrawing: IRasterDrawingCanvas;
 
-    constructor(rasterVirtualDrawing: IRasterVirtualDrawingCanvas) {
+    constructor(rasterDrawing: IRasterDrawingCanvas) {
         super();
-        this.rasterVirtualDrawing = rasterVirtualDrawing;
+        this.rasterDrawing = rasterDrawing;
     }
 
     public subscribe(stitchCanvas: IStitchCanvas): void {
@@ -34,8 +34,8 @@ export class StitchDrawingCanvas extends CanvasBase implements IStitchDrawingCan
             // this.rasterVirtualDrawing.drawDots([thread.from, thread.to], event.dotRadius, thread.color);
         });
 
-        
-        this.rasterVirtualDrawing.drawLines(threads);
+
+        this.rasterDrawing.drawLines(threads);
     }
 
     private handleRedraw(): void {
@@ -45,10 +45,10 @@ export class StitchDrawingCanvas extends CanvasBase implements IStitchDrawingCan
     private handleBoundsChange(event: BoundsChangeEvent): void {
         const bounds = event.bounds;
         super.bounds = bounds;
-        this.rasterVirtualDrawing.bounds = bounds;
+        this.rasterDrawing.bounds = bounds;
     }
 
     private clear(): void {
-        this.rasterVirtualDrawing.clear();
+        this.rasterDrawing.clear();
     }
 }

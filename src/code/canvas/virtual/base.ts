@@ -1,52 +1,75 @@
 import { CanvasBase } from "../base.js";
-import { CanvasConfig } from "../types.js";
 import { IVirtualCanvas } from "./types.js";
-import { VoidMessaging } from "../../messaging/impl.js";
-import { IVoidMessaging } from "../../messaging/types.js";
+import { Messaging1 } from "../../messaging/impl.js";
+import { IMessaging1 } from "../../messaging/types.js";
 import { VoidListener, VoidUnsubscribe } from "../../types.js";
+import {
+    Bounds,
+    CanvasConfig,
+    BoundsChangeEvent,
+    BoundsChangeListener,
+} from "../types.js";
 
 export abstract class VirtualCanvasBase<TConfig extends CanvasConfig> extends CanvasBase implements IVirtualCanvas<TConfig> {
     private readonly configuration: Readonly<TConfig>;
-    private readonly voidMessaging: IVoidMessaging;
+    private readonly vMessaging: IMessaging1<BoundsChangeEvent>;
 
-    private _dotColor!: string;
-    private _dotRadius!: number;
-    private _threadColor!: string;
-    private _threadWidth!: number;
+    private vX: number;
+    private vY: number;
+    private vWidth: number;
+    private vHeight: number;
+
+    protected _dotColor!: string;
+    protected _dotRadius!: number;
+    protected _threadColor!: string;
+    protected _threadWidth!: number;
 
     constructor(config: TConfig) {
         super();
         this.configuration = config;
         this.setConfig(this.configuration);
-        this.voidMessaging = new VoidMessaging();
+        this.vMessaging = new Messaging1();
+
+        this.vX = 0;
+        this.vY = 0;
+        this.vWidth = 0;
+        this.vHeight = 0;
+    }
+
+    public get virtualBounds(): Bounds {
+        const bounds = { x: this.vX, y: this.vY, width: this.vWidth, height: this.vHeight };
+        return bounds;
+    }
+
+    public set virtualBounds(value: Bounds) {
+        const newX = value.x;
+        const newY = value.y;
+        const newWidth = value.width;
+        const newHeight = value.height;
+
+        if (this.vX !== newX || this.vY !== newY || this.vWidth !== newWidth || this.vHeight !== newHeight) {
+            this.vX = newX;
+            this.vY = newY;
+            this.vWidth = newWidth;
+            this.vHeight = newHeight;
+            this.invokeVirtualBoundsChange(value);
+        }
     }
 
     public get config(): TConfig {
         return this.configuration;
     }
 
-    protected get dotColor(): string {
-        return this._dotColor;
-    }
-
-    protected get dotRadius(): number {
-        return this._dotRadius;
-    }
-
-    protected get threadColor(): string {
-        return this._threadColor;
-    }
-
-    protected get threadWidth(): number {
-        return this._threadWidth;
-    }
-
     public onRedraw(listener: VoidListener): VoidUnsubscribe {
-        return this.voidMessaging.listenOnChannel0(listener);
+        return this.vMessaging.listenOnChannel0(listener);
+    }
+
+    public onVirtualBoundsChange(listener: BoundsChangeListener): VoidUnsubscribe {
+        return this.vMessaging.listenOnChannel1(listener);
     }
 
     public override dispose(): void {
-        this.voidMessaging.dispose();
+        this.vMessaging.dispose();
         super.dispose();
     }
 
@@ -65,7 +88,12 @@ export abstract class VirtualCanvasBase<TConfig extends CanvasConfig> extends Ca
     }
 
     protected invokeRedraw(): void {
-        this.voidMessaging.sendToChannel0();
+        this.vMessaging.sendToChannel0();
+    }
+
+    protected invokeVirtualBoundsChange(bounds: Bounds): void {
+        const event = { bounds };
+        this.vMessaging.sendToChannel1(event);
     }
 
     private zoomInDots(): void {
@@ -91,7 +119,7 @@ export abstract class VirtualCanvasBase<TConfig extends CanvasConfig> extends Ca
 
     private zoomOutThreads(): void {
         const configThreadWidth = this.config.thread.width;
-        this._threadWidth -= (this.threadWidth > configThreadWidth.value)
+        this._threadWidth -= (this._threadWidth > configThreadWidth.value)
             ? configThreadWidth.zoomInStep
             : configThreadWidth.zoomOutStep;
     }

@@ -1,6 +1,7 @@
 import { Position } from "../input/types.js";
 import { Listener, VoidListener, VoidUnsubscribe } from "../../types.js";
 import {
+    Bounds,
     CueDot,
     ICanvas,
     GridDot,
@@ -11,17 +12,17 @@ import {
     CueCanvasConfig,
     GridCanvasConfig,
     StitchCanvasConfig,
+    BoundsChangeListener,
 } from "../types.js";
 
 export interface IVirtualCanvas<TConfig> extends ICanvas {
     get config(): TConfig;
-
-    // get virtualBounds(): Bounds;
+    get virtualBounds(): Bounds;
 
     draw(): void;
 
+    onVirtualBoundsChange(listener: BoundsChangeListener): VoidUnsubscribe;
     onRedraw(listener: VoidListener): VoidUnsubscribe;
-    // onVirtualBoundsChange(listener: BoundsChangeListener): VoidUnsubscribe;
 }
 
 

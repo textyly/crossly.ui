@@ -64,8 +64,8 @@ export abstract class InputCanvasBase extends CanvasBase implements IInputCanvas
         this.messaging.sendToChannel3(event);
     }
 
-    protected invokeMove(position: Position): void {
-        const event = { position };
+    protected invokeMove(difference: Position): void {
+        const event = { difference };
         this.messaging.sendToChannel4(event);
     }
 

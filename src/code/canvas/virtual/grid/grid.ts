@@ -110,19 +110,19 @@ export class GridCanvas extends GridCanvasBase implements IGridCanvas {
     }
 
     private handleMove(event: MoveEvent): void {
-        const position = event.position;
-        const x = position.x;
-        const y = position.y;
-        const width = this.bounds.width;
-        const height = this.bounds.height;
+        const difference = event.difference;
+        const x = this.virtualBounds.x + difference.x;
+        const y = this.virtualBounds.y + difference.y;
+        const width = this.virtualBounds.width;
+        const height = this.virtualBounds.height;
 
-        super.bounds = { x, y, width, height };
+        super.virtualBounds = { x, y, width, height };
         this.draw();
     }
 
     private createAndDrawDots(): void {
         const hasItems = this._allDotsX.length > 0;
-        const bounds = this.bounds;
+        const bounds = this.virtualBounds;
         const spacing = this._dotsSpacing;
 
         const allRows = this.allDotsY;
@@ -132,27 +132,67 @@ export class GridCanvas extends GridCanvasBase implements IGridCanvas {
         const dotsY = this._allDotsY;
 
         // do not touch `this` or any dynamic property in the loops for performance reasons!!!
+
+        const visibleDotsX: Array<number> = [];
+        const visibleDotsY: Array<number> = [];
+
         if (hasItems) {
             // TODO: extract in a new method
             let index = 0;
             for (let dotY = 0; dotY < allRows; dotY++) {
+                const isVisibleRow = dotY % 2 === 0;
                 for (let dotX = 0; dotX < allColumns; dotX++) {
-                    dotsX[index] = bounds.x + (dotX * spacing);
-                    dotsY[index] = bounds.y + (dotY * spacing);
+                    const isVisibleColumn = dotX % 2 === 0;
+
+                    const x = bounds.x + (dotX * spacing);
+                    const y = bounds.y + (dotY * spacing);
+
+                    dotsX[index] = x;
+                    dotsY[index] = y;
+
+                    if (isVisibleRow && isVisibleColumn) {
+                        const isVisibleByX = x >= this.bounds.x && x <= this.bounds.width;
+                        if (isVisibleByX) {
+                            const isVisibleByY = y >= this.bounds.y && y <= this.bounds.height;
+                            if (isVisibleByY) {
+                                visibleDotsX.push(x);
+                                visibleDotsY.push(y);
+                            }
+                        }
+                    }
+
                     index++;
                 }
             }
         } else {
             // TODO: extract in a new method
+            let index = 0;
             for (let dotY = 0; dotY < allRows; dotY++) {
+                const isVisibleRow = dotY % 2 === 0;
                 for (let dotX = 0; dotX < allColumns; dotX++) {
-                    dotsX.push(bounds.x + (dotX * spacing));
-                    dotsY.push(bounds.y + (dotY * spacing));
+                    const isVisibleColumn = dotX % 2 === 0;
+                    const x = bounds.x + (dotX * spacing);
+                    const y = bounds.y + (dotY * spacing);
+
+                    dotsX.push(x);
+                    dotsY.push(y);
+
+                    if (isVisibleRow && isVisibleColumn) {
+                        const isVisibleByX = x >= this.bounds.x && x <= this.bounds.width;
+                        if (isVisibleByX) {
+                            const isVisibleByY = y >= this.bounds.y && y <= this.bounds.height;
+                            if (isVisibleByY) {
+                                visibleDotsX.push(x);
+                                visibleDotsY.push(y);
+                            }
+                        }
+                    }
+
+                    index++;
                 }
             }
-
         }
-        super.invokeDrawDots(this._allDotsX, this._allDotsY, this.dotRadius, this.dotColor);
+        super.invokeDrawDots(visibleDotsX, visibleDotsY, this._dotRadius, this._dotColor);
     }
 
     private createAndDrawThreads(): void {
@@ -188,7 +228,7 @@ export class GridCanvas extends GridCanvasBase implements IGridCanvas {
         const from: GridDot = { id: fromDotIndex, x: fromDotX, y: fromDotY };
         const to: GridDot = { id: toDoIndex, x: toDotX, y: toDotY };
 
-        const thread = { id, from, to, width: this.threadWidth, visibility, color: this.threadColor }
+        const thread = { id, from, to, width: this._threadWidth, visibility, color: this._threadColor }
         return thread;
     }
 
@@ -219,7 +259,7 @@ export class GridCanvas extends GridCanvasBase implements IGridCanvas {
         const from: GridDot = { id: fromDotIndex, x: fromDotX, y: fromDotY };
         const to: GridDot = { id: toDotIndex, x: toDotX, y: toDotY };
 
-        const thread = { id, from, to, width: this.threadWidth, visibility, color: this.threadColor }
+        const thread = { id, from, to, width: this._threadWidth, visibility, color: this._threadColor }
         return thread;
     }
 
@@ -262,12 +302,11 @@ export class GridCanvas extends GridCanvasBase implements IGridCanvas {
     }
 
     private calculateVirtualBounds(): void {
-        const x = this.bounds.x;
-        const y = this.bounds.y;
+        const x = this.virtualBounds.x;
+        const y = this.virtualBounds.y;
         const width = this._dotsSpacing + ((this._visibleDotsX - 1) * this._dotsSpacing);
         const height = this._dotsSpacing + ((this._visibleDotsY - 1) * this._dotsSpacing);
 
-        // TODO: set virtualBounds
-        this.bounds = { x, y, width, height };
+        this.virtualBounds = { x, y, width, height };
     }
 }

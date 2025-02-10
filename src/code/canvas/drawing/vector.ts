@@ -10,23 +10,6 @@ export class VectorDrawingCanvas extends CanvasBase implements IVectorDrawingCan
         this.svgCanvas = svgCanvas;
     }
 
-    public override get bounds(): Bounds {
-        return super.bounds;
-    }
-
-    public override set bounds(value: Bounds) {
-        super.bounds = value;
-
-        const x = value.x.toString();
-        const y = value.y.toString();
-        const width = value.width.toString();
-        const height = value.height.toString();
-
-        this.svgCanvas.style.transform = `translate(${x}px, ${y}px, ${width}px, ${height}px)`;
-        this.svgCanvas.setAttribute("width", width);
-        this.svgCanvas.setAttribute("height", height);
-    }
-
     public drawDot(dot: Dot, radius: number, color: string): SvgDot {
         const svgDot = this.createDot(dot, radius, color);
         this.svgCanvas.appendChild(svgDot);
@@ -72,8 +55,10 @@ export class VectorDrawingCanvas extends CanvasBase implements IVectorDrawingCan
     public moveLine(thread: Thread<Dot>, svgLine: SvgLine): SvgLine {
         const x1 = thread.from.x.toString();
         const y1 = thread.from.y.toString();
+
         const x2 = thread.to.x.toString();
         const y2 = thread.to.y.toString();
+
         const width = thread.width.toString();
         const color = thread.color;
 
@@ -89,15 +74,29 @@ export class VectorDrawingCanvas extends CanvasBase implements IVectorDrawingCan
         return svgLine;
     }
 
+    protected override invokeBoundsChange(bounds: Bounds): void {
+        super.invokeBoundsChange(bounds);
+
+        const x = bounds.x.toString();
+        const y = bounds.y.toString();
+        const width = bounds.width.toString();
+        const height = bounds.height.toString();
+
+        this.svgCanvas.style.transform = `translate(${x}px, ${y}px, ${width}px, ${height}px)`;
+        this.svgCanvas.setAttribute("width", width);
+        this.svgCanvas.setAttribute("height", height);
+    }
+
     private createDot(dot: Dot, radius: number, color: string): SvgDot {
         const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
 
         const cx = dot.x.toString();
         const cy = dot.y.toString();
+        const r = radius.toString();
 
         circle.setAttribute("cx", cx);
         circle.setAttribute("cy", cy);
-        circle.setAttribute("r", radius.toString());
+        circle.setAttribute("r", r);
         circle.setAttribute("fill", color);
 
         return circle;

@@ -14,5 +14,5 @@ const height = ((window.innerHeight / 10) * 9.3);
 const bounds = { x, y, width, height };
 
 const canvas = canvasBuilder.build();
-// canvas.bounds = bounds;
+canvas.bounds = bounds;
 canvas.draw();

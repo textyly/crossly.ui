@@ -1,4 +1,4 @@
-import { Dot, ICanvas, Id, Thread } from "../types.js";
+import { Dot, ICanvas, Thread } from "../types.js";
 import { ICueCanvas, IGridCanvas, IStitchCanvas } from "../virtual/types.js";
 
 export type SvgDot = SVGCircleElement;
@@ -32,18 +32,4 @@ export interface IVectorDrawingCanvas extends ICanvas {
     drawDashLine(thread: Thread<Dot>): SvgLine;
     moveLine(thread: Thread<Dot>, svgLine: SvgLine): void;
     removeLine(thread: SvgLine): void;
-}
-
-export interface IRasterVirtualDrawingCanvas extends IRasterDrawingCanvas {
-}
-
-export interface IVectorVirtualDrawingCanvas extends ICanvas {
-    drawDot(dot: Dot, radius: number, color: string): void;
-    drawDashDot(dot: Dot, radius: number, color: string): void;
-    removeDot(id: Id): void;
-
-    drawLine(id: Id, thread: Thread<Dot>): void;
-    drawDashLine(id: Id, thread: Thread<Dot>): void;
-    moveLine(id: Id, thread: Thread<Dot>): void;
-    removeLine(id: Id): void;
 }

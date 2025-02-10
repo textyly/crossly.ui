@@ -71,7 +71,7 @@ export class InputCanvasThrottler extends InputCanvasBase {
 
     private handleMove(event: MoveEvent): void {
         const eventType = CanvasEventType.Move;
-        const position = event.position;
+        const position = event.difference;
         this.addEvent(eventType, position);
     }
 
@@ -124,7 +124,7 @@ export class InputCanvasThrottler extends InputCanvasBase {
         }
     }
 
-    private addEvent(eventType: CanvasEventType, position?: Position,): void {
+    private addEvent(eventType: CanvasEventType, position?: Position): void {
         // extract the algorithm in a different class
         const events = this.groupedEvents;
 

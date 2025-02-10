@@ -93,8 +93,8 @@ export class MoveInput extends CanvasBase implements IMoveInput {
         this.stopMove();
     }
 
-    private invokeMove(position: Position): void {
-        const event = { position };
+    private invokeMove(difference: Position): void {
+        const event = { difference };
         this.messaging.sendToChannel1(event);
     }
 
@@ -110,19 +110,15 @@ export class MoveInput extends CanvasBase implements IMoveInput {
 
             const lastCanvasPos = this.lastCanvasPos ?? super.bounds;
 
-            // 2. calculate the new canvas position
-            const newX = lastCanvasPos.x + diffX;
-            const newY = lastCanvasPos.y + diffY;
-
             // 3. check whether there is enough difference to start moving (filter some small moving request cause it might not be intended)
-            const ignoreUntil = 5; // TODO: config
+            const ignoreUntil = 1; // TODO: config
             const hasEnoughDiff = (ignoreUntil < Math.abs(diffX)) || (ignoreUntil < Math.abs(diffY));
 
             if (hasEnoughDiff || this.lastCanvasPos) {
                 // 4. invoke canvas move
-                const newCanvasPos = { x: newX, y: newY };
-                this.invokeMove(newCanvasPos);
-                this.lastCanvasPos = newCanvasPos;
+                const difference = { x: diffX, y: diffY };
+                this.invokeMove(difference);
+                this.lastCanvasPos = difference;
             }
             this.lastPointerPos = position;
         }

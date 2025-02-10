@@ -1,9 +1,9 @@
 import { CueCanvasBase } from "./base.js";
-import { DrawGridDotsEvent, ICueCanvas, IGridCanvas } from "../types.js";
 import { Converter } from "../../../utilities/converter.js";
 import { IdGenerator } from "../../../utilities/generator.js";
+import { DrawGridDotsEvent, ICueCanvas, IGridCanvas } from "../types.js";
 import { IInputCanvas, PointerMoveEvent, PointerUpEvent, Position } from "../../input/types.js";
-import { CanvasSide, Id, CueThread, BoundsChangeEvent, GridDot, Bounds, CueCanvasConfig } from "../../types.js";
+import { CanvasSide, Id, CueThread, BoundsChangeEvent, GridDot, CueCanvasConfig } from "../../types.js";
 
 export class CueCanvas extends CueCanvasBase implements ICueCanvas {
     private readonly inputCanvas: IInputCanvas;
@@ -61,11 +61,11 @@ export class CueCanvas extends CueCanvasBase implements ICueCanvas {
         const pointerUpUn = this.inputCanvas.onPointerUp(this.handlePointerUp.bind(this));
         super.registerUn(pointerUpUn);
 
-        const boundsChangeUn = this.gridCanvas.onBoundsChange(this.handleBoundsChange.bind(this));
-        super.registerUn(boundsChangeUn);
+        const virtualBoundsChangeUn = this.gridCanvas.onVirtualBoundsChange(this.handleVirtualBoundsChange.bind(this));
+        super.registerUn(virtualBoundsChangeUn);
 
-        const drawVisibleDotsUn = this.gridCanvas.onDrawDots(this.handleDrawVisibleDots.bind(this));
-        super.registerUn(drawVisibleDotsUn);
+        const drawDosUn = this.gridCanvas.onDrawDots(this.handleDrawDots.bind(this));
+        super.registerUn(drawDosUn);
     }
 
     private handleZoomIn(): void {
@@ -87,11 +87,11 @@ export class CueCanvas extends CueCanvasBase implements ICueCanvas {
         this.clickDot(position);
     }
 
-    private handleBoundsChange(event: BoundsChangeEvent): void {
-        this.bounds = event.bounds;
+    private handleVirtualBoundsChange(event: BoundsChangeEvent): void {
+        this.virtualBounds = event.bounds;
     }
 
-    private handleDrawVisibleDots(event: DrawGridDotsEvent): void {
+    private handleDrawDots(event: DrawGridDotsEvent): void {
         this.draw();
     }
 
@@ -132,14 +132,14 @@ export class CueCanvas extends CueCanvasBase implements ICueCanvas {
     }
 
     private hoverDot(hoveredDot: GridDot): void {
-        const hovered = { id: hoveredDot.id, x: hoveredDot.x, y: hoveredDot.y, radius: this.dotRadius, color: this.dotColor };
+        const hovered = { id: hoveredDot.id, x: hoveredDot.x, y: hoveredDot.y, radius: this._dotRadius, color: this._dotColor };
 
         if (this.previouslyClickedDotId === undefined) {
-            super.invokeDrawDashDot(hovered, this.dotRadius, this.dotColor);
+            super.invokeDrawDashDot(hovered, this._dotRadius, this._dotColor);
         } else {
             this.currentSide === CanvasSide.Front
-                ? super.invokeDrawDot(hovered, this.dotRadius, this.dotColor)
-                : super.invokeDrawDashDot(hovered, this.dotRadius, this.dotColor);
+                ? super.invokeDrawDot(hovered, this._dotRadius, this._dotColor)
+                : super.invokeDrawDashDot(hovered, this._dotRadius, this._dotColor);
         }
 
         this.previouslyHoveredDotId = hoveredDot.id;
@@ -172,9 +172,9 @@ export class CueCanvas extends CueCanvasBase implements ICueCanvas {
         const fromDot = this.converter.convertToCueDot(previousClickedDot);
 
         const toDotId = this.ids.next();
-        const toDot = { ...currentPointerPosition, id: toDotId, radius: this.dotRadius, color: this.dotColor };
+        const toDot = { ...currentPointerPosition, id: toDotId, radius: this._dotRadius, color: this._dotColor };
 
-        const thread = { id: threadId, from: fromDot, to: toDot, width: this.threadWidth, color: this.threadColor };
+        const thread = { id: threadId, from: fromDot, to: toDot, width: this._threadWidth, color: this._threadColor };
         return thread;
     }
 

@@ -1,42 +1,28 @@
 import { CanvasBase } from "../base.js";
-import { IRasterDrawingCanvas } from "./types.js";
 import { Dot, Bounds, Thread } from "../types.js";
+import { IRasterDrawingCanvas } from "./types.js";
 
 export class RasterDrawingCanvas extends CanvasBase implements IRasterDrawingCanvas {
+    private readonly endAngle: number;
     private readonly context: CanvasRenderingContext2D;
 
     constructor(private rasterCanvas: HTMLCanvasElement) {
         super();
+        this.endAngle = Math.PI * 2;
         this.context = rasterCanvas.getContext("2d")!;
-    }
-
-    public override get bounds(): Bounds {
-        return super.bounds;
-    }
-
-    public override set bounds(value: Bounds) {
-        super.bounds = value;
-
-        const x = value.x;
-        const y = value.y;
-        const width = value.width;
-        const height = value.height;
-
-        this.rasterCanvas.style.transform = `translate(${x}px, ${y}px, ${width}px, ${height}px)`;
-        this.rasterCanvas.width = width;
-        this.rasterCanvas.height = height;
     }
 
     public drawDots(dotsX: Array<number>, dotsY: Array<number>, radius: number, color: string): void {
         this.context.beginPath();
-        const endAngle = Math.PI * 2;
+
         for (let index = 0; index < dotsX.length; index++) {
             const x = dotsX[index];
             const y = dotsY[index];
-         
+
+            // do not move to a drawDot method for perf reasons
             this.context.fillStyle = color;
             this.context.moveTo(x, y);
-            this.context.arc(x, y, radius, 0, endAngle);
+            this.context.arc(x, y, radius, 0, this.endAngle);
         }
 
         this.context.fill();
@@ -46,6 +32,7 @@ export class RasterDrawingCanvas extends CanvasBase implements IRasterDrawingCan
         this.context.beginPath();
 
         threads.forEach((thread) => {
+            // do not move to a drawLine method for perf reasons
             this.context.lineWidth = thread.width;
             this.context.strokeStyle = thread.color;
 
@@ -60,6 +47,19 @@ export class RasterDrawingCanvas extends CanvasBase implements IRasterDrawingCan
     }
 
     public clear(): void {
-        this.context.clearRect(0, 0, this.rasterCanvas.clientWidth, this.rasterCanvas.clientHeight);
+        this.context.clearRect(this.bounds.x, this.bounds.y, this.bounds.width, this.bounds.height);
+    }
+
+    protected override invokeBoundsChange(bounds: Bounds): void {
+        super.invokeBoundsChange(bounds);
+
+        const x = bounds.x;
+        const y = bounds.y;
+        const width = bounds.width;
+        const height = bounds.height;
+
+        this.rasterCanvas.style.transform = `translate(${x}px, ${y}px, ${width}px, ${height}px)`;
+        this.rasterCanvas.width = width;
+        this.rasterCanvas.height = height;
     }
 }

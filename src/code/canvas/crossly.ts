@@ -58,6 +58,8 @@ export class CrosslyCanvas extends CanvasBase implements ICrosslyCanvas {
 
     protected override invokeBoundsChange(bounds: Bounds): void {
         this.gridCanvas.bounds = bounds;
+        this.stitchCanvas.bounds = bounds;
+        this.cueCanvas.bounds = bounds;
     }
 
     private initializeGridCanvas(dotDrawingCanvas: IGridDrawingCanvas): void {
@@ -83,6 +85,7 @@ export class CrosslyCanvas extends CanvasBase implements ICrosslyCanvas {
 
     private handleBoundsChange(event: BoundsChangeEvent): void {
         const bounds = event.bounds;
+
         super.bounds = bounds;
         this.inputCanvas.bounds = bounds;
     }

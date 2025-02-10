@@ -62,11 +62,11 @@ export class StitchCanvas extends StitchCanvasBase implements IStitchCanvas {
         const pointerUpUn = this.inputCanvas.onPointerUp(this.handlePointerUp.bind(this));
         super.registerUn(pointerUpUn);
 
-        const boundsChangeUn = this.gridCanvas.onBoundsChange(this.handleBoundsChange.bind(this));
-        super.registerUn(boundsChangeUn);
+        const virtualBoundsChangeUn = this.gridCanvas.onVirtualBoundsChange(this.handleVirtualBoundsChange.bind(this));
+        super.registerUn(virtualBoundsChangeUn);
 
-        const drawVisibleDotsUn = this.gridCanvas.onDrawDots(this.handleDrawVisibleDots.bind(this));
-        super.registerUn(drawVisibleDotsUn);
+        const drawDotsUn = this.gridCanvas.onDrawDots(this.handleDrawDots.bind(this));
+        super.registerUn(drawDotsUn);
     }
 
     private handleZoomIn(): void {
@@ -82,11 +82,11 @@ export class StitchCanvas extends StitchCanvasBase implements IStitchCanvas {
         this.handleDotClick(position);
     }
 
-    private handleBoundsChange(event: BoundsChangeEvent): void {
-        super.bounds = event.bounds;
+    private handleVirtualBoundsChange(event: BoundsChangeEvent): void {
+        super.virtualBounds = event.bounds;
     }
 
-    private handleDrawVisibleDots(event: DrawGridDotsEvent): void {
+    private handleDrawDots(event: DrawGridDotsEvent): void {
         this.draw();
     }
 
@@ -129,18 +129,18 @@ export class StitchCanvas extends StitchCanvasBase implements IStitchCanvas {
         const from = this.converter.convertToStitchDot(dots.from, side);
         const to = this.converter.convertToStitchDot(dots.to, side);
 
-        const thread = { from, to, side, width: this.threadWidth, color: this.threadColor };
+        const thread = { from, to, side, width: this._threadWidth, color: this._threadColor };
         return thread;
     }
 
     private drawThreads(): void {
         const frontThreads = this.threads.filter((thread) => thread.side === CanvasSide.Front);
-        super.invokeDrawThreads(frontThreads, this.dotRadius);
+        super.invokeDrawThreads(frontThreads, this._dotRadius);
     }
 
     private drawThread(thread: StitchThread): void {
         if (thread.side == CanvasSide.Front) {
-            super.invokeDrawThreads([thread], this.dotRadius);
+            super.invokeDrawThreads([thread], this._dotRadius);
         }
     }
 

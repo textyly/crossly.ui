@@ -37,18 +37,6 @@ export class InputCanvas extends InputCanvasBase {
         this.subscribe();
     }
 
-    public override set bounds(value: Bounds) {
-        super.bounds = value;
-        this.touchInput.bounds = value;
-        this.moveInput.bounds = value;
-
-        const width = ((window.innerWidth / 10) * 9.8) + "px";
-        const height = ((window.innerHeight / 10) * 9.3) + "px";
-
-        this.htmlElement.style.width = width;
-        this.htmlElement.style.height = height;
-    }
-
     public override dispose(): void {
         this.unsubscribe();
 
@@ -56,6 +44,16 @@ export class InputCanvas extends InputCanvasBase {
         this.touchInput.dispose();
 
         super.dispose();
+    }
+
+    protected override invokeBoundsChange(bounds: Bounds): void {
+        super.invokeBoundsChange(bounds);
+
+        const width = bounds.width.toString() + "px";
+        const height = bounds.height.toString() + "px";
+
+        this.htmlElement.style.width = width;
+        this.htmlElement.style.height = height;
     }
 
     private subscribe(): void {
@@ -99,7 +97,7 @@ export class InputCanvas extends InputCanvasBase {
     }
 
     private handleMove(event: MoveEvent): void {
-        super.invokeMove(event.position);
+        super.invokeMove(event.difference);
     }
 
     private handlePointerUp(event: PointerEvent): void {
