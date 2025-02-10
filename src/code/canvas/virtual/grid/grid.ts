@@ -172,21 +172,21 @@ export class GridCanvas extends GridCanvasBase implements IGridCanvas {
         const dotsX = this.dotsX;
         const dotsY = this.dotsY;
 
-        // do not touch `this` or dynamic property in the loops for performance reasons!!!
+        // do not touch `this` or any dynamic property in the loops for performance reasons!!!
         if (hasItems) {
             let index = 0;
-            for (let rowIdx = 0; rowIdx < allRows; rowIdx++) {
-                for (let dotIdx = 0; dotIdx < allColumns; dotIdx++) {
-                    dotsX[index] = bounds.x + (dotIdx * spacing);
-                    dotsY[index] = bounds.y + (rowIdx * spacing);
+            for (let dotY = 0; dotY < allRows; dotY++) {
+                for (let dotX = 0; dotX < allColumns; dotX++) {
+                    dotsX[index] = bounds.x + (dotX * spacing);
+                    dotsY[index] = bounds.y + (dotY * spacing);
                     index++;
                 }
             }
         } else {
-            for (let rowIdx = 0; rowIdx < allRows; rowIdx++) {
-                for (let dotIdx = 0; dotIdx < allColumns; dotIdx++) {
-                    dotsX.push(bounds.x + (dotIdx * spacing));
-                    dotsY.push(bounds.y + (rowIdx * spacing));
+            for (let dotY = 0; dotY < allRows; dotY++) {
+                for (let dotX = 0; dotX < allColumns; dotX++) {
+                    dotsX.push(bounds.x + (dotX * spacing));
+                    dotsY.push(bounds.y + (dotY * spacing));
                 }
             }
 
@@ -317,8 +317,8 @@ export class GridCanvas extends GridCanvasBase implements IGridCanvas {
         // TODO: check this calculations whether they can become simpler
         const x = this.bounds.x;
         const y = this.bounds.y;
-        const width = this.spacing + (this.allColumns * this.dotRadius) + ((this.allColumns - 1) * this.spacing);
-        const height = this.spacing + (this.allRows * this.dotRadius) + ((this.allRows - 1) * this.spacing);
+        const width = this.spacing + ((this.columns - 1) * this.spacing);
+        const height = this.spacing + ((this.rows - 1) * this.spacing);
 
         this.bounds = { x, y, width, height };
     }
