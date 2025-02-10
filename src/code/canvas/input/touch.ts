@@ -158,6 +158,7 @@ export class TouchInput extends CanvasBase implements ITouchInput {
         }
     }
 
+    // TODO: look for better algorithm
     private calculateDistance(finger1: Touch, finger2: Touch) {
         const dx = finger1.clientX - finger2.clientX;
         const dy = finger1.clientY - finger2.clientY;

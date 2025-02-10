@@ -137,7 +137,6 @@ export class InputCanvas extends InputCanvasBase {
         // TODO: create move held event
     }
 
-    // TODO: extract in different class since more than one classes are using it
     private getPosition(event: PointerEvent): Position {
         const x = event.layerX;
         const y = event.layerY;
