@@ -24,7 +24,7 @@ export class InputCanvasThrottler extends InputCanvasBase {
         this.inputCanvas = inputCanvas;
 
         this.groupedEvents = [];
-        this.timerInterval = 30; // TODO: outside!!!
+        this.timerInterval = 20; // TODO: outside!!!
 
         this.subscribe();
     }
@@ -128,10 +128,11 @@ export class InputCanvasThrottler extends InputCanvasBase {
         // extract the algorithm in a different class
         const events = this.groupedEvents;
 
-        if (events.length !== 0) {
+        if (events.length > 1) {
             const lastEvent = events.pop()!;
+            const beforeLastEvent = events.pop()!;
 
-            if (lastEvent.type !== eventType) {
+            if (lastEvent.type == beforeLastEvent.type) {
                 events.push(lastEvent);
             }
         }

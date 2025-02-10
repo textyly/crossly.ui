@@ -23,7 +23,7 @@ export class MoveInput extends CanvasBase implements IMoveInput {
     private readonly pointerMoveHandler: PointerEventHandler;
     private readonly pointerDownHandler: PointerEventHandler;
 
-    private lastCanvasPos?: Position;
+    private lastDifference?: Position;
     private lastPointerPos?: Position;
 
     constructor(htmlElement: HTMLElement, touchInput: ITouchInput) {
@@ -43,7 +43,7 @@ export class MoveInput extends CanvasBase implements IMoveInput {
     }
 
     public get inMoveMode(): boolean {
-        return !this.lastCanvasPos;
+        return !this.lastDifference;
     }
 
     public onMove(listener: MoveListener): VoidUnsubscribe {
@@ -108,24 +108,22 @@ export class MoveInput extends CanvasBase implements IMoveInput {
             const diffX = position.x - this.lastPointerPos.x;
             const diffY = position.y - this.lastPointerPos.y;
 
-            const lastCanvasPos = this.lastCanvasPos ?? super.bounds;
-
             // 3. check whether there is enough difference to start moving (filter some small moving request cause it might not be intended)
-            const ignoreUntil = 1; // TODO: config
+            const ignoreUntil = 5; // TODO: config
             const hasEnoughDiff = (ignoreUntil < Math.abs(diffX)) || (ignoreUntil < Math.abs(diffY));
 
-            if (hasEnoughDiff || this.lastCanvasPos) {
+            if (hasEnoughDiff || this.lastDifference) {
                 // 4. invoke canvas move
                 const difference = { x: diffX, y: diffY };
                 this.invokeMove(difference);
-                this.lastCanvasPos = difference;
+                this.lastDifference = difference;
             }
             this.lastPointerPos = position;
         }
     }
 
     private stopMove(): void {
-        this.lastCanvasPos = undefined;
+        this.lastDifference = undefined;
         this.lastPointerPos = undefined;
     }
 

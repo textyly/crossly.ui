@@ -42,11 +42,7 @@ export class GridDrawingCanvas extends CanvasBase implements IGridDrawingCanvas 
 
     private handleDrawThreads(event: DrawGridThreadsEvent): void {
         const threads = event.threads;
-
-        threads.forEach((thread) => {
-            const svgLine = this.vectorDrawing.drawLine(thread);
-            this.svgLines.set(thread.id, svgLine);
-        });
+        this.rasterDrawing.drawLines(threads);
     }
 
     private handleRedraw(): void {

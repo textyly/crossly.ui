@@ -29,8 +29,8 @@ export class CrosslyCanvasBuilder {
 
     public withInputCanvas(inputElement: HTMLElement): CrosslyCanvasBuilder {
         const inputCanvas = new InputCanvas(inputElement);
-        const inputCanvasThrottler = new InputCanvasThrottler(inputCanvas); // TODO: it is filtering the last event!!!!
-        this.inputCanvas = inputCanvas;
+        const inputCanvasThrottler = new InputCanvasThrottler(inputCanvas);
+        this.inputCanvas = inputCanvasThrottler;
         return this;
     }
 
