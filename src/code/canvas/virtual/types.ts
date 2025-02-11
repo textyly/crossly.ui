@@ -1,17 +1,17 @@
-import { Position } from "../input/types.js";
 import { Listener, VoidListener, VoidUnsubscribe } from "../../types.js";
 import {
+    Dot,
     Bounds,
     CueDot,
     ICanvas,
-    GridDot,
-    StitchDot,
     CueThread,
     GridThread,
     StitchThread,
     CanvasConfig,
     BoundsChangeListener,
 } from "../types.js";
+
+export type DotIndex = { indexX: number, indexY: number };
 
 export interface IVirtualCanvas<TConfig> extends ICanvas {
     get config(): TConfig;
@@ -23,11 +23,7 @@ export interface IVirtualCanvas<TConfig> extends ICanvas {
     onRedraw(listener: VoidListener): VoidUnsubscribe;
 }
 
-
 export interface IGridCanvas extends IVirtualCanvas<CanvasConfig> {
-    getDotById(id: number): GridDot | undefined;
-    getDotByPosition(position: Position): GridDot | undefined;
-
     onDrawDots(listener: DrawGridDotsListener): VoidUnsubscribe;
     onDrawThreads(listener: DrawGridThreadsListener): VoidUnsubscribe;
 }
@@ -53,7 +49,7 @@ export type DrawGridDotsListener = Listener<DrawGridDotsEvent>;
 export type DrawGridThreadsEvent = { threads: Array<GridThread> };
 export type DrawGridThreadsListener = Listener<DrawGridThreadsEvent>;
 
-export type DrawStitchDotEvent = { dot: StitchDot };
+export type DrawStitchDotEvent = { dot: Dot };
 export type DrawStitchDotListener = Listener<DrawStitchDotEvent>;
 
 export type DrawStitchThreadsEvent = { threads: Array<StitchThread>, dotRadius: number }; // TODO: dotRadius???

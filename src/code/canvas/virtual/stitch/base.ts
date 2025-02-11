@@ -5,7 +5,7 @@ import { IMessaging1 } from "../../../messaging/types.js";
 import { CanvasConfig, StitchThread } from "../../types.js";
 import { DrawStitchThreadsEvent, DrawStitchThreadsListener } from "../types.js";
 
-export abstract class StitchCanvasBase extends VirtualCanvasBase<CanvasConfig> {
+export abstract class StitchCanvasBase extends VirtualCanvasBase {
     private readonly messaging: IMessaging1<DrawStitchThreadsEvent>;
 
     constructor(config: CanvasConfig) {

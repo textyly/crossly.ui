@@ -16,7 +16,7 @@ import {
     RemoveCueThreadListener,
 } from "../types.js";
 
-export abstract class CueCanvasBase extends VirtualCanvasBase<CanvasConfig> {
+export abstract class CueCanvasBase extends VirtualCanvasBase {
     private readonly messaging: IMessaging7<DrawCueDotEvent, DrawCueDotEvent, DrawCueThreadEvent, RemoveCueDotEvent, MoveCueThreadEvent, DrawCueThreadEvent, RemoveCueThreadEvent>;
 
     constructor(config: CanvasConfig) {

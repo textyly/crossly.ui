@@ -10,7 +10,7 @@ import {
     DrawGridThreadsListener
 } from "../types.js";
 
-export abstract class GridCanvasBase extends VirtualCanvasBase<CanvasConfig> {
+export abstract class GridCanvasBase extends VirtualCanvasBase {
     private readonly messaging: IMessaging2<DrawGridDotsEvent, DrawGridThreadsEvent>;
 
     constructor(config: CanvasConfig) {

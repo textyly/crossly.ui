@@ -2,19 +2,13 @@ import { CanvasConfig, CrosslyCanvasConfig, SpacingConfig, ZoomItemConfig } from
 
 export class ConfigFactory {
     public create(): CrosslyCanvasConfig {
-        const columns = 70;
-        const rows = 70;
+        const columns = 1000;
+        const rows = 1000;
 
         const spacing: SpacingConfig = {
             value: 25,
             zoomInStep: 0.5,
             zoomOutStep: 0.5
-        }
-
-        const dotMatchDistance: ZoomItemConfig = {
-            value: 4,
-            zoomInStep: 0.2,
-            zoomOutStep: 0.1
         }
 
         const gridConfig: CanvasConfig = {
@@ -27,8 +21,7 @@ export class ConfigFactory {
                     value: 2,
                     zoomInStep: 0.1,
                     zoomOutStep: 0.1
-                },
-                dotMatchDistance
+                }
             },
             thread: {
                 color: "#d2d4d2",
@@ -50,8 +43,7 @@ export class ConfigFactory {
                     value: 2,
                     zoomInStep: 0.1,
                     zoomOutStep: 0.1
-                },
-                dotMatchDistance
+                }
             },
             thread: {
                 color: "gray",
@@ -73,8 +65,7 @@ export class ConfigFactory {
                     value: 4,
                     zoomInStep: 0.2,
                     zoomOutStep: 0.1
-                },
-                dotMatchDistance
+                }
             },
             thread: {
                 color: "gray",

@@ -15,8 +15,10 @@ export class CanvasBuilder {
         this.crosslyCanvasBuilder.withInputCanvas(inputHTMLElement);
 
         const gridDotsHTMLElement = this.buildGridDotsHTMLElement();
+
+        // TODO: see whether we can use raster lines and delete the svg canvas (gridThreadsHTMLElement)
         const gridThreadsHTMLElement = this.buildGridThreadsHTMLElement();
-        this.crosslyCanvasBuilder.withGridCanvas(gridDotsHTMLElement, gridThreadsHTMLElement);
+        this.crosslyCanvasBuilder.withGridCanvas(gridDotsHTMLElement);
 
         const stitchHTMLElement = this.buildStitchHTMLElement();
         this.crosslyCanvasBuilder.withStitchCanvas(stitchHTMLElement);

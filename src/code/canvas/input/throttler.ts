@@ -24,7 +24,7 @@ export class InputCanvasThrottler extends InputCanvasBase {
         this.inputCanvas = inputCanvas;
 
         this.groupedEvents = [];
-        this.timerInterval = 20; // TODO: outside!!!
+        this.timerInterval = 30; // TODO: outside!!!
 
         this.subscribe();
     }

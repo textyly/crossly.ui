@@ -1,20 +1,19 @@
 import { Listener, VoidUnsubscribe } from "../types";
+import { Position } from "./input/types.js";
 
 export type Bounds = { x: number, y: number, width: number, height: number };
 export type Id = number;
 
-export type Dot = { id: Id, x: number, y: number };
-export type GridDot = Dot;
-export type StitchDot = Dot & { side: CanvasSide };
-export type CueDot = Dot;
+export type Dot = Position;
+export type CueDot = Dot & { id: Id };
 
-export type Thread<TDot> = { from: TDot, to: TDot, width: number, color: string };
-export type GridThread = Thread<GridDot> & { id: Id, visibility: Visibility };
-export type StitchThread = Thread<StitchDot> & { side: CanvasSide };
+export type Thread<TDot extends Dot> = { from: TDot, to: TDot, width: number, color: string };
+export type GridThread = Thread<Dot>;
+export type StitchThread = Thread<Dot> & { side: CanvasSide };
 export type CueThread = Thread<CueDot> & { id: Id };
 
 export type CanvasConfig = {
-    dot: DotConfig & { dotMatchDistance: ZoomItemConfig }; //TODO: remove  dotMatchDistance
+    dot: DotConfig
     thread: ThreadConfig;
     columns: number;
     rows: number;

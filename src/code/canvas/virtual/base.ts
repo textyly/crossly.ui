@@ -1,19 +1,18 @@
 import { CanvasBase } from "../base.js";
-import { IVirtualCanvas } from "./types.js";
-import { Messaging1 } from "../../messaging/impl.js";
-import { IMessaging1 } from "../../messaging/types.js";
 import { Position } from "../input/types.js";
+import { Messaging1 } from "../../messaging/impl.js";
+import { DotIndex, IVirtualCanvas } from "./types.js";
+import { IMessaging1 } from "../../messaging/types.js";
 import { VoidListener, VoidUnsubscribe } from "../../types.js";
 import {
-    Dot,
     Bounds,
     CanvasConfig,
     BoundsChangeEvent,
     BoundsChangeListener,
 } from "../types.js";
 
-export abstract class VirtualCanvasBase<TConfig extends CanvasConfig> extends CanvasBase implements IVirtualCanvas<TConfig> {
-    private readonly configuration: Readonly<TConfig>;
+export abstract class VirtualCanvasBase extends CanvasBase implements IVirtualCanvas<CanvasConfig> {
+    private readonly configuration: Readonly<CanvasConfig>;
     private readonly vMessaging: IMessaging1<BoundsChangeEvent>;
 
     private vX: number;
@@ -21,21 +20,17 @@ export abstract class VirtualCanvasBase<TConfig extends CanvasConfig> extends Ca
     private vWidth: number;
     private vHeight: number;
 
-    protected _allDotsY: Array<number>;
-    protected _allDotsX: Array<number>;
-
     protected _visibleDotsY!: number;
     protected _visibleDotsX!: number;
 
     protected _dotsSpacing!: number;
-    protected _dotMatchDistance!: number;
 
     protected _dotColor!: string;
     protected _dotRadius!: number;
     protected _threadColor!: string;
     protected _threadWidth!: number;
 
-    constructor(config: TConfig) {
+    constructor(config: CanvasConfig) {
         super();
 
         this.configuration = config;
@@ -46,9 +41,6 @@ export abstract class VirtualCanvasBase<TConfig extends CanvasConfig> extends Ca
         this.vY = 0;
         this.vWidth = 0;
         this.vHeight = 0;
-
-        this._allDotsY = new Array<number>();
-        this._allDotsX = new Array<number>();
     }
 
     public get virtualBounds(): Bounds {
@@ -71,7 +63,7 @@ export abstract class VirtualCanvasBase<TConfig extends CanvasConfig> extends Ca
         }
     }
 
-    public get config(): TConfig {
+    public get config(): CanvasConfig {
         return this.configuration;
     }
 
@@ -110,7 +102,6 @@ export abstract class VirtualCanvasBase<TConfig extends CanvasConfig> extends Ca
 
     protected zoomIn(): void {
         this.zoomInSpacing();
-        this.zoomInDotMatchDistance();
         this.zoomInDots();
         this.zoomInThreads();
         this.draw();
@@ -118,7 +109,6 @@ export abstract class VirtualCanvasBase<TConfig extends CanvasConfig> extends Ca
 
     protected zoomOut(): void {
         this.zoomOutSpacing();
-        this.zoomOutDotMatchDistance();
         this.zoomOutDots();
         this.zoomOutThreads();
         this.draw();
@@ -143,7 +133,6 @@ export abstract class VirtualCanvasBase<TConfig extends CanvasConfig> extends Ca
         this.vMessaging.sendToChannel1(event);
     }
 
-    // extract in VirtualBase
     protected calculateVirtualBounds(): void {
         const x = this.virtualBounds.x;
         const y = this.virtualBounds.y;
@@ -151,32 +140,23 @@ export abstract class VirtualCanvasBase<TConfig extends CanvasConfig> extends Ca
         const height = (this.allDotsY - 1) * this._dotsSpacing;
 
         this.virtualBounds = { x, y, width, height };
-
-        // console.log(`new vb: ${JSON.stringify(this.virtualBounds)}`);
     }
 
-    protected getDotByPosition(position: Position): Dot | undefined {
-        const closestDotX = position.x / this._dotsSpacing;
-        const dotX = Math.round(closestDotX);
+    protected getDotIndex(position: Position): DotIndex {
+        const closestX = (position.x - this.virtualBounds.x) / this._dotsSpacing;
+        const closestY = (position.y - this.virtualBounds.y) / this._dotsSpacing;
 
-        const closestDotY = position.y / this._dotsSpacing;
-        const dotY = Math.round(closestDotY);
+        const indexX = Math.round(closestX);
+        const indexY = Math.round(closestY);
 
-        const x = dotX * this._dotsSpacing;
-        const y = dotY * this._dotsSpacing;
+        const index = { indexX, indexY };
+        return index;
+    }
 
-        // console.log(`x: ${x}, y: ${y}, vb: ${JSON.stringify(this.virtualBounds)}`);
-
-        const isInVirtualX = x >= this.virtualBounds.x && x <= this.virtualBounds.width;
-        const isInVirtualY = y >= this.virtualBounds.y && y <= this.virtualBounds.height;
-        const isInVirtualBounds = isInVirtualX && isInVirtualY;
-
-        // console.log(`isInVirtualBounds: ${isInVirtualBounds}`);
-
-        if (isInVirtualBounds) {
-            // TODO: remove id!!!
-            return { id: 0, x, y };
-        }
+    protected getDotPositionByIndex(index: DotIndex): Position {
+        const x = this.virtualBounds.x + (index.indexX * this._dotsSpacing);
+        const y = this.virtualBounds.y + (index.indexY * this._dotsSpacing);
+        return { x, y };
     }
 
     private zoomInSpacing(): void {
@@ -188,32 +168,13 @@ export abstract class VirtualCanvasBase<TConfig extends CanvasConfig> extends Ca
         this._dotsSpacing = spacing;
     }
 
-    private zoomInDotMatchDistance(): void {
-        const configDotMatchDistance = this.config.dot.dotMatchDistance;
-        const dotMatchDistance = (this._dotMatchDistance < configDotMatchDistance.value)
-            ? (this._dotMatchDistance + this.config.dot.dotMatchDistance.zoomOutStep)
-            : (this._dotMatchDistance + this.config.dot.dotMatchDistance.zoomInStep);
-
-        this._dotMatchDistance = dotMatchDistance;
-    }
-
     private zoomOutSpacing(): void {
-        // zoom in spacing
         const configSpacing = this.config.spacing;
         const spacing = (this._dotsSpacing > configSpacing.value)
             ? (this._dotsSpacing - this.config.spacing.zoomInStep)
             : (this._dotsSpacing - this.config.spacing.zoomOutStep);
 
         this._dotsSpacing = spacing;
-    }
-
-    private zoomOutDotMatchDistance(): void {
-        const configDotMatchDistance = this.config.dot.dotMatchDistance;
-        const dotMatchDistance = (this._dotMatchDistance > configDotMatchDistance.value)
-            ? (this._dotMatchDistance - this.config.dot.dotMatchDistance.zoomInStep)
-            : (this._dotMatchDistance - this.config.dot.dotMatchDistance.zoomOutStep);
-
-        this._dotMatchDistance = dotMatchDistance;
     }
 
     private zoomInDots(): void {
@@ -247,7 +208,6 @@ export abstract class VirtualCanvasBase<TConfig extends CanvasConfig> extends Ca
     private setConfig(config: CanvasConfig): void {
         // make space for invisible dots, respectively invisible rows and columns
         this._dotsSpacing = config.spacing.value / 2;
-        this._dotMatchDistance = config.dot.dotMatchDistance.value;
 
         this._visibleDotsY = config.rows;
         this._visibleDotsX = config.columns;

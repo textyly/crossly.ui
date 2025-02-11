@@ -30,11 +30,11 @@ export class CrosslyCanvasBuilder {
     public withInputCanvas(inputElement: HTMLElement): CrosslyCanvasBuilder {
         const inputCanvas = new InputCanvas(inputElement);
         const inputCanvasThrottler = new InputCanvasThrottler(inputCanvas);
-        this.inputCanvas = inputCanvas;
+        this.inputCanvas = inputCanvasThrottler;
         return this;
     }
 
-    public withGridCanvas(gridDotsCanvasElement: HTMLCanvasElement, gridThreadsSvgElement: HTMLElement): CrosslyCanvasBuilder {
+    public withGridCanvas(gridDotsCanvasElement: HTMLCanvasElement): CrosslyCanvasBuilder {
         const rasterDrawingCanvas = new RasterDrawingCanvas(gridDotsCanvasElement);
         this.gridDrawingCanvas = new GridDrawingCanvas(rasterDrawingCanvas);
         return this;

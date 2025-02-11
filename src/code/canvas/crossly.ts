@@ -72,13 +72,13 @@ export class CrosslyCanvas extends CanvasBase implements ICrosslyCanvas {
 
     private initializeStitchCanvas(stitchDrawingCanvas: IStitchDrawingCanvas): void {
         this.stitchDrawingCanvas = stitchDrawingCanvas;
-        this.stitchCanvas = new StitchCanvas(this.configuration.stitch, this.inputCanvas, this.gridCanvas);
+        this.stitchCanvas = new StitchCanvas(this.configuration.stitch, this.inputCanvas);
         this.stitchDrawingCanvas.subscribe(this.stitchCanvas);
     }
 
     private initializeCueCanvas(cueDrawingCanvas: ICueDrawingCanvas): void {
         this.cueDrawingCanvas = cueDrawingCanvas;
-        this.cueCanvas = new CueCanvas(this.configuration.cue, this.inputCanvas, this.gridCanvas);
+        this.cueCanvas = new CueCanvas(this.configuration.cue, this.inputCanvas);
         this.cueDrawingCanvas.subscribe(this.cueCanvas);
     }
 
