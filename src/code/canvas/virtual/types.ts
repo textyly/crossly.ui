@@ -7,9 +7,11 @@ import {
     CueThread,
     GridThread,
     StitchThread,
+    CanvasSide,
 } from "../types.js";
 
 export type DotIndex = { indexX: number, indexY: number };
+export type ThreadIndex = { from: DotIndex, to: DotIndex, side: CanvasSide, width: number, color: string }
 
 export interface IVirtualCanvas extends ICanvas {
     draw(): void;
@@ -26,12 +28,20 @@ export interface IStitchCanvas extends IVirtualCanvas {
 }
 
 export interface ICueCanvas extends IVirtualCanvas {
+    // onDrawFrontDot
     onDrawDot(listener: DrawCueDotListener): VoidUnsubscribe;
+
+    // onDrawBackDot
     onDrawDashDot(listener: DrawCueDotListener): VoidUnsubscribe;
+
     onRemoveDot(listener: RemoveCueDotListener): VoidUnsubscribe;
 
+    // onDrawFrontDot
     onDrawThread(listener: DrawCueThreadListener): VoidUnsubscribe;
+
+    // onDrawBackDot
     onDrawDashThread(listener: DrawCueThreadListener): VoidUnsubscribe;
+
     onMoveThread(listener: MoveCueThreadListener): VoidUnsubscribe;
     onRemoveThread(listener: RemoveCueThreadListener): VoidUnsubscribe;
 }

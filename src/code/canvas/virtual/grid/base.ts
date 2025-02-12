@@ -1,17 +1,18 @@
 import { VirtualCanvasBase } from "../base.js";
 import { VoidUnsubscribe } from "../../../types.js";
+import { IInputCanvas } from "../../input/types.js";
 import { Messaging2 } from "../../../messaging/impl.js";
 import { IMessaging2 } from "../../../messaging/types.js";
 import { CanvasConfig, GridThread } from "../../types.js";
 import {
+    IGridCanvas,
     DrawGridDotsEvent,
     DrawGridDotsListener,
     DrawGridThreadsEvent,
-    DrawGridThreadsListener
+    DrawGridThreadsListener,
 } from "../types.js";
-import { IInputCanvas } from "../../input/types.js";
 
-export abstract class GridCanvasBase extends VirtualCanvasBase {
+export abstract class GridCanvasBase extends VirtualCanvasBase implements IGridCanvas {
     private readonly messaging: IMessaging2<DrawGridDotsEvent, DrawGridThreadsEvent>;
 
     constructor(config: CanvasConfig, input: IInputCanvas) {

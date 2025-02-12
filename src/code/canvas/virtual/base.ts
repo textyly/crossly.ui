@@ -2,9 +2,9 @@ import { CanvasBase } from "../base.js";
 import { DotIndex, IVirtualCanvas } from "./types.js";
 import { VoidMessaging } from "../../messaging/impl.js";
 import { IVoidMessaging } from "../../messaging/types.js";
-import { IInputCanvas, MoveEvent, Position } from "../input/types.js";
 import { VoidListener, VoidUnsubscribe } from "../../types.js";
 import { Bounds, CanvasSide, CanvasConfig } from "../types.js";
+import { IInputCanvas, MoveEvent, Position } from "../input/types.js";
 
 export abstract class VirtualCanvasBase extends CanvasBase implements IVirtualCanvas {
     private readonly configuration: Readonly<CanvasConfig>;
@@ -35,7 +35,7 @@ export abstract class VirtualCanvasBase extends CanvasBase implements IVirtualCa
         this.voidMessaging = new VoidMessaging();
         this.currentSide = CanvasSide.Back;
 
-        this.dotsSpacing = config.spacing.value / 2;
+        this.dotsSpacing = config.dotSpacing.value / 2;
 
         const dotConfig = config.dot;
         this.dotColor = dotConfig.color;
@@ -184,19 +184,19 @@ export abstract class VirtualCanvasBase extends CanvasBase implements IVirtualCa
     }
 
     private zoomInSpacing(): void {
-        const configSpacing = this.config.spacing;
+        const configSpacing = this.config.dotSpacing;
         const spacing = (this.dotsSpacing < configSpacing.value)
-            ? (this.dotsSpacing + this.config.spacing.zoomOutStep)
-            : (this.dotsSpacing + this.config.spacing.zoomInStep);
+            ? (this.dotsSpacing + this.config.dotSpacing.zoomOutStep)
+            : (this.dotsSpacing + this.config.dotSpacing.zoomInStep);
 
         this.dotsSpacing = spacing;
     }
 
     private zoomOutSpacing(): void {
-        const configSpacing = this.config.spacing;
+        const configSpacing = this.config.dotSpacing;
         const spacing = (this.dotsSpacing > configSpacing.value)
-            ? (this.dotsSpacing - this.config.spacing.zoomInStep)
-            : (this.dotsSpacing - this.config.spacing.zoomOutStep);
+            ? (this.dotsSpacing - this.config.dotSpacing.zoomInStep)
+            : (this.dotsSpacing - this.config.dotSpacing.zoomOutStep);
 
         this.dotsSpacing = spacing;
     }

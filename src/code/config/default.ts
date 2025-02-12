@@ -5,7 +5,7 @@ export class ConfigFactory {
         const columns = 42;
         const rows = 24;
 
-        const spacing: SpacingConfig = {
+        const dotSpacing: SpacingConfig = {
             value: 25,
             zoomInStep: 0.5,
             zoomOutStep: 0.5
@@ -14,7 +14,7 @@ export class ConfigFactory {
         const gridConfig: CanvasConfig = {
             columns,
             rows,
-            spacing,
+            dotSpacing,
             dot: {
                 color: "#9fa19f",
                 radius: {
@@ -36,7 +36,7 @@ export class ConfigFactory {
         const stitchConfig: CanvasConfig = {
             columns,
             rows,
-            spacing,
+            dotSpacing,
             dot: {
                 color: "gray",
                 radius: {
@@ -58,7 +58,7 @@ export class ConfigFactory {
         const cueConfig: CanvasConfig = {
             columns,
             rows,
-            spacing,
+            dotSpacing,
             dot: {
                 color: "gray",
                 radius: {

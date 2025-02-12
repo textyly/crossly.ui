@@ -13,11 +13,11 @@ export type StitchThread = Thread<Dot> & { side: CanvasSide };
 export type CueThread = Thread<Dot> & { id: Id };
 
 export type CanvasConfig = {
-    dot: DotConfig
-    thread: ThreadConfig;
     columns: number;
     rows: number;
-    spacing: SpacingConfig;
+    dot: DotConfig;
+    dotSpacing: SpacingConfig;
+    thread: ThreadConfig;
 };
 
 export type ZoomItemConfig = { value: number; zoomInStep: number; zoomOutStep: number };

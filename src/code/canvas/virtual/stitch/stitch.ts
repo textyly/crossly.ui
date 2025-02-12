@@ -1,26 +1,26 @@
 import { StitchCanvasBase } from "./base.js";
-import { DotIndex, IStitchCanvas } from "../types.js";
+import { DotIndex, ThreadIndex } from "../types.js";
 import { DotsUtility } from "../../../utilities/dots.js";
 import { Dot, CanvasSide, StitchThread, CanvasConfig } from "../../types.js";
 import { IInputCanvas, PointerUpEvent, Position } from "../../input/types.js";
 
-export class StitchCanvas extends StitchCanvasBase implements IStitchCanvas {
+export class StitchCanvas extends StitchCanvasBase {
     private readonly dotsUtility: DotsUtility<Dot>;
 
-    private threads: Array<{ from: DotIndex, to: DotIndex, side: CanvasSide, width: number, color: string }>;
-    private clickedDot?: DotIndex;
+    private threadIndexes: Array<ThreadIndex>;
+    private clickedDotIndex?: DotIndex;
 
     constructor(config: CanvasConfig, inputCanvas: IInputCanvas) {
         super(config, inputCanvas);
 
         this.dotsUtility = new DotsUtility();
+        this.threadIndexes = new Array<ThreadIndex>();
 
-        this.threads = [];
         this.startListening();
     }
 
     public override dispose(): void {
-        this.threads = [];
+        this.threadIndexes = [];
         super.dispose();
     }
 
@@ -39,45 +39,53 @@ export class StitchCanvas extends StitchCanvasBase implements IStitchCanvas {
     }
 
     private handleDotClick(position: Position): void {
-        const closestDotIndex = super.getDotIndex(position);
-        const currentlyClickedDot = super.getDotPosition(closestDotIndex);
+        const clickedDotIndex = super.getDotIndex(position);
+        const clickedDot = super.getDotPosition(clickedDotIndex);
 
-        if (!currentlyClickedDot) {
-            return;
+        const previouslyClickedDotIndex = this.clickedDotIndex;
+        if (previouslyClickedDotIndex) {
+
+            const previouslyClickedDot = this.getDotPosition(previouslyClickedDotIndex);
+            const areIdenticalClicks = this.dotsUtility.areDotsEqual(clickedDot, previouslyClickedDot);
+
+            if (!areIdenticalClicks) {
+
+                const threadIndex = this.createThreadIndex(previouslyClickedDotIndex, clickedDotIndex);
+                this.threadIndexes.push(threadIndex);
+
+                const thread = this.createThread(previouslyClickedDot, clickedDot);
+                this.drawThread(thread);
+            }
         }
 
-        const previousClickedDot = !this.clickedDot ? undefined : this.getDotPosition(this.clickedDot);
-        if (currentlyClickedDot.x === previousClickedDot?.x &&
-            currentlyClickedDot.y === previousClickedDot?.y
-        ) {
-            return;
-        }
-
-        if (previousClickedDot !== undefined) {
-            const threadIndex = { from: this.clickedDot!, to: closestDotIndex!, side: this.currentSide, width: this.threadWidth, color: this.threadColor };
-            const thread = { from: previousClickedDot, to: currentlyClickedDot, side: this.currentSide, width: this.threadWidth, color: this.threadColor };
-            this.threads.push(threadIndex);
-            this.drawThread(thread);
-        }
-
-        this.clickedDot = closestDotIndex;
+        this.clickedDotIndex = clickedDotIndex;
         this.changeSide();
     }
 
     private redrawThreads(): void {
-        const frontThreadsIndexes = this.threads.filter((thread) => thread.side === CanvasSide.Front);
+        const frontThreadsIndexes = this.threadIndexes.filter((thread) => thread.side === CanvasSide.Front);
 
-        const threads: Array<StitchThread> = [];
+        const threads = new Array<StitchThread>();
 
         frontThreadsIndexes.forEach((threadIndex) => {
-            const from = super.getDotPosition(threadIndex.from)!;
-            const to = super.getDotPosition(threadIndex.to)!;
+            const from = super.getDotPosition(threadIndex.from);
+            const to = super.getDotPosition(threadIndex.to);
 
-            const recreated = { from, to, side: threadIndex.side, width: this.threadWidth, color: this.threadColor };
-            threads.push(recreated);
+            const recalculated = { from, to, side: threadIndex.side, width: threadIndex.width, color: threadIndex.color };
+            threads.push(recalculated);
         });
 
         super.invokeDrawThreads(threads, this.dotRadius);
+    }
+
+    private createThreadIndex(fromIndex: DotIndex, toIndex: DotIndex): ThreadIndex {
+        const threadIndex = { from: fromIndex, to: toIndex, side: this.currentSide, width: this.threadWidth, color: this.threadColor };
+        return threadIndex;
+    }
+
+    private createThread(from: Dot, to: Dot): StitchThread {
+        const thread = { from, to, side: this.currentSide, width: this.threadWidth, color: this.threadColor };
+        return thread;
     }
 
     private drawThread(thread: StitchThread): void {

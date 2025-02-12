@@ -1,9 +1,8 @@
-import { IGridCanvas } from "../types.js";
 import { GridCanvasBase } from "./base.js";
+import { IInputCanvas } from "../../input/types.js";
 import { GridThread, CanvasConfig } from "../../types.js";
-import { IInputCanvas, MoveEvent } from "../../input/types.js";
 
-export class GridCanvas extends GridCanvasBase implements IGridCanvas {
+export class GridCanvas extends GridCanvasBase {
     constructor(config: CanvasConfig, inputCanvas: IInputCanvas) {
         super(config, inputCanvas);
     }

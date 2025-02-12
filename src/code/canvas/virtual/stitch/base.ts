@@ -1,12 +1,12 @@
 import { VirtualCanvasBase } from "../base.js";
+import { IInputCanvas } from "../../input/types.js";
 import { VoidUnsubscribe } from "../../../types.js";
 import { Messaging1 } from "../../../messaging/impl.js";
 import { IMessaging1 } from "../../../messaging/types.js";
 import { CanvasConfig, StitchThread } from "../../types.js";
-import { DrawStitchThreadsEvent, DrawStitchThreadsListener } from "../types.js";
-import { IInputCanvas } from "../../input/types.js";
+import { DrawStitchThreadsEvent, DrawStitchThreadsListener, IStitchCanvas } from "../types.js";
 
-export abstract class StitchCanvasBase extends VirtualCanvasBase {
+export abstract class StitchCanvasBase extends VirtualCanvasBase implements IStitchCanvas {
     private readonly messaging: IMessaging1<DrawStitchThreadsEvent>;
 
     constructor(config: CanvasConfig, input: IInputCanvas) {

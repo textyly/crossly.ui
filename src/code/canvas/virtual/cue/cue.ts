@@ -1,11 +1,11 @@
+import { DotIndex } from "../types.js";
 import { CueCanvasBase } from "./base.js";
-import { DotIndex, ICueCanvas } from "../types.js";
 import { DotsUtility } from "../../../utilities/dots.js";
 import { IdGenerator } from "../../../utilities/generator.js";
 import { CanvasSide, Id, CueThread, CanvasConfig, CueDot, Dot } from "../../types.js";
 import { Position, IInputCanvas, PointerUpEvent, PointerMoveEvent } from "../../input/types.js";
 
-export class CueCanvas extends CueCanvasBase implements ICueCanvas {
+export class CueCanvas extends CueCanvasBase {
     private readonly ids: IdGenerator;
     private readonly dotsUtility: DotsUtility<Dot>;
 
@@ -31,8 +31,7 @@ export class CueCanvas extends CueCanvasBase implements ICueCanvas {
         // 2. recreate hovered dot and thread
         if (dotIndex) {
             const position = super.getDotPosition(dotIndex);
-            const event = { position };
-            this.handlePointerMove(event);
+            this.handlePointerMove({ position });
         }
     }
 
@@ -47,7 +46,7 @@ export class CueCanvas extends CueCanvasBase implements ICueCanvas {
     private handlePointerMove(event: PointerMoveEvent): void {
         const position = event.position;
         this.moveDot(position);
-        this.createOrResizeThread(position);
+        this.resizeThead(position);
     }
 
     private handlePointerUp(event: PointerUpEvent): void {
@@ -64,43 +63,48 @@ export class CueCanvas extends CueCanvasBase implements ICueCanvas {
         const dotIndex = super.getDotIndex(position);
         const dotPosition = super.getDotPosition(dotIndex);
 
+        // TODO: move in a method
         // 3. create and hover а new dot
         const isDashDot = this.currentSide === CanvasSide.Back;
         const hoveredDot = this.createAndHoverDot(dotPosition, isDashDot);
 
         // 4. remember the newly hovered dot so that it can be removed next moveDot invocation
         this.hoveredDotIndex = { id: hoveredDot.id, ...dotIndex };
+        // --------------------
     }
 
     private clickDot(position: Position): void {
-        const dotIndex = super.getDotIndex(position);
-        const dotPosition = super.getDotPosition(dotIndex);
+        const clickedDotIndex = super.getDotIndex(position);
+        const clickDot = super.getDotPosition(clickedDotIndex);
         const previouslyClickedDotIndex = this.clickedDotIndex;
 
         if (!previouslyClickedDotIndex) {
-
+            // TODO: move in a method
             this.changeSide();
             this.removeHoveredDot();
 
             const isDashDot = false;
-            const hoveredDot = this.createAndHoverDot(dotPosition, isDashDot);
-            this.hoveredDotIndex = { id: hoveredDot.id, ...dotIndex };
+            const hoveredDot = this.createAndHoverDot(clickDot, isDashDot);
+            this.hoveredDotIndex = { id: hoveredDot.id, ...clickedDotIndex };
+            // --------------------
 
         } else {
             const previouslyClickedDot = super.getDotPosition(previouslyClickedDotIndex);
-            const areEqual = this.dotsUtility.areDotEqual(dotPosition, previouslyClickedDot);
+            const areIdenticalClicks = this.dotsUtility.areDotsEqual(clickDot, previouslyClickedDot);
 
-            if (!areEqual) {
+            if (!areIdenticalClicks) {
+                // TODO: move in a method
                 this.changeSide();
                 this.removeHoveredDot();
 
                 const isDashDot = this.currentSide === CanvasSide.Back;
-                const hoveredDot = this.createAndHoverDot(dotPosition, isDashDot);
-                this.hoveredDotIndex = { id: hoveredDot.id, ...dotIndex };
+                const hoveredDot = this.createAndHoverDot(clickDot, isDashDot);
+                this.hoveredDotIndex = { id: hoveredDot.id, ...clickedDotIndex };
+                // --------------------
             }
         }
 
-        this.clickedDotIndex = dotIndex;
+        this.clickedDotIndex = clickedDotIndex;
     }
 
     private createAndHoverDot(dotPosition: Position, isDashDot: boolean): CueDot {
@@ -114,36 +118,32 @@ export class CueCanvas extends CueCanvasBase implements ICueCanvas {
         return hoveredDot;
     }
 
-    private createOrResizeThread(position: Position): void {
+    private resizeThead(position: Position): void {
         if (this.clickedDotIndex) {
-
-            let thread: CueThread;
-
-            if (this.threadId) {
-                const threadId = this.threadId;
-                thread = this.createThread(this.clickedDotIndex, position, threadId);
-                super.invokeMoveThread(thread);
-            } else {
-                const threadId = this.ids.next();
-                thread = this.createThread(this.clickedDotIndex, position, threadId);
-                this.drawThread(thread);
-            }
-
-            this.threadId = thread.id;
+            const fromDotIndex = this.clickedDotIndex;
+            const toPosition = position;
+            this.createOrResizeThread(fromDotIndex, toPosition);
         }
     }
 
-    private createThread(fromDotIndex: DotIndex, toDotPosition: Position, threadId: number): CueThread {
-        const fromDotPosition = super.getDotPosition(fromDotIndex);
+    private createOrResizeThread(fromDotIndex: DotIndex, toPosition: Position): void {
+        const fromPosition = super.getDotPosition(fromDotIndex);
 
-        const thread = {
-            id: threadId,
-            from: fromDotPosition,
-            to: toDotPosition,
-            width: this.threadWidth,
-            color: this.threadColor
-        };
+        let thread: CueThread;
+        if (this.threadId) {
+            const threadId = this.threadId;
+            thread = this.createThread(fromPosition, toPosition, threadId);
+            super.invokeMoveThread(thread);
+        } else {
+            const threadId = this.ids.next();
+            thread = this.createThread(fromPosition, toPosition, threadId);
+            this.drawThread(thread);
+        }
+        this.threadId = thread.id;
+    }
 
+    private createThread(from: Position, to: Position, id: number): CueThread {
+        const thread = { id, from, to, width: this.threadWidth, color: this.threadColor };
         return thread;
     }
 
