@@ -2,7 +2,7 @@ import { VirtualCanvasBase } from "../base.js";
 import { VoidUnsubscribe } from "../../../types.js";
 import { Messaging7 } from "../../../messaging/impl.js";
 import { IMessaging7 } from "../../../messaging/types.js";
-import { CueThread, CueDot, CanvasConfig } from "../../types.js";
+import { CueThread, CueDot, CanvasConfig, Id } from "../../types.js";
 import {
     DrawCueThreadEvent,
     DrawCueThreadListener,
@@ -72,8 +72,8 @@ export abstract class CueCanvasBase extends VirtualCanvasBase {
         this.messaging.sendToChannel3(drawThreadEvent);
     }
 
-    protected invokeRemoveDot(dot: CueDot): void {
-        const drawDotEvent = { dot };
+    protected invokeRemoveDot(dotId: Id): void {
+        const drawDotEvent = { dotId };
         this.messaging.sendToChannel4(drawDotEvent);
     }
 
@@ -87,8 +87,8 @@ export abstract class CueCanvasBase extends VirtualCanvasBase {
         this.messaging.sendToChannel6(drawThreadEvent);
     }
 
-    protected invokeRemoveThread(thread: CueThread): void {
-        const drawThreadEvent = { thread };
+    protected invokeRemoveThread(threadId: Id): void {
+        const drawThreadEvent = { threadId };
         this.messaging.sendToChannel7(drawThreadEvent);
     }
 }

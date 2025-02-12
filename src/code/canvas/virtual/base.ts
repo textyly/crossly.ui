@@ -9,9 +9,21 @@ import {
     CanvasConfig,
     BoundsChangeEvent,
     BoundsChangeListener,
+    CanvasSide,
 } from "../types.js";
 
 export abstract class VirtualCanvasBase extends CanvasBase implements IVirtualCanvas<CanvasConfig> {
+    protected _visibleDotsY!: number;
+    protected _visibleDotsX!: number;
+    protected _dotsSpacing!: number;
+    protected _dotColor!: string;
+    protected _dotRadius!: number;
+
+    protected _threadColor!: string;
+    protected _threadWidth!: number;
+
+    protected currentSide: CanvasSide;
+
     private readonly configuration: Readonly<CanvasConfig>;
     private readonly vMessaging: IMessaging1<BoundsChangeEvent>;
 
@@ -19,16 +31,6 @@ export abstract class VirtualCanvasBase extends CanvasBase implements IVirtualCa
     private vY: number;
     private vWidth: number;
     private vHeight: number;
-
-    protected _visibleDotsY!: number;
-    protected _visibleDotsX!: number;
-
-    protected _dotsSpacing!: number;
-
-    protected _dotColor!: string;
-    protected _dotRadius!: number;
-    protected _threadColor!: string;
-    protected _threadWidth!: number;
 
     constructor(config: CanvasConfig) {
         super();
@@ -41,6 +43,7 @@ export abstract class VirtualCanvasBase extends CanvasBase implements IVirtualCa
         this.vY = 0;
         this.vWidth = 0;
         this.vHeight = 0;
+        this.currentSide = CanvasSide.Back;
     }
 
     public get virtualBounds(): Bounds {
@@ -153,10 +156,14 @@ export abstract class VirtualCanvasBase extends CanvasBase implements IVirtualCa
         return index;
     }
 
-    protected getDotPositionByIndex(index: DotIndex): Position {
+    protected getDotPosition(index: DotIndex): Position {
         const x = this.virtualBounds.x + (index.indexX * this._dotsSpacing);
         const y = this.virtualBounds.y + (index.indexY * this._dotsSpacing);
         return { x, y };
+    }
+
+    protected changeSide(): void {
+        this.currentSide = this.currentSide === CanvasSide.Front ? CanvasSide.Back : CanvasSide.Front;
     }
 
     private zoomInSpacing(): void {

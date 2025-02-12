@@ -9,6 +9,7 @@ import {
     StitchThread,
     CanvasConfig,
     BoundsChangeListener,
+    Id,
 } from "../types.js";
 
 export type DotIndex = { indexX: number, indexY: number };
@@ -61,11 +62,11 @@ export type DrawCueDotListener = Listener<DrawCueDotEvent>;
 export type DrawCueThreadEvent = { thread: CueThread };
 export type DrawCueThreadListener = Listener<DrawCueThreadEvent>;
 
-export type RemoveCueDotEvent = { dot: CueDot };
+export type RemoveCueDotEvent = { dotId: Id };
 export type RemoveCueDotListener = Listener<RemoveCueDotEvent>;
 
 export type MoveCueThreadEvent = { thread: CueThread };
 export type MoveCueThreadListener = Listener<MoveCueThreadEvent>;
 
-export type RemoveCueThreadEvent = { thread: CueThread };
-export type RemoveCueThreadListener = Listener<MoveCueThreadEvent>;
+export type RemoveCueThreadEvent = { threadId: Id };
+export type RemoveCueThreadListener = Listener<RemoveCueThreadEvent>;

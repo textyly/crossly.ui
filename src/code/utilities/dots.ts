@@ -1,16 +1,9 @@
-export class DotsUtility<TDot> {
-    // TODO: add dot equality
+import { Dot } from "../canvas/types.js";
 
-    public ensureDots(from: TDot | undefined, to: TDot | undefined): { from: TDot, to: TDot } {
-        if (!from) {
-            throw new Error("`from` dot must exist.");
-        }
-
-        if (!to) {
-            throw new Error("`to` dot must exist.");
-        }
-
-        const dots = { from, to };
-        return dots;
+export class DotsUtility<TDot extends Dot> {
+    public areDotEqual(dot1?: TDot, dot2?: TDot): boolean {
+        const isEqualByX = dot1?.x === dot2?.x;
+        const isEqualByY = dot1?.y === dot2?.y;
+        return isEqualByX && isEqualByY;
     }
 }

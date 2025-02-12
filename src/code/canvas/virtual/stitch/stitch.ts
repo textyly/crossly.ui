@@ -1,14 +1,12 @@
 import { StitchCanvasBase } from "./base.js";
+import { DotIndex, IStitchCanvas } from "../types.js";
 import { DotsUtility } from "../../../utilities/dots.js";
-import { DotIndex, DrawGridDotsEvent, IGridCanvas, IStitchCanvas } from "../types.js";
 import { IInputCanvas, MoveEvent, PointerUpEvent, Position } from "../../input/types.js";
 import {
-    Id,
+    Dot,
     CanvasSide,
     StitchThread,
     CanvasConfig,
-    BoundsChangeEvent,
-    Dot,
 } from "../../types.js";
 
 export class StitchCanvas extends StitchCanvasBase implements IStitchCanvas {
@@ -16,8 +14,7 @@ export class StitchCanvas extends StitchCanvasBase implements IStitchCanvas {
     private readonly dotsUtility: DotsUtility<Dot>;
 
     private threads: Array<{ from: DotIndex, to: DotIndex, side: CanvasSide, width: number, color: string }>;
-    private currentSide: CanvasSide;
-    private previousClickedDotIndex?: DotIndex;
+    private clickedDot?: DotIndex;
 
     constructor(config: CanvasConfig, inputCanvas: IInputCanvas) {
         super(config);
@@ -26,8 +23,6 @@ export class StitchCanvas extends StitchCanvasBase implements IStitchCanvas {
         this.dotsUtility = new DotsUtility();
 
         this.threads = [];
-        this.currentSide = CanvasSide.Back;
-
         this.subscribe();
     }
 
@@ -74,13 +69,13 @@ export class StitchCanvas extends StitchCanvasBase implements IStitchCanvas {
 
     private handleDotClick(position: Position): void {
         const closestDotIndex = super.getDotIndex(position);
-        const currentlyClickedDot = !closestDotIndex ? undefined : super.getDotPositionByIndex(closestDotIndex);
+        const currentlyClickedDot = super.getDotPosition(closestDotIndex);
 
         if (!currentlyClickedDot) {
             return;
         }
 
-        const previousClickedDot = !this.previousClickedDotIndex ? undefined : this.getDotPositionByIndex(this.previousClickedDotIndex);
+        const previousClickedDot = !this.clickedDot ? undefined : this.getDotPosition(this.clickedDot);
         if (currentlyClickedDot.x === previousClickedDot?.x &&
             currentlyClickedDot.y === previousClickedDot?.y
         ) {
@@ -88,13 +83,13 @@ export class StitchCanvas extends StitchCanvasBase implements IStitchCanvas {
         }
 
         if (previousClickedDot !== undefined) {
-            const threadIndex = { from: this.previousClickedDotIndex!, to: closestDotIndex!, side: this.currentSide, width: this._threadWidth, color: this._threadColor };
+            const threadIndex = { from: this.clickedDot!, to: closestDotIndex!, side: this.currentSide, width: this._threadWidth, color: this._threadColor };
             const thread = { from: previousClickedDot, to: currentlyClickedDot, side: this.currentSide, width: this._threadWidth, color: this._threadColor };
             this.threads.push(threadIndex);
             this.drawThread(thread);
         }
 
-        this.previousClickedDotIndex = closestDotIndex;
+        this.clickedDot = closestDotIndex;
         this.changeSide();
     }
 
@@ -104,8 +99,8 @@ export class StitchCanvas extends StitchCanvasBase implements IStitchCanvas {
         const threads: Array<StitchThread> = [];
 
         frontThreadsIndexes.forEach((threadIndex) => {
-            const from = super.getDotPositionByIndex(threadIndex.from)!;
-            const to = super.getDotPositionByIndex(threadIndex.to)!;
+            const from = super.getDotPosition(threadIndex.from)!;
+            const to = super.getDotPosition(threadIndex.to)!;
 
             const recreated = { from, to, side: threadIndex.side, width: this._threadWidth, color: this._threadColor };
             threads.push(recreated);
@@ -118,9 +113,5 @@ export class StitchCanvas extends StitchCanvasBase implements IStitchCanvas {
         if (thread.side == CanvasSide.Front) {
             super.invokeDrawThreads([thread], this._dotRadius);
         }
-    }
-
-    private changeSide(): void {
-        this.currentSide = this.currentSide === CanvasSide.Front ? CanvasSide.Back : CanvasSide.Front;
     }
 }

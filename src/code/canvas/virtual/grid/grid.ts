@@ -16,6 +16,8 @@ export class GridCanvas extends GridCanvasBase implements IGridCanvas {
         // CPU, GPU, memory and GC intensive code!!!
 
         // 1. Do not divide this method in different methods
+        const allRows = this.allDotsY;
+        const allColumns = this.allDotsX;
         const dotSpacing = this._dotsSpacing;
 
         const bounds = this.bounds;
@@ -30,18 +32,10 @@ export class GridCanvas extends GridCanvasBase implements IGridCanvas {
         const virtualBoundsWidth = virtualBounds.width;
         const virtualBoundsHeight = virtualBounds.height;
 
-        const allRows = this.allDotsY;
-        const allColumns = this.allDotsX;
-
         const dotRadius = this._dotRadius;
         const dotColor = this._dotColor;
-        const dotsX: Array<number> = [];
-        const dotsY: Array<number> = [];
-
         const threadWidth = this._threadWidth;
         const threadColor = this._threadColor;
-        const threadsX = new Array<GridThread>();
-        const threadsY = new Array<GridThread>();
 
         // 2. Do not touch `this` in the loops
         // 3. Do not touch nested props in the loops (such as this.virtualBounds.width)
@@ -49,7 +43,12 @@ export class GridCanvas extends GridCanvasBase implements IGridCanvas {
         // 5. Use as many if clauses as needed in order to limit the code execution and drawing
 
         // TODO: find only the visible dots to be drawn and all !!!
-        let areThreadsCalculated = false;
+        let areThreadsXCalculated = false; // reduces threads number 
+        const dotsX: Array<number> = [];
+        const dotsY: Array<number> = [];
+        const threadsX = new Array<GridThread>();
+        const threadsY = new Array<GridThread>();
+
         for (let dotY = 0; dotY < allRows; dotY++) {
             // check wether the row is visible
             if (dotY % 2 === 0) {
@@ -74,7 +73,7 @@ export class GridCanvas extends GridCanvasBase implements IGridCanvas {
                                     }
                                 }
 
-                                if (!areThreadsCalculated) {
+                                if (!areThreadsXCalculated) {
                                     // draw only visible columns!!!
                                     const from = { x, y: virtualBoundsY };
                                     const to = { x, y: virtualBoundsY + virtualBoundsHeight };
@@ -85,7 +84,7 @@ export class GridCanvas extends GridCanvasBase implements IGridCanvas {
                     }
                 }
 
-                areThreadsCalculated = true;
+                areThreadsXCalculated = true;
 
                 // check whether the dot is visible by `y`
                 const y = virtualBoundsY + (dotY * dotSpacing);
@@ -104,6 +103,17 @@ export class GridCanvas extends GridCanvasBase implements IGridCanvas {
         super.invokeDrawDots(dotsX, dotsY, dotRadius, dotColor);
     }
 
+    private subscribe(): void {
+        const zoomInUn = this.inputCanvas.onZoomIn(this.handleZoomIn.bind(this));
+        super.registerUn(zoomInUn);
+
+        const zoomOutUn = this.inputCanvas.onZoomOut(this.handleZoomOut.bind(this));
+        super.registerUn(zoomOutUn);
+
+        const moveUn = this.inputCanvas.onMove(this.handleMove.bind(this));
+        super.registerUn(moveUn);
+    }
+
     private handleZoomIn(): void {
         super.zoomIn();
     }
@@ -115,16 +125,5 @@ export class GridCanvas extends GridCanvasBase implements IGridCanvas {
     private handleMove(event: MoveEvent): void {
         const difference = event.difference;
         super.move(difference);
-    }
-
-    private subscribe(): void {
-        const zoomInUn = this.inputCanvas.onZoomIn(this.handleZoomIn.bind(this));
-        super.registerUn(zoomInUn);
-
-        const zoomOutUn = this.inputCanvas.onZoomOut(this.handleZoomOut.bind(this));
-        super.registerUn(zoomOutUn);
-
-        const moveUn = this.inputCanvas.onMove(this.handleMove.bind(this));
-        super.registerUn(moveUn);
     }
 }

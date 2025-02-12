@@ -1,32 +1,47 @@
 import { CueCanvasBase } from "./base.js";
-import { IdGenerator } from "../../../utilities/generator.js";
 import { DotIndex, ICueCanvas } from "../types.js";
-import { IInputCanvas, MoveEvent, PointerMoveEvent, PointerUpEvent, Position } from "../../input/types.js";
-import { CanvasSide, Id, CueThread, CanvasConfig, CueDot } from "../../types.js";
+import { DotsUtility } from "../../../utilities/dots.js";
+import { IdGenerator } from "../../../utilities/generator.js";
+import { CanvasSide, Id, CueThread, CanvasConfig, CueDot, Dot } from "../../types.js";
+import {
+    Position,
+    MoveEvent,
+    IInputCanvas,
+    PointerUpEvent,
+    PointerMoveEvent,
+} from "../../input/types.js";
 
 export class CueCanvas extends CueCanvasBase implements ICueCanvas {
     private readonly inputCanvas: IInputCanvas;
     private readonly ids: IdGenerator;
+    private readonly dotsUtility: DotsUtility<Dot>;
 
-    private currentSide: CanvasSide;
-
-    private currentThreadIndex?: { id: number, from: DotIndex & { id: number }, to: DotIndex & { id: number }, side: CanvasSide, width: number, color: string };
-    private previouslyClickedDotIndex?: DotIndex & { id: number };
-    private previouslyHoveredDotIndex?: DotIndex & { id: number };
+    private threadId?: Id;
+    private clickedDotIndex?: DotIndex;
+    private hoveredDotIndex?: DotIndex & { id: Id };
 
     constructor(config: CanvasConfig, inputCanvas: IInputCanvas) {
         super(config);
 
         this.inputCanvas = inputCanvas;
         this.ids = new IdGenerator();
+        this.dotsUtility = new DotsUtility();
 
-        this.currentSide = CanvasSide.Back;
         this.subscribe();
     }
 
     protected override redraw(): void {
-        this.previouslyHoveredDotIndex = undefined;
-        this.currentThreadIndex = undefined;
+        // 1. remove hovered dot and thread
+        const dotIndex = this.hoveredDotIndex;
+        this.hoveredDotIndex = undefined;
+        this.threadId = undefined;
+
+        // 2. recreate hovered dot and thread
+        if (dotIndex) {
+            const position = super.getDotPosition(dotIndex);
+            const event = { position };
+            this.handlePointerMove(event);
+        }
     }
 
     private subscribe(): void {
@@ -68,104 +83,97 @@ export class CueCanvas extends CueCanvasBase implements ICueCanvas {
     private handlePointerUp(event: PointerUpEvent): void {
         const position = event.position;
         this.clickDot(position);
+        this.removeThread();
     }
 
     private moveDot(position: Position): void {
-        const currentDotIndex = super.getDotIndex(position);
-        const currentlyHoveredDot = !currentDotIndex ? undefined : super.getDotPositionByIndex(currentDotIndex);
-        const previouslyHoveredDot = !this.previouslyHoveredDotIndex ? undefined : super.getDotPositionByIndex(this.previouslyHoveredDotIndex);
+        // 1. remove previously hovered dot
+        this.removeHoveredDot();
 
-        if (!currentlyHoveredDot) {
-            this.removeHoveredDot();
-        } else if (currentlyHoveredDot.x !== previouslyHoveredDot?.x ||
-            currentlyHoveredDot.y !== previouslyHoveredDot?.y
-        ) {
-            this.removeHoveredDot();
-            const id = this.ids.next();
-            const hoveredDot: CueDot = { id, ...currentlyHoveredDot };
-            this.hoverDot(hoveredDot);
-            this.previouslyHoveredDotIndex = { id, ...currentDotIndex };
-        }
+        // 2. get newly hovered dot's position
+        const dotIndex = super.getDotIndex(position);
+        const dotPosition = super.getDotPosition(dotIndex);
+
+        // 3. create and hover а new dot
+        const isDashDot = this.currentSide === CanvasSide.Back;
+        const hoveredDot = this.createAndHoverDot(dotPosition, isDashDot);
+
+        // 4. remember the newly hovered dot so that it can be removed next moveDot invocation
+        this.hoveredDotIndex = { id: hoveredDot.id, ...dotIndex };
     }
 
     private clickDot(position: Position): void {
-        const currentlyClickedDotIndex = super.getDotIndex(position);
-        const currentlyClickedDot = !currentlyClickedDotIndex ? undefined : super.getDotPositionByIndex(currentlyClickedDotIndex);
+        const dotIndex = super.getDotIndex(position);
+        const dotPosition = super.getDotPosition(dotIndex);
+        const previouslyClickedDotIndex = this.clickedDotIndex;
 
-        const previouslyClickedDotIndex = this.previouslyClickedDotIndex;
-        const previouslyClickedDot = !previouslyClickedDotIndex ? undefined : super.getDotPositionByIndex(previouslyClickedDotIndex);
+        if (!previouslyClickedDotIndex) {
 
-        // 1. check weather user has clicked on a dot and it is not the same as before
-        if (currentlyClickedDot && (currentlyClickedDot.x !== previouslyClickedDot?.x || currentlyClickedDot.y !== previouslyClickedDot?.y)) {
-
-            // 2. set the new clicked dot
-            const id = previouslyClickedDotIndex?.id ?? this.ids.next();
-            this.previouslyClickedDotIndex = { id, ...currentlyClickedDotIndex };
-
-            // 3. change canvas side
             this.changeSide();
-
-            // 4. handle dot logic, remove previously hovered dot and hover the clicked one
             this.removeHoveredDot();
-            const hoveredDot: CueDot = { id, ...currentlyClickedDot };
-            this.hoverDot(hoveredDot);
 
-            // 5. handle thread logic, remove previously drawn thread and draw a new one
-            this.removeCurrentThread();
-            this.createOrResizeThread(position);
-        }
-    }
+            const isDashDot = false;
+            const hoveredDot = this.createAndHoverDot(dotPosition, isDashDot);
+            this.hoveredDotIndex = { id: hoveredDot.id, ...dotIndex };
 
-    private hoverDot(hoveredDot: CueDot): void {
-        if (this.previouslyClickedDotIndex === undefined) {
-            super.invokeDrawDashDot(hoveredDot, this._dotRadius, this._dotColor);
         } else {
-            this.currentSide === CanvasSide.Front
-                ? super.invokeDrawDot(hoveredDot, this._dotRadius, this._dotColor)
-                : super.invokeDrawDashDot(hoveredDot, this._dotRadius, this._dotColor);
+            const previouslyClickedDot = super.getDotPosition(previouslyClickedDotIndex);
+            const areEqual = this.dotsUtility.areDotEqual(dotPosition, previouslyClickedDot);
+
+            if (!areEqual) {
+                this.changeSide();
+                this.removeHoveredDot();
+
+                const isDashDot = this.currentSide === CanvasSide.Back;
+                const hoveredDot = this.createAndHoverDot(dotPosition, isDashDot);
+                this.hoveredDotIndex = { id: hoveredDot.id, ...dotIndex };
+            }
         }
+
+        this.clickedDotIndex = dotIndex;
     }
 
-    private removeHoveredDot(): void {
-        if (this.previouslyHoveredDotIndex) {
-            const previouslyHoveredDotPosition = super.getDotPositionByIndex(this.previouslyHoveredDotIndex);
-            const previouslyHoveredDot = { id: this.previouslyHoveredDotIndex.id, x: previouslyHoveredDotPosition.x, y: previouslyHoveredDotPosition.y, radius: this._dotRadius, color: this._dotColor };
-            super.invokeRemoveDot(previouslyHoveredDot);
-            this.previouslyHoveredDotIndex = undefined;
-        }
+    private createAndHoverDot(dotPosition: Position, isDashDot: boolean): CueDot {
+        const id = this.ids.next();
+        const hoveredDot: CueDot = { id, ...dotPosition };
+
+        isDashDot
+            ? super.invokeDrawDashDot(hoveredDot, this._dotRadius, this._dotColor)
+            : super.invokeDrawDot(hoveredDot, this._dotRadius, this._dotColor);
+
+        return hoveredDot;
     }
 
     private createOrResizeThread(position: Position): void {
-        if (!this.previouslyClickedDotIndex) {
-            return;
-        }
+        if (this.clickedDotIndex) {
 
-        if (this.currentThreadIndex) {
-            const dotIndex = super.getDotIndex(position)!;
-            const toDotPosition = super.getDotPositionByIndex(dotIndex);
+            let thread: CueThread;
 
-            const thread = this.createCurrentThread(this.previouslyClickedDotIndex, toDotPosition, this.currentThreadIndex.id);
-            this.currentThreadIndex = { id: thread.id, from: this.previouslyClickedDotIndex, to: { id: thread.to.id, ...dotIndex }, side: this.currentSide, width: thread.width, color: thread.color };
-            super.invokeMoveThread(thread);
-        } else {
-            const dotIndex = super.getDotIndex(position)!;
-            const toDotPosition = super.getDotPositionByIndex(dotIndex);
+            if (this.threadId) {
+                const threadId = this.threadId;
+                thread = this.createThread(this.clickedDotIndex, position, threadId);
+                super.invokeMoveThread(thread);
+            } else {
+                const threadId = this.ids.next();
+                thread = this.createThread(this.clickedDotIndex, position, threadId);
+                this.drawThread(thread);
+            }
 
-            const threadId = this.ids.next();
-            const thread = this.createCurrentThread(this.previouslyClickedDotIndex, toDotPosition, threadId);
-            this.currentThreadIndex = { id: thread.id, from: this.previouslyClickedDotIndex, to: { id: thread.to.id, ...dotIndex }, side: this.currentSide, width: thread.width, color: thread.color };
-            this.drawThread(thread);
+            this.threadId = thread.id;
         }
     }
 
-    private createCurrentThread(previousClickedDotIndex: DotIndex & { id: number }, toDotPosition: Position, threadId: number): CueThread {
-        const fromDotPosition = super.getDotPositionByIndex(previousClickedDotIndex);
-        const fromDot = { id: previousClickedDotIndex.id, ...fromDotPosition };
+    private createThread(fromDotIndex: DotIndex, toDotPosition: Position, threadId: number): CueThread {
+        const fromDotPosition = super.getDotPosition(fromDotIndex);
 
-        const dotId = this.ids.next();
-        const toDot = { id: dotId, ...toDotPosition };
+        const thread = {
+            id: threadId,
+            from: fromDotPosition,
+            to: toDotPosition,
+            width: this._threadWidth,
+            color: this._threadColor
+        };
 
-        const thread = { id: threadId, from: fromDot, to: toDot, width: this._threadWidth, color: this._threadColor };
         return thread;
     }
 
@@ -177,17 +185,18 @@ export class CueCanvas extends CueCanvasBase implements ICueCanvas {
         }
     }
 
-    private removeCurrentThread(): void {
-        if (this.currentThreadIndex) {
-            const threadId = this.currentThreadIndex.id;
-            const toDotPosition = super.getDotPositionByIndex(this.currentThreadIndex.to);
-            const thread = this.createCurrentThread(this.currentThreadIndex.from, toDotPosition, threadId);
-            super.invokeRemoveThread(thread);
-            this.currentThreadIndex = undefined;
+    private removeHoveredDot(): void {
+        if (this.hoveredDotIndex) {
+            const dotId = this.hoveredDotIndex.id;
+            super.invokeRemoveDot(dotId);
+            this.hoveredDotIndex = undefined;
         }
     }
 
-    private changeSide(): void {
-        this.currentSide = this.currentSide === CanvasSide.Front ? CanvasSide.Back : CanvasSide.Front;
+    private removeThread(): void {
+        if (this.threadId) {
+            super.invokeRemoveThread(this.threadId);
+            this.threadId = undefined;
+        }
     }
 }

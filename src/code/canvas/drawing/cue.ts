@@ -6,7 +6,8 @@ import {
     DrawCueDotEvent,
     RemoveCueDotEvent,
     DrawCueThreadEvent,
-    RemoveCueThreadEvent
+    RemoveCueThreadEvent,
+    MoveCueThreadEvent
 } from "../virtual/types.js";
 
 export class CueDrawingCanvas extends CanvasBase implements ICueDrawingCanvas {
@@ -74,7 +75,7 @@ export class CueDrawingCanvas extends CanvasBase implements ICueDrawingCanvas {
     }
 
     private handleRemoveDot(event: RemoveCueDotEvent): void {
-        const id = event.dot.id;
+        const id = event.dotId;
 
         const svgDot = this.svgDots.get(id)!;
         this.vectorDrawing.removeDot(svgDot);
@@ -89,9 +90,9 @@ export class CueDrawingCanvas extends CanvasBase implements ICueDrawingCanvas {
         this.svgLines.set(id, svgLine);
     }
 
-    private handleMoveThread(event: DrawCueThreadEvent): void {
+    private handleMoveThread(event: MoveCueThreadEvent): void {
         const thread = event.thread;
-        const id = thread.id;
+        const id = event.thread.id;
 
         const svgLine = this.svgLines.get(id)!;
         this.vectorDrawing.moveLine(thread, svgLine);
@@ -106,8 +107,7 @@ export class CueDrawingCanvas extends CanvasBase implements ICueDrawingCanvas {
     }
 
     private handleRemoveThread(event: RemoveCueThreadEvent): void {
-        const thread = event.thread;
-        const id = thread.id;
+        const id = event.threadId;
 
         const svgLine = this.svgLines.get(id)!;
         this.vectorDrawing.removeLine(svgLine);
