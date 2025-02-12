@@ -83,8 +83,8 @@ export class StitchCanvas extends StitchCanvasBase implements IStitchCanvas {
         }
 
         if (previousClickedDot !== undefined) {
-            const threadIndex = { from: this.clickedDot!, to: closestDotIndex!, side: this.currentSide, width: this._threadWidth, color: this._threadColor };
-            const thread = { from: previousClickedDot, to: currentlyClickedDot, side: this.currentSide, width: this._threadWidth, color: this._threadColor };
+            const threadIndex = { from: this.clickedDot!, to: closestDotIndex!, side: this.currentSide, width: this.threadWidth, color: this.threadColor };
+            const thread = { from: previousClickedDot, to: currentlyClickedDot, side: this.currentSide, width: this.threadWidth, color: this.threadColor };
             this.threads.push(threadIndex);
             this.drawThread(thread);
         }
@@ -102,16 +102,16 @@ export class StitchCanvas extends StitchCanvasBase implements IStitchCanvas {
             const from = super.getDotPosition(threadIndex.from)!;
             const to = super.getDotPosition(threadIndex.to)!;
 
-            const recreated = { from, to, side: threadIndex.side, width: this._threadWidth, color: this._threadColor };
+            const recreated = { from, to, side: threadIndex.side, width: this.threadWidth, color: this.threadColor };
             threads.push(recreated);
         });
 
-        super.invokeDrawThreads(threads, this._dotRadius);
+        super.invokeDrawThreads(threads, this.dotRadius);
     }
 
     private drawThread(thread: StitchThread): void {
         if (thread.side == CanvasSide.Front) {
-            super.invokeDrawThreads([thread], this._dotRadius);
+            super.invokeDrawThreads([thread], this.dotRadius);
         }
     }
 }

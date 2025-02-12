@@ -14,26 +14,21 @@ import {
 
 export type DotIndex = { indexX: number, indexY: number };
 
-export interface IVirtualCanvas<TConfig> extends ICanvas {
-    get config(): TConfig;
-    get virtualBounds(): Bounds;
-
+export interface IVirtualCanvas extends ICanvas {
     draw(): void;
-
-    onVirtualBoundsChange(listener: BoundsChangeListener): VoidUnsubscribe;
     onRedraw(listener: VoidListener): VoidUnsubscribe;
 }
 
-export interface IGridCanvas extends IVirtualCanvas<CanvasConfig> {
+export interface IGridCanvas extends IVirtualCanvas {
     onDrawDots(listener: DrawGridDotsListener): VoidUnsubscribe;
     onDrawThreads(listener: DrawGridThreadsListener): VoidUnsubscribe;
 }
 
-export interface IStitchCanvas extends IVirtualCanvas<CanvasConfig> {
+export interface IStitchCanvas extends IVirtualCanvas {
     onDrawThreads(listener: DrawStitchThreadsListener): VoidUnsubscribe;
 }
 
-export interface ICueCanvas extends IVirtualCanvas<CanvasConfig> {
+export interface ICueCanvas extends IVirtualCanvas {
     onDrawDot(listener: DrawCueDotListener): VoidUnsubscribe;
     onDrawDashDot(listener: DrawCueDotListener): VoidUnsubscribe;
     onRemoveDot(listener: RemoveCueDotListener): VoidUnsubscribe;

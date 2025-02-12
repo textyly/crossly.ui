@@ -7,19 +7,14 @@ export abstract class CanvasBase implements ICanvas {
     private readonly uns: Array<VoidUnsubscribe>;
     private readonly msg: IMessaging1<BoundsChangeEvent>;
 
-    private x: number;
-    private y: number;
-    private width: number;
-    private height: number;
+    private x = 0;
+    private y = 0;
+    private width = 0;
+    private height = 0;
 
     constructor() {
         this.uns = new Array<VoidUnsubscribe>;
         this.msg = new Messaging1();
-
-        this.x = 0;
-        this.y = 0;
-        this.width = 0;
-        this.height = 0;
     }
 
     public get bounds(): Bounds {
@@ -51,12 +46,12 @@ export abstract class CanvasBase implements ICanvas {
         return this.msg.listenOnChannel1(listener);
     }
 
-    protected registerUn(func: VoidUnsubscribe): void {
-        this.uns.push(func);
-    }
-
     protected invokeBoundsChange(bounds: Bounds): void {
         const event = { bounds };
         this.msg.sendToChannel1(event);
+    }
+
+    protected registerUn(func: VoidUnsubscribe): void {
+        this.uns.push(func);
     }
 }

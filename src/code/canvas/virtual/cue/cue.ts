@@ -138,8 +138,8 @@ export class CueCanvas extends CueCanvasBase implements ICueCanvas {
         const hoveredDot: CueDot = { id, ...dotPosition };
 
         isDashDot
-            ? super.invokeDrawDashDot(hoveredDot, this._dotRadius, this._dotColor)
-            : super.invokeDrawDot(hoveredDot, this._dotRadius, this._dotColor);
+            ? super.invokeDrawDashDot(hoveredDot, this.dotRadius, this.dotColor)
+            : super.invokeDrawDot(hoveredDot, this.dotRadius, this.dotColor);
 
         return hoveredDot;
     }
@@ -170,8 +170,8 @@ export class CueCanvas extends CueCanvasBase implements ICueCanvas {
             id: threadId,
             from: fromDotPosition,
             to: toDotPosition,
-            width: this._threadWidth,
-            color: this._threadColor
+            width: this.threadWidth,
+            color: this.threadColor
         };
 
         return thread;
