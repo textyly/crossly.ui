@@ -4,12 +4,8 @@ import { GridThread, CanvasConfig } from "../../types.js";
 import { IInputCanvas, MoveEvent } from "../../input/types.js";
 
 export class GridCanvas extends GridCanvasBase implements IGridCanvas {
-    private readonly inputCanvas: IInputCanvas;
-
     constructor(config: CanvasConfig, inputCanvas: IInputCanvas) {
-        super(config);
-        this.inputCanvas = inputCanvas;
-        this.subscribe();
+        super(config, inputCanvas);
     }
 
     protected override redraw(): void {
@@ -101,29 +97,5 @@ export class GridCanvas extends GridCanvasBase implements IGridCanvas {
 
         super.invokeDrawThreads([...threadsX, ...threadsY]);
         super.invokeDrawDots(dotsX, dotsY, dotRadius, dotColor);
-    }
-
-    private subscribe(): void {
-        const zoomInUn = this.inputCanvas.onZoomIn(this.handleZoomIn.bind(this));
-        super.registerUn(zoomInUn);
-
-        const zoomOutUn = this.inputCanvas.onZoomOut(this.handleZoomOut.bind(this));
-        super.registerUn(zoomOutUn);
-
-        const moveUn = this.inputCanvas.onMove(this.handleMove.bind(this));
-        super.registerUn(moveUn);
-    }
-
-    private handleZoomIn(): void {
-        super.zoomIn();
-    }
-
-    private handleZoomOut(): void {
-        super.zoomOut();
-    }
-
-    private handleMove(event: MoveEvent): void {
-        const difference = event.difference;
-        super.move(difference);
     }
 }

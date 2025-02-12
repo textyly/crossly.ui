@@ -1,19 +1,21 @@
 import { CanvasBase } from "../base.js";
-import { Position } from "../input/types.js";
 import { DotIndex, IVirtualCanvas } from "./types.js";
 import { VoidMessaging } from "../../messaging/impl.js";
 import { IVoidMessaging } from "../../messaging/types.js";
+import { IInputCanvas, MoveEvent, Position } from "../input/types.js";
 import { VoidListener, VoidUnsubscribe } from "../../types.js";
 import { Bounds, CanvasSide, CanvasConfig } from "../types.js";
 
 export abstract class VirtualCanvasBase extends CanvasBase implements IVirtualCanvas {
     private readonly configuration: Readonly<CanvasConfig>;
-    private readonly vMessaging: IVoidMessaging;
+    private readonly voidMessaging: IVoidMessaging;
 
     private virtualX = 0;
     private virtualY = 0;
     private virtualWidth = 0;
     private virtualHeight = 0;
+
+    protected readonly inputCanvas: IInputCanvas;
 
     protected dotsSpacing: number;
     protected dotColor: string;
@@ -24,13 +26,15 @@ export abstract class VirtualCanvasBase extends CanvasBase implements IVirtualCa
 
     protected currentSide: CanvasSide;
 
-    constructor(config: CanvasConfig) {
+    constructor(config: CanvasConfig, inputCanvas: IInputCanvas) {
         super();
 
-        this.vMessaging = new VoidMessaging();
+        this.inputCanvas = inputCanvas;
+        this.configuration = config;
+
+        this.voidMessaging = new VoidMessaging();
         this.currentSide = CanvasSide.Back;
 
-        this.configuration = config;
         this.dotsSpacing = config.spacing.value / 2;
 
         const dotConfig = config.dot;
@@ -40,6 +44,8 @@ export abstract class VirtualCanvasBase extends CanvasBase implements IVirtualCa
         const threadConfig = config.thread;
         this.threadColor = threadConfig.color;
         this.threadWidth = threadConfig.width.value;
+
+        this.subscribe();
     }
 
     public get virtualBounds(): Bounds {
@@ -78,11 +84,11 @@ export abstract class VirtualCanvasBase extends CanvasBase implements IVirtualCa
     }
 
     public onRedraw(listener: VoidListener): VoidUnsubscribe {
-        return this.vMessaging.listenOnChannel0(listener);
+        return this.voidMessaging.listenOnChannel0(listener);
     }
 
     public override dispose(): void {
-        this.vMessaging.dispose();
+        this.voidMessaging.dispose();
         super.dispose();
     }
 
@@ -119,7 +125,7 @@ export abstract class VirtualCanvasBase extends CanvasBase implements IVirtualCa
     }
 
     protected invokeRedraw(): void {
-        this.vMessaging.sendToChannel0();
+        this.voidMessaging.sendToChannel0();
     }
 
     protected getDotIndex(position: Position): DotIndex {
@@ -141,6 +147,30 @@ export abstract class VirtualCanvasBase extends CanvasBase implements IVirtualCa
 
     protected changeSide(): void {
         this.currentSide = this.currentSide === CanvasSide.Front ? CanvasSide.Back : CanvasSide.Front;
+    }
+
+    private subscribe(): void {
+        const zoomInUn = this.inputCanvas.onZoomIn(this.handleZoomIn.bind(this));
+        super.registerUn(zoomInUn);
+
+        const zoomOutUn = this.inputCanvas.onZoomOut(this.handleZoomOut.bind(this));
+        super.registerUn(zoomOutUn);
+
+        const moveUn = this.inputCanvas.onMove(this.handleMove.bind(this));
+        super.registerUn(moveUn);
+    }
+
+    private handleZoomIn(): void {
+        this.zoomIn();
+    }
+
+    private handleZoomOut(): void {
+        this.zoomOut();
+    }
+
+    private handleMove(event: MoveEvent): void {
+        const difference = event.difference;
+        this.move(difference);
     }
 
     private calculateVirtualBounds(): void {

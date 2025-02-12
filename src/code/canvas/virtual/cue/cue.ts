@@ -3,16 +3,9 @@ import { DotIndex, ICueCanvas } from "../types.js";
 import { DotsUtility } from "../../../utilities/dots.js";
 import { IdGenerator } from "../../../utilities/generator.js";
 import { CanvasSide, Id, CueThread, CanvasConfig, CueDot, Dot } from "../../types.js";
-import {
-    Position,
-    MoveEvent,
-    IInputCanvas,
-    PointerUpEvent,
-    PointerMoveEvent,
-} from "../../input/types.js";
+import { Position, IInputCanvas, PointerUpEvent, PointerMoveEvent } from "../../input/types.js";
 
 export class CueCanvas extends CueCanvasBase implements ICueCanvas {
-    private readonly inputCanvas: IInputCanvas;
     private readonly ids: IdGenerator;
     private readonly dotsUtility: DotsUtility<Dot>;
 
@@ -20,14 +13,13 @@ export class CueCanvas extends CueCanvasBase implements ICueCanvas {
     private clickedDotIndex?: DotIndex;
     private hoveredDotIndex?: DotIndex & { id: Id };
 
-    constructor(config: CanvasConfig, inputCanvas: IInputCanvas) {
-        super(config);
+    constructor(config: CanvasConfig, input: IInputCanvas) {
+        super(config, input);
 
-        this.inputCanvas = inputCanvas;
         this.ids = new IdGenerator();
         this.dotsUtility = new DotsUtility();
 
-        this.subscribe();
+        this.startListening();
     }
 
     protected override redraw(): void {
@@ -44,34 +36,12 @@ export class CueCanvas extends CueCanvasBase implements ICueCanvas {
         }
     }
 
-    private subscribe(): void {
-        const zoomInUn = this.inputCanvas.onZoomIn(this.handleZoomIn.bind(this));
-        super.registerUn(zoomInUn);
-
-        const zoomOutUn = this.inputCanvas.onZoomOut(this.handleZoomOut.bind(this));
-        super.registerUn(zoomOutUn);
-
-        const moveUn = this.inputCanvas.onMove(this.handleMove.bind(this));
-        super.registerUn(moveUn);
-
+    private startListening(): void {
         const pointerMoveUn = this.inputCanvas.onPointerMove(this.handlePointerMove.bind(this));
         super.registerUn(pointerMoveUn);
 
         const pointerUpUn = this.inputCanvas.onPointerUp(this.handlePointerUp.bind(this));
         super.registerUn(pointerUpUn);
-    }
-
-    private handleZoomIn(): void {
-        super.zoomIn();
-    }
-
-    private handleZoomOut(): void {
-        super.zoomOut();
-    }
-
-    private handleMove(event: MoveEvent): void {
-        const difference = event.difference;
-        super.move(difference);
     }
 
     private handlePointerMove(event: PointerMoveEvent): void {

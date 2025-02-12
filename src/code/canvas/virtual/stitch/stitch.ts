@@ -1,29 +1,22 @@
 import { StitchCanvasBase } from "./base.js";
 import { DotIndex, IStitchCanvas } from "../types.js";
 import { DotsUtility } from "../../../utilities/dots.js";
-import { IInputCanvas, MoveEvent, PointerUpEvent, Position } from "../../input/types.js";
-import {
-    Dot,
-    CanvasSide,
-    StitchThread,
-    CanvasConfig,
-} from "../../types.js";
+import { Dot, CanvasSide, StitchThread, CanvasConfig } from "../../types.js";
+import { IInputCanvas, PointerUpEvent, Position } from "../../input/types.js";
 
 export class StitchCanvas extends StitchCanvasBase implements IStitchCanvas {
-    private readonly inputCanvas: IInputCanvas;
     private readonly dotsUtility: DotsUtility<Dot>;
 
     private threads: Array<{ from: DotIndex, to: DotIndex, side: CanvasSide, width: number, color: string }>;
     private clickedDot?: DotIndex;
 
     constructor(config: CanvasConfig, inputCanvas: IInputCanvas) {
-        super(config);
+        super(config, inputCanvas);
 
-        this.inputCanvas = inputCanvas;
         this.dotsUtility = new DotsUtility();
 
         this.threads = [];
-        this.subscribe();
+        this.startListening();
     }
 
     public override dispose(): void {
@@ -35,31 +28,9 @@ export class StitchCanvas extends StitchCanvasBase implements IStitchCanvas {
         this.redrawThreads();
     }
 
-    private subscribe(): void {
-        const zoomInUn = this.inputCanvas.onZoomIn(this.handleZoomIn.bind(this));
-        super.registerUn(zoomInUn);
-
-        const zoomOutUn = this.inputCanvas.onZoomOut(this.handleZoomOut.bind(this));
-        super.registerUn(zoomOutUn);
-
-        const moveUn = this.inputCanvas.onMove(this.handleMove.bind(this));
-        super.registerUn(moveUn);
-
+    private startListening(): void {
         const pointerUpUn = this.inputCanvas.onPointerUp(this.handlePointerUp.bind(this));
         super.registerUn(pointerUpUn);
-    }
-
-    private handleZoomIn(): void {
-        super.zoomIn();
-    }
-
-    private handleZoomOut(): void {
-        super.zoomOut();
-    }
-
-    private handleMove(event: MoveEvent): void {
-        const difference = event.difference;
-        super.move(difference);
     }
 
     private handlePointerUp(event: PointerUpEvent): void {

@@ -1,15 +1,12 @@
 import { Listener, VoidListener, VoidUnsubscribe } from "../../types.js";
 import {
+    Id,
     Dot,
-    Bounds,
     CueDot,
     ICanvas,
     CueThread,
     GridThread,
     StitchThread,
-    CanvasConfig,
-    BoundsChangeListener,
-    Id,
 } from "../types.js";
 
 export type DotIndex = { indexX: number, indexY: number };

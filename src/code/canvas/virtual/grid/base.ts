@@ -9,12 +9,13 @@ import {
     DrawGridThreadsEvent,
     DrawGridThreadsListener
 } from "../types.js";
+import { IInputCanvas } from "../../input/types.js";
 
 export abstract class GridCanvasBase extends VirtualCanvasBase {
     private readonly messaging: IMessaging2<DrawGridDotsEvent, DrawGridThreadsEvent>;
 
-    constructor(config: CanvasConfig) {
-        super(config);
+    constructor(config: CanvasConfig, input: IInputCanvas) {
+        super(config, input);
         this.messaging = new Messaging2();
     }
 
