@@ -64,27 +64,46 @@ export class StitchCanvas extends StitchCanvasBase {
 
     private redrawThreads(): void {
         const frontThreadsIndexes = this.threadIndexes.filter((thread) => thread.side === CanvasSide.Front);
-
         const threads = new Array<StitchThread>();
 
         frontThreadsIndexes.forEach((threadIndex) => {
-            const from = super.getDotPosition(threadIndex.from);
-            const to = super.getDotPosition(threadIndex.to);
-
-            const recalculated = { from, to, side: threadIndex.side, width: threadIndex.width, color: threadIndex.color };
-            threads.push(recalculated);
+            const thread = this.recalculateThread(threadIndex);
+            threads.push(thread);
         });
 
         super.invokeDrawThreads(threads, this.dotRadius);
     }
 
+    private recalculateThread(threadIndex: ThreadIndex): StitchThread {
+        const from = super.getDotPosition(threadIndex.from);
+        const to = super.getDotPosition(threadIndex.to);
+
+        // TODO: each thread can have different thread width. recalculated with is threadWidth + threadWidthZoomStep
+        const thread = { from, to, side: threadIndex.side, width: this.threadWidth, color: threadIndex.color };
+        return thread;
+    }
+
     private createThreadIndex(fromIndex: DotIndex, toIndex: DotIndex): ThreadIndex {
-        const threadIndex = { from: fromIndex, to: toIndex, side: this.currentSide, width: this.threadWidth, color: this.threadColor };
+        const threadIndex = {
+            from: fromIndex,
+            to: toIndex,
+            side: this.currentSide,
+            width: this.threadWidth,
+            color: this.threadColor
+        };
+
         return threadIndex;
     }
 
     private createThread(from: Dot, to: Dot): StitchThread {
-        const thread = { from, to, side: this.currentSide, width: this.threadWidth, color: this.threadColor };
+        const thread = {
+            from,
+            to,
+            side: this.currentSide,
+            width: this.threadWidth,
+            color: this.threadColor
+        };
+
         return thread;
     }
 
