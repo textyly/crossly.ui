@@ -6,14 +6,7 @@ body {
   overflow: hidden;
 }
 
-#grid-threads {
-  position: absolute;
-  top: 0;
-  left: 0;
-  z-index: 1;
-}
-
-#grid-dots {
+#fabric {
   position: absolute;
   top: 0;
   left: 0;

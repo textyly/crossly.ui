@@ -48,25 +48,6 @@ export abstract class VirtualCanvasBase extends CanvasBase implements IVirtualCa
         this.subscribe();
     }
 
-    public get virtualBounds(): Bounds {
-        const bounds = { x: this.virtualX, y: this.virtualY, width: this.virtualWidth, height: this.virtualHeight };
-        return bounds;
-    }
-
-    public set virtualBounds(value: Bounds) {
-        const newX = value.x;
-        const newY = value.y;
-        const newWidth = value.width;
-        const newHeight = value.height;
-
-        if (this.virtualX !== newX || this.virtualY !== newY || this.virtualWidth !== newWidth || this.virtualHeight !== newHeight) {
-            this.virtualX = newX;
-            this.virtualY = newY;
-            this.virtualWidth = newWidth;
-            this.virtualHeight = newHeight;
-        }
-    }
-
     public get config(): CanvasConfig {
         return this.configuration;
     }
@@ -81,6 +62,25 @@ export abstract class VirtualCanvasBase extends CanvasBase implements IVirtualCa
         const invisibleColumns = this.config.columns - 1;
         const all = this.config.columns + invisibleColumns;
         return all;
+    }
+
+    protected get virtualBounds(): Bounds {
+        const bounds = { x: this.virtualX, y: this.virtualY, width: this.virtualWidth, height: this.virtualHeight };
+        return bounds;
+    }
+
+    private set virtualBounds(value: Bounds) {
+        const newX = value.x;
+        const newY = value.y;
+        const newWidth = value.width;
+        const newHeight = value.height;
+
+        if (this.virtualX !== newX || this.virtualY !== newY || this.virtualWidth !== newWidth || this.virtualHeight !== newHeight) {
+            this.virtualX = newX;
+            this.virtualY = newY;
+            this.virtualWidth = newWidth;
+            this.virtualHeight = newHeight;
+        }
     }
 
     public onRedraw(listener: VoidListener): VoidUnsubscribe {

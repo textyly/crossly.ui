@@ -11,7 +11,7 @@ export class ConfigFactory {
             zoomOutStep: 0.5
         }
 
-        const gridConfig: CanvasConfig = {
+        const fabricConfig: CanvasConfig = {
             columns,
             rows,
             dotSpacing,
@@ -42,7 +42,7 @@ export class ConfigFactory {
                 radius: {
                     value: 2,
                     zoomInStep: 0.1,
-                    zoomOutStep: 0.1
+                    zoomOutStep: 0.05
                 }
             },
             thread: {
@@ -50,7 +50,7 @@ export class ConfigFactory {
                 width: {
                     value: 5,
                     zoomInStep: 0.2,
-                    zoomOutStep: 0.2
+                    zoomOutStep: 0.1
                 }
             }
         };
@@ -64,7 +64,7 @@ export class ConfigFactory {
                 radius: {
                     value: 4,
                     zoomInStep: 0.2,
-                    zoomOutStep: 0.1
+                    zoomOutStep: 0.05
                 }
             },
             thread: {
@@ -72,13 +72,13 @@ export class ConfigFactory {
                 width: {
                     value: 5,
                     zoomInStep: 0.2,
-                    zoomOutStep: 0.2
+                    zoomOutStep: 0.1
                 }
             }
         };
 
         const canvasConfig: CrosslyCanvasConfig = {
-            grid: gridConfig,
+            fabric: fabricConfig,
             stitch: stitchConfig,
             cue: cueConfig
         };

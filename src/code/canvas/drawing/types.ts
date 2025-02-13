@@ -1,5 +1,5 @@
 import { Dot, ICanvas, Thread } from "../types.js";
-import { ICueCanvas, IGridCanvas, IStitchCanvas } from "../virtual/types.js";
+import { ICueCanvas, IFabricCanvas, IStitchCanvas } from "../virtual/types.js";
 
 export type SvgDot = SVGCircleElement;
 export type SvgLine = SVGLineElement;
@@ -8,7 +8,7 @@ export interface IDrawingCanvas<TCanvas> extends ICanvas {
     subscribe(canvas: TCanvas): void;
 }
 
-export interface IGridDrawingCanvas extends IDrawingCanvas<IGridCanvas> {
+export interface IFabricDrawingCanvas extends IDrawingCanvas<IFabricCanvas> {
 }
 
 export interface IStitchDrawingCanvas extends IDrawingCanvas<IStitchCanvas> {

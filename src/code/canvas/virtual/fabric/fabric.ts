@@ -1,8 +1,8 @@
-import { GridCanvasBase } from "./base.js";
+import { FabricCanvasBase } from "./base.js";
 import { IInputCanvas } from "../../input/types.js";
-import { GridThread, CanvasConfig } from "../../types.js";
+import { FabricThread, CanvasConfig } from "../../types.js";
 
-export class GridCanvas extends GridCanvasBase {
+export class FabricCanvas extends FabricCanvasBase {
     constructor(config: CanvasConfig, inputCanvas: IInputCanvas) {
         super(config, inputCanvas);
     }
@@ -41,8 +41,8 @@ export class GridCanvas extends GridCanvasBase {
         let areThreadsXCalculated = false; // reduces threads number 
         const dotsX: Array<number> = [];
         const dotsY: Array<number> = [];
-        const threadsX = new Array<GridThread>();
-        const threadsY = new Array<GridThread>();
+        const threadsX = new Array<FabricThread>();
+        const threadsY = new Array<FabricThread>();
 
         for (let dotY = 0; dotY < allRows; dotY++) {
             // check wether the row is visible

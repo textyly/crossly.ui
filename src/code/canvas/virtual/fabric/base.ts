@@ -3,28 +3,28 @@ import { VoidUnsubscribe } from "../../../types.js";
 import { IInputCanvas } from "../../input/types.js";
 import { Messaging2 } from "../../../messaging/impl.js";
 import { IMessaging2 } from "../../../messaging/types.js";
-import { CanvasConfig, GridThread } from "../../types.js";
+import { CanvasConfig, FabricThread } from "../../types.js";
 import {
-    IGridCanvas,
-    DrawGridDotsEvent,
-    DrawGridDotsListener,
-    DrawGridThreadsEvent,
-    DrawGridThreadsListener,
+    IFabricCanvas,
+    DrawFabricDotsEvent,
+    DrawFabricDotsListener,
+    DrawFabricThreadsEvent,
+    DrawFabricThreadsListener,
 } from "../types.js";
 
-export abstract class GridCanvasBase extends VirtualCanvasBase implements IGridCanvas {
-    private readonly messaging: IMessaging2<DrawGridDotsEvent, DrawGridThreadsEvent>;
+export abstract class FabricCanvasBase extends VirtualCanvasBase implements IFabricCanvas {
+    private readonly messaging: IMessaging2<DrawFabricDotsEvent, DrawFabricThreadsEvent>;
 
     constructor(config: CanvasConfig, input: IInputCanvas) {
         super(config, input);
         this.messaging = new Messaging2();
     }
 
-    public onDrawDots(listener: DrawGridDotsListener): VoidUnsubscribe {
+    public onDrawDots(listener: DrawFabricDotsListener): VoidUnsubscribe {
         return this.messaging.listenOnChannel1(listener);
     }
 
-    public onDrawThreads(listener: DrawGridThreadsListener): VoidUnsubscribe {
+    public onDrawThreads(listener: DrawFabricThreadsListener): VoidUnsubscribe {
         return this.messaging.listenOnChannel2(listener);
     }
 
@@ -38,7 +38,7 @@ export abstract class GridCanvasBase extends VirtualCanvasBase implements IGridC
         this.messaging.sendToChannel1(drawDotEvent);
     }
 
-    protected invokeDrawThreads(threads: Array<GridThread>): void {
+    protected invokeDrawThreads(threads: Array<FabricThread>): void {
         const drawThreadsEvent = { threads };
         this.messaging.sendToChannel2(drawThreadsEvent);
     }

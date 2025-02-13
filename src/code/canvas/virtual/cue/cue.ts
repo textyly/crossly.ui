@@ -91,44 +91,35 @@ export class CueCanvas extends CueCanvasBase {
         this.clickedDotIndex = clickedDotIndex;
     }
 
-    private hoverDot(dot: Dot, clickedDotIndex: DotIndex): void {
-        const isDashDot = this.currentSide === CanvasSide.Back;
-        const hoveredDot = this.createAndHoverDot(dot, isDashDot);
-        this.hoveredDotIndex = { id: hoveredDot.id, ...clickedDotIndex };
-    }
-
-    private createAndHoverDot(dotPosition: Position, isDashDot: boolean): CueDot {
+    private hoverDot(dot: Dot, dotIndex: DotIndex): void {
         const id = this.ids.next();
-        const hoveredDot: CueDot = { id, ...dotPosition };
+        const hoveredDot: CueDot = { id, ...dot };
 
-        isDashDot
+        this.currentSide === CanvasSide.Back
             ? super.invokeDrawDashDot(hoveredDot, this.dotRadius, this.dotColor)
             : super.invokeDrawDot(hoveredDot, this.dotRadius, this.dotColor);
 
-        return hoveredDot;
+
+        this.hoveredDotIndex = { id, ...dotIndex };
     }
 
     private resizeThead(toPosition: Position): void {
         if (this.clickedDotIndex) {
             const fromDotIndex = this.clickedDotIndex;
-            this.createOrResizeThread(fromDotIndex, toPosition);
-        }
-    }
+            const fromPosition = super.getDotPosition(fromDotIndex);
 
-    private createOrResizeThread(fromDotIndex: DotIndex, toPosition: Position): void {
-        const fromPosition = super.getDotPosition(fromDotIndex);
-
-        let thread: CueThread;
-        if (this.currentThreadId) {
-            const threadId = this.currentThreadId;
-            thread = this.createThread(fromPosition, toPosition, threadId);
-            super.invokeMoveThread(thread);
-        } else {
-            const threadId = this.ids.next();
-            thread = this.createThread(fromPosition, toPosition, threadId);
-            this.drawThread(thread);
+            let thread: CueThread;
+            if (this.currentThreadId) {
+                const threadId = this.currentThreadId;
+                thread = this.createThread(fromPosition, toPosition, threadId);
+                super.invokeMoveThread(thread);
+            } else {
+                const threadId = this.ids.next();
+                thread = this.createThread(fromPosition, toPosition, threadId);
+                this.drawThread(thread);
+            }
+            this.currentThreadId = thread.id;
         }
-        this.currentThreadId = thread.id;
     }
 
     private createThread(from: Position, to: Position, id: number): CueThread {

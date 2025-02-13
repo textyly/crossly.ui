@@ -8,8 +8,8 @@ export type Dot = Position;
 export type CueDot = Dot & { id: Id };
 
 export type Thread<TDot extends Dot> = { from: TDot, to: TDot, width: number, color: string };
-export type GridThread = Thread<Dot>;
-export type StitchThread = Thread<Dot> & { side: CanvasSide };
+export type FabricThread = Thread<Dot>;
+export type StitchThread = Thread<Dot> & { side: CanvasSide, dotRadius: number };
 export type CueThread = Thread<Dot> & { id: Id };
 
 export type CanvasConfig = {
@@ -27,7 +27,7 @@ export type SpacingConfig = ZoomItemConfig;
 
 
 export type CrosslyCanvasConfig = {
-    grid: CanvasConfig,
+    fabric: CanvasConfig,
     stitch: CanvasConfig,
     cue: CanvasConfig
 };

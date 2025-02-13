@@ -65,13 +65,21 @@ export class StitchCanvas extends StitchCanvasBase {
     private redrawThreads(): void {
         const frontThreadsIndexes = this.threadIndexes.filter((thread) => thread.side === CanvasSide.Front);
         const threads = new Array<StitchThread>();
+        const dotsX = new Array<number>();
+        const dotsY = new Array<number>();
 
         frontThreadsIndexes.forEach((threadIndex) => {
             const thread = this.recalculateThread(threadIndex);
             threads.push(thread);
+
+            dotsX.push(thread.from.x);
+            dotsY.push(thread.from.y);
+
+            dotsX.push(thread.to.x);
+            dotsY.push(thread.to.y);
         });
 
-        super.invokeDrawThreads(threads, this.dotRadius);
+        super.invokeDrawThreads(threads);
     }
 
     private recalculateThread(threadIndex: ThreadIndex): StitchThread {
@@ -79,7 +87,16 @@ export class StitchCanvas extends StitchCanvasBase {
         const to = super.getDotPosition(threadIndex.to);
 
         // TODO: each thread can have different thread width. recalculated with is threadWidth + threadWidthZoomStep
-        const thread = { from, to, side: threadIndex.side, width: this.threadWidth, color: threadIndex.color };
+        // TODO: same for dotsRadius
+        const thread = {
+            from,
+            to,
+            dotRadius: this.dotRadius,
+            side: threadIndex.side,
+            width: this.threadWidth,
+            color: threadIndex.color
+        };
+
         return thread;
     }
 
@@ -95,10 +112,11 @@ export class StitchCanvas extends StitchCanvasBase {
         return threadIndex;
     }
 
-    private createThread(from: Dot, to: Dot): StitchThread {
+    private createThread(fromDot: Dot, toDot: Dot): StitchThread {
         const thread = {
-            from,
-            to,
+            from: { ...fromDot, radius: this.dotRadius },
+            to: { ...toDot, radius: this.dotRadius },
+            dotRadius: this.dotRadius,
             side: this.currentSide,
             width: this.threadWidth,
             color: this.threadColor
@@ -109,7 +127,7 @@ export class StitchCanvas extends StitchCanvasBase {
 
     private drawThread(thread: StitchThread): void {
         if (thread.side == CanvasSide.Front) {
-            super.invokeDrawThreads([thread], this.dotRadius);
+            super.invokeDrawThreads([thread]);
         }
     }
 }

@@ -14,11 +14,8 @@ export class CanvasBuilder {
         const inputHTMLElement = this.buildInputHTMLElement();
         this.crosslyCanvasBuilder.withInputCanvas(inputHTMLElement);
 
-        const gridDotsHTMLElement = this.buildGridDotsHTMLElement();
-
-        // TODO: see whether we can use raster lines and delete the svg canvas (gridThreadsHTMLElement)
-        const gridThreadsHTMLElement = this.buildGridThreadsHTMLElement();
-        this.crosslyCanvasBuilder.withGridCanvas(gridDotsHTMLElement);
+        const fabricHTMLElement = this.buildFabricHTMLElement();
+        this.crosslyCanvasBuilder.withFabricCanvas(fabricHTMLElement);
 
         const stitchHTMLElement = this.buildStitchHTMLElement();
         this.crosslyCanvasBuilder.withStitchCanvas(stitchHTMLElement);
@@ -41,13 +38,8 @@ export class CanvasBuilder {
         return htmlSvgElement;
     }
 
-    private buildGridDotsHTMLElement(): HTMLCanvasElement {
-        const htmlCanvasElement = document.getElementById("grid-dots") as HTMLCanvasElement;
-        return htmlCanvasElement;
-    }
-
-    private buildGridThreadsHTMLElement(): HTMLElement {
-        const htmlCanvasElement = document.getElementById("grid-threads") as HTMLElement;
+    private buildFabricHTMLElement(): HTMLCanvasElement {
+        const htmlCanvasElement = document.getElementById("fabric") as HTMLCanvasElement;
         return htmlCanvasElement;
     }
 

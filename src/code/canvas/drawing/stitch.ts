@@ -1,5 +1,5 @@
 import { CanvasBase } from "../base.js";
-import { BoundsChangeEvent } from "../types.js";
+import { BoundsChangeEvent, Dot } from "../types.js";
 import { IRasterDrawingCanvas, IStitchDrawingCanvas } from "./types.js";
 import { DrawStitchThreadsEvent, IStitchCanvas } from "../virtual/types.js";
 
@@ -30,10 +30,12 @@ export class StitchDrawingCanvas extends CanvasBase implements IStitchDrawingCan
     private handleDrawThreads(event: DrawStitchThreadsEvent): void {
         const threads = event.threads;
 
+        // TODO: dots must be drawn in one call!!!
         threads.forEach((thread) => {
-            // this.rasterVirtualDrawing.drawDots([thread.from, thread.to], event.dotRadius, thread.color);
+            const dotsX = [thread.from.x, thread.to.x];
+            const dotsY = [thread.from.y, thread.to.y];
+            this.rasterDrawing.drawDots(dotsX, dotsY, thread.dotRadius, thread.color);
         });
-
 
         this.rasterDrawing.drawLines(threads);
     }

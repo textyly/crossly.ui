@@ -23,8 +23,8 @@ export abstract class StitchCanvasBase extends VirtualCanvasBase implements ISti
         super.dispose();
     }
 
-    protected invokeDrawThreads(threads: Array<StitchThread>, dotRadius: number): void {
-        const drawThreadsEvent = { threads, dotRadius };
+    protected invokeDrawThreads(threads: Array<StitchThread>): void {
+        const drawThreadsEvent = { threads };
         this.messaging.sendToChannel1(drawThreadsEvent);
     }
 }

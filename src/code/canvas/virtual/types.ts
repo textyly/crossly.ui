@@ -5,7 +5,7 @@ import {
     CueDot,
     ICanvas,
     CueThread,
-    GridThread,
+    FabricThread,
     StitchThread,
     CanvasSide,
 } from "../types.js";
@@ -18,9 +18,9 @@ export interface IVirtualCanvas extends ICanvas {
     onRedraw(listener: VoidListener): VoidUnsubscribe;
 }
 
-export interface IGridCanvas extends IVirtualCanvas {
-    onDrawDots(listener: DrawGridDotsListener): VoidUnsubscribe;
-    onDrawThreads(listener: DrawGridThreadsListener): VoidUnsubscribe;
+export interface IFabricCanvas extends IVirtualCanvas {
+    onDrawDots(listener: DrawFabricDotsListener): VoidUnsubscribe;
+    onDrawThreads(listener: DrawFabricThreadsListener): VoidUnsubscribe;
 }
 
 export interface IStitchCanvas extends IVirtualCanvas {
@@ -28,34 +28,26 @@ export interface IStitchCanvas extends IVirtualCanvas {
 }
 
 export interface ICueCanvas extends IVirtualCanvas {
-    // onDrawFrontDot
     onDrawDot(listener: DrawCueDotListener): VoidUnsubscribe;
-
-    // onDrawBackDot
     onDrawDashDot(listener: DrawCueDotListener): VoidUnsubscribe;
-
     onRemoveDot(listener: RemoveCueDotListener): VoidUnsubscribe;
 
-    // onDrawFrontDot
     onDrawThread(listener: DrawCueThreadListener): VoidUnsubscribe;
-
-    // onDrawBackDot
     onDrawDashThread(listener: DrawCueThreadListener): VoidUnsubscribe;
-
     onMoveThread(listener: MoveCueThreadListener): VoidUnsubscribe;
     onRemoveThread(listener: RemoveCueThreadListener): VoidUnsubscribe;
 }
 
-export type DrawGridDotsEvent = { dotsX: Array<number>, dotsY: Array<number>, dotRadius: number, dotColor: string };
-export type DrawGridDotsListener = Listener<DrawGridDotsEvent>;
+export type DrawFabricDotsEvent = { dotsX: Array<number>, dotsY: Array<number>, dotRadius: number, dotColor: string };
+export type DrawFabricDotsListener = Listener<DrawFabricDotsEvent>;
 
-export type DrawGridThreadsEvent = { threads: Array<GridThread> };
-export type DrawGridThreadsListener = Listener<DrawGridThreadsEvent>;
+export type DrawFabricThreadsEvent = { threads: Array<FabricThread> };
+export type DrawFabricThreadsListener = Listener<DrawFabricThreadsEvent>;
 
-export type DrawStitchDotEvent = { dot: Dot };
-export type DrawStitchDotListener = Listener<DrawStitchDotEvent>;
+export type DrawStitchDotsEvent = { dot: Dot };
+export type DrawStitchDotsListener = Listener<DrawStitchDotsEvent>;
 
-export type DrawStitchThreadsEvent = { threads: Array<StitchThread>, dotRadius: number }; // TODO: dotRadius???
+export type DrawStitchThreadsEvent = { threads: Array<StitchThread> };
 export type DrawStitchThreadsListener = Listener<DrawStitchThreadsEvent>;
 
 export type DrawCueDotEvent = { dot: CueDot, dotRadius: number, dotColor: string };

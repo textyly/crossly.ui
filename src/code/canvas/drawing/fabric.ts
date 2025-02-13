@@ -1,9 +1,9 @@
 import { CanvasBase } from "../base.js";
-import { Id, BoundsChangeEvent } from "../types.js";
-import { DrawGridDotsEvent, DrawGridThreadsEvent, IGridCanvas } from "../virtual/types.js";
-import { IGridDrawingCanvas, IRasterDrawingCanvas, IVectorDrawingCanvas, SvgLine } from "./types.js";
+import { BoundsChangeEvent } from "../types.js";
+import { IFabricDrawingCanvas, IRasterDrawingCanvas} from "./types.js";
+import { DrawFabricDotsEvent, DrawFabricThreadsEvent, IFabricCanvas } from "../virtual/types.js";
 
-export class GridDrawingCanvas extends CanvasBase implements IGridDrawingCanvas {
+export class FabricDrawingCanvas extends CanvasBase implements IFabricDrawingCanvas {
     private readonly rasterDrawing: IRasterDrawingCanvas;
 
     constructor(rasterDrawing: IRasterDrawingCanvas) {
@@ -11,17 +11,17 @@ export class GridDrawingCanvas extends CanvasBase implements IGridDrawingCanvas 
         this.rasterDrawing = rasterDrawing;
     }
 
-    public subscribe(gridCanvas: IGridCanvas): void {
-        const drawDotsUn = gridCanvas.onDrawDots(this.handleDrawDots.bind(this));
+    public subscribe(fabricCanvas: IFabricCanvas): void {
+        const drawDotsUn = fabricCanvas.onDrawDots(this.handleDrawDots.bind(this));
         super.registerUn(drawDotsUn);
 
-        const drawThreadsUn = gridCanvas.onDrawThreads(this.handleDrawThreads.bind(this));
+        const drawThreadsUn = fabricCanvas.onDrawThreads(this.handleDrawThreads.bind(this));
         super.registerUn(drawThreadsUn);
 
-        const redrawUn = gridCanvas.onRedraw(this.handleRedraw.bind(this));
+        const redrawUn = fabricCanvas.onRedraw(this.handleRedraw.bind(this));
         super.registerUn(redrawUn);
 
-        const boundsChangeUn = gridCanvas.onBoundsChange(this.handleBoundsChange.bind(this));
+        const boundsChangeUn = fabricCanvas.onBoundsChange(this.handleBoundsChange.bind(this));
         super.registerUn(boundsChangeUn);
     }
 
@@ -30,11 +30,11 @@ export class GridDrawingCanvas extends CanvasBase implements IGridDrawingCanvas 
         super.dispose();
     }
 
-    private handleDrawDots(event: DrawGridDotsEvent): void {
+    private handleDrawDots(event: DrawFabricDotsEvent): void {
         this.rasterDrawing.drawDots(event.dotsX, event.dotsY, event.dotRadius, event.dotColor);
     }
 
-    private handleDrawThreads(event: DrawGridThreadsEvent): void {
+    private handleDrawThreads(event: DrawFabricThreadsEvent): void {
         const threads = event.threads;
         this.rasterDrawing.drawLines(threads);
     }
