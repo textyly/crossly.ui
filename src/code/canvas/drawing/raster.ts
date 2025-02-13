@@ -19,7 +19,7 @@ export class RasterDrawingCanvas extends CanvasBase implements IRasterDrawingCan
             const x = dotsX[index];
             const y = dotsY[index];
 
-            // do not move to a drawDot method for perf reasons
+            // do not extract a drawDot method for perf reasons
             this.context.fillStyle = color;
             this.context.moveTo(x, y);
             this.context.arc(x, y, radius, 0, this.endAngle);
@@ -32,7 +32,7 @@ export class RasterDrawingCanvas extends CanvasBase implements IRasterDrawingCan
         this.context.beginPath();
 
         threads.forEach((thread) => {
-            // do not move to a drawLine method for perf reasons
+            // do not move extract a drawLine method for perf reasons
             this.context.lineWidth = thread.width;
             this.context.strokeStyle = thread.color;
 
