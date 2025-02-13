@@ -145,6 +145,26 @@ export abstract class VirtualCanvasBase extends CanvasBase implements IVirtualCa
         return { x, y };
     }
 
+    protected isInVirtualBounds(position: Position): boolean {
+
+        const dotIndex = this.getDotIndex(position);
+        const newPosition = this.getDotPosition(dotIndex);
+
+        const x = newPosition.x;
+        const y = newPosition.y;
+
+        const vBounds = this.virtualBounds;
+        const vX = vBounds.x;
+        const vY = vBounds.y;
+        const vWidth = vBounds.width;
+        const vHeight = vBounds.height;
+
+        const isInVirtualX = x >= vX && (x <= vX + vWidth);
+        const isInVirtualY = y >= vY && (y <= vY + vHeight);
+
+        return isInVirtualX && isInVirtualY;
+    }
+
     protected changeSide(): void {
         this.currentSide = this.currentSide === CanvasSide.Front ? CanvasSide.Back : CanvasSide.Front;
     }
