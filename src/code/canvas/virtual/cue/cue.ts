@@ -68,10 +68,11 @@ export class CueCanvas extends CueCanvasBase {
         // 1. remove previously hovered dot
         this.removeHoveredDot();
 
-        // 2. get newly hovered dot's position
+        // 2. get a newly hovered dot's position
         const dotIndex = super.getDotIndex(position);
         const dotPosition = super.getDotPosition(dotIndex);
 
+        // 3. hover the new dot
         this.hoverDot(dotPosition, dotIndex);
     }
 
