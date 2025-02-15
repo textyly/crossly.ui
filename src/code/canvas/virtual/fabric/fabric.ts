@@ -44,45 +44,77 @@ export class FabricCanvas extends FabricCanvasBase {
         const threadsX = new Array<FabricThread>();
         const threadsY = new Array<FabricThread>();
 
-        for (let dotY = 0; dotY < allRows; dotY += 2) {
-            for (let dotX = 0; dotX < allColumns; dotX += 2) {
+        const x = virtualBoundsX < bounds.x ? bounds.x : Math.min(virtualBoundsX, boundsX + boundsWidth);
+        const y = virtualBoundsY < bounds.y ? bounds.y : Math.min(virtualBoundsY, boundsY + boundsHeight);
 
-                const x = virtualBoundsX + (dotX * dotSpacing);
+        const width = virtualBoundsX < bounds.x
+            ? (virtualBoundsWidth - (Math.abs(virtualBoundsX) + Math.abs(bounds.x)))
+            : (virtualBoundsX + virtualBoundsWidth) <= (bounds.x + boundsWidth)
+                ? virtualBoundsWidth
+                : (boundsWidth - virtualBoundsX);
 
-                // check whether the dot is visible by `x`
-                if (x >= boundsX) {
-                    if (x <= boundsWidth) {
-                        const y = virtualBoundsY + (dotY * dotSpacing);
+        const height = virtualBoundsY < bounds.y
+            ? (virtualBoundsHeight - (Math.abs(virtualBoundsY) + Math.abs(bounds.y)))
+            : (virtualBoundsY + virtualBoundsHeight) <= (bounds.y + boundsHeight)
+                ? virtualBoundsHeight
+                : (boundsHeight - virtualBoundsY);
 
-                        // check whether the dot is visible by `y`
-                        if (y >= boundsY) {
-                            if (y <= boundsHeight) {
-                                // draw only visible dots!!!
-                                dotsX.push(x);
-                                dotsY.push(y);
+        // console.log(`x: ${x}, y: ${y}, width: ${width}, height: ${height}`);
+
+        const dotIndex = super.getDotIndex({ x, y });
+        const newPos = this.getDotPosition(dotIndex);
+
+        const widthIndex = super.getDotIndex({ x: newPos.x + width, y: newPos.y });
+        const heightIndex = super.getDotIndex({ x: newPos.x, y: newPos.y + height });
+
+        // console.log(`dotIndex: ${JSON.stringify(dotIndex)}, widthIndex: ${JSON.stringify(widthIndex)}, heightIndex: ${JSON.stringify(heightIndex)}`);
+
+        for (let dotY = dotIndex.indexY; dotY <= heightIndex.indexY; dotY++) {
+            const isRowVisible = dotY % 2 === 0;
+
+            if (isRowVisible) {
+                for (let dotX = dotIndex.indexX; dotX <= widthIndex.indexX; dotX++) {
+                    const isColumnVisible = dotX % 2 === 0;
+
+                    if (isColumnVisible) {
+                        const x = virtualBoundsX + (dotX * dotSpacing);
+
+                        // check whether the dot is visible by `x`
+                        if (x >= boundsX) {
+                            if (x <= boundsWidth) {
+                                const y = virtualBoundsY + (dotY * dotSpacing);
+
+                                // check whether the dot is visible by `y`
+                                if (y >= boundsY) {
+                                    if (y <= boundsHeight) {
+                                        // draw only visible dots!!!
+                                        dotsX.push(x);
+                                        dotsY.push(y);
+                                    }
+                                }
+
+                                if (!areThreadsXCalculated) {
+                                    // draw only visible columns!!!
+                                    const from = { x, y: virtualBoundsY };
+                                    const to = { x, y: virtualBoundsY + virtualBoundsHeight };
+                                    threadsX.push({ from, to, width: threadWidth, color: threadColor });
+                                }
                             }
-                        }
-
-                        if (!areThreadsXCalculated) {
-                            // draw only visible columns!!!
-                            const from = { x, y: virtualBoundsY };
-                            const to = { x, y: virtualBoundsY + virtualBoundsHeight };
-                            threadsX.push({ from, to, width: threadWidth, color: threadColor });
                         }
                     }
                 }
-            }
 
-            areThreadsXCalculated = true;
+                areThreadsXCalculated = true;
 
-            // check whether the dot is visible by `y`
-            const y = virtualBoundsY + (dotY * dotSpacing);
-            if (y >= boundsY) {
-                if (y <= boundsHeight) {
-                    // draw only visible rows!!!
-                    const from = { x: virtualBoundsX, y };
-                    const to = { x: virtualBoundsX + virtualBoundsWidth, y }
-                    threadsY.push({ from, to, width: threadWidth, color: threadColor });
+                // check whether the dot is visible by `y`
+                const y = virtualBoundsY + (dotY * dotSpacing);
+                if (y >= boundsY) {
+                    if (y <= boundsHeight) {
+                        // draw only visible rows!!!
+                        const from = { x: virtualBoundsX, y };
+                        const to = { x: virtualBoundsX + virtualBoundsWidth, y }
+                        threadsY.push({ from, to, width: threadWidth, color: threadColor });
+                    }
                 }
             }
         }

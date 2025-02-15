@@ -44,8 +44,6 @@ export interface ICanvas extends IDisposable {
 }
 
 export interface ICrosslyCanvas extends ICanvas {
-    get configuration(): CrosslyCanvasConfig;
-
     draw(): void;
 }
 

@@ -146,10 +146,8 @@ export abstract class VirtualCanvasBase extends CanvasBase implements IVirtualCa
     }
 
     protected isInVirtualBounds(position: Position): boolean {
-
         const dotIndex = this.getDotIndex(position);
         const newPosition = this.getDotPosition(dotIndex);
-
         const x = newPosition.x;
         const y = newPosition.y;
 
@@ -161,8 +159,9 @@ export abstract class VirtualCanvasBase extends CanvasBase implements IVirtualCa
 
         const isInVirtualX = x >= vX && (x <= vX + vWidth);
         const isInVirtualY = y >= vY && (y <= vY + vHeight);
+        const isInVirtualBounds = isInVirtualX && isInVirtualY;
 
-        return isInVirtualX && isInVirtualY;
+        return isInVirtualBounds;
     }
 
     protected changeSide(): void {

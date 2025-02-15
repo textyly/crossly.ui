@@ -30,13 +30,10 @@ export class CrosslyCanvas extends CanvasBase implements ICrosslyCanvas {
         super();
         this.config = config;
         this.inputCanvas = inputCanvas;
+
         this.initializeFabricCanvas(fabricDrawingCanvas);
         this.initializeStitchCanvas(stitchDrawingCanvas);
         this.initializeCueCanvas(cueDrawingCanvas);
-    }
-
-    public get configuration(): CrosslyCanvasConfig {
-        return this.config;
     }
 
     public draw(): void {
@@ -49,9 +46,7 @@ export class CrosslyCanvas extends CanvasBase implements ICrosslyCanvas {
         this.disposeCueCanvas();
         this.disposeStitchCanvas();
         this.disposeFabricCanvas();
-
-        this.inputCanvas?.dispose();
-
+        this.disposeInputCanvas();
         super.dispose();
     }
 
@@ -66,19 +61,19 @@ export class CrosslyCanvas extends CanvasBase implements ICrosslyCanvas {
 
     private initializeFabricCanvas(fabricDrawingCanvas: IFabricDrawingCanvas): void {
         this.fabricDrawingCanvas = fabricDrawingCanvas;
-        this.fabricCanvas = new FabricCanvas(this.configuration.fabric, this.inputCanvas);
+        this.fabricCanvas = new FabricCanvas(this.config.fabric, this.inputCanvas);
         this.fabricDrawingCanvas.subscribe(this.fabricCanvas);
     }
 
     private initializeStitchCanvas(stitchDrawingCanvas: IStitchDrawingCanvas): void {
         this.stitchDrawingCanvas = stitchDrawingCanvas;
-        this.stitchCanvas = new StitchCanvas(this.configuration.stitch, this.inputCanvas);
+        this.stitchCanvas = new StitchCanvas(this.config.stitch, this.inputCanvas);
         this.stitchDrawingCanvas.subscribe(this.stitchCanvas);
     }
 
     private initializeCueCanvas(cueDrawingCanvas: ICueDrawingCanvas): void {
         this.cueDrawingCanvas = cueDrawingCanvas;
-        this.cueCanvas = new CueCanvas(this.configuration.cue, this.inputCanvas);
+        this.cueCanvas = new CueCanvas(this.config.cue, this.inputCanvas);
         this.cueDrawingCanvas.subscribe(this.cueCanvas);
     }
 
@@ -95,5 +90,9 @@ export class CrosslyCanvas extends CanvasBase implements ICrosslyCanvas {
     private disposeFabricCanvas(): void {
         this.fabricCanvas?.dispose();
         this.fabricDrawingCanvas?.dispose();
+    }
+
+    private disposeInputCanvas(): void {
+        this.inputCanvas?.dispose();
     }
 }
