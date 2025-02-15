@@ -8,11 +8,6 @@ export class FabricCanvas extends FabricCanvasBase {
     }
 
     protected override redraw(): void {
-        // CPU, GPU, memory and GC intensive code!!!
-
-        // 1. Do not divide this method in different methods
-        const dotSpacing = this.dotsSpacing;
-
         const bounds = this.bounds;
         const boundsX = bounds.x;
         const boundsY = bounds.y;
@@ -30,12 +25,6 @@ export class FabricCanvas extends FabricCanvasBase {
         const threadWidth = this.threadWidth;
         const threadColor = this.threadColor;
 
-        // 2. Do not touch `this` in the loops
-        // 3. Do not touch nested props in the loops (such as this.virtualBounds.width)
-        // 4. Do not create variables in the loops except for perf reasons
-        // 5. Use as many if clauses as needed in order to limit the code execution and drawing
-
-        // TODO: find only the visible dots to be drawn and all !!!
         let areThreadsXCalculated = false; // reduces threads number 
         const dotsX: Array<number> = [];
         const dotsY: Array<number> = [];
@@ -75,17 +64,14 @@ export class FabricCanvas extends FabricCanvasBase {
                     const isColumnVisible = dotX % 2 === 0;
 
                     if (isColumnVisible) {
-                        const x2 = virtualBoundsX + (dotX * dotSpacing);
-                        const y2 = virtualBoundsY + (dotY * dotSpacing);
 
-                         // draw only visible dots!!!
-                         dotsX.push(x2);
-                         dotsY.push(y2);
+                        const dotPosition = super.getDotPosition({ indexX: dotX, indexY: dotY });
+                        dotsX.push(dotPosition.x);
+                        dotsY.push(dotPosition.y);
 
                         if (!areThreadsXCalculated) {
-                            // draw only visible columns!!!
-                            const from = { x: x2, y: virtualBoundsY };
-                            const to = { x: x2, y: virtualBoundsY + virtualBoundsHeight };
+                            const from = { x: dotPosition.x, y: virtualBoundsY };
+                            const to = { x: dotPosition.x, y: virtualBoundsY + virtualBoundsHeight };
                             threadsX.push({ from, to, width: threadWidth, color: threadColor });
                         }
                     }
@@ -93,11 +79,9 @@ export class FabricCanvas extends FabricCanvasBase {
 
                 areThreadsXCalculated = true;
 
-                // check whether the dot is visible by `y`
-                const y1 = virtualBoundsY + (dotY * dotSpacing);
-                // draw only visible rows!!!
-                const from = { x: virtualBoundsX, y: y1 };
-                const to = { x: virtualBoundsX + virtualBoundsWidth, y: y1 }
+                const dotYPosition = super.getDotYPosition(dotY);
+                const from = { x: virtualBoundsX, y: dotYPosition };
+                const to = { x: virtualBoundsX + virtualBoundsWidth, y: dotYPosition }
                 threadsY.push({ from, to, width: threadWidth, color: threadColor });
             }
         }

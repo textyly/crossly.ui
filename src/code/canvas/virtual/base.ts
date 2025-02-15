@@ -140,9 +140,19 @@ export abstract class VirtualCanvasBase extends CanvasBase implements IVirtualCa
     }
 
     protected getDotPosition(index: DotIndex): Position {
-        const x = this.virtualBounds.x + (index.indexX * this.dotsSpacing);
-        const y = this.virtualBounds.y + (index.indexY * this.dotsSpacing);
+        const x = this.getDotXPosition(index.indexX)
+        const y = this.getDotYPosition(index.indexY)
         return { x, y };
+    }
+
+    protected getDotXPosition(indexX: number): number {
+        const x = this.virtualBounds.x + (indexX * this.dotsSpacing);
+        return x;
+    }
+
+    protected getDotYPosition(indexY: number): number {
+        const y = this.virtualBounds.y + (indexY * this.dotsSpacing);
+        return y;
     }
 
     protected isInVirtualBounds(position: Position): boolean {
