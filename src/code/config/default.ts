@@ -18,16 +18,16 @@ export class ConfigFactory {
             dot: {
                 color: "#9fa19f",
                 radius: {
-                    value: 2,
-                    zoomInStep: 0.1,
-                    zoomOutStep: 0.07
+                    value: 1.5,
+                    zoomInStep: 0.05,
+                    zoomOutStep: 0.05
                 } 
             },
             thread: {
                 color: "#d2d4d2",
                 width: {
                     value: 1,
-                    zoomInStep: 0.1,
+                    zoomInStep: 0.05,
                     zoomOutStep: 0.05
                 }
             }
