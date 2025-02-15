@@ -34,12 +34,14 @@ export class FabricCanvas extends FabricCanvasBase {
         const x = virtualBoundsX < bounds.x ? bounds.x : Math.min(virtualBoundsX, boundsX + boundsWidth);
         const y = virtualBoundsY < bounds.y ? bounds.y : Math.min(virtualBoundsY, boundsY + boundsHeight);
 
+        // if-else, new method
         const width = virtualBoundsX < bounds.x
             ? (virtualBoundsWidth - (Math.abs(virtualBoundsX) + Math.abs(bounds.x))) > boundsWidth ? boundsWidth : (virtualBoundsWidth - (Math.abs(virtualBoundsX) + Math.abs(bounds.x)))
             : (virtualBoundsX + virtualBoundsWidth) <= (bounds.x + boundsWidth)
                 ? virtualBoundsWidth
                 : (boundsWidth - virtualBoundsX);
 
+        // if-else, new method
         const height = virtualBoundsY < bounds.y
             ? (virtualBoundsHeight - (Math.abs(virtualBoundsY) + Math.abs(bounds.y))) > boundsHeight ? boundsHeight : (virtualBoundsHeight - (Math.abs(virtualBoundsY) + Math.abs(bounds.y)))
             : (virtualBoundsY + virtualBoundsHeight) <= (bounds.y + boundsHeight)
@@ -56,34 +58,31 @@ export class FabricCanvas extends FabricCanvasBase {
 
         // console.log(`dotIndex: ${JSON.stringify(dotIndex)}, widthIndex: ${JSON.stringify(widthIndex)}, heightIndex: ${JSON.stringify(heightIndex)}`);
 
-        for (let dotY = dotIndex.indexY; dotY <= heightIndex.indexY; dotY++) {
-            const isRowVisible = dotY % 2 === 0;
+        const dotIndexX = dotIndex.indexX % 2 === 0 ? dotIndex.indexX : ++dotIndex.indexX;
+        const dotIndexY = dotIndex.indexY % 2 === 0 ? dotIndex.indexY : ++dotIndex.indexY;
 
-            if (isRowVisible) {
-                for (let dotX = dotIndex.indexX; dotX <= widthIndex.indexX; dotX++) {
-                    const isColumnVisible = dotX % 2 === 0;
+        console.log(`dotIndexX: ${dotIndexX} - heightIndex: ${widthIndex}`);
+        console.log(`dotIndexY: ${dotIndexY} - heightIndex: ${widthIndex}`);
 
-                    if (isColumnVisible) {
+        for (let dotY = dotIndexY; dotY <= heightIndex.indexY; dotY += 2) {
+            for (let dotX = dotIndexX; dotX <= widthIndex.indexX; dotX += 2) {
+                const dotPosition = super.getDotPosition({ indexX: dotX, indexY: dotY });
+                dotsX.push(dotPosition.x);
+                dotsY.push(dotPosition.y);
 
-                        const dotPosition = super.getDotPosition({ indexX: dotX, indexY: dotY });
-                        dotsX.push(dotPosition.x);
-                        dotsY.push(dotPosition.y);
-
-                        if (!areThreadsXCalculated) {
-                            const from = { x: dotPosition.x, y: virtualBoundsY };
-                            const to = { x: dotPosition.x, y: virtualBoundsY + virtualBoundsHeight };
-                            threadsX.push({ from, to, width: threadWidth, color: threadColor });
-                        }
-                    }
+                if (!areThreadsXCalculated) {
+                    const from = { x: dotPosition.x, y: virtualBoundsY };
+                    const to = { x: dotPosition.x, y: virtualBoundsY + virtualBoundsHeight };
+                    threadsX.push({ from, to, width: threadWidth, color: threadColor });
                 }
-
-                areThreadsXCalculated = true;
-
-                const dotYPosition = super.getDotYPosition(dotY);
-                const from = { x: virtualBoundsX, y: dotYPosition };
-                const to = { x: virtualBoundsX + virtualBoundsWidth, y: dotYPosition }
-                threadsY.push({ from, to, width: threadWidth, color: threadColor });
             }
+
+            areThreadsXCalculated = true;
+
+            const dotYPosition = super.getDotYPosition(dotY);
+            const from = { x: virtualBoundsX, y: dotYPosition };
+            const to = { x: virtualBoundsX + virtualBoundsWidth, y: dotYPosition }
+            threadsY.push({ from, to, width: threadWidth, color: threadColor });
         }
 
         super.invokeDrawThreads([...threadsX, ...threadsY]);
