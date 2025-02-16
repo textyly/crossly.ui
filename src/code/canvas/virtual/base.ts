@@ -9,13 +9,12 @@ import { IInputCanvas, MoveEvent, Position } from "../input/types.js";
 export abstract class VirtualCanvasBase extends CanvasBase implements IVirtualCanvas {
     private readonly configuration: Readonly<CanvasConfig>;
     private readonly voidMessaging: IVoidMessaging;
+    protected readonly inputCanvas: IInputCanvas;
 
     private virtualLeft = 0;
     private virtualTop = 0;
     private virtualWidth = 0;
     private virtualHeight = 0;
-
-    protected readonly inputCanvas: IInputCanvas;
 
     protected dotsSpacing: number;
     protected dotColor: string;

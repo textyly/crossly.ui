@@ -48,7 +48,7 @@ export class ConfigFactory {
             thread: {
                 color: "gray",
                 width: {
-                    value: 6.5,
+                    value: 6.1,
                     zoomInStep: 0.2,
                     zoomOutStep: 0.1
                 }
@@ -70,7 +70,7 @@ export class ConfigFactory {
             thread: {
                 color: "gray",
                 width: {
-                    value: 6.5,
+                    value: 6.1,
                     zoomInStep: 0.2,
                     zoomOutStep: 0.1
                 }

@@ -1,7 +1,7 @@
 import { CanvasBase } from "../base.js";
 import { BoundsChangeEvent, Dot } from "../types.js";
 import { IRasterDrawingCanvas, IStitchDrawingCanvas } from "./types.js";
-import { DrawStitchThreadsEvent, IStitchCanvas } from "../virtual/types.js";
+import { DrawStitchDotsEvent, DrawStitchThreadsEvent, IStitchCanvas } from "../virtual/types.js";
 
 export class StitchDrawingCanvas extends CanvasBase implements IStitchDrawingCanvas {
     private readonly rasterDrawing: IRasterDrawingCanvas;
@@ -12,14 +12,17 @@ export class StitchDrawingCanvas extends CanvasBase implements IStitchDrawingCan
     }
 
     public subscribe(stitchCanvas: IStitchCanvas): void {
-        const drawThreadsUn = stitchCanvas.onDrawThreads(this.handleDrawThreads.bind(this));
-        super.registerUn(drawThreadsUn);
-
         const redrawUn = stitchCanvas.onRedraw(this.handleRedraw.bind(this));
         super.registerUn(redrawUn);
 
         const boundsChangeUn = stitchCanvas.onBoundsChange(this.handleBoundsChange.bind(this));
         super.registerUn(boundsChangeUn);
+
+        const drawDotsUn = stitchCanvas.onDrawDots(this.handleDrawDots.bind(this));
+        super.registerUn(drawDotsUn);
+
+        const drawThreadsUn = stitchCanvas.onDrawThreads(this.handleDrawThreads.bind(this));
+        super.registerUn(drawThreadsUn);
     }
 
     public override dispose(): void {
@@ -27,16 +30,17 @@ export class StitchDrawingCanvas extends CanvasBase implements IStitchDrawingCan
         super.dispose();
     }
 
+    private handleDrawDots(event: DrawStitchDotsEvent): void {
+        const dotsX = event.dotsX;
+        const dotsY = event.dotsY;
+        const dotRadius = event.dotRadius;
+        const dotColor = event.dotColor;
+
+        this.rasterDrawing.drawDots(dotsX, dotsY, dotRadius, dotColor);
+    }
+
     private handleDrawThreads(event: DrawStitchThreadsEvent): void {
         const threads = event.threads;
-
-        // TODO: dots must be drawn in one call!!!
-        threads.forEach((thread) => {
-            const dotsX = [thread.from.x, thread.to.x];
-            const dotsY = [thread.from.y, thread.to.y];
-            this.rasterDrawing.drawDots(dotsX, dotsY, thread.dotRadius, thread.color);
-        });
-
         this.rasterDrawing.drawLines(threads);
     }
 
