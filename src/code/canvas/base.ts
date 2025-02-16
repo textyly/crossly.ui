@@ -7,8 +7,8 @@ export abstract class CanvasBase implements ICanvas {
     private readonly uns: Array<VoidUnsubscribe>;
     private readonly msg: IMessaging1<BoundsChangeEvent>;
 
-    private x = 0;
-    private y = 0;
+    private left = 0;
+    private top = 0;
     private width = 0;
     private height = 0;
 
@@ -18,19 +18,19 @@ export abstract class CanvasBase implements ICanvas {
     }
 
     public get bounds(): Bounds {
-        const bounds = { x: this.x, y: this.y, width: this.width, height: this.height };
+        const bounds = { left: this.left, top: this.top, width: this.width, height: this.height };
         return bounds;
     }
 
     public set bounds(value: Bounds) {
-        const newX = value.x;
-        const newY = value.y;
+        const newLeft = value.left;
+        const newTop = value.top;
         const newWidth = value.width;
         const newHeight = value.height;
 
-        if (this.x !== newX || this.y !== newY || this.width !== newWidth || this.height !== newHeight) {
-            this.x = newX;
-            this.y = newY;
+        if (this.left !== newLeft || this.top !== newTop || this.width !== newWidth || this.height !== newHeight) {
+            this.left = newLeft;
+            this.top = newTop;
             this.width = newWidth;
             this.height = newHeight;
             this.invokeBoundsChange(value);

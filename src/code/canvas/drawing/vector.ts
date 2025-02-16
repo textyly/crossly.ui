@@ -77,8 +77,8 @@ export class VectorDrawingCanvas extends CanvasBase implements IVectorDrawingCan
     protected override invokeBoundsChange(bounds: Bounds): void {
         super.invokeBoundsChange(bounds);
 
-        const x = bounds.x.toString();
-        const y = bounds.y.toString();
+        const x = bounds.left.toString();
+        const y = bounds.top.toString();
         const width = bounds.width.toString();
         const height = bounds.height.toString();
 

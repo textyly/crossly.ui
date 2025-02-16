@@ -30,7 +30,7 @@ export class CueCanvas extends CueCanvasBase {
 
         // 2. recreate hovered dot and thread
         if (dotIndex) {
-            const position = super.getDotPosition(dotIndex);
+            const position = super.calculateDotPosition(dotIndex);
             this.handlePointerMove({ position });
         }
     }
@@ -69,16 +69,16 @@ export class CueCanvas extends CueCanvasBase {
         this.removeHoveredDot();
 
         // 2. get a newly hovered dot's position
-        const dotIndex = super.getDotIndex(position);
-        const dotPosition = super.getDotPosition(dotIndex);
+        const dotIndex = super.calculateDotIndex(position);
+        const dotPosition = super.calculateDotPosition(dotIndex);
 
         // 3. hover the new dot
         this.hoverDot(dotPosition, dotIndex);
     }
 
     private clickDot(position: Position): void {
-        const clickedDotIndex = super.getDotIndex(position);
-        const clickedDot = super.getDotPosition(clickedDotIndex);
+        const clickedDotIndex = super.calculateDotIndex(position);
+        const clickedDot = super.calculateDotPosition(clickedDotIndex);
         const previouslyClickedDotIndex = this.clickedDotIndex;
 
         if (!previouslyClickedDotIndex) {
@@ -88,7 +88,7 @@ export class CueCanvas extends CueCanvasBase {
             this.hoverDot(clickedDot, clickedDotIndex);
 
         } else {
-            const previouslyClickedDot = super.getDotPosition(previouslyClickedDotIndex);
+            const previouslyClickedDot = super.calculateDotPosition(previouslyClickedDotIndex);
             const areIdenticalClicks = this.dotsUtility.areDotsEqual(clickedDot, previouslyClickedDot);
 
             if (!areIdenticalClicks) {
@@ -116,7 +116,7 @@ export class CueCanvas extends CueCanvasBase {
     private resizeThead(toPosition: Position): void {
         if (this.clickedDotIndex) {
             const fromDotIndex = this.clickedDotIndex;
-            const fromPosition = super.getDotPosition(fromDotIndex);
+            const fromPosition = super.calculateDotPosition(fromDotIndex);
 
             let thread: CueThread;
             if (this.currentThreadId) {

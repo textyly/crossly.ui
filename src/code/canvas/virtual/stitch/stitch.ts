@@ -43,13 +43,13 @@ export class StitchCanvas extends StitchCanvasBase {
     }
 
     private handleDotClick(position: Position): void {
-        const clickedDotIndex = super.getDotIndex(position);
-        const clickedDot = super.getDotPosition(clickedDotIndex);
+        const clickedDotIndex = super.calculateDotIndex(position);
+        const clickedDot = super.calculateDotPosition(clickedDotIndex);
 
         const previouslyClickedDotIndex = this.clickedDotIndex;
         if (previouslyClickedDotIndex) {
 
-            const previouslyClickedDot = this.getDotPosition(previouslyClickedDotIndex);
+            const previouslyClickedDot = this.calculateDotPosition(previouslyClickedDotIndex);
             const areIdenticalClicks = this.dotsUtility.areDotsEqual(clickedDot, previouslyClickedDot);
 
             if (!areIdenticalClicks) {
@@ -87,8 +87,8 @@ export class StitchCanvas extends StitchCanvasBase {
     }
 
     private recalculateThread(threadIndex: ThreadIndex): StitchThread {
-        const from = super.getDotPosition(threadIndex.from);
-        const to = super.getDotPosition(threadIndex.to);
+        const from = super.calculateDotPosition(threadIndex.from);
+        const to = super.calculateDotPosition(threadIndex.to);
 
         // TODO: each thread can have different thread width. recalculated with is threadWidth + threadWidthZoomStep
         // TODO: same for dotsRadius

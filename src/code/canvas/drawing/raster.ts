@@ -47,14 +47,14 @@ export class RasterDrawingCanvas extends CanvasBase implements IRasterDrawingCan
     }
 
     public clear(): void {
-        this.context.clearRect(this.bounds.x, this.bounds.y, this.bounds.width, this.bounds.height);
+        this.context.clearRect(this.bounds.left, this.bounds.top, this.bounds.width, this.bounds.height);
     }
 
     protected override invokeBoundsChange(bounds: Bounds): void {
         super.invokeBoundsChange(bounds);
 
-        const x = bounds.x;
-        const y = bounds.y;
+        const x = bounds.left;
+        const y = bounds.top;
         const width = bounds.width;
         const height = bounds.height;
 

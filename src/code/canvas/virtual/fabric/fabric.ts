@@ -1,3 +1,4 @@
+import { DotIndex } from "../types.js";
 import { FabricCanvasBase } from "./base.js";
 import { IInputCanvas } from "../../input/types.js";
 import { FabricThread, CanvasConfig } from "../../types.js";
@@ -8,84 +9,133 @@ export class FabricCanvas extends FabricCanvasBase {
     }
 
     protected override redraw(): void {
-        const bounds = this.bounds;
-        const boundsX = bounds.x;
-        const boundsY = bounds.y;
-        const boundsWidth = bounds.width;
-        const boundsHeight = bounds.height;
+        const leftTopDotIndex = this.calculateLeftTopDotIndex();
+        const leftTopDotPosition = super.calculateDotPosition(leftTopDotIndex);
 
-        const virtualBounds = this.virtualBounds;
-        const virtualBoundsX = virtualBounds.x;
-        const virtualBoundsY = virtualBounds.y;
-        const virtualBoundsWidth = virtualBounds.width;
-        const virtualBoundsHeight = virtualBounds.height;
-
-        const dotRadius = this.dotRadius;
-        const dotColor = this.dotColor;
-        const threadWidth = this.threadWidth;
-        const threadColor = this.threadColor;
-
-        let areThreadsXCalculated = false; // reduces threads number 
-        const dotsX: Array<number> = [];
-        const dotsY: Array<number> = [];
-        const threadsX = new Array<FabricThread>();
-        const threadsY = new Array<FabricThread>();
-
-        const x = virtualBoundsX < bounds.x ? bounds.x : Math.min(virtualBoundsX, boundsX + boundsWidth);
-        const y = virtualBoundsY < bounds.y ? bounds.y : Math.min(virtualBoundsY, boundsY + boundsHeight);
-
-        // if-else, new method
-        const width = virtualBoundsX < bounds.x
-            ? (virtualBoundsWidth - (Math.abs(virtualBoundsX) + Math.abs(bounds.x))) > boundsWidth ? boundsWidth : (virtualBoundsWidth - (Math.abs(virtualBoundsX) + Math.abs(bounds.x)))
-            : (virtualBoundsX + virtualBoundsWidth) <= (bounds.x + boundsWidth)
-                ? virtualBoundsWidth
-                : (boundsWidth - virtualBoundsX);
-
-        // if-else, new method
-        const height = virtualBoundsY < bounds.y
-            ? (virtualBoundsHeight - (Math.abs(virtualBoundsY) + Math.abs(bounds.y))) > boundsHeight ? boundsHeight : (virtualBoundsHeight - (Math.abs(virtualBoundsY) + Math.abs(bounds.y)))
-            : (virtualBoundsY + virtualBoundsHeight) <= (bounds.y + boundsHeight)
-                ? virtualBoundsHeight
-                : (boundsHeight - virtualBoundsY);
+        const width = this.calculateWidth();
+        const height = this.calculateHeight();
 
         // console.log(`x: ${x}, y: ${y}, width: ${width}, height: ${height}`);
 
-        const dotIndex = super.getDotIndex({ x, y });
-        const newPos = this.getDotPosition(dotIndex);
-
-        const widthIndex = super.getDotIndex({ x: newPos.x + width, y: newPos.y });
-        const heightIndex = super.getDotIndex({ x: newPos.x, y: newPos.y + height });
+        const widthDotIndex = super.calculateDotIndex({ x: leftTopDotPosition.x + width, y: leftTopDotPosition.y });
+        const heightDotIndex = super.calculateDotIndex({ x: leftTopDotPosition.x, y: leftTopDotPosition.y + height });
 
         // console.log(`dotIndex: ${JSON.stringify(dotIndex)}, widthIndex: ${JSON.stringify(widthIndex)}, heightIndex: ${JSON.stringify(heightIndex)}`);
 
-        const dotIndexX = dotIndex.indexX % 2 === 0 ? dotIndex.indexX : ++dotIndex.indexX;
-        const dotIndexY = dotIndex.indexY % 2 === 0 ? dotIndex.indexY : ++dotIndex.indexY;
+        const startDotIndexX = leftTopDotIndex.indexX % 2 === 0 ? leftTopDotIndex.indexX : ++leftTopDotIndex.indexX;
+        const startDotIndexY = leftTopDotIndex.indexY % 2 === 0 ? leftTopDotIndex.indexY : ++leftTopDotIndex.indexY;
 
-        console.log(`dotIndexX: ${dotIndexX} - heightIndex: ${widthIndex}`);
-        console.log(`dotIndexY: ${dotIndexY} - heightIndex: ${widthIndex}`);
+        // console.log(`dotIndexX: ${dotIndexX} - heightIndex: ${widthIndex}`);
+        // console.log(`dotIndexY: ${dotIndexY} - heightIndex: ${heightIndex}`);
 
-        for (let dotY = dotIndexY; dotY <= heightIndex.indexY; dotY += 2) {
-            for (let dotX = dotIndexX; dotX <= widthIndex.indexX; dotX += 2) {
-                const dotPosition = super.getDotPosition({ indexX: dotX, indexY: dotY });
+        // do not create threads on movie if the width is too small because it is not visible anyway!!!
+        this.createThreads(startDotIndexX, startDotIndexY, widthDotIndex.indexX, heightDotIndex.indexY);
+
+        // TODO: do not crate dots on move!!!
+        this.createDots(startDotIndexX, startDotIndexY, widthDotIndex.indexX, heightDotIndex.indexY);
+    }
+
+    private createDots(startDotIndexX: number, startDotIndexY: number, widthDotIndexX: number, heightDotIndexY: number): void {
+        // CPU, GPU, memory and GC intensive code
+        // Do not extract this method in different methods
+
+        const dotsX = new Array<number>();
+        const dotsY = new Array<number>();
+
+        for (let dotY = startDotIndexY; dotY <= heightDotIndexY; dotY += 2) {
+            for (let dotX = startDotIndexX; dotX <= widthDotIndexX; dotX += 2) {
+
+                const dotIndex = { indexX: dotX, indexY: dotY };
+                const dotPosition = super.calculateDotPosition(dotIndex);
                 dotsX.push(dotPosition.x);
                 dotsY.push(dotPosition.y);
-
-                if (!areThreadsXCalculated) {
-                    const from = { x: dotPosition.x, y: virtualBoundsY };
-                    const to = { x: dotPosition.x, y: virtualBoundsY + virtualBoundsHeight };
-                    threadsX.push({ from, to, width: threadWidth, color: threadColor });
-                }
             }
+        }
 
-            areThreadsXCalculated = true;
+        super.invokeDrawDots(dotsX, dotsY, this.dotRadius, this.dotColor);
+    }
 
-            const dotYPosition = super.getDotYPosition(dotY);
+    private createThreads(startDotIndexX: number, startDotIndexY: number, widthDotIndexX: number, heightDotIndexY: number): void {
+        // CPU, GPU, memory and GC intensive code
+        // Do not extract this method in different methods
+
+        // create variables otherwise nested properties must be retrieved in every loop cycle (performance optimization)
+        const virtualBounds = this.virtualBounds;
+        const virtualBoundsX = virtualBounds.left;
+        const virtualBoundsY = virtualBounds.top;
+        const virtualBoundsWidth = virtualBounds.width;
+        const virtualBoundsHeight = virtualBounds.height;
+
+        const threadWidth = this.threadWidth;
+        const threadColor = this.threadColor;
+
+        const threadsX = new Array<FabricThread>();
+        const threadsY = new Array<FabricThread>();
+
+        for (let dotY = startDotIndexY; dotY <= heightDotIndexY; dotY += 2) {
+
+            const dotYPosition = super.calculateDotYPosition(dotY);
             const from = { x: virtualBoundsX, y: dotYPosition };
             const to = { x: virtualBoundsX + virtualBoundsWidth, y: dotYPosition }
             threadsY.push({ from, to, width: threadWidth, color: threadColor });
         }
 
-        super.invokeDrawThreads([...threadsX, ...threadsY]);
-        super.invokeDrawDots(dotsX, dotsY, dotRadius, dotColor);
+        for (let dotX = startDotIndexX; dotX <= widthDotIndexX; dotX += 2) {
+
+            const dotXPosition = super.calculateDotXPosition(dotX);
+            const from = { x: dotXPosition, y: virtualBoundsY };
+            const to = { x: dotXPosition, y: virtualBoundsY + virtualBoundsHeight };
+            threadsX.push({ from, to, width: threadWidth, color: threadColor });
+        }
+
+        const threads = [...threadsX, ...threadsY];
+        super.invokeDrawThreads(threads);
+    }
+
+    private calculateLeftTopDotIndex(): DotIndex {
+        const leftTopX = this.virtualBounds.left < this.bounds.left
+            ? this.bounds.left
+            : Math.min(this.virtualBounds.left, (this.bounds.left + this.bounds.width));
+
+        const leftTop = this.virtualBounds.top < this.bounds.top
+            ? this.bounds.top
+            : Math.min(this.virtualBounds.top, (this.bounds.top + this.bounds.width));
+
+        const leftTopDot = { x: leftTopX, y: leftTop };
+        const leftTopDotIndex = super.calculateDotIndex(leftTopDot);
+
+        return leftTopDotIndex;
+    }
+
+    private calculateWidth(): number {
+        if (this.virtualBounds.left < this.bounds.left) {
+            const virtualWidth = this.virtualBounds.width - (Math.abs(this.virtualBounds.left) + Math.abs(this.bounds.left));
+            return Math.min(virtualWidth, this.bounds.width);
+        } else {
+            const offsetBoundsWidth = this.bounds.left + this.bounds.width;
+            const offsetVirtualWidth = this.virtualBounds.left + this.virtualBounds.width;
+
+            if (offsetVirtualWidth <= offsetBoundsWidth) {
+                return this.virtualBounds.width;
+            } else {
+                return (this.bounds.width - this.virtualBounds.left);
+            }
+        }
+    }
+
+    private calculateHeight(): number {
+        if (this.virtualBounds.top < this.bounds.top) {
+            const virtualHeight = this.virtualBounds.height - (Math.abs(this.virtualBounds.top) + Math.abs(this.bounds.top));
+            return Math.min(virtualHeight, this.bounds.height);
+        } else {
+            const offsetBoundsHeight = this.bounds.top + this.bounds.height;
+            const offsetVirtualHeight = this.virtualBounds.top + this.virtualBounds.height;
+
+            if (offsetVirtualHeight <= offsetBoundsHeight) {
+                return this.virtualBounds.height;
+            } else {
+                return (this.bounds.height - this.virtualBounds.top);
+            }
+        }
     }
 }

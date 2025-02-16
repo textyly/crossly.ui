@@ -10,8 +10,8 @@ export abstract class VirtualCanvasBase extends CanvasBase implements IVirtualCa
     private readonly configuration: Readonly<CanvasConfig>;
     private readonly voidMessaging: IVoidMessaging;
 
-    private virtualX = 0;
-    private virtualY = 0;
+    private virtualLeft = 0;
+    private virtualTop = 0;
     private virtualWidth = 0;
     private virtualHeight = 0;
 
@@ -65,19 +65,19 @@ export abstract class VirtualCanvasBase extends CanvasBase implements IVirtualCa
     }
 
     protected get virtualBounds(): Bounds {
-        const bounds = { x: this.virtualX, y: this.virtualY, width: this.virtualWidth, height: this.virtualHeight };
+        const bounds = { left: this.virtualLeft, top: this.virtualTop, width: this.virtualWidth, height: this.virtualHeight };
         return bounds;
     }
 
     private set virtualBounds(value: Bounds) {
-        const newX = value.x;
-        const newY = value.y;
+        const newLeft = value.left;
+        const newTop = value.top;
         const newWidth = value.width;
         const newHeight = value.height;
 
-        if (this.virtualX !== newX || this.virtualY !== newY || this.virtualWidth !== newWidth || this.virtualHeight !== newHeight) {
-            this.virtualX = newX;
-            this.virtualY = newY;
+        if (this.virtualLeft !== newLeft || this.virtualTop !== newTop || this.virtualWidth !== newWidth || this.virtualHeight !== newHeight) {
+            this.virtualLeft = newLeft;
+            this.virtualTop = newTop;
             this.virtualWidth = newWidth;
             this.virtualHeight = newHeight;
         }
@@ -115,12 +115,12 @@ export abstract class VirtualCanvasBase extends CanvasBase implements IVirtualCa
     }
 
     protected move(difference: Position): void {
-        const x = this.virtualBounds.x + difference.x;
-        const y = this.virtualBounds.y + difference.y;
+        const newLeft = this.virtualBounds.left + difference.x;
+        const newTop = this.virtualBounds.top + difference.y;
         const width = this.virtualBounds.width;
         const height = this.virtualBounds.height;
 
-        this.virtualBounds = { x, y, width, height };
+        this.virtualBounds = { left: newLeft, top: newTop, width, height };
         this.draw();
     }
 
@@ -128,9 +128,9 @@ export abstract class VirtualCanvasBase extends CanvasBase implements IVirtualCa
         this.voidMessaging.sendToChannel0();
     }
 
-    protected getDotIndex(position: Position): DotIndex {
-        const closestX = (position.x - this.virtualBounds.x) / this.dotsSpacing;
-        const closestY = (position.y - this.virtualBounds.y) / this.dotsSpacing;
+    protected calculateDotIndex(position: Position): DotIndex {
+        const closestX = (position.x - this.virtualBounds.left) / this.dotsSpacing;
+        const closestY = (position.y - this.virtualBounds.top) / this.dotsSpacing;
 
         const indexX = Math.round(closestX);
         const indexY = Math.round(closestY);
@@ -139,31 +139,31 @@ export abstract class VirtualCanvasBase extends CanvasBase implements IVirtualCa
         return index;
     }
 
-    protected getDotPosition(index: DotIndex): Position {
-        const x = this.getDotXPosition(index.indexX)
-        const y = this.getDotYPosition(index.indexY)
+    protected calculateDotPosition(index: DotIndex): Position {
+        const x = this.calculateDotXPosition(index.indexX)
+        const y = this.calculateDotYPosition(index.indexY)
         return { x, y };
     }
 
-    protected getDotXPosition(indexX: number): number {
-        const x = this.virtualBounds.x + (indexX * this.dotsSpacing);
+    protected calculateDotXPosition(indexX: number): number {
+        const x = this.virtualBounds.left + (indexX * this.dotsSpacing);
         return x;
     }
 
-    protected getDotYPosition(indexY: number): number {
-        const y = this.virtualBounds.y + (indexY * this.dotsSpacing);
+    protected calculateDotYPosition(indexY: number): number {
+        const y = this.virtualBounds.top + (indexY * this.dotsSpacing);
         return y;
     }
 
     protected isInVirtualBounds(position: Position): boolean {
-        const dotIndex = this.getDotIndex(position);
-        const newPosition = this.getDotPosition(dotIndex);
+        const dotIndex = this.calculateDotIndex(position);
+        const newPosition = this.calculateDotPosition(dotIndex);
         const x = newPosition.x;
         const y = newPosition.y;
 
         const vBounds = this.virtualBounds;
-        const vX = vBounds.x;
-        const vY = vBounds.y;
+        const vX = vBounds.left;
+        const vY = vBounds.top;
         const vWidth = vBounds.width;
         const vHeight = vBounds.height;
 
@@ -203,13 +203,13 @@ export abstract class VirtualCanvasBase extends CanvasBase implements IVirtualCa
     }
 
     private calculateVirtualBounds(): void {
-        const x = this.virtualBounds.x;
-        const y = this.virtualBounds.y;
+        const left = this.virtualBounds.left;
+        const top = this.virtualBounds.top;
 
         const width = (this.allDotsX - 1) * this.dotsSpacing;
         const height = (this.allDotsY - 1) * this.dotsSpacing;
 
-        this.virtualBounds = { x, y, width, height };
+        this.virtualBounds = { left, top, width, height };
     }
 
     private zoomInSpacing(): void {

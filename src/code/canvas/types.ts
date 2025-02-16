@@ -1,7 +1,7 @@
 import { Listener, VoidUnsubscribe } from "../types";
 import { Position } from "./input/types.js";
 
-export type Bounds = { x: number, y: number, width: number, height: number };
+export type Bounds = { left: number, top: number, width: number, height: number };
 export type Id = number;
 
 export type Dot = Position;
