@@ -37,10 +37,11 @@ export class StitchCanvas extends StitchCanvasBase {
 
     protected override redraw(): void {
         const frontThreadsIndexes = this.threadIndexes.filter((threadIndex) => threadIndex.side === CanvasSide.Front);
+        const visibleFrontThreadsIndexes = this.getVisibleThreadsIndexes(frontThreadsIndexes);
 
-        this.redrawThreads(frontThreadsIndexes);
+        this.redrawThreads(visibleFrontThreadsIndexes);
         // TODO: do not draw dots on move!!!
-        this.redrawThreadsDots(frontThreadsIndexes);
+        this.redrawThreadsDots(visibleFrontThreadsIndexes);
     }
 
     private startListening(): void {
@@ -70,7 +71,7 @@ export class StitchCanvas extends StitchCanvasBase {
             if (!areIdenticalClicks) {
                 const thread = this.createThread(previouslyClickedDot, clickedDot);
 
-                const internalThreadId = 0; // must change id color, width and/or dotRadius has changed by the user
+                const internalThreadId = 0; // must change when color and/or width has changed by the user (use ids.next())
                 const threadEx: InternalThread = { dotRadius: this.dotRadius, ...thread };
                 this.internalThreads.set(internalThreadId, threadEx);
 
@@ -88,6 +89,53 @@ export class StitchCanvas extends StitchCanvasBase {
         this.changeSide();
     }
 
+    private getVisibleThreadsIndexes(threadsIndexes: Array<ThreadIndex>): Array<ThreadIndex> {
+        const leftTopDotIndex = this.calculateLeftTopDotIndex();
+        const leftTopDotPosition = super.calculateDotPosition(leftTopDotIndex);
+
+        const width = this.calculateWidth();
+        const height = this.calculateHeight();
+
+        // console.log(`x: ${x}, y: ${y}, width: ${width}, height: ${height}`);
+
+        const widthDotIndex = super.calculateDotIndex({ x: leftTopDotPosition.x + width, y: leftTopDotPosition.y });
+        const heightDotIndex = super.calculateDotIndex({ x: leftTopDotPosition.x, y: leftTopDotPosition.y + height });
+
+        const visibleThreadsIndexes = new Array<ThreadIndex>();
+
+        for (let index = 0; index < threadsIndexes.length; index++) {
+            const threadIndex = threadsIndexes[index];
+
+            const indexX1 = threadIndex.from.indexX;
+            const indexX2 = threadIndex.to.indexX;
+
+            if ((indexX1 < leftTopDotIndex.indexX) && (indexX2 < leftTopDotIndex.indexX)) {
+                continue;
+            }
+
+            if ((indexX1 > (leftTopDotIndex.indexX + widthDotIndex.indexX)) && (indexX2 > (leftTopDotIndex.indexX + widthDotIndex.indexX))) {
+                continue;
+            }
+
+            const indexY1 = threadIndex.from.indexY;
+            const indexY2 = threadIndex.to.indexY;
+
+            if ((indexY1 < leftTopDotIndex.indexY) && (indexY2 < leftTopDotIndex.indexY)) {
+                continue;
+            }
+
+            if ((indexY1 > (leftTopDotIndex.indexY + heightDotIndex.indexY)) && (indexY2 > (leftTopDotIndex.indexY + heightDotIndex.indexY))) {
+                continue;
+            }
+
+
+            visibleThreadsIndexes.push(threadIndex);
+        }
+
+        console.log(`visible threads: ${visibleThreadsIndexes.length}`);
+        return visibleThreadsIndexes;
+    }
+
     private redrawThreads(threadsIndexes: Array<ThreadIndex>): void {
         const threads = new Array<StitchThread>();
 
@@ -97,7 +145,6 @@ export class StitchCanvas extends StitchCanvasBase {
             threads.push(thread);
         });
 
-        // TODO: draw only visible threads
         super.invokeDrawThreads(threads);
     }
 
@@ -120,10 +167,14 @@ export class StitchCanvas extends StitchCanvasBase {
                 dotsY.push(to.y);
             });
 
-            const color = internalThread.color;
-            const dotRadius = this.recalculateDotRadius(internalThread.dotRadius);
+            const hasDots = dotsX.length > 0;
+            if (hasDots) {
 
-            this.invokeDrawDots(dotsX, dotsY, dotRadius, color);
+                const color = internalThread.color;
+                const dotRadius = this.recalculateDotRadius(internalThread.dotRadius);
+
+                this.invokeDrawDots(dotsX, dotsY, dotRadius, color);
+            }
         });
     }
 
@@ -164,5 +215,52 @@ export class StitchCanvas extends StitchCanvasBase {
         // TODO: radius +- dotRadiusZoomStep
         const newRadius = this.dotRadius;
         return newRadius;
+    }
+
+    private calculateLeftTopDotIndex(): DotIndex {
+        const leftTopX = this.virtualBounds.left < this.bounds.left
+            ? this.bounds.left
+            : Math.min(this.virtualBounds.left, (this.bounds.left + this.bounds.width));
+
+        const leftTop = this.virtualBounds.top < this.bounds.top
+            ? this.bounds.top
+            : Math.min(this.virtualBounds.top, (this.bounds.top + this.bounds.width));
+
+        const leftTopDot = { x: leftTopX, y: leftTop };
+        const leftTopDotIndex = super.calculateDotIndex(leftTopDot);
+
+        return leftTopDotIndex;
+    }
+
+    private calculateWidth(): number {
+        if (this.virtualBounds.left < this.bounds.left) {
+            const virtualWidth = this.virtualBounds.width - (Math.abs(this.virtualBounds.left) + Math.abs(this.bounds.left));
+            return Math.min(virtualWidth, this.bounds.width);
+        } else {
+            const offsetBoundsWidth = this.bounds.left + this.bounds.width;
+            const offsetVirtualWidth = this.virtualBounds.left + this.virtualBounds.width;
+
+            if (offsetVirtualWidth <= offsetBoundsWidth) {
+                return this.virtualBounds.width;
+            } else {
+                return (this.bounds.width - this.virtualBounds.left);
+            }
+        }
+    }
+
+    private calculateHeight(): number {
+        if (this.virtualBounds.top < this.bounds.top) {
+            const virtualHeight = this.virtualBounds.height - (Math.abs(this.virtualBounds.top) + Math.abs(this.bounds.top));
+            return Math.min(virtualHeight, this.bounds.height);
+        } else {
+            const offsetBoundsHeight = this.bounds.top + this.bounds.height;
+            const offsetVirtualHeight = this.virtualBounds.top + this.virtualBounds.height;
+
+            if (offsetVirtualHeight <= offsetBoundsHeight) {
+                return this.virtualBounds.height;
+            } else {
+                return (this.bounds.height - this.virtualBounds.top);
+            }
+        }
     }
 }
