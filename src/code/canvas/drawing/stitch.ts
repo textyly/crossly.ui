@@ -40,8 +40,7 @@ export class StitchDrawingCanvas extends CanvasBase implements IStitchDrawingCan
     }
 
     private handleDrawThreads(event: DrawStitchThreadsEvent): void {
-        const threads = event.threads;
-        this.rasterDrawing.drawLines(threads);
+        this.rasterDrawing.drawLines(event.visible, event.fromDotsX, event.fromDotsY, event.toDotsX, event.toDotsY, event.widths, event.colors);
     }
 
     private handleRedraw(): void {

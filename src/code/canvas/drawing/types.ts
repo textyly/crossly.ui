@@ -19,7 +19,7 @@ export interface ICueDrawingCanvas extends IDrawingCanvas<ICueCanvas> {
 
 export interface IRasterDrawingCanvas extends ICanvas {
     drawDots(dotsX: Array<number>, dotsY: Array<number>, radius: number, color: string): void;
-    drawLines(threads: Array<Thread<Dot>>): void;
+    drawLines(included: Array<boolean>, fromDotsX: Array<number>, fromDotsY: Array<number>, toDotsX: Array<number>, toDotsY: Array<number>, width: Array<number>, colors: Array<string>): void;
     clear(): void;
 }
 

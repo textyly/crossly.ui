@@ -1,12 +1,5 @@
+import { Id, CueDot, ICanvas, CueThread } from "../types.js";
 import { Listener, VoidListener, VoidUnsubscribe } from "../../types.js";
-import {
-    Id,
-    CueDot,
-    ICanvas,
-    CueThread,
-    FabricThread,
-    StitchThread,
-} from "../types.js";
 
 export type DotIndex = { indexX: number, indexY: number };
 
@@ -40,13 +33,13 @@ export interface ICueCanvas extends IVirtualCanvas {
 export type DrawFabricDotsEvent = { dotsX: Array<number>, dotsY: Array<number>, dotRadius: number, dotColor: string };
 export type DrawFabricDotsListener = Listener<DrawFabricDotsEvent>;
 
-export type DrawFabricThreadsEvent = { threads: Array<FabricThread> };
+export type DrawFabricThreadsEvent = { visible: Array<boolean>, fromDotsX: Array<number>, fromDotsY: Array<number>, toDotsX: Array<number>, toDotsY: Array<number>, widths: Array<number>, colors: Array<string> };
 export type DrawFabricThreadsListener = Listener<DrawFabricThreadsEvent>;
 
 export type DrawStitchDotsEvent = { dotsX: Array<number>, dotsY: Array<number>, dotRadius: number, dotColor: string };
 export type DrawStitchDotsListener = Listener<DrawStitchDotsEvent>;
 
-export type DrawStitchThreadsEvent = { threads: Array<StitchThread> };
+export type DrawStitchThreadsEvent = { visible: Array<boolean>, fromDotsX: Array<number>, fromDotsY: Array<number>, toDotsX: Array<number>, toDotsY: Array<number>, widths: Array<number>, colors: Array<string> };
 export type DrawStitchThreadsListener = Listener<DrawStitchThreadsEvent>;
 
 export type DrawCueDotEvent = { dot: CueDot, dotRadius: number, dotColor: string };

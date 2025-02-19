@@ -9,7 +9,7 @@ export class RasterDrawingCanvas extends CanvasBase implements IRasterDrawingCan
     constructor(private rasterCanvas: HTMLCanvasElement) {
         super();
         this.endAngle = Math.PI * 2;
-        this.context = rasterCanvas.getContext("2d")!;
+        this.context = rasterCanvas.getContext("2d", { willReadFrequently: true })!;
     }
 
     public drawDots(dotsX: Array<number>, dotsY: Array<number>, radius: number, color: string): void {
@@ -22,28 +22,32 @@ export class RasterDrawingCanvas extends CanvasBase implements IRasterDrawingCan
             // do not extract a drawDot method for perf reasons
             this.context.fillStyle = color;
             this.context.moveTo(x, y);
+
             this.context.arc(x, y, radius, 0, this.endAngle);
         }
 
         this.context.fill();
     }
 
-    public drawLines(threads: Array<Thread<Dot>>): void {
+    public drawLines(visible: Array<boolean>, fromDotsX: Array<number>, fromDotsY: Array<number>, toDotsX: Array<number>, toDotsY: Array<number>, widths: Array<number>, colors: Array<string>): void {
         this.context.beginPath();
 
-        threads.forEach((thread) => {
+        for (let index = 0; index < fromDotsX.length; index++) {
+            const isVisible = visible[index];
+            if (!isVisible) {
+                continue;
+            }
+
             // do not move extract a drawLine method for perf reasons
-            this.context.lineWidth = thread.width;
-            this.context.strokeStyle = thread.color;
+            this.context.lineWidth = widths[index];
+            this.context.strokeStyle = colors[index];
 
-            const from = thread.from;
-            this.context.moveTo(from.x, from.y);
-
-            const to = thread.to;
-            this.context.lineTo(to.x, to.y);
-        });
+            this.context.moveTo(fromDotsX[index], fromDotsY[index]);
+            this.context.lineTo(toDotsX[index], toDotsY[index]);
+        }
 
         this.context.stroke();
+        this.context.closePath();
     }
 
     public clear(): void {

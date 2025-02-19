@@ -1,9 +1,9 @@
+import { CanvasConfig } from "../../types.js";
 import { VirtualCanvasBase } from "../base.js";
 import { IInputCanvas } from "../../input/types.js";
 import { VoidUnsubscribe } from "../../../types.js";
 import { Messaging2 } from "../../../messaging/impl.js";
 import { IMessaging2 } from "../../../messaging/types.js";
-import { CanvasConfig, Dot, StitchThread } from "../../types.js";
 import {
     IStitchCanvas,
     DrawStitchDotsEvent,
@@ -33,8 +33,8 @@ export abstract class StitchCanvasBase extends VirtualCanvasBase implements ISti
         super.dispose();
     }
 
-    protected invokeDrawThreads(threads: Array<StitchThread>): void {
-        const event = { threads };
+    protected invokeDrawThreads(visible: Array<boolean>, fromDotsX: Array<number>, fromDotsY: Array<number>, toDotsX: Array<number>, toDotsY: Array<number>, widths: Array<number>, colors: Array<string>): void {
+        const event = { visible, fromDotsX, fromDotsY, toDotsX, toDotsY, widths, colors };
         this.messaging.sendToChannel1(event);
     }
 

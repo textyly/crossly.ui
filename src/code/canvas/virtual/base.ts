@@ -154,6 +154,53 @@ export abstract class VirtualCanvasBase extends CanvasBase implements IVirtualCa
         return y;
     }
 
+    protected calculateVisibleLeftTopDotIndex(): DotIndex {
+        const leftTopX = this.virtualBounds.left < this.bounds.left
+            ? this.bounds.left
+            : Math.min(this.virtualBounds.left, (this.bounds.left + this.bounds.width));
+
+        const leftTop = this.virtualBounds.top < this.bounds.top
+            ? this.bounds.top
+            : Math.min(this.virtualBounds.top, (this.bounds.top + this.bounds.width));
+
+        const leftTopDot = { x: leftTopX, y: leftTop };
+        const leftTopDotIndex = this.calculateDotIndex(leftTopDot);
+
+        return leftTopDotIndex;
+    }
+
+    protected calculateVisibleWidth(): number {
+        if (this.virtualBounds.left < this.bounds.left) {
+            const virtualWidth = this.virtualBounds.width - (Math.abs(this.virtualBounds.left) + Math.abs(this.bounds.left));
+            return Math.min(virtualWidth, this.bounds.width);
+        } else {
+            const offsetBoundsWidth = this.bounds.left + this.bounds.width;
+            const offsetVirtualWidth = this.virtualBounds.left + this.virtualBounds.width;
+
+            if (offsetVirtualWidth <= offsetBoundsWidth) {
+                return this.virtualBounds.width;
+            } else {
+                return (this.bounds.width - this.virtualBounds.left);
+            }
+        }
+    }
+
+    protected calculateVisibleHeight(): number {
+        if (this.virtualBounds.top < this.bounds.top) {
+            const virtualHeight = this.virtualBounds.height - (Math.abs(this.virtualBounds.top) + Math.abs(this.bounds.top));
+            return Math.min(virtualHeight, this.bounds.height);
+        } else {
+            const offsetBoundsHeight = this.bounds.top + this.bounds.height;
+            const offsetVirtualHeight = this.virtualBounds.top + this.virtualBounds.height;
+
+            if (offsetVirtualHeight <= offsetBoundsHeight) {
+                return this.virtualBounds.height;
+            } else {
+                return (this.bounds.height - this.virtualBounds.top);
+            }
+        }
+    }
+
     protected isInVirtualBounds(position: Position): boolean {
         const dotIndex = this.calculateDotIndex(position);
         const newPosition = this.calculateDotPosition(dotIndex);
