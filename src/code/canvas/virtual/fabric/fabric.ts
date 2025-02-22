@@ -1,4 +1,3 @@
-import { DotIndex } from "../types.js";
 import { FabricCanvasBase } from "./base.js";
 import { CanvasConfig } from "../../types.js";
 import { IInputCanvas } from "../../input/types.js";
@@ -16,26 +15,26 @@ export class FabricCanvas extends FabricCanvasBase {
         const visibleWidth = this.calculateVisibleWidth();
         const visibleHeight = this.calculateVisibleHeight();
 
-        const visibleWidthDotIndex = super.calculateDotIndex({ x: visibleLeftTopDotPosition.x + visibleWidth, y: visibleLeftTopDotPosition.y });
-        const visibleHeightDotIndex = super.calculateDotIndex({ x: visibleLeftTopDotPosition.x, y: visibleLeftTopDotPosition.y + visibleHeight });
+        const visibleRightTopDotIndex = super.calculateDotIndex({ x: visibleLeftTopDotPosition.x + visibleWidth, y: visibleLeftTopDotPosition.y });
+        const visibleLeftBottomDotIndex = super.calculateDotIndex({ x: visibleLeftTopDotPosition.x, y: visibleLeftTopDotPosition.y + visibleHeight });
         // ---------------------------------------
 
         const startDotIndexX = visibleLeftTopDotIndex.indexX % 2 === 0 ? visibleLeftTopDotIndex.indexX : ++visibleLeftTopDotIndex.indexX;
         const startDotIndexY = visibleLeftTopDotIndex.indexY % 2 === 0 ? visibleLeftTopDotIndex.indexY : ++visibleLeftTopDotIndex.indexY;
 
-        this.createThreads(startDotIndexX, startDotIndexY, visibleWidthDotIndex.indexX, visibleHeightDotIndex.indexY);
-        this.createDots(startDotIndexX, startDotIndexY, visibleWidthDotIndex.indexX, visibleHeightDotIndex.indexY);
+        this.createThreads(startDotIndexX, startDotIndexY, visibleRightTopDotIndex.indexX, visibleLeftBottomDotIndex.indexY);
+        this.createDots(startDotIndexX, startDotIndexY, visibleRightTopDotIndex.indexX, visibleLeftBottomDotIndex.indexY);
     }
 
-    private createDots(startDotIndexX: number, startDotIndexY: number, widthDotIndexX: number, heightDotIndexY: number): void {
+    private createDots(startDotIndexX: number, startDotIndexY: number, endDotIndexX: number, endDotIndexY: number): void {
         // CPU, GPU, memory and GC intensive code
         // Do not extract this method in different methods
 
         const dotsX = new Array<number>();
         const dotsY = new Array<number>();
 
-        for (let dotY = startDotIndexY; dotY <= heightDotIndexY; dotY += 2) {
-            for (let dotX = startDotIndexX; dotX <= widthDotIndexX; dotX += 2) {
+        for (let dotY = startDotIndexY; dotY <= endDotIndexY; dotY += 2) {
+            for (let dotX = startDotIndexX; dotX <= endDotIndexX; dotX += 2) {
 
                 const dotIndex = { indexX: dotX, indexY: dotY };
                 const dotPosition = super.calculateDotPosition(dotIndex);
@@ -47,7 +46,7 @@ export class FabricCanvas extends FabricCanvasBase {
         super.invokeDrawDots(dotsX, dotsY, this.dotRadius, this.dotColor);
     }
 
-    private createThreads(startDotIndexX: number, startDotIndexY: number, widthDotIndexX: number, heightDotIndexY: number): void {
+    private createThreads(startDotIndexX: number, startDotIndexY: number, endDotIndexX: number, endDotIndexY: number): void {
         // CPU, GPU, memory and GC intensive code
         // Do not extract this method in different methods
 
@@ -70,7 +69,7 @@ export class FabricCanvas extends FabricCanvasBase {
         const colors = new Array<string>();
 
 
-        for (let dotY = startDotIndexY; dotY <= heightDotIndexY; dotY += 2) {
+        for (let dotY = startDotIndexY; dotY <= endDotIndexY; dotY += 2) {
             const dotYPosition = super.calculateDotYPosition(dotY);
 
             visible.push(true);
@@ -82,7 +81,7 @@ export class FabricCanvas extends FabricCanvasBase {
             colors.push(threadColor);
         }
 
-        for (let dotX = startDotIndexX; dotX <= widthDotIndexX; dotX += 2) {
+        for (let dotX = startDotIndexX; dotX <= endDotIndexX; dotX += 2) {
 
             const dotXPosition = super.calculateDotXPosition(dotX);
 

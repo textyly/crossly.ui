@@ -26,6 +26,10 @@ export class InputCanvas extends InputCanvasBase {
         super();
 
         this.htmlElement = htmlElement;
+
+        const bounds = { left: htmlElement.clientLeft, top: htmlElement.clientTop, width: htmlElement.clientWidth, height: htmlElement.clientHeight };
+        super.bounds = bounds;
+
         this.touchInput = new TouchInput(htmlElement);
         this.moveInput = new MoveInput(htmlElement, this.touchInput);
 
@@ -46,16 +50,6 @@ export class InputCanvas extends InputCanvasBase {
         super.dispose();
     }
 
-    protected override invokeBoundsChange(bounds: Bounds): void {
-        super.invokeBoundsChange(bounds);
-
-        const width = bounds.width.toString() + "px";
-        const height = bounds.height.toString() + "px";
-
-        this.htmlElement.style.width = width;
-        this.htmlElement.style.height = height;
-    }
-
     private subscribe(): void {
         this.htmlElement.addEventListener(CanvasEventType.WheelChange, this.wheelChangeHandler);
         this.htmlElement.addEventListener(CanvasEventType.PointerMove, this.pointerMoveHandler);
@@ -68,8 +62,14 @@ export class InputCanvas extends InputCanvasBase {
         const touchZoomOutUn = this.touchInput.onZoomOut(this.handleZoomOut.bind(this));
         super.registerUn(touchZoomOutUn);
 
+        const moveStartUn = this.moveInput.onMoveStart(this.handleMoveStart.bind(this));
+        super.registerUn(moveStartUn);
+
         const moveUn = this.moveInput.onMove(this.handleMove.bind(this));
         super.registerUn(moveUn);
+
+        const moveStopUn = this.moveInput.onMoveStop(this.handleMoveStop.bind(this));
+        super.registerUn(moveStopUn);
 
         this.touchInput.subscribe();
         this.moveInput.subscribe();
@@ -96,8 +96,16 @@ export class InputCanvas extends InputCanvasBase {
         super.invokeZoomOut();
     }
 
+    private handleMoveStart(): void {
+        super.invokeMoveStart();
+    }
+
     private handleMove(event: MoveEvent): void {
-        super.invokeMove(event.difference);
+        super.invokeMove(event);
+    }
+
+    private handleMoveStop(): void {
+        super.invokeMoveStop();
     }
 
     private handlePointerUp(event: PointerEvent): void {
@@ -105,14 +113,14 @@ export class InputCanvas extends InputCanvasBase {
             return;
         }
 
-        if (!this.moveInput.inMoveMode) {
+        if (this.moveInput.inMoveMode) {
             return;
         }
 
         const position = this.getPosition(event);
         const leftButton = 0;
         if (event.button === leftButton) {
-            super.invokePointerUp(position);
+            super.invokePointerUp({ position });
         }
     }
 
@@ -121,12 +129,12 @@ export class InputCanvas extends InputCanvasBase {
             return;
         }
 
-        if (!this.moveInput.inMoveMode) {
+        if (this.moveInput.inMoveMode) {
             return;
         }
 
         const position = this.getPosition(event);
-        super.invokePointerMove(position);
+        super.invokePointerMove({ position });
     }
 
     private handlePointerDown(event: PointerEvent): void {

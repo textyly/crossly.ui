@@ -53,11 +53,11 @@ export class VectorDrawingCanvas extends CanvasBase implements IVectorDrawingCan
     }
 
     public moveLine(thread: Thread<Dot>, svgLine: SvgLine): SvgLine {
-        const x1 = thread.from.x.toString();
-        const y1 = thread.from.y.toString();
+        const x1 = (thread.from.x - this.bounds.left).toString();
+        const y1 = (thread.from.y - this.bounds.top).toString();
 
-        const x2 = thread.to.x.toString();
-        const y2 = thread.to.y.toString();
+        const x2 = (thread.to.x - this.bounds.left).toString();
+        const y2 = (thread.to.y - this.bounds.top).toString();
 
         const width = thread.width.toString();
         const color = thread.color;
@@ -82,7 +82,7 @@ export class VectorDrawingCanvas extends CanvasBase implements IVectorDrawingCan
         const width = bounds.width.toString();
         const height = bounds.height.toString();
 
-        this.svgCanvas.style.transform = `translate(${x}px, ${y}px, ${width}px, ${height}px)`;
+        this.svgCanvas.style.transform = `translate(${x}px, ${y}px)`;
         this.svgCanvas.setAttribute("width", width);
         this.svgCanvas.setAttribute("height", height);
     }
@@ -90,8 +90,8 @@ export class VectorDrawingCanvas extends CanvasBase implements IVectorDrawingCan
     private createDot(dot: Dot, radius: number, color: string): SvgDot {
         const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
 
-        const cx = dot.x.toString();
-        const cy = dot.y.toString();
+        const cx = (dot.x - this.bounds.left).toString();
+        const cy = (dot.y - this.bounds.top).toString();
         const r = radius.toString();
 
         circle.setAttribute("cx", cx);

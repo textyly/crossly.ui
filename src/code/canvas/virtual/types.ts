@@ -1,11 +1,14 @@
 import { Id, CueDot, ICanvas, CueThread } from "../types.js";
 import { Listener, VoidListener, VoidUnsubscribe } from "../../types.js";
+import { MoveListener } from "../input/types.js";
 
 export type DotIndex = { indexX: number, indexY: number };
 
 export interface IVirtualCanvas extends ICanvas {
     draw(): void;
     onRedraw(listener: VoidListener): VoidUnsubscribe;
+    onMoveStart(listener: VoidListener): VoidUnsubscribe;
+    onMoveStop(listener: VoidListener): VoidUnsubscribe;
 }
 
 export interface IFabricCanvas extends IVirtualCanvas {

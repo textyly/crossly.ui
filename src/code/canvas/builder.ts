@@ -6,19 +6,24 @@ import { FabricDrawingCanvas } from "./drawing/fabric.js";
 import { RasterDrawingCanvas } from "./drawing/raster.js";
 import { VectorDrawingCanvas } from "./drawing/vector.js";
 import { StitchDrawingCanvas } from "./drawing/stitch.js";
-import { InputCanvasThrottler } from "./input/throttler.js";
 import { CrosslyCanvasConfig, ICrosslyCanvas } from "./types.js";
-import { ICueDrawingCanvas, IFabricDrawingCanvas, IStitchDrawingCanvas } from "./drawing/types.js";
+import { ICueDrawingCanvas, IFabricDrawingCanvas, IRasterDrawingCanvas, IStitchDrawingCanvas, IVectorDrawingCanvas } from "./drawing/types.js";
 
 export class CrosslyCanvasBuilder {
     private config!: CrosslyCanvasConfig;
     private inputCanvas!: IInputCanvas;
-    private fabricDrawingCanvas!: IFabricDrawingCanvas;
-    private stitchDrawingCanvas!: IStitchDrawingCanvas;
-    private cueDrawingCanvas!: ICueDrawingCanvas;
+    private fabricRasterDrawing!: IRasterDrawingCanvas;
+    private stitchRasterDrawing!: IRasterDrawingCanvas;
+    private cueVectorDrawing!: IVectorDrawingCanvas;
 
     public build(): ICrosslyCanvas {
-        const crosslyCanvas = new CrosslyCanvas(this.config, this.inputCanvas, this.fabricDrawingCanvas, this.stitchDrawingCanvas, this.cueDrawingCanvas);
+        const crosslyCanvas = new CrosslyCanvas(
+            this.config,
+            this.inputCanvas,
+            this.fabricRasterDrawing,
+            this.stitchRasterDrawing,
+            this.cueVectorDrawing);
+
         return crosslyCanvas;
     }
 
@@ -28,27 +33,22 @@ export class CrosslyCanvasBuilder {
     }
 
     public withInputCanvas(inputElement: HTMLElement): CrosslyCanvasBuilder {
-        const inputCanvas = new InputCanvas(inputElement);
-        const inputCanvasThrottler = new InputCanvasThrottler(inputCanvas);
-        this.inputCanvas = inputCanvasThrottler;
+        this.inputCanvas = new InputCanvas(inputElement);
         return this;
     }
 
     public withFabricCanvas(fabricCanvasElement: HTMLCanvasElement): CrosslyCanvasBuilder {
-        const rasterDrawingCanvas = new RasterDrawingCanvas(fabricCanvasElement);
-        this.fabricDrawingCanvas = new FabricDrawingCanvas(rasterDrawingCanvas);
+        this.fabricRasterDrawing = new RasterDrawingCanvas(fabricCanvasElement);
         return this;
     }
 
     public withStitchCanvas(stitchCanvasElement: HTMLCanvasElement): CrosslyCanvasBuilder {
-        const rasterDrawingCanvas = new RasterDrawingCanvas(stitchCanvasElement);
-        this.stitchDrawingCanvas = new StitchDrawingCanvas(rasterDrawingCanvas);
+        this.stitchRasterDrawing = new RasterDrawingCanvas(stitchCanvasElement);
         return this;
     }
 
     public withCueCanvas(cueSvgElement: HTMLElement): CrosslyCanvasBuilder {
-        const vectorDrawingCanvas = new VectorDrawingCanvas(cueSvgElement);
-        this.cueDrawingCanvas = new CueDrawingCanvas(vectorDrawingCanvas);
+        this.cueVectorDrawing = new VectorDrawingCanvas(cueSvgElement);
         return this;
     }
 }

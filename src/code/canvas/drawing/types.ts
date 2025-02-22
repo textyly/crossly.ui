@@ -4,20 +4,21 @@ import { ICueCanvas, IFabricCanvas, IStitchCanvas } from "../virtual/types.js";
 export type SvgDot = SVGCircleElement;
 export type SvgLine = SVGLineElement;
 
-export interface IDrawingCanvas<TCanvas> extends ICanvas {
-    subscribe(canvas: TCanvas): void;
+export interface IDrawingCanvas extends ICanvas {
 }
 
-export interface IFabricDrawingCanvas extends IDrawingCanvas<IFabricCanvas> {
+export interface IFabricDrawingCanvas extends IDrawingCanvas {
 }
 
-export interface IStitchDrawingCanvas extends IDrawingCanvas<IStitchCanvas> {
+export interface IStitchDrawingCanvas extends IDrawingCanvas {
 }
 
-export interface ICueDrawingCanvas extends IDrawingCanvas<ICueCanvas> {
+export interface ICueDrawingCanvas extends IDrawingCanvas {
 }
 
 export interface IRasterDrawingCanvas extends ICanvas {
+    createBitMap(): Promise<ImageBitmap>;
+    drawBitMap(bitmap: ImageBitmap): void;
     drawDots(dotsX: Array<number>, dotsY: Array<number>, radius: number, color: string): void;
     drawLines(included: Array<boolean>, fromDotsX: Array<number>, fromDotsY: Array<number>, toDotsX: Array<number>, toDotsY: Array<number>, width: Array<number>, colors: Array<string>): void;
     clear(): void;

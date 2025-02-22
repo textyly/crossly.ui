@@ -1,12 +1,15 @@
 import { ICanvas } from "../types";
-import { Listener, VoidUnsubscribe } from "../../types";
+import { Listener, VoidListener, VoidUnsubscribe } from "../../types";
 
 
-export type CanvasEvent = { type: CanvasEventType, value?: Position };
+export type CanvasEvent = { type: CanvasEventType, event?: any };
 export type ActiveTouches = { currentDistance: number };
 
 export interface IInputCanvas extends ICanvas {
+    onMoveStart(listener: VoidListener): VoidUnsubscribe;
     onMove(listener: MoveListener): VoidUnsubscribe;
+    onMoveStop(listener: VoidListener): VoidUnsubscribe;
+
     onZoomIn(listener: ZoomInListener): VoidUnsubscribe;
     onZoomOut(listener: ZoomOutListener): VoidUnsubscribe;
 
@@ -29,14 +32,19 @@ export interface IMoveInput extends ICanvas {
 
     subscribe(): void;
 
+    onMoveStart(listener: VoidListener): VoidUnsubscribe;
     onMove(listener: MoveListener): VoidUnsubscribe;
+    onMoveStop(listener: VoidListener): VoidUnsubscribe;
 }
 
 export enum CanvasEventType {
     WheelChange = "wheel",
     ZoomIn = "zoomin",
     ZoomOut = "zoomout",
-    Move = "Move",
+
+    MoveStart = "movestart",
+    Move = "move",
+    MoveStop = "movestop",
 
     PointerMove = "pointermove",
     PointerDown = "pointerdown",
@@ -67,7 +75,7 @@ export type ZoomInListener = Listener<ZoomInEvent>;
 export type ZoomOutEvent = {};
 export type ZoomOutListener = Listener<ZoomOutEvent>;
 
-export type MoveEvent = { difference: Position };
+export type MoveEvent = { previousPosition: Position, currentPosition: Position };
 export type MoveListener = Listener<MoveEvent>;
 
 export type PointerEventHandler = Listener<PointerEvent>;

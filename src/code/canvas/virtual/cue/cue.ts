@@ -35,6 +35,13 @@ export class CueCanvas extends CueCanvasBase {
         }
     }
 
+    protected override handleMoveStart(): void {
+        super.handleMoveStart();
+
+        this.removeHoveredDot();
+        this.removeThread();
+    }
+
     private startListening(): void {
         const pointerMoveUn = this.inputCanvas.onPointerMove(this.handlePointerMove.bind(this));
         super.registerUn(pointerMoveUn);

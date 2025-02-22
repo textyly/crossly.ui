@@ -9,17 +9,26 @@ export class RasterDrawingCanvas extends CanvasBase implements IRasterDrawingCan
     constructor(private rasterCanvas: HTMLCanvasElement) {
         super();
         this.endAngle = Math.PI * 2;
-        this.context = rasterCanvas.getContext("2d", { willReadFrequently: true })!;
+        this.context = rasterCanvas.getContext("2d")!;
+    }
+
+    public async createBitMap(): Promise<ImageBitmap> {
+        const bitmap = await createImageBitmap(this.rasterCanvas);
+        return bitmap;
+    }
+
+    public drawBitMap(bitmap: ImageBitmap): void {
+        const bounds = this.bounds;
+        this.context.drawImage(bitmap, 0, 0, bounds.width, bounds.height);
     }
 
     public drawDots(dotsX: Array<number>, dotsY: Array<number>, radius: number, color: string): void {
         this.context.beginPath();
 
         for (let index = 0; index < dotsX.length; index++) {
-            const x = dotsX[index];
-            const y = dotsY[index];
+            const x = dotsX[index] - this.bounds.left;
+            const y = dotsY[index] - this.bounds.top;
 
-            // do not extract a drawDot method for perf reasons
             this.context.fillStyle = color;
             this.context.moveTo(x, y);
 
@@ -33,17 +42,17 @@ export class RasterDrawingCanvas extends CanvasBase implements IRasterDrawingCan
         this.context.beginPath();
 
         for (let index = 0; index < fromDotsX.length; index++) {
+            // TODO: do not supply visible!!! Remove this if
             const isVisible = visible[index];
             if (!isVisible) {
                 continue;
             }
 
-            // do not move extract a drawLine method for perf reasons
             this.context.lineWidth = widths[index];
             this.context.strokeStyle = colors[index];
 
-            this.context.moveTo(fromDotsX[index], fromDotsY[index]);
-            this.context.lineTo(toDotsX[index], toDotsY[index]);
+            this.context.moveTo(fromDotsX[index] - this.bounds.left, fromDotsY[index] - this.bounds.top);
+            this.context.lineTo(toDotsX[index] - this.bounds.left, toDotsY[index] - this.bounds.top);
         }
 
         this.context.stroke();
@@ -51,7 +60,7 @@ export class RasterDrawingCanvas extends CanvasBase implements IRasterDrawingCan
     }
 
     public clear(): void {
-        this.context.clearRect(this.bounds.left, this.bounds.top, this.bounds.width, this.bounds.height);
+        this.context.clearRect(0, 0, this.bounds.width, this.bounds.height);
     }
 
     protected override invokeBoundsChange(bounds: Bounds): void {
@@ -62,8 +71,11 @@ export class RasterDrawingCanvas extends CanvasBase implements IRasterDrawingCan
         const width = bounds.width;
         const height = bounds.height;
 
-        this.rasterCanvas.style.transform = `translate(${x}px, ${y}px, ${width}px, ${height}px)`;
-        this.rasterCanvas.width = width;
-        this.rasterCanvas.height = height;
+        this.rasterCanvas.style.transform = `translate(${x}px, ${y}px)`;
+
+        if (width !== this.rasterCanvas.width || height !== this.rasterCanvas.height) {
+            this.rasterCanvas.height = height;
+            this.rasterCanvas.width = width;
+        }
     }
 }

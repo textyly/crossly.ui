@@ -41,6 +41,38 @@ export class StitchCanvas extends StitchCanvasBase {
         this.sides = new Array<CanvasSide>();
         this.colors = new Array<string>();
 
+        // setTimeout(() => {
+        //     for (let dotIndexY = 0; dotIndexY < this.allDotsY; dotIndexY += 2) {
+        //         for (let dotIndexX = 0; dotIndexX < this.allDotsX; dotIndexX += 2) {
+        //             if (dotIndexY > 0 && dotIndexX > 0) {
+        //                 this.visible.push(true);
+        //                 this.sides.push(CanvasSide.Front);
+        //                 this.widths.push(this.threadWidth);
+        //                 this.colors.push(this.threadColor);
+
+        //                 this.fromDotsX.push(dotIndexX);
+        //                 this.fromDotsY.push(dotIndexY);
+
+        //                 this.toDotsX.push(dotIndexX + 2);
+        //                 this.toDotsY.push(dotIndexY - 2);
+
+        //                 this.visible.push(true);
+        //                 this.sides.push(CanvasSide.Front);
+        //                 this.widths.push(this.threadWidth);
+        //                 this.colors.push(this.threadColor);
+
+        //                 this.fromDotsX.push(dotIndexX);
+        //                 this.fromDotsY.push(dotIndexY);
+
+        //                 this.toDotsX.push(dotIndexX - 2);
+        //                 this.toDotsY.push(dotIndexY - 2);
+        //             }
+        //         }
+        //     }
+
+        //     this.draw();
+        // }, 1000);
+
         this.startListening();
     }
 
@@ -57,8 +89,8 @@ export class StitchCanvas extends StitchCanvasBase {
         const visibleWidth = this.calculateVisibleWidth();
         const visibleHeight = this.calculateVisibleHeight();
 
-        const visibleWidthDotIndex = super.calculateDotIndex({ x: visibleLeftTopDotPosition.x + visibleWidth, y: visibleLeftTopDotPosition.y });
-        const visibleHeightDotIndex = super.calculateDotIndex({ x: visibleLeftTopDotPosition.x, y: visibleLeftTopDotPosition.y + visibleHeight });
+        const visibleRightTopDotIndex = super.calculateDotIndex({ x: visibleLeftTopDotPosition.x + visibleWidth, y: visibleLeftTopDotPosition.y });
+        const visibleLeftBottomDotIndex = super.calculateDotIndex({ x: visibleLeftTopDotPosition.x, y: visibleLeftTopDotPosition.y + visibleHeight });
         // ---------------------------------------
 
         const virtualBounds = this.virtualBounds;
@@ -84,7 +116,7 @@ export class StitchCanvas extends StitchCanvasBase {
                 continue;
             }
 
-            if ((fromDotX > visibleWidthDotIndex.indexX) && (toDotX > visibleWidthDotIndex.indexX)) {
+            if ((fromDotX > visibleRightTopDotIndex.indexX) && (toDotX > visibleRightTopDotIndex.indexX)) {
                 continue;
             }
 
@@ -95,7 +127,7 @@ export class StitchCanvas extends StitchCanvasBase {
                 continue;
             }
 
-            if ((fromDotY > visibleHeightDotIndex.indexY) && (toDotY > visibleHeightDotIndex.indexY)) {
+            if ((fromDotY > visibleLeftBottomDotIndex.indexY) && (toDotY > visibleLeftBottomDotIndex.indexY)) {
                 continue;
             }
 

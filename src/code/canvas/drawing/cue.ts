@@ -11,46 +11,24 @@ import {
 } from "../virtual/types.js";
 
 export class CueDrawingCanvas extends CanvasBase implements ICueDrawingCanvas {
+    private readonly cueCanvas: ICueCanvas;
     private readonly vectorDrawing: IVectorDrawingCanvas;
 
     private readonly svgDots: Map<Id, SvgDot>;
     private readonly svgLines: Map<Id, SvgLine>;
 
-    constructor(vectorDrawing: IVectorDrawingCanvas) {
+    constructor(cueCanvas: ICueCanvas, vectorDrawing: IVectorDrawingCanvas) {
         super();
+        this.cueCanvas = cueCanvas;
         this.vectorDrawing = vectorDrawing;
+
+        super.bounds = cueCanvas.bounds;
+        this.vectorDrawing.bounds = super.bounds;
 
         this.svgDots = new Map<Id, SvgDot>();
         this.svgLines = new Map<Id, SvgLine>();
-    }
 
-    public subscribe(cueCanvas: ICueCanvas): void {
-        const drawDotUn = cueCanvas.onDrawDot(this.handleDrawDot.bind(this));
-        super.registerUn(drawDotUn);
-
-        const drawDashDotUn = cueCanvas.onDrawDashDot(this.handleDrawDashDot.bind(this));
-        super.registerUn(drawDashDotUn);
-
-        const removeDotUn = cueCanvas.onRemoveDot(this.handleRemoveDot.bind(this));
-        super.registerUn(removeDotUn);
-
-        const drawThreadUn = cueCanvas.onDrawThread(this.handleDrawThread.bind(this));
-        super.registerUn(drawThreadUn);
-
-        const drawDashThreadUn = cueCanvas.onDrawDashThread(this.handleDrawDashThread.bind(this));
-        super.registerUn(drawDashThreadUn);
-
-        const moveThreadUn = cueCanvas.onMoveThread(this.handleMoveThread.bind(this));
-        super.registerUn(moveThreadUn);
-
-        const removeThreadUn = cueCanvas.onRemoveThread(this.handleRemoveThread.bind(this));
-        super.registerUn(removeThreadUn);
-
-        const redrawUn = cueCanvas.onRedraw(this.handleRedraw.bind(this));
-        super.registerUn(redrawUn);
-
-        const boundsChangeUn = cueCanvas.onBoundsChange(this.handleBoundsChange.bind(this));
-        super.registerUn(boundsChangeUn);
+        this.subscribe();
     }
 
     public override dispose(): void {
@@ -136,5 +114,34 @@ export class CueDrawingCanvas extends CanvasBase implements ICueDrawingCanvas {
     private clear(): void {
         this.svgDots.clear();
         this.svgLines.clear();
+    }
+
+    private subscribe(): void {
+        const drawDotUn = this.cueCanvas.onDrawDot(this.handleDrawDot.bind(this));
+        super.registerUn(drawDotUn);
+
+        const drawDashDotUn = this.cueCanvas.onDrawDashDot(this.handleDrawDashDot.bind(this));
+        super.registerUn(drawDashDotUn);
+
+        const removeDotUn = this.cueCanvas.onRemoveDot(this.handleRemoveDot.bind(this));
+        super.registerUn(removeDotUn);
+
+        const drawThreadUn = this.cueCanvas.onDrawThread(this.handleDrawThread.bind(this));
+        super.registerUn(drawThreadUn);
+
+        const drawDashThreadUn = this.cueCanvas.onDrawDashThread(this.handleDrawDashThread.bind(this));
+        super.registerUn(drawDashThreadUn);
+
+        const moveThreadUn = this.cueCanvas.onMoveThread(this.handleMoveThread.bind(this));
+        super.registerUn(moveThreadUn);
+
+        const removeThreadUn = this.cueCanvas.onRemoveThread(this.handleRemoveThread.bind(this));
+        super.registerUn(removeThreadUn);
+
+        const redrawUn = this.cueCanvas.onRedraw(this.handleRedraw.bind(this));
+        super.registerUn(redrawUn);
+
+        const boundsChangeUn = this.cueCanvas.onBoundsChange(this.handleBoundsChange.bind(this));
+        super.registerUn(boundsChangeUn);
     }
 }

@@ -1,8 +1,8 @@
 import { Bounds } from "../types.js";
 import { CanvasBase } from "../base.js";
-import { VoidUnsubscribe } from "../../types.js";
-import { Messaging1 } from "../../messaging/impl.js";
-import { IMessaging1 } from "../../messaging/types.js";
+import { Messaging2 } from "../../messaging/impl.js";
+import { IMessaging2 } from "../../messaging/types.js";
+import { VoidListener, VoidUnsubscribe } from "../../types.js";
 import {
     Position,
     MoveEvent,
@@ -14,7 +14,7 @@ import {
 } from "./types.js";
 
 export class MoveInput extends CanvasBase implements IMoveInput {
-    private readonly messaging: IMessaging1<MoveEvent>;
+    private readonly messaging: IMessaging2<MoveEvent, void>;
 
     private readonly htmlElement: HTMLElement;
     private readonly touchInput: ITouchInput;
@@ -31,7 +31,7 @@ export class MoveInput extends CanvasBase implements IMoveInput {
         this.htmlElement = htmlElement;
         this.touchInput = touchInput;
 
-        this.messaging = new Messaging1();
+        this.messaging = new Messaging2();
 
         this.pointerUpHandler = this.handlePointerUp.bind(this);
         this.pointerMoveHandler = this.handlePointerMove.bind(this);
@@ -43,11 +43,19 @@ export class MoveInput extends CanvasBase implements IMoveInput {
     }
 
     public get inMoveMode(): boolean {
-        return !this.lastDifference;
+        return this.lastDifference !== undefined;
+    }
+
+    public onMoveStart(listener: VoidListener): VoidUnsubscribe {
+        return this.messaging.listenOnChannel0(listener);
     }
 
     public onMove(listener: MoveListener): VoidUnsubscribe {
         return this.messaging.listenOnChannel1(listener);
+    }
+
+    public onMoveStop(listener: VoidListener): VoidUnsubscribe {
+        return this.messaging.listenOnChannel2(listener);
     }
 
     public subscribe(): void {
@@ -97,35 +105,56 @@ export class MoveInput extends CanvasBase implements IMoveInput {
         this.lastPointerPos = position;
     }
 
-    private move(position: Position): void {
+    private move(currentPosition: Position): void {
         if (this.lastPointerPos) {
             // 1. calculate the diff between last pointer position and the current one
-            const diffX = position.x - this.lastPointerPos.x;
-            const diffY = position.y - this.lastPointerPos.y;
+            const diffX = currentPosition.x - this.lastPointerPos.x;
+            const diffY = currentPosition.y - this.lastPointerPos.y;
 
-            // 2. check whether there is enough difference to start moving (filter some small moving requests cause they might not be intended)
+            // 2. check whether there is enough difference to start moving (filter out some small moving requests cause they might not be intended)
             const ignoreUntil = 10; // TODO: config
             const hasEnoughDiff = (ignoreUntil < Math.abs(diffX)) || (ignoreUntil < Math.abs(diffY));
 
             if (hasEnoughDiff || this.lastDifference) {
-                // 3. invoke canvas move
-                const difference = { x: diffX, y: diffY };
-                this.invokeMove(difference);
+                const isMoveStarting = !this.lastDifference;
+                const previousPosition = this.lastPointerPos;
 
+                // 4. invoke canvas move
+                const difference = { x: diffX, y: diffY };
                 this.lastDifference = difference;
-                this.lastPointerPos = position;
+                this.lastPointerPos = currentPosition;
+
+                if (isMoveStarting) {
+                    this.invokeMoveStart();
+                }
+
+                this.invokeMove(previousPosition, currentPosition);
             }
         }
     }
 
     private stopMove(): void {
+        const inMoveMode = this.inMoveMode;
+
         this.lastDifference = undefined;
         this.lastPointerPos = undefined;
+
+        if (inMoveMode) {
+            this.invokeMoveStop();
+        }
     }
 
-    private invokeMove(difference: Position): void {
-        const event = { difference };
+    private invokeMoveStart(): void {
+        this.messaging.sendToChannel0();
+    }
+
+    private invokeMove(previousPosition: Position, currentPosition: Position): void {
+        const event = { previousPosition, currentPosition };
         this.messaging.sendToChannel1(event);
+    }
+
+    private invokeMoveStop(): void {
+        this.messaging.sendToChannel2();
     }
 
     // TODO: extract in different class since more than one classes are using it

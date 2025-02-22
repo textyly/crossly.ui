@@ -1,9 +1,15 @@
-body {
+html, body {
   overflow: hidden;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
 }
 
 .container {
   overflow: hidden;
+  width: 100%;
+  height: 100%;
 }
 
 #fabric {
@@ -32,4 +38,6 @@ body {
   overflow: auto;
   border: 1px solid #ccc;
   z-index: 5;
+  width: 100%;
+  height: 100%;
 }
