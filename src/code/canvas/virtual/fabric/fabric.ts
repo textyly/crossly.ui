@@ -8,23 +8,21 @@ export class FabricCanvas extends FabricCanvasBase {
     }
 
     protected override redraw(): void {
-        const drawingWidth = this.calculateDrawingWidth();
-        const drawingHeight = this.calculateDrawingHeight();
+        const drawingBoundsIndexes = this.drawingBoundsIndexes;
+        const leftTopIndex = drawingBoundsIndexes.leftTop;
+        const rightTopIndex = drawingBoundsIndexes.rightTop;
+        const leftBottomIndex = drawingBoundsIndexes.leftBottom;
 
-        const drawingLeftTopIndex = this.calculateDrawingLeftTopIndex();
-        const drawingLeftTop = this.calculateDrawingPosition(drawingLeftTopIndex);
+        const startIndexX = leftTopIndex.indexX % 2 === 0
+            ? leftTopIndex.indexX
+            : leftTopIndex.indexX + 1;
 
-        const drawingRightTop = { x: drawingLeftTop.x + drawingWidth, y: drawingLeftTop.y };
-        const drawingRightTopIndex = this.calculateDrawingIndex(drawingRightTop);
+        const startIndexY = leftTopIndex.indexY % 2 === 0
+            ? leftTopIndex.indexY
+            : leftTopIndex.indexY + 1;
 
-        const drawingLeftBottom = { x: drawingLeftTop.x, y: drawingLeftTop.y + drawingHeight };
-        const drawingLeftBottomIndex = this.calculateDrawingIndex(drawingLeftBottom);
-
-        const startIndexX = drawingLeftTopIndex.indexX % 2 === 0 ? drawingLeftTopIndex.indexX : ++drawingLeftTopIndex.indexX;
-        const startIndexY = drawingLeftTopIndex.indexY % 2 === 0 ? drawingLeftTopIndex.indexY : ++drawingLeftTopIndex.indexY;
-
-        this.createThreads(startIndexX, startIndexY, drawingRightTopIndex.indexX, drawingLeftBottomIndex.indexY);
-        this.createDots(startIndexX, startIndexY, drawingRightTopIndex.indexX, drawingLeftBottomIndex.indexY);
+        this.createThreads(startIndexX, startIndexY, rightTopIndex.indexX, leftBottomIndex.indexY);
+        this.createDots(startIndexX, startIndexY, rightTopIndex.indexX, leftBottomIndex.indexY);
     }
 
     private createDots(startIndexX: number, startIndexY: number, endIndexX: number, endIndexY: number): void {

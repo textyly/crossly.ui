@@ -85,19 +85,10 @@ export class StitchCanvas extends StitchCanvasBase {
         // CPU, GPU, memory and GC intensive code
         // Do not extract this method in different methods
 
-        // TODO: extract in the virtual base class
-        const drawingWidth = this.calculateDrawingWidth();
-        const drawingHeight = this.calculateDrawingHeight();
-
-        const drawingLeftTopIndex = this.calculateDrawingLeftTopIndex();
-        const drawingLeftTop = this.calculateDrawingPosition(drawingLeftTopIndex);
-
-        const drawingRightTop = { x: drawingLeftTop.x + drawingWidth, y: drawingLeftTop.y };
-        const drawingRightTopIndex = this.calculateDrawingIndex(drawingRightTop);
-
-        const drawingLeftBottom = { x: drawingLeftTop.x, y: drawingLeftTop.y + drawingHeight };
-        const drawingLeftBottomIndex = this.calculateDrawingIndex(drawingLeftBottom);
-        // ---------------------------------------
+        const drawingBoundsIndexes = this.drawingBoundsIndexes;
+        const leftTopIndex = drawingBoundsIndexes.leftTop;
+        const rightTopIndex = drawingBoundsIndexes.rightTop;
+        const leftBottomIndex = drawingBoundsIndexes.leftBottom;
 
         const threadWidth = this.threadWidth;
         const threadColor = this.threadColor;
@@ -117,22 +108,22 @@ export class StitchCanvas extends StitchCanvasBase {
             const fromDotX = this.fromDotsX[index];
             const toDotX = this.toDotsX[index];
 
-            if ((fromDotX < drawingLeftTopIndex.indexX) && (toDotX < drawingLeftTopIndex.indexX)) {
+            if ((fromDotX < leftTopIndex.indexX) && (toDotX < leftTopIndex.indexX)) {
                 continue;
             }
 
-            if ((fromDotX > drawingRightTopIndex.indexX) && (toDotX > drawingRightTopIndex.indexX)) {
+            if ((fromDotX > rightTopIndex.indexX) && (toDotX > rightTopIndex.indexX)) {
                 continue;
             }
 
             const fromDotY = this.fromDotsY[index];
             const toDotY = this.toDotsY[index];
 
-            if ((fromDotY < drawingLeftTopIndex.indexY) && (toDotY < drawingLeftTopIndex.indexY)) {
+            if ((fromDotY < leftTopIndex.indexY) && (toDotY < leftTopIndex.indexY)) {
                 continue;
             }
 
-            if ((fromDotY > drawingLeftBottomIndex.indexY) && (toDotY > drawingLeftBottomIndex.indexY)) {
+            if ((fromDotY > leftBottomIndex.indexY) && (toDotY > leftBottomIndex.indexY)) {
                 continue;
             }
 

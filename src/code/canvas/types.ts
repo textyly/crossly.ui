@@ -1,9 +1,12 @@
 import { Listener, VoidUnsubscribe } from "../types";
 import { Position } from "./input/types.js";
+import { DotIndex } from "./virtual/types.js";
+
 
 export type Bounds = { left: number, top: number, width: number, height: number };
-export type Id = number;
+export type BoundsIndexes = { leftTop: DotIndex, rightTop: DotIndex, leftBottom: DotIndex, rightBottom: DotIndex };
 
+export type Id = number;
 export type Dot = Position;
 export type CueDot = Dot & { id: Id };
 

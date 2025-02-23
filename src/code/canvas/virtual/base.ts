@@ -3,7 +3,7 @@ import { Messaging2, Messaging3 } from "../../messaging/impl.js";
 import { DotIndex, IVirtualCanvas } from "./types.js";
 import { IMessaging2, IMessaging3 } from "../../messaging/types.js";
 import { VoidListener, VoidUnsubscribe } from "../../types.js";
-import { Bounds, CanvasSide, CanvasConfig, BoundsChangeEvent } from "../types.js";
+import { Bounds, CanvasSide, CanvasConfig, BoundsChangeEvent, BoundsIndexes } from "../types.js";
 import { IInputCanvas, MoveEvent, MoveListener, Position } from "../input/types.js";
 
 export abstract class VirtualCanvasBase extends CanvasBase {
@@ -46,6 +46,31 @@ export abstract class VirtualCanvasBase extends CanvasBase {
         return this.bounds;
     }
 
+    protected get drawingBoundsIndexes(): BoundsIndexes {
+        const leftTop = this.calculateDrawingLeftTop();
+        const leftTopIndex = this.calculateDrawingIndex(leftTop);
+
+        const width = this.calculateDrawingWidth();
+        const rightTop = { x: leftTop.x + width, y: leftTop.y };
+        const rightTopIndex = this.calculateDrawingIndex(rightTop);
+
+        const height = this.calculateDrawingHeight();
+        const leftBottom = { x: leftTop.x, y: leftTop.y + height };
+        const leftBottomIndex = this.calculateDrawingIndex(leftBottom);
+
+        const rightBottom = { x: leftTop.x + width, y: leftTop.y + height };
+        const rightBottomIndex = this.calculateDrawingIndex(rightBottom);
+
+        const boundsIndexes = {
+            leftTop: leftTopIndex,
+            rightTop: rightTopIndex,
+            leftBottom: leftBottomIndex,
+            rightBottom: rightBottomIndex
+        };
+
+        return boundsIndexes;
+    }
+
     protected get virtualBounds(): Bounds {
         const bounds = {
             left: this.virtualLeft,
@@ -61,7 +86,7 @@ export abstract class VirtualCanvasBase extends CanvasBase {
         if (hasChange) {
             this.virtualLeft = value.left;
             this.virtualTop = value.top;
-            this.virtualWidth = value.width;
+            this.virtualWidth = value.width;``
             this.virtualHeight = value.height;
         }
     }
@@ -133,12 +158,6 @@ export abstract class VirtualCanvasBase extends CanvasBase {
     protected calculateDrawingY(indexY: number): number {
         const y = this.virtualBounds.top + (indexY * this.dotsSpacing);
         return y;
-    }
-
-    protected calculateDrawingLeftTopIndex(): DotIndex {
-        const visibleLeftTop = this.calculateDrawingLeftTop();
-        const visibleLeftTopIndex = this.calculateDrawingIndex(visibleLeftTop);
-        return visibleLeftTopIndex;
     }
 
     protected calculateDrawingLeftTop(): Position {
