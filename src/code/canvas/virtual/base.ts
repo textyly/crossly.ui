@@ -100,7 +100,7 @@ export abstract class VirtualCanvasBase extends CanvasBase {
         this.bounds = drawingBounds;
     }
 
-    protected calculateDotIndex(position: Position): DotIndex {
+    protected calculateIndex(position: Position): DotIndex {
         const closestX = (position.x - this.virtualBounds.left) / this.dotsSpacing;
         const closestY = (position.y - this.virtualBounds.top) / this.dotsSpacing;
 
@@ -110,25 +110,25 @@ export abstract class VirtualCanvasBase extends CanvasBase {
         return { indexX, indexY };
     }
 
-    protected calculateDot(index: DotIndex): Position {
-        const x = this.calculateDotX(index.indexX)
-        const y = this.calculateDotY(index.indexY)
+    protected calculatePosition(index: DotIndex): Position {
+        const x = this.calculateX(index.indexX)
+        const y = this.calculateY(index.indexY)
         return { x, y };
     }
 
-    protected calculateDotX(indexX: number): number {
+    protected calculateX(indexX: number): number {
         const x = this.virtualBounds.left + (indexX * this.dotsSpacing);
         return x;
     }
 
-    protected calculateDotY(indexY: number): number {
+    protected calculateY(indexY: number): number {
         const y = this.virtualBounds.top + (indexY * this.dotsSpacing);
         return y;
     }
 
     protected calculateDrawingLeftTopIndex(): DotIndex {
         const visibleLeftTop = this.calculateDrawingLeftTop();
-        const visibleLeftTopIndex = this.calculateDotIndex(visibleLeftTop);
+        const visibleLeftTopIndex = this.calculateIndex(visibleLeftTop);
         return visibleLeftTopIndex;
     }
 
@@ -187,7 +187,7 @@ export abstract class VirtualCanvasBase extends CanvasBase {
     }
 
     protected inVirtualBounds(position: Position): boolean {
-        const dotIndex = this.calculateDotIndex(position);
+        const dotIndex = this.calculateIndex(position);
         const calculatedX = this.virtualBounds.left + (dotIndex.indexX * this.dotsSpacing);
         const calculatedY = this.virtualBounds.top + (dotIndex.indexY * this.dotsSpacing);
 

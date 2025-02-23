@@ -90,13 +90,13 @@ export class StitchCanvas extends StitchCanvasBase {
         const drawingHeight = this.calculateDrawingHeight();
 
         const drawingLeftTopIndex = this.calculateDrawingLeftTopIndex();
-        const drawingLeftTop = super.calculateDot(drawingLeftTopIndex);
+        const drawingLeftTop = super.calculatePosition(drawingLeftTopIndex);
 
         const drawingRightTop = { x: drawingLeftTop.x + drawingWidth, y: drawingLeftTop.y };
-        const drawingRightTopIndex = super.calculateDotIndex(drawingRightTop);
+        const drawingRightTopIndex = super.calculateIndex(drawingRightTop);
 
         const drawingLeftBottom = { x: drawingLeftTop.x, y: drawingLeftTop.y + drawingHeight };
-        const drawingLeftBottomIndex = super.calculateDotIndex(drawingLeftBottom);
+        const drawingLeftBottomIndex = super.calculateIndex(drawingLeftBottom);
         // ---------------------------------------
 
         const virtualBounds = this.virtualBounds;
@@ -137,19 +137,19 @@ export class StitchCanvas extends StitchCanvasBase {
                 continue;
             }
 
-            const fromDotXPos = this.calculateDotX(fromDotX);
+            const fromDotXPos = this.calculateX(fromDotX);
             this.fromDotsXPos[index] = fromDotXPos;
             dotsX.push(fromDotXPos);
 
-            const fromDotYPos = this.calculateDotY(fromDotY);
+            const fromDotYPos = this.calculateY(fromDotY);
             this.fromDotsYPos[index] = fromDotYPos;
             dotsY.push(fromDotYPos);
 
-            const toDotXPos = this.calculateDotX(toDotX);
+            const toDotXPos = this.calculateX(toDotX);
             this.toDotsXPos[index] = toDotXPos;
             dotsX.push(toDotXPos);
 
-            const toDotYPos = this.calculateDotY(toDotY);
+            const toDotYPos = this.calculateY(toDotY);
             this.toDotsYPos[index] = toDotYPos;
             dotsY.push(toDotYPos);
 
@@ -177,13 +177,13 @@ export class StitchCanvas extends StitchCanvasBase {
     }
 
     private handleDotClick(position: Position): void {
-        const clickedDotIndex = super.calculateDotIndex(position);
-        const clickedDot = super.calculateDot(clickedDotIndex);
+        const clickedDotIndex = super.calculateIndex(position);
+        const clickedDot = super.calculatePosition(clickedDotIndex);
 
         const previouslyClickedDotIndex = this.clickedDotIndex;
         if (previouslyClickedDotIndex) {
 
-            const previouslyClickedDot = this.calculateDot(previouslyClickedDotIndex);
+            const previouslyClickedDot = this.calculatePosition(previouslyClickedDotIndex);
             const areIdenticalClicks = this.dotsUtility.areDotsEqual(clickedDot, previouslyClickedDot);
 
             if (!areIdenticalClicks) {
