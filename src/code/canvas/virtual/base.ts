@@ -70,9 +70,9 @@ export abstract class VirtualCanvasBase extends CanvasBase {
         this.calculateVirtualBounds(differenceX, differenceY);
         this.calculateDrawingBounds();
 
-        console.log(`visible bounds: ${JSON.stringify(this.visibleBounds)}`);
-        console.log(`drawing bounds: ${JSON.stringify(this.drawingBounds)}`);
-        console.log(`virtual bounds: ${JSON.stringify(this.virtualBounds)}`);
+        // console.log(`visible bounds: ${JSON.stringify(this.visibleBounds)}`);
+        // console.log(`drawing bounds: ${JSON.stringify(this.drawingBounds)}`);
+        // console.log(`virtual bounds: ${JSON.stringify(this.virtualBounds)}`);
     }
 
     private calculateVirtualBounds(differenceX: number, differenceY: number): void {
@@ -86,9 +86,9 @@ export abstract class VirtualCanvasBase extends CanvasBase {
     }
 
     private calculateDrawingBounds(): void {
-        const visibleLeftTop = this.calculateVisibleLeftTop();
-        const visibleWidth = this.calculateVisibleWidth();
-        const visibleHeight = this.calculateVisibleHeight();
+        const visibleLeftTop = this.calculateDrawingLeftTop();
+        const visibleWidth = this.calculateDrawingWidth();
+        const visibleHeight = this.calculateDrawingHeight();
 
         const drawingBounds = {
             left: visibleLeftTop.x,
@@ -126,13 +126,13 @@ export abstract class VirtualCanvasBase extends CanvasBase {
         return y;
     }
 
-    protected calculateVisibleLeftTopDotIndex(): DotIndex {
-        const visibleLeftTop = this.calculateVisibleLeftTop();
+    protected calculateDrawingLeftTopIndex(): DotIndex {
+        const visibleLeftTop = this.calculateDrawingLeftTop();
         const visibleLeftTopIndex = this.calculateDotIndex(visibleLeftTop);
         return visibleLeftTopIndex;
     }
 
-    protected calculateVisibleLeftTop(): Position {
+    protected calculateDrawingLeftTop(): Position {
         const virtualBounds = this.virtualBounds;
         const visibleBounds = this.visibleBounds;
 
@@ -148,7 +148,7 @@ export abstract class VirtualCanvasBase extends CanvasBase {
         return visibleLeftTopDot;
     }
 
-    protected calculateVisibleWidth(): number {
+    protected calculateDrawingWidth(): number {
         const virtualBounds = this.virtualBounds;
         const visibleBounds = this.visibleBounds;
 
@@ -167,7 +167,7 @@ export abstract class VirtualCanvasBase extends CanvasBase {
         }
     }
 
-    protected calculateVisibleHeight(): number {
+    protected calculateDrawingHeight(): number {
         const virtualBounds = this.virtualBounds;
         const visibleBounds = this.visibleBounds;
 

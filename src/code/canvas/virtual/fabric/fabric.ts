@@ -8,23 +8,23 @@ export class FabricCanvas extends FabricCanvasBase {
     }
 
     protected override redraw(): void {
-        const visibleWidth = this.calculateVisibleWidth();
-        const visibleHeight = this.calculateVisibleHeight();
+        const drawingWidth = this.calculateDrawingWidth();
+        const drawingHeight = this.calculateDrawingHeight();
 
-        const visibleLeftTopIndex = this.calculateVisibleLeftTopDotIndex();
-        const visibleLeftTop = super.calculateDot(visibleLeftTopIndex);
+        const drawingLeftTopIndex = this.calculateDrawingLeftTopIndex();
+        const drawingLeftTop = super.calculateDot(drawingLeftTopIndex);
 
-        const visibleRightTop = { x: visibleLeftTop.x + visibleWidth, y: visibleLeftTop.y };
-        const visibleRightTopIndex = super.calculateDotIndex(visibleRightTop);
+        const drawingRightTop = { x: drawingLeftTop.x + drawingWidth, y: drawingLeftTop.y };
+        const drawingRightTopIndex = super.calculateDotIndex(drawingRightTop);
 
-        const visibleLeftBottom = { x: visibleLeftTop.x, y: visibleLeftTop.y + visibleHeight };
-        const visibleLeftBottomIndex = super.calculateDotIndex(visibleLeftBottom);
+        const drawingLeftBottom = { x: drawingLeftTop.x, y: drawingLeftTop.y + drawingHeight };
+        const drawingLeftBottomIndex = super.calculateDotIndex(drawingLeftBottom);
 
-        const startIndexX = visibleLeftTopIndex.indexX % 2 === 0 ? visibleLeftTopIndex.indexX : ++visibleLeftTopIndex.indexX;
-        const startIndexY = visibleLeftTopIndex.indexY % 2 === 0 ? visibleLeftTopIndex.indexY : ++visibleLeftTopIndex.indexY;
+        const startIndexX = drawingLeftTopIndex.indexX % 2 === 0 ? drawingLeftTopIndex.indexX : ++drawingLeftTopIndex.indexX;
+        const startIndexY = drawingLeftTopIndex.indexY % 2 === 0 ? drawingLeftTopIndex.indexY : ++drawingLeftTopIndex.indexY;
 
-        this.createThreads(startIndexX, startIndexY, visibleRightTopIndex.indexX, visibleLeftBottomIndex.indexY);
-        this.createDots(startIndexX, startIndexY, visibleRightTopIndex.indexX, visibleLeftBottomIndex.indexY);
+        this.createThreads(startIndexX, startIndexY, drawingRightTopIndex.indexX, drawingLeftBottomIndex.indexY);
+        this.createDots(startIndexX, startIndexY, drawingRightTopIndex.indexX, drawingLeftBottomIndex.indexY);
     }
 
     private createDots(startIndexX: number, startIndexY: number, endIndexX: number, endIndexY: number): void {

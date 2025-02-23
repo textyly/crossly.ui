@@ -86,17 +86,17 @@ export class StitchCanvas extends StitchCanvasBase {
         // Do not extract this method in different methods
 
         // TODO: extract in the virtual base class
-        const visibleWidth = this.calculateVisibleWidth();
-        const visibleHeight = this.calculateVisibleHeight();
+        const drawingWidth = this.calculateDrawingWidth();
+        const drawingHeight = this.calculateDrawingHeight();
 
-        const visibleLeftTopIndex = this.calculateVisibleLeftTopDotIndex();
-        const visibleLeftTop = super.calculateDot(visibleLeftTopIndex);
+        const drawingLeftTopIndex = this.calculateDrawingLeftTopIndex();
+        const drawingLeftTop = super.calculateDot(drawingLeftTopIndex);
 
-        const visibleRightTop = { x: visibleLeftTop.x + visibleWidth, y: visibleLeftTop.y };
-        const visibleRightTopIndex = super.calculateDotIndex(visibleRightTop);
+        const drawingRightTop = { x: drawingLeftTop.x + drawingWidth, y: drawingLeftTop.y };
+        const drawingRightTopIndex = super.calculateDotIndex(drawingRightTop);
 
-        const visibleLeftBottom = { x: visibleLeftTop.x, y: visibleLeftTop.y + visibleHeight };
-        const visibleLeftBottomIndex = super.calculateDotIndex(visibleLeftBottom);
+        const drawingLeftBottom = { x: drawingLeftTop.x, y: drawingLeftTop.y + drawingHeight };
+        const drawingLeftBottomIndex = super.calculateDotIndex(drawingLeftBottom);
         // ---------------------------------------
 
         const virtualBounds = this.virtualBounds;
@@ -118,22 +118,22 @@ export class StitchCanvas extends StitchCanvasBase {
             const fromDotX = this.fromDotsX[index];
             const toDotX = this.toDotsX[index];
 
-            if ((fromDotX < visibleLeftTopIndex.indexX) && (toDotX < visibleLeftTopIndex.indexX)) {
+            if ((fromDotX < drawingLeftTopIndex.indexX) && (toDotX < drawingLeftTopIndex.indexX)) {
                 continue;
             }
 
-            if ((fromDotX > visibleRightTopIndex.indexX) && (toDotX > visibleRightTopIndex.indexX)) {
+            if ((fromDotX > drawingRightTopIndex.indexX) && (toDotX > drawingRightTopIndex.indexX)) {
                 continue;
             }
 
             const fromDotY = this.fromDotsY[index];
             const toDotY = this.toDotsY[index];
 
-            if ((fromDotY < visibleLeftTopIndex.indexY) && (toDotY < visibleLeftTopIndex.indexY)) {
+            if ((fromDotY < drawingLeftTopIndex.indexY) && (toDotY < drawingLeftTopIndex.indexY)) {
                 continue;
             }
 
-            if ((fromDotY > visibleLeftBottomIndex.indexY) && (toDotY > visibleLeftBottomIndex.indexY)) {
+            if ((fromDotY > drawingLeftBottomIndex.indexY) && (toDotY > drawingLeftBottomIndex.indexY)) {
                 continue;
             }
 
