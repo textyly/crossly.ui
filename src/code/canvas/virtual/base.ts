@@ -215,7 +215,9 @@ export abstract class VirtualCanvasBase extends CanvasBase {
         }
     }
 
-    protected inVirtualBounds(position: Position): boolean {
+    protected inDrawingBounds(position: Position): boolean {
+        // TODO: 
+
         const dotIndex = this.calculateVirtualIndex(position);
         const calculatedX = this.virtualBounds.left + (dotIndex.indexX * this.dotsSpacing);
         const calculatedY = this.virtualBounds.top + (dotIndex.indexY * this.dotsSpacing);
