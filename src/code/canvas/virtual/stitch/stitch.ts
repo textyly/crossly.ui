@@ -137,19 +137,19 @@ export class StitchCanvas extends StitchCanvasBase {
                 continue;
             }
 
-            const fromDotXPos = virtualBounds.left + (fromDotX * this.dotsSpacing);
+            const fromDotXPos = this.calculateDotX(fromDotX);
             this.fromDotsXPos[index] = fromDotXPos;
             dotsX.push(fromDotXPos);
 
-            const fromDotYPos = virtualBounds.top + (fromDotY * this.dotsSpacing);
+            const fromDotYPos = this.calculateDotY(fromDotY);
             this.fromDotsYPos[index] = fromDotYPos;
             dotsY.push(fromDotYPos);
 
-            const toDotXPos = virtualBounds.left + (toDotX * this.dotsSpacing);
+            const toDotXPos = this.calculateDotX(toDotX);
             this.toDotsXPos[index] = toDotXPos;
             dotsX.push(toDotXPos);
 
-            const toDotYPos = virtualBounds.top + (toDotY * this.dotsSpacing);
+            const toDotYPos = this.calculateDotY(toDotY);
             this.toDotsYPos[index] = toDotYPos;
             dotsY.push(toDotYPos);
 
