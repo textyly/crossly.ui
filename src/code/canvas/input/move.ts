@@ -1,7 +1,7 @@
 import { Bounds } from "../types.js";
 import { CanvasBase } from "../base.js";
-import { Messaging2 } from "../../messaging/impl.js";
-import { IMessaging2 } from "../../messaging/types.js";
+import { Messaging2, Messaging3 } from "../../messaging/impl.js";
+import { IMessaging2, IMessaging3 } from "../../messaging/types.js";
 import { VoidListener, VoidUnsubscribe } from "../../types.js";
 import {
     Position,
@@ -11,10 +11,14 @@ import {
     MoveListener,
     CanvasEventType,
     PointerEventHandler,
+    MoveStartEvent,
+    MoveStopEvent,
+    MoveStartListener,
+    MoveStopListener,
 } from "./types.js";
 
 export class MoveInput extends CanvasBase implements IMoveInput {
-    private readonly messaging: IMessaging2<MoveEvent, void>;
+    private readonly messaging: IMessaging3<MoveStartEvent, MoveEvent, MoveStopEvent>;
 
     private readonly htmlElement: HTMLElement;
     private readonly touchInput: ITouchInput;
@@ -31,7 +35,7 @@ export class MoveInput extends CanvasBase implements IMoveInput {
         this.htmlElement = htmlElement;
         this.touchInput = touchInput;
 
-        this.messaging = new Messaging2();
+        this.messaging = new Messaging3();
 
         this.pointerUpHandler = this.handlePointerUp.bind(this);
         this.pointerMoveHandler = this.handlePointerMove.bind(this);
@@ -46,16 +50,16 @@ export class MoveInput extends CanvasBase implements IMoveInput {
         return this.lastDifference !== undefined;
     }
 
-    public onMoveStart(listener: VoidListener): VoidUnsubscribe {
-        return this.messaging.listenOnChannel0(listener);
-    }
-
-    public onMove(listener: MoveListener): VoidUnsubscribe {
+    public onMoveStart(listener: MoveStartListener): VoidUnsubscribe {
         return this.messaging.listenOnChannel1(listener);
     }
 
-    public onMoveStop(listener: VoidListener): VoidUnsubscribe {
+    public onMove(listener: MoveListener): VoidUnsubscribe {
         return this.messaging.listenOnChannel2(listener);
+    }
+
+    public onMoveStop(listener: MoveStopListener): VoidUnsubscribe {
+        return this.messaging.listenOnChannel3(listener);
     }
 
     public subscribe(): void {
@@ -98,7 +102,8 @@ export class MoveInput extends CanvasBase implements IMoveInput {
             return;
         }
 
-        this.stopMove();
+        const position = this.getPosition(event);
+        this.stopMove(position);
     }
 
     private startMove(position: Position): void {
@@ -125,7 +130,7 @@ export class MoveInput extends CanvasBase implements IMoveInput {
                 this.lastPointerPos = currentPosition;
 
                 if (isMoveStarting) {
-                    this.invokeMoveStart();
+                    this.invokeMoveStart(currentPosition);
                 }
 
                 this.invokeMove(previousPosition, currentPosition);
@@ -133,28 +138,30 @@ export class MoveInput extends CanvasBase implements IMoveInput {
         }
     }
 
-    private stopMove(): void {
+    private stopMove(position: Position): void {
         const inMoveMode = this.inMoveMode;
 
         this.lastDifference = undefined;
         this.lastPointerPos = undefined;
 
         if (inMoveMode) {
-            this.invokeMoveStop();
+            this.invokeMoveStop(position);
         }
     }
 
-    private invokeMoveStart(): void {
-        this.messaging.sendToChannel0();
+    private invokeMoveStart(position: Position): void {
+        const event = { position };
+        this.messaging.sendToChannel1(event);
     }
 
     private invokeMove(previousPosition: Position, currentPosition: Position): void {
         const event = { previousPosition, currentPosition };
-        this.messaging.sendToChannel1(event);
+        this.messaging.sendToChannel2(event);
     }
 
-    private invokeMoveStop(): void {
-        this.messaging.sendToChannel2();
+    private invokeMoveStop(position: Position): void {
+        const event = { position };
+        this.messaging.sendToChannel3(event);
     }
 
     // TODO: extract in different class since more than one classes are using it

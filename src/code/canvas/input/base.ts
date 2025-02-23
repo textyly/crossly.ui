@@ -1,6 +1,6 @@
 import { CanvasBase } from "../base.js";
-import { Messaging6 } from "../../messaging/impl.js";
-import { IMessaging6 } from "../../messaging/types.js";
+import { Messaging6, Messaging7 } from "../../messaging/impl.js";
+import { IMessaging6, IMessaging7 } from "../../messaging/types.js";
 import { VoidListener, VoidUnsubscribe } from "../../types.js";
 import {
     Position,
@@ -15,15 +15,19 @@ import {
     PointerMoveEvent,
     PointerMoveListener,
     PointerDownListener,
+    MoveStopEvent,
+    MoveStartEvent,
+    MoveStartListener,
+    MoveStopListener,
 } from "./types.js";
 
 
 export abstract class InputCanvasBase extends CanvasBase implements IInputCanvas {
-    private readonly messaging: IMessaging6<ZoomInEvent, ZoomOutEvent, PointerMoveEvent, PointerUpEvent, MoveEvent, void>;
+    private readonly messaging: IMessaging7<ZoomInEvent, ZoomOutEvent, PointerMoveEvent, PointerUpEvent, MoveStartEvent, MoveEvent, MoveStopEvent>;
 
     constructor() {
         super();
-        this.messaging = new Messaging6();
+        this.messaging = new Messaging7();
     }
 
     public onZoomIn(listener: ZoomInListener): VoidUnsubscribe {
@@ -42,16 +46,16 @@ export abstract class InputCanvasBase extends CanvasBase implements IInputCanvas
         return this.messaging.listenOnChannel4(listener);
     }
 
-    public onMoveStart(listener: VoidListener): VoidUnsubscribe {
-        return this.messaging.listenOnChannel0(listener);
-    }
-
-    public onMove(listener: MoveListener): VoidUnsubscribe {
+    public onMoveStart(listener: MoveStartListener): VoidUnsubscribe {
         return this.messaging.listenOnChannel5(listener);
     }
 
-    public onMoveStop(listener: VoidListener): VoidUnsubscribe {
+    public onMove(listener: MoveListener): VoidUnsubscribe {
         return this.messaging.listenOnChannel6(listener);
+    }
+
+    public onMoveStop(listener: MoveStopListener): VoidUnsubscribe {
+        return this.messaging.listenOnChannel7(listener);
     }
 
     public override dispose(): void {
@@ -75,15 +79,15 @@ export abstract class InputCanvasBase extends CanvasBase implements IInputCanvas
         this.messaging.sendToChannel4(event);
     }
 
-    protected invokeMoveStart(): void {
-        this.messaging.sendToChannel0();
-    }
-
-    protected invokeMove(event: MoveEvent): void {
+    protected invokeMoveStart(event: MoveStartEvent): void {
         this.messaging.sendToChannel5(event);
     }
 
-    protected invokeMoveStop(): void {
-        this.messaging.sendToChannel6();
+    protected invokeMove(event: MoveEvent): void {
+        this.messaging.sendToChannel6(event);
+    }
+
+    protected invokeMoveStop(event: MoveStopEvent): void {
+        this.messaging.sendToChannel7(event);
     }
 }

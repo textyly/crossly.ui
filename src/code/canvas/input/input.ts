@@ -10,6 +10,8 @@ import {
     CanvasEventType,
     WheelChangeHandler,
     PointerEventHandler,
+    MoveStartEvent,
+    MoveStopEvent,
 } from "./types.js";
 
 export class InputCanvas extends InputCanvasBase {
@@ -96,16 +98,16 @@ export class InputCanvas extends InputCanvasBase {
         super.invokeZoomOut();
     }
 
-    private handleMoveStart(): void {
-        super.invokeMoveStart();
+    private handleMoveStart(event: MoveStartEvent): void {
+        super.invokeMoveStart(event);
     }
 
     private handleMove(event: MoveEvent): void {
         super.invokeMove(event);
     }
 
-    private handleMoveStop(): void {
-        super.invokeMoveStop();
+    private handleMoveStop(event: MoveStopEvent): void {
+        super.invokeMoveStop(event);
     }
 
     private handlePointerUp(event: PointerEvent): void {

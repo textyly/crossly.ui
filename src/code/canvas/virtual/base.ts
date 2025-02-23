@@ -66,16 +66,20 @@ export abstract class VirtualCanvasBase extends CanvasBase {
         }
     }
 
-    protected calculateBounds(differenceX: number = 0, differenceY: number = 0): void {
-        this.virtualBounds = this.calculateVirtualBounds(differenceX, differenceY);
+    protected recalculateBounds(): void {
+        this.virtualBounds = this.calculateVirtualBounds();
         this.bounds = this.calculateDrawingBounds();
-
-        // console.log(`visible bounds: ${JSON.stringify(this.visibleBounds)}`);
-        // console.log(`drawing bounds: ${JSON.stringify(this.drawingBounds)}`);
-        // console.log(`virtual bounds: ${JSON.stringify(this.virtualBounds)}`);
     }
 
-    private calculateVirtualBounds(differenceX: number, differenceY: number): Bounds {
+    protected recalculateMovingBounds(differenceX: number, differenceY: number): void {
+        this.virtualBounds = this.calculateVirtualBounds(differenceX, differenceY);
+        const bounds = this.calculateMovingBounds();
+
+        const test = { left: bounds.left, top: bounds.top, width: this.bounds.width, height: this.bounds.height };
+        this.bounds = test;
+    }
+
+    private calculateVirtualBounds(differenceX: number = 0, differenceY: number = 0): Bounds {
         const left = this.virtualBounds.left + differenceX;
         const top = this.virtualBounds.top + differenceY;
 
@@ -98,6 +102,11 @@ export abstract class VirtualCanvasBase extends CanvasBase {
         };
 
         return drawingBounds;
+    }
+
+    private calculateMovingBounds(): Bounds {
+        // TODO:
+        return this.calculateDrawingBounds();
     }
 
     protected calculateDrawingIndex(position: Position): DotIndex {

@@ -1,7 +1,7 @@
 import { Messaging2 } from "../../messaging/impl.js";
 import { IMessaging2 } from "../../messaging/types.js";
 import { VoidListener, VoidUnsubscribe } from "../../types.js";
-import { IInputCanvas, MoveEvent } from "../input/types.js";
+import { IInputCanvas, MoveEvent, MoveStartEvent, MoveStopEvent } from "../input/types.js";
 import { BoundsChangeEvent, CanvasConfig, CanvasSide } from "../types.js";
 import { VirtualCanvasBase } from "./base.js";
 import { IVirtualCanvas } from "./types.js";
@@ -13,7 +13,7 @@ export abstract class VirtualCanvas extends VirtualCanvasBase implements IVirtua
 
     protected threadColor: string;
     protected threadWidth: number;
-    
+
     protected currentSide: CanvasSide;
 
     constructor(config: CanvasConfig, inputCanvas: IInputCanvas) {
@@ -29,13 +29,13 @@ export abstract class VirtualCanvas extends VirtualCanvasBase implements IVirtua
         const threadConfig = config.thread;
         this.threadColor = threadConfig.color;
         this.threadWidth = threadConfig.width.value;
-        
+
         this.subscribe();
     }
 
     public draw(): void {
         this.invokeRedraw();
-        this.calculateBounds();
+        this.recalculateBounds();
         this.redraw();
     }
 
@@ -62,10 +62,6 @@ export abstract class VirtualCanvas extends VirtualCanvasBase implements IVirtua
         this.currentSide = this.currentSide === CanvasSide.Front ? CanvasSide.Back : CanvasSide.Front;
     }
 
-    protected handleMoveStart(): void {
-        this.invokeMoveStart();
-    }
-
     private handleBoundsChange(event: BoundsChangeEvent): void {
         const bounds = event.bounds;
         this.bounds = bounds;
@@ -79,17 +75,21 @@ export abstract class VirtualCanvas extends VirtualCanvasBase implements IVirtua
         this.zoomOut();
     }
 
+    protected handleMoveStart(event: MoveStartEvent): void {
+        this.invokeMoveStart();
+    }
+
     private handleMove(event: MoveEvent): void {
         // 1. calculate the diff between last pointer position and the current one
         const diffX = event.currentPosition.x - event.previousPosition.x;
         const diffY = event.currentPosition.y - event.previousPosition.y;
 
-        this.calculateBounds(diffX, diffY);
+        this.recalculateMovingBounds(diffX, diffY);
 
         //console.log(`diffX: ${diffX}, diffY: ${diffY}`);
     }
 
-    private handleMoveStop(): void {
+    private handleMoveStop(event: MoveStopEvent): void {
         this.invokeMoveStop();
         this.draw();
     }

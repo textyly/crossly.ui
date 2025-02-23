@@ -3,7 +3,7 @@ import { CueCanvasBase } from "./base.js";
 import { DotsUtility } from "../../../utilities/dots.js";
 import { IdGenerator } from "../../../utilities/generator.js";
 import { CanvasSide, Id, CueThread, CanvasConfig, CueDot, Dot } from "../../types.js";
-import { Position, IInputCanvas, PointerUpEvent, PointerMoveEvent } from "../../input/types.js";
+import { Position, IInputCanvas, PointerUpEvent, PointerMoveEvent, MoveStartEvent } from "../../input/types.js";
 
 export class CueCanvas extends CueCanvasBase {
     private readonly ids: IdGenerator;
@@ -35,8 +35,8 @@ export class CueCanvas extends CueCanvasBase {
         }
     }
 
-    protected override handleMoveStart(): void {
-        super.handleMoveStart();
+    protected override handleMoveStart(event: MoveStartEvent): void {
+        super.handleMoveStart(event);
 
         this.removeHoveredDot();
         this.removeThread();
