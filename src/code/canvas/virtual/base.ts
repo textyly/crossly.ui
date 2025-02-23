@@ -100,6 +100,17 @@ export abstract class VirtualCanvasBase extends CanvasBase {
         return drawingBounds;
     }
 
+    protected calculateDrawingIndex(position: Position): DotIndex {
+        // TODO:
+        const closestX = (position.x - this.virtualBounds.left) / this.dotsSpacing;
+        const closestY = (position.y - this.virtualBounds.top) / this.dotsSpacing;
+
+        const indexX = Math.round(closestX);
+        const indexY = Math.round(closestY);
+
+        return { indexX, indexY };
+    }
+
     protected calculateVirtualIndex(position: Position): DotIndex {
         const closestX = (position.x - this.virtualBounds.left) / this.dotsSpacing;
         const closestY = (position.y - this.virtualBounds.top) / this.dotsSpacing;
@@ -108,6 +119,24 @@ export abstract class VirtualCanvasBase extends CanvasBase {
         const indexY = Math.round(closestY);
 
         return { indexX, indexY };
+    }
+
+    protected calculateDrawingPosition(index: DotIndex): Position {
+        const x = this.calculateDrawingX(index.indexX)
+        const y = this.calculateDrawingY(index.indexY)
+        return { x, y };
+    }
+
+    protected calculateDrawingX(indexX: number): number {
+        // TODO:
+        const x = this.virtualBounds.left + (indexX * this.dotsSpacing);
+        return x;
+    }
+
+    protected calculateDrawingY(indexY: number): number {
+        // TODO:
+        const y = this.virtualBounds.top + (indexY * this.dotsSpacing);
+        return y;
     }
 
     protected calculateVirtualPosition(index: DotIndex): Position {
@@ -128,7 +157,7 @@ export abstract class VirtualCanvasBase extends CanvasBase {
 
     protected calculateDrawingLeftTopIndex(): DotIndex {
         const visibleLeftTop = this.calculateDrawingLeftTop();
-        const visibleLeftTopIndex = this.calculateVirtualIndex(visibleLeftTop);
+        const visibleLeftTopIndex = this.calculateDrawingIndex(visibleLeftTop);
         return visibleLeftTopIndex;
     }
 

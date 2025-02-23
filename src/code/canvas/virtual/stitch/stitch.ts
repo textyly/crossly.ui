@@ -90,16 +90,15 @@ export class StitchCanvas extends StitchCanvasBase {
         const drawingHeight = this.calculateDrawingHeight();
 
         const drawingLeftTopIndex = this.calculateDrawingLeftTopIndex();
-        const drawingLeftTop = super.calculateVirtualPosition(drawingLeftTopIndex);
+        const drawingLeftTop = this.calculateDrawingPosition(drawingLeftTopIndex);
 
         const drawingRightTop = { x: drawingLeftTop.x + drawingWidth, y: drawingLeftTop.y };
-        const drawingRightTopIndex = super.calculateVirtualIndex(drawingRightTop);
+        const drawingRightTopIndex = this.calculateDrawingIndex(drawingRightTop);
 
         const drawingLeftBottom = { x: drawingLeftTop.x, y: drawingLeftTop.y + drawingHeight };
-        const drawingLeftBottomIndex = super.calculateVirtualIndex(drawingLeftBottom);
+        const drawingLeftBottomIndex = this.calculateDrawingIndex(drawingLeftBottom);
         // ---------------------------------------
 
-        const virtualBounds = this.virtualBounds;
         const threadWidth = this.threadWidth;
         const threadColor = this.threadColor;
 
@@ -137,19 +136,19 @@ export class StitchCanvas extends StitchCanvasBase {
                 continue;
             }
 
-            const fromDotXPos = this.calculateVirtualX(fromDotX);
+            const fromDotXPos = this.calculateDrawingX(fromDotX);
             this.fromDotsXPos[index] = fromDotXPos;
             dotsX.push(fromDotXPos);
 
-            const fromDotYPos = this.calculateVirtualY(fromDotY);
+            const fromDotYPos = this.calculateDrawingY(fromDotY);
             this.fromDotsYPos[index] = fromDotYPos;
             dotsY.push(fromDotYPos);
 
-            const toDotXPos = this.calculateVirtualX(toDotX);
+            const toDotXPos = this.calculateDrawingX(toDotX);
             this.toDotsXPos[index] = toDotXPos;
             dotsX.push(toDotXPos);
 
-            const toDotYPos = this.calculateVirtualY(toDotY);
+            const toDotYPos = this.calculateDrawingY(toDotY);
             this.toDotsYPos[index] = toDotYPos;
             dotsY.push(toDotYPos);
 
@@ -177,13 +176,13 @@ export class StitchCanvas extends StitchCanvasBase {
     }
 
     private handleDotClick(position: Position): void {
-        const clickedDotIndex = super.calculateVirtualIndex(position);
-        const clickedDot = super.calculateVirtualPosition(clickedDotIndex);
+        const clickedDotIndex = super.calculateDrawingIndex(position);
+        const clickedDot = super.calculateDrawingPosition(clickedDotIndex);
 
         const previouslyClickedDotIndex = this.clickedDotIndex;
         if (previouslyClickedDotIndex) {
 
-            const previouslyClickedDot = this.calculateVirtualPosition(previouslyClickedDotIndex);
+            const previouslyClickedDot = this.calculateDrawingPosition(previouslyClickedDotIndex);
             const areIdenticalClicks = this.dotsUtility.areDotsEqual(clickedDot, previouslyClickedDot);
 
             if (!areIdenticalClicks) {

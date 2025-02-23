@@ -30,7 +30,7 @@ export class CueCanvas extends CueCanvasBase {
 
         // 2. recreate hovered dot and thread
         if (dotIndex) {
-            const position = super.calculateVirtualPosition(dotIndex);
+            const position = super.calculateDrawingPosition(dotIndex);
             this.handlePointerMove({ position });
         }
     }
@@ -76,16 +76,16 @@ export class CueCanvas extends CueCanvasBase {
         this.removeHoveredDot();
 
         // 2. get a newly hovered dot's position
-        const dotIndex = super.calculateVirtualIndex(position);
-        const dotPosition = super.calculateVirtualPosition(dotIndex);
+        const dotIndex = super.calculateDrawingIndex(position);
+        const dotPosition = super.calculateDrawingPosition(dotIndex);
 
         // 3. hover the new dot
         this.hoverDot(dotPosition, dotIndex);
     }
 
     private clickDot(position: Position): void {
-        const clickedDotIndex = super.calculateVirtualIndex(position);
-        const clickedDot = super.calculateVirtualPosition(clickedDotIndex);
+        const clickedDotIndex = super.calculateDrawingIndex(position);
+        const clickedDot = super.calculateDrawingPosition(clickedDotIndex);
         const previouslyClickedDotIndex = this.clickedDotIndex;
 
         if (!previouslyClickedDotIndex) {
@@ -95,7 +95,7 @@ export class CueCanvas extends CueCanvasBase {
             this.hoverDot(clickedDot, clickedDotIndex);
 
         } else {
-            const previouslyClickedDot = super.calculateVirtualPosition(previouslyClickedDotIndex);
+            const previouslyClickedDot = super.calculateDrawingPosition(previouslyClickedDotIndex);
             const areIdenticalClicks = this.dotsUtility.areDotsEqual(clickedDot, previouslyClickedDot);
 
             if (!areIdenticalClicks) {
@@ -123,7 +123,7 @@ export class CueCanvas extends CueCanvasBase {
     private resizeThead(toPosition: Position): void {
         if (this.clickedDotIndex) {
             const fromDotIndex = this.clickedDotIndex;
-            const fromPosition = super.calculateVirtualPosition(fromDotIndex);
+            const fromPosition = super.calculateDrawingPosition(fromDotIndex);
 
             let thread: CueThread;
             if (this.currentThreadId) {
