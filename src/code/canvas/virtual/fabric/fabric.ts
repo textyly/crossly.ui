@@ -10,7 +10,7 @@ export class FabricCanvas extends FabricCanvasBase {
     protected override redraw(): void {
         // TODO: extract in the virtual base class
         const visibleLeftTopDotIndex = this.calculateVisibleLeftTopDotIndex();
-        const visibleLeftTopDotPosition = super.calculateDotPosition(visibleLeftTopDotIndex);
+        const visibleLeftTopDotPosition = super.calculateDot(visibleLeftTopDotIndex);
 
         const visibleWidth = this.calculateVisibleWidth();
         const visibleHeight = this.calculateVisibleHeight();
@@ -37,7 +37,7 @@ export class FabricCanvas extends FabricCanvasBase {
             for (let dotX = startDotIndexX; dotX <= endDotIndexX; dotX += 2) {
 
                 const dotIndex = { indexX: dotX, indexY: dotY };
-                const dotPosition = super.calculateDotPosition(dotIndex);
+                const dotPosition = super.calculateDot(dotIndex);
                 dotsX.push(dotPosition.x);
                 dotsY.push(dotPosition.y);
             }
@@ -70,7 +70,7 @@ export class FabricCanvas extends FabricCanvasBase {
 
 
         for (let dotY = startDotIndexY; dotY <= endDotIndexY; dotY += 2) {
-            const dotYPosition = super.calculateDotYPosition(dotY);
+            const dotYPosition = super.calculateDotY(dotY);
 
             visible.push(true);
             fromDotsXPos.push(virtualBoundsX);
@@ -83,7 +83,7 @@ export class FabricCanvas extends FabricCanvasBase {
 
         for (let dotX = startDotIndexX; dotX <= endDotIndexX; dotX += 2) {
 
-            const dotXPosition = super.calculateDotXPosition(dotX);
+            const dotXPosition = super.calculateDotX(dotX);
 
             visible.push(true);
             fromDotsXPos.push(dotXPosition);

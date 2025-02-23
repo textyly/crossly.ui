@@ -23,16 +23,12 @@ export abstract class CanvasBase implements ICanvas {
     }
 
     public set bounds(value: Bounds) {
-        const newLeft = value.left;
-        const newTop = value.top;
-        const newWidth = value.width;
-        const newHeight = value.height;
-
-        if (this.left !== newLeft || this.top !== newTop || this.width !== newWidth || this.height !== newHeight) {
-            this.left = newLeft;
-            this.top = newTop;
-            this.width = newWidth;
-            this.height = newHeight;
+        const hasChange = (this.left !== value.left) || (this.top !== value.top) || (this.width !== value.width) || (this.height !== value.height);
+        if (hasChange) {
+            this.left = value.left;
+            this.top = value.top;
+            this.width = value.width;
+            this.height = value.height;
             this.invokeBoundsChange(value);
         }
     }

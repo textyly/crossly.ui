@@ -6,8 +6,9 @@ import { VoidListener, VoidUnsubscribe } from "../../types.js";
 import { Bounds, CanvasSide, CanvasConfig, BoundsChangeEvent } from "../types.js";
 import { IInputCanvas, MoveEvent, MoveListener, Position } from "../input/types.js";
 
+// TODO: create VirtualCanvas abstract class and extract part of the logic
 export abstract class VirtualCanvasBase extends CanvasBase implements IVirtualCanvas {
-    private readonly configuration: Readonly<CanvasConfig>;
+    private readonly config: Readonly<CanvasConfig>;
     private readonly virtualMessaging: IMessaging2<void, void>;
     protected readonly inputCanvas: IInputCanvas;
 
@@ -31,7 +32,7 @@ export abstract class VirtualCanvasBase extends CanvasBase implements IVirtualCa
         this.bounds = inputCanvas.bounds;
 
         this.inputCanvas = inputCanvas;
-        this.configuration = config;
+        this.config = config;
 
         this.virtualMessaging = new Messaging2();
         this.currentSide = CanvasSide.Back;
@@ -49,10 +50,6 @@ export abstract class VirtualCanvasBase extends CanvasBase implements IVirtualCa
         this.subscribe();
     }
 
-    public get config(): CanvasConfig {
-        return this.configuration;
-    }
-
     protected get allDotsY(): number {
         const invisibleRows = this.config.rows - 1;
         const all = this.config.rows + invisibleRows;
@@ -65,22 +62,31 @@ export abstract class VirtualCanvasBase extends CanvasBase implements IVirtualCa
         return all;
     }
 
+    protected get visibleBounds(): Bounds {
+        return this.inputCanvas.bounds;
+    }
+
+    protected get drawingBounds(): Bounds {
+        return this.bounds;
+    }
+
     protected get virtualBounds(): Bounds {
-        const bounds = { left: this.virtualLeft, top: this.virtualTop, width: this.virtualWidth, height: this.virtualHeight };
+        const bounds = {
+            left: this.virtualLeft,
+            top: this.virtualTop,
+            width: this.virtualWidth,
+            height: this.virtualHeight
+        };
         return bounds;
     }
 
     private set virtualBounds(value: Bounds) {
-        const newLeft = value.left;
-        const newTop = value.top;
-        const newWidth = value.width;
-        const newHeight = value.height;
-
-        if (this.virtualLeft !== newLeft || this.virtualTop !== newTop || this.virtualWidth !== newWidth || this.virtualHeight !== newHeight) {
-            this.virtualLeft = newLeft;
-            this.virtualTop = newTop;
-            this.virtualWidth = newWidth;
-            this.virtualHeight = newHeight;
+        const hasChange = (this.virtualLeft !== value.left) || (this.virtualTop !== value.top) || (this.virtualWidth !== value.width) || (this.virtualHeight !== value.height);
+        if (hasChange) {
+            this.virtualLeft = value.left;
+            this.virtualTop = value.top;
+            this.virtualWidth = value.width;
+            this.virtualHeight = value.height;
         }
     }
 
@@ -109,6 +115,40 @@ export abstract class VirtualCanvasBase extends CanvasBase implements IVirtualCa
 
     protected abstract redraw(): void;
 
+    private calculateBounds(differenceX: number = 0, differenceY: number = 0): void {
+        this.calculateVirtualBounds(differenceX, differenceY);
+        this.calculateDrawingBounds();
+
+        console.log(`visible bounds: ${JSON.stringify(this.visibleBounds)}`);
+        console.log(`drawing bounds: ${JSON.stringify(this.drawingBounds)}`);
+        console.log(`virtual bounds: ${JSON.stringify(this.virtualBounds)}`);
+    }
+
+    private calculateVirtualBounds(differenceX: number, differenceY: number): void {
+        const left = this.virtualBounds.left + differenceX;
+        const top = this.virtualBounds.top + differenceY;
+
+        const width = (this.allDotsX - 1) * this.dotsSpacing;
+        const height = (this.allDotsY - 1) * this.dotsSpacing;
+
+        this.virtualBounds = { left, top, width, height };
+    }
+
+    private calculateDrawingBounds(): void {
+        const visibleLeftTop = this.calculateVisibleLeftTop();
+        const visibleWidth = this.calculateVisibleWidth();
+        const visibleHeight = this.calculateVisibleHeight();
+
+        const drawingBounds = {
+            left: visibleLeftTop.x,
+            top: visibleLeftTop.y,
+            width: visibleWidth,
+            height: visibleHeight
+        };
+
+        this.bounds = drawingBounds;
+    }
+
     protected calculateDotIndex(position: Position): DotIndex {
         const closestX = (position.x - this.virtualBounds.left) / this.dotsSpacing;
         const closestY = (position.y - this.virtualBounds.top) / this.dotsSpacing;
@@ -116,105 +156,97 @@ export abstract class VirtualCanvasBase extends CanvasBase implements IVirtualCa
         const indexX = Math.round(closestX);
         const indexY = Math.round(closestY);
 
-        const index = { indexX, indexY };
-        return index;
+        return { indexX, indexY };
     }
 
-    protected calculateDotPosition(index: DotIndex): Position {
-        const x = this.calculateDotXPosition(index.indexX)
-        const y = this.calculateDotYPosition(index.indexY)
+    protected calculateDot(index: DotIndex): Position {
+        const x = this.calculateDotX(index.indexX)
+        const y = this.calculateDotY(index.indexY)
         return { x, y };
     }
 
-    protected calculateDotXPosition(indexX: number): number {
+    protected calculateDotX(indexX: number): number {
         const x = this.virtualBounds.left + (indexX * this.dotsSpacing);
         return x;
     }
 
-    protected calculateDotYPosition(indexY: number): number {
+    protected calculateDotY(indexY: number): number {
         const y = this.virtualBounds.top + (indexY * this.dotsSpacing);
         return y;
     }
 
     protected calculateVisibleLeftTopDotIndex(): DotIndex {
-        const leftTopDotPosition = this.calculateVisibleLeftTopDotPosition();
-        const leftTopDotIndex = this.calculateDotIndex(leftTopDotPosition);
-        return leftTopDotIndex;
+        const visibleLeftTop = this.calculateVisibleLeftTop();
+        const visibleLeftTopIndex = this.calculateDotIndex(visibleLeftTop);
+        return visibleLeftTopIndex;
     }
 
-    protected calculateVisibleLeftTopDotPosition(): Position {
-        const visibleBounds = this.inputCanvas.bounds;
+    protected calculateVisibleLeftTop(): Position {
+        const virtualBounds = this.virtualBounds;
+        const visibleBounds = this.visibleBounds;
 
-        const leftTopX = this.virtualBounds.left < visibleBounds.left
+        const visibleLeftTopX = virtualBounds.left < visibleBounds.left
             ? visibleBounds.left
-            : Math.min(this.virtualBounds.left, (visibleBounds.left + visibleBounds.width));
+            : Math.min(virtualBounds.left, (visibleBounds.left + visibleBounds.width));
 
-        const leftTopY = this.virtualBounds.top < visibleBounds.top
+        const visibleLeftTopY = virtualBounds.top < visibleBounds.top
             ? visibleBounds.top
-            : Math.min(this.virtualBounds.top, (visibleBounds.top + visibleBounds.height));
+            : Math.min(virtualBounds.top, (visibleBounds.top + visibleBounds.height));
 
-        const leftTopDot = { x: leftTopX, y: leftTopY };
-
-        return leftTopDot;
+        const visibleLeftTopDot = { x: visibleLeftTopX, y: visibleLeftTopY };
+        return visibleLeftTopDot;
     }
 
     protected calculateVisibleWidth(): number {
-        const visibleBounds = this.inputCanvas.bounds;
+        const virtualBounds = this.virtualBounds;
+        const visibleBounds = this.visibleBounds;
 
-        if (this.virtualBounds.left < visibleBounds.left) {
-            const virtualWidth = this.virtualBounds.width - (Math.abs(this.virtualBounds.left) + Math.abs(visibleBounds.left));
+        if (virtualBounds.left < visibleBounds.left) {
+            const virtualWidth = virtualBounds.width - (Math.abs(virtualBounds.left) + Math.abs(visibleBounds.left));
             return Math.min(virtualWidth, visibleBounds.width);
         } else {
-            const offsetBoundsWidth = visibleBounds.left + visibleBounds.width;
-            const offsetVirtualWidth = this.virtualBounds.left + this.virtualBounds.width;
+            const visibleWidthOffset = visibleBounds.left + visibleBounds.width;
+            const virtualWidthOffset = virtualBounds.left + virtualBounds.width;
 
-            if (offsetVirtualWidth <= offsetBoundsWidth) {
-                return this.virtualBounds.width;
+            if (virtualWidthOffset <= visibleWidthOffset) {
+                return virtualBounds.width;
             } else {
-                return (visibleBounds.width - this.virtualBounds.left);
+                return (visibleBounds.width - virtualBounds.left);
             }
         }
     }
 
     protected calculateVisibleHeight(): number {
-        const visibleBounds = this.inputCanvas.bounds;
+        const virtualBounds = this.virtualBounds;
+        const visibleBounds = this.visibleBounds;
 
-        if (this.virtualBounds.top < visibleBounds.top) {
-            const virtualHeight = this.virtualBounds.height - (Math.abs(this.virtualBounds.top) + Math.abs(visibleBounds.top));
+        if (virtualBounds.top < visibleBounds.top) {
+            const virtualHeight = virtualBounds.height - (Math.abs(virtualBounds.top) + Math.abs(visibleBounds.top));
             return Math.min(virtualHeight, visibleBounds.height);
         } else {
-            const offsetBoundsHeight = visibleBounds.top + visibleBounds.height;
-            const offsetVirtualHeight = this.virtualBounds.top + this.virtualBounds.height;
+            const visibleHeightOffset = visibleBounds.top + visibleBounds.height;
+            const virtualHeightOffset = virtualBounds.top + virtualBounds.height;
 
-            if (offsetVirtualHeight <= offsetBoundsHeight) {
-                return this.virtualBounds.height;
+            if (virtualHeightOffset <= visibleHeightOffset) {
+                return virtualBounds.height;
             } else {
-                return (visibleBounds.height - this.virtualBounds.top);
+                return (visibleBounds.height - virtualBounds.top);
             }
         }
     }
 
-    protected isInVirtualBounds(position: Position): boolean {
+    protected inVirtualBounds(position: Position): boolean {
         const dotIndex = this.calculateDotIndex(position);
-        const newPosition = this.calculateDotPosition(dotIndex);
-        const x = newPosition.x;
-        const y = newPosition.y;
+        const calculatedPosition = this.calculateDot(dotIndex);
 
-        const vBounds = this.virtualBounds;
-        const vX = vBounds.left;
-        const vY = vBounds.top;
-        const vWidth = vBounds.width;
-        const vHeight = vBounds.height;
+        const virtualBounds = this.virtualBounds;
 
-        const isInVirtualX = x >= vX && (x <= vX + vWidth);
-        const isInVirtualY = y >= vY && (y <= vY + vHeight);
-        const isInVirtualBounds = isInVirtualX && isInVirtualY;
+        const inVirtualX = (calculatedPosition.x >= virtualBounds.left) && (calculatedPosition.x <= virtualBounds.left + virtualBounds.width);
+        const inVirtualY = (calculatedPosition.y >= virtualBounds.top) && (calculatedPosition.y <= virtualBounds.top + virtualBounds.height);
+
+        const isInVirtualBounds = inVirtualX && inVirtualY;
 
         return isInVirtualBounds;
-    }
-
-    protected changeSide(): void {
-        this.currentSide = this.currentSide === CanvasSide.Front ? CanvasSide.Back : CanvasSide.Front;
     }
 
     protected handleBoundsChange(event: BoundsChangeEvent): void {
@@ -239,9 +271,9 @@ export abstract class VirtualCanvasBase extends CanvasBase implements IVirtualCa
         const diffX = event.currentPosition.x - event.previousPosition.x;
         const diffY = event.currentPosition.y - event.previousPosition.y;
 
-        //console.log(`diffX: ${diffX}, diffY: ${diffY}`);
-
         this.calculateBounds(diffX, diffY);
+
+        //console.log(`diffX: ${diffX}, diffY: ${diffY}`);
     }
 
     protected handleMoveStop(): void {
@@ -249,47 +281,8 @@ export abstract class VirtualCanvasBase extends CanvasBase implements IVirtualCa
         this.draw();
     }
 
-    private subscribe(): void {
-        const boundsChangeUn = this.inputCanvas.onBoundsChange(this.handleBoundsChange.bind(this));
-        super.registerUn(boundsChangeUn);
-
-        const zoomInUn = this.inputCanvas.onZoomIn(this.handleZoomIn.bind(this));
-        super.registerUn(zoomInUn);
-
-        const zoomOutUn = this.inputCanvas.onZoomOut(this.handleZoomOut.bind(this));
-        super.registerUn(zoomOutUn);
-
-        const moveStartUn = this.inputCanvas.onMoveStart(this.handleMoveStart.bind(this));
-        super.registerUn(moveStartUn);
-
-        const moveUn = this.inputCanvas.onMove(this.handleMove.bind(this));
-        super.registerUn(moveUn);
-
-        const moveStopUn = this.inputCanvas.onMoveStop(this.handleMoveStop.bind(this));
-        super.registerUn(moveStopUn);
-    }
-
-    private calculateBounds(differenceX: number = 0, differenceY: number = 0): void {
-        this.calculateVirtualBounds(differenceX, differenceY);
-        this.calculateVisibleBounds();
-    }
-
-    private calculateVirtualBounds(differenceX: number = 0, differenceY: number = 0): void {
-        const left = this.virtualBounds.left + differenceX;
-        const top = this.virtualBounds.top + differenceY;
-
-        const width = (this.allDotsX - 1) * this.dotsSpacing;
-        const height = (this.allDotsY - 1) * this.dotsSpacing;
-
-        this.virtualBounds = { left, top, width, height };
-    }
-
-    private calculateVisibleBounds(): void {
-        const leftTopPosition = this.calculateVisibleLeftTopDotPosition();
-        const width = this.calculateVisibleWidth();
-        const height = this.calculateVisibleHeight();
-
-        this.bounds = { left: leftTopPosition.x, top: leftTopPosition.y, width, height };
+    protected changeSide(): void {
+        this.currentSide = this.currentSide === CanvasSide.Front ? CanvasSide.Back : CanvasSide.Front;
     }
 
     private zoomInSpacing(): void {
@@ -362,5 +355,25 @@ export abstract class VirtualCanvasBase extends CanvasBase implements IVirtualCa
 
     private invokeMoveStop(): void {
         this.virtualMessaging.sendToChannel2();
+    }
+
+    private subscribe(): void {
+        const boundsChangeUn = this.inputCanvas.onBoundsChange(this.handleBoundsChange.bind(this));
+        super.registerUn(boundsChangeUn);
+
+        const zoomInUn = this.inputCanvas.onZoomIn(this.handleZoomIn.bind(this));
+        super.registerUn(zoomInUn);
+
+        const zoomOutUn = this.inputCanvas.onZoomOut(this.handleZoomOut.bind(this));
+        super.registerUn(zoomOutUn);
+
+        const moveStartUn = this.inputCanvas.onMoveStart(this.handleMoveStart.bind(this));
+        super.registerUn(moveStartUn);
+
+        const moveUn = this.inputCanvas.onMove(this.handleMove.bind(this));
+        super.registerUn(moveUn);
+
+        const moveStopUn = this.inputCanvas.onMoveStop(this.handleMoveStop.bind(this));
+        super.registerUn(moveStopUn);
     }
 }

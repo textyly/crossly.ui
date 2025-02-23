@@ -84,7 +84,7 @@ export class StitchCanvas extends StitchCanvasBase {
     protected override redraw(): void {
         // TODO: extract in the virtual base class
         const visibleLeftTopDotIndex = this.calculateVisibleLeftTopDotIndex();
-        const visibleLeftTopDotPosition = super.calculateDotPosition(visibleLeftTopDotIndex);
+        const visibleLeftTopDotPosition = super.calculateDot(visibleLeftTopDotIndex);
 
         const visibleWidth = this.calculateVisibleWidth();
         const visibleHeight = this.calculateVisibleHeight();
@@ -163,7 +163,7 @@ export class StitchCanvas extends StitchCanvasBase {
 
     private handlePointerUp(event: PointerUpEvent): void {
         const position = event.position;
-        const isInVirtualBounds = super.isInVirtualBounds(position);
+        const isInVirtualBounds = super.inVirtualBounds(position);
 
         if (isInVirtualBounds) {
             this.handleDotClick(position);
@@ -172,12 +172,12 @@ export class StitchCanvas extends StitchCanvasBase {
 
     private handleDotClick(position: Position): void {
         const clickedDotIndex = super.calculateDotIndex(position);
-        const clickedDot = super.calculateDotPosition(clickedDotIndex);
+        const clickedDot = super.calculateDot(clickedDotIndex);
 
         const previouslyClickedDotIndex = this.clickedDotIndex;
         if (previouslyClickedDotIndex) {
 
-            const previouslyClickedDot = this.calculateDotPosition(previouslyClickedDotIndex);
+            const previouslyClickedDot = this.calculateDot(previouslyClickedDotIndex);
             const areIdenticalClicks = this.dotsUtility.areDotsEqual(clickedDot, previouslyClickedDot);
 
             if (!areIdenticalClicks) {
