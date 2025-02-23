@@ -11,8 +11,9 @@ import {
     DrawFabricThreadsEvent,
     DrawFabricThreadsListener,
 } from "../types.js";
+import { VirtualCanvas } from "../virtual.js";
 
-export abstract class FabricCanvasBase extends VirtualCanvasBase implements IFabricCanvas {
+export abstract class FabricCanvasBase extends VirtualCanvas implements IFabricCanvas {
     private readonly messaging: IMessaging2<DrawFabricDotsEvent, DrawFabricThreadsEvent>;
 
     constructor(config: CanvasConfig, input: IInputCanvas) {

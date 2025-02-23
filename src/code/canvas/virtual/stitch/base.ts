@@ -11,8 +11,9 @@ import {
     DrawStitchThreadsEvent,
     DrawStitchThreadsListener,
 } from "../types.js";
+import { VirtualCanvas } from "../virtual.js";
 
-export abstract class StitchCanvasBase extends VirtualCanvasBase implements IStitchCanvas {
+export abstract class StitchCanvasBase extends VirtualCanvas implements IStitchCanvas {
     private readonly messaging: IMessaging2<DrawStitchThreadsEvent, DrawStitchDotsEvent>;
 
     constructor(config: CanvasConfig, input: IInputCanvas) {
