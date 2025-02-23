@@ -82,15 +82,21 @@ export class StitchCanvas extends StitchCanvasBase {
     }
 
     protected override redraw(): void {
-        // TODO: extract in the virtual base class
-        const visibleLeftTopDotIndex = this.calculateVisibleLeftTopDotIndex();
-        const visibleLeftTopDotPosition = super.calculateDot(visibleLeftTopDotIndex);
+        // CPU, GPU, memory and GC intensive code
+        // Do not extract this method in different methods
 
+        // TODO: extract in the virtual base class
         const visibleWidth = this.calculateVisibleWidth();
         const visibleHeight = this.calculateVisibleHeight();
 
-        const visibleRightTopDotIndex = super.calculateDotIndex({ x: visibleLeftTopDotPosition.x + visibleWidth, y: visibleLeftTopDotPosition.y });
-        const visibleLeftBottomDotIndex = super.calculateDotIndex({ x: visibleLeftTopDotPosition.x, y: visibleLeftTopDotPosition.y + visibleHeight });
+        const visibleLeftTopIndex = this.calculateVisibleLeftTopDotIndex();
+        const visibleLeftTop = super.calculateDot(visibleLeftTopIndex);
+
+        const visibleRightTop = { x: visibleLeftTop.x + visibleWidth, y: visibleLeftTop.y };
+        const visibleRightTopIndex = super.calculateDotIndex(visibleRightTop);
+
+        const visibleLeftBottom = { x: visibleLeftTop.x, y: visibleLeftTop.y + visibleHeight };
+        const visibleLeftBottomIndex = super.calculateDotIndex(visibleLeftBottom);
         // ---------------------------------------
 
         const virtualBounds = this.virtualBounds;
@@ -112,22 +118,22 @@ export class StitchCanvas extends StitchCanvasBase {
             const fromDotX = this.fromDotsX[index];
             const toDotX = this.toDotsX[index];
 
-            if ((fromDotX < visibleLeftTopDotIndex.indexX) && (toDotX < visibleLeftTopDotIndex.indexX)) {
+            if ((fromDotX < visibleLeftTopIndex.indexX) && (toDotX < visibleLeftTopIndex.indexX)) {
                 continue;
             }
 
-            if ((fromDotX > visibleRightTopDotIndex.indexX) && (toDotX > visibleRightTopDotIndex.indexX)) {
+            if ((fromDotX > visibleRightTopIndex.indexX) && (toDotX > visibleRightTopIndex.indexX)) {
                 continue;
             }
 
             const fromDotY = this.fromDotsY[index];
             const toDotY = this.toDotsY[index];
 
-            if ((fromDotY < visibleLeftTopDotIndex.indexY) && (toDotY < visibleLeftTopDotIndex.indexY)) {
+            if ((fromDotY < visibleLeftTopIndex.indexY) && (toDotY < visibleLeftTopIndex.indexY)) {
                 continue;
             }
 
-            if ((fromDotY > visibleLeftBottomDotIndex.indexY) && (toDotY > visibleLeftBottomDotIndex.indexY)) {
+            if ((fromDotY > visibleLeftBottomIndex.indexY) && (toDotY > visibleLeftBottomIndex.indexY)) {
                 continue;
             }
 
