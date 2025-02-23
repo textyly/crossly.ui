@@ -207,6 +207,6 @@ export class StitchCanvas extends StitchCanvasBase {
         }
 
         this.clickedDotIndex = clickedDotIndex;
-        this.changeSide();
+        this.changeSide(); // TODO: bug!!! cannot change side on every click. If dots Identical than do not change sides!!! See cue impl
     }
 }
