@@ -2,8 +2,8 @@ import { CanvasConfig, CrosslyCanvasConfig, SpacingConfig } from "../canvas/type
 
 export class ConfigFactory {
     public create(): CrosslyCanvasConfig {
-        const columns = 10;
-        const rows = 10;
+        const columns = 300;
+        const rows = 300;
 
         const dotSpacing: SpacingConfig = {
             value: 25,
