@@ -90,13 +90,13 @@ export class StitchCanvas extends StitchCanvasBase {
         const drawingHeight = this.calculateDrawingHeight();
 
         const drawingLeftTopIndex = this.calculateDrawingLeftTopIndex();
-        const drawingLeftTop = super.calculatePosition(drawingLeftTopIndex);
+        const drawingLeftTop = super.calculateVirtualPosition(drawingLeftTopIndex);
 
         const drawingRightTop = { x: drawingLeftTop.x + drawingWidth, y: drawingLeftTop.y };
-        const drawingRightTopIndex = super.calculateIndex(drawingRightTop);
+        const drawingRightTopIndex = super.calculateVirtualIndex(drawingRightTop);
 
         const drawingLeftBottom = { x: drawingLeftTop.x, y: drawingLeftTop.y + drawingHeight };
-        const drawingLeftBottomIndex = super.calculateIndex(drawingLeftBottom);
+        const drawingLeftBottomIndex = super.calculateVirtualIndex(drawingLeftBottom);
         // ---------------------------------------
 
         const virtualBounds = this.virtualBounds;
@@ -137,19 +137,19 @@ export class StitchCanvas extends StitchCanvasBase {
                 continue;
             }
 
-            const fromDotXPos = this.calculateX(fromDotX);
+            const fromDotXPos = this.calculateVirtualX(fromDotX);
             this.fromDotsXPos[index] = fromDotXPos;
             dotsX.push(fromDotXPos);
 
-            const fromDotYPos = this.calculateY(fromDotY);
+            const fromDotYPos = this.calculateVirtualY(fromDotY);
             this.fromDotsYPos[index] = fromDotYPos;
             dotsY.push(fromDotYPos);
 
-            const toDotXPos = this.calculateX(toDotX);
+            const toDotXPos = this.calculateVirtualX(toDotX);
             this.toDotsXPos[index] = toDotXPos;
             dotsX.push(toDotXPos);
 
-            const toDotYPos = this.calculateY(toDotY);
+            const toDotYPos = this.calculateVirtualY(toDotY);
             this.toDotsYPos[index] = toDotYPos;
             dotsY.push(toDotYPos);
 
@@ -177,13 +177,13 @@ export class StitchCanvas extends StitchCanvasBase {
     }
 
     private handleDotClick(position: Position): void {
-        const clickedDotIndex = super.calculateIndex(position);
-        const clickedDot = super.calculatePosition(clickedDotIndex);
+        const clickedDotIndex = super.calculateVirtualIndex(position);
+        const clickedDot = super.calculateVirtualPosition(clickedDotIndex);
 
         const previouslyClickedDotIndex = this.clickedDotIndex;
         if (previouslyClickedDotIndex) {
 
-            const previouslyClickedDot = this.calculatePosition(previouslyClickedDotIndex);
+            const previouslyClickedDot = this.calculateVirtualPosition(previouslyClickedDotIndex);
             const areIdenticalClicks = this.dotsUtility.areDotsEqual(clickedDot, previouslyClickedDot);
 
             if (!areIdenticalClicks) {

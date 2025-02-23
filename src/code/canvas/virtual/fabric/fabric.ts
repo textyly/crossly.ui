@@ -12,13 +12,13 @@ export class FabricCanvas extends FabricCanvasBase {
         const drawingHeight = this.calculateDrawingHeight();
 
         const drawingLeftTopIndex = this.calculateDrawingLeftTopIndex();
-        const drawingLeftTop = super.calculatePosition(drawingLeftTopIndex);
+        const drawingLeftTop = super.calculateVirtualPosition(drawingLeftTopIndex);
 
         const drawingRightTop = { x: drawingLeftTop.x + drawingWidth, y: drawingLeftTop.y };
-        const drawingRightTopIndex = super.calculateIndex(drawingRightTop);
+        const drawingRightTopIndex = super.calculateVirtualIndex(drawingRightTop);
 
         const drawingLeftBottom = { x: drawingLeftTop.x, y: drawingLeftTop.y + drawingHeight };
-        const drawingLeftBottomIndex = super.calculateIndex(drawingLeftBottom);
+        const drawingLeftBottomIndex = super.calculateVirtualIndex(drawingLeftBottom);
 
         const startIndexX = drawingLeftTopIndex.indexX % 2 === 0 ? drawingLeftTopIndex.indexX : ++drawingLeftTopIndex.indexX;
         const startIndexY = drawingLeftTopIndex.indexY % 2 === 0 ? drawingLeftTopIndex.indexY : ++drawingLeftTopIndex.indexY;
@@ -38,7 +38,7 @@ export class FabricCanvas extends FabricCanvasBase {
             for (let dotX = startIndexX; dotX <= endIndexX; dotX += 2) {
 
                 const dotIndex = { indexX: dotX, indexY: dotY };
-                const dot = super.calculatePosition(dotIndex);
+                const dot = super.calculateVirtualPosition(dotIndex);
                 dotsX.push(dot.x);
                 dotsY.push(dot.y);
             }
@@ -71,7 +71,7 @@ export class FabricCanvas extends FabricCanvasBase {
 
 
         for (let dotY = startDotIndexY; dotY <= endDotIndexY; dotY += 2) {
-            const dotYPosition = super.calculateY(dotY);
+            const dotYPosition = super.calculateVirtualY(dotY);
 
             visible.push(true);
             fromDotsXPos.push(virtualBoundsX);
@@ -84,7 +84,7 @@ export class FabricCanvas extends FabricCanvasBase {
 
         for (let dotX = startDotIndexX; dotX <= endDotIndexX; dotX += 2) {
 
-            const dotXPosition = super.calculateX(dotX);
+            const dotXPosition = super.calculateVirtualX(dotX);
 
             visible.push(true);
             fromDotsXPos.push(dotXPosition);
