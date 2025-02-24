@@ -20,7 +20,6 @@ export abstract class VirtualCanvasCalculator extends CanvasBase {
 
         this.inputCanvas = inputCanvas;
         this.config = config;
-        this.bounds = this.inputCanvas.bounds;
         this.dotsSpacing = config.dotSpacing.value / 2;
     }
 
