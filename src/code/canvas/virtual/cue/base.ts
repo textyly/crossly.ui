@@ -1,4 +1,4 @@
-import { VirtualCanvasBase } from "../base.js";
+import { VirtualCanvasCalculator } from "../calculator.js";
 import { VoidUnsubscribe } from "../../../types.js";
 import { Messaging7 } from "../../../messaging/impl.js";
 import { IMessaging7 } from "../../../messaging/types.js";
@@ -17,9 +17,9 @@ import {
     RemoveCueThreadListener,
 } from "../types.js";
 import { IInputCanvas } from "../../input/types.js";
-import { VirtualCanvas } from "../virtual.js";
+import { VirtualCanvasBase } from "../virtual.js";
 
-export abstract class CueCanvasBase extends VirtualCanvas implements ICueCanvas {
+export abstract class CueCanvasBase extends VirtualCanvasBase implements ICueCanvas {
     private readonly messaging: IMessaging7<DrawCueDotEvent, DrawCueDotEvent, DrawCueThreadEvent, RemoveCueDotEvent, MoveCueThreadEvent, DrawCueThreadEvent, RemoveCueThreadEvent>;
 
     constructor(config: CanvasConfig, input: IInputCanvas) {

@@ -2,7 +2,6 @@ import { CanvasBase } from "../base.js";
 import { BoundsChangeEvent } from "../types.js";
 import { IFabricDrawingCanvas, IRasterDrawingCanvas } from "./types.js";
 import { DrawFabricDotsEvent, DrawFabricThreadsEvent, IFabricCanvas } from "../virtual/types.js";
-import { MoveEvent } from "../input/types.js";
 
 export class FabricDrawingCanvas extends CanvasBase implements IFabricDrawingCanvas {
     private readonly fabricCanvas: IFabricCanvas;
@@ -12,9 +11,6 @@ export class FabricDrawingCanvas extends CanvasBase implements IFabricDrawingCan
         super();
         this.rasterDrawing = rasterDrawing;
         this.fabricCanvas = fabricCanvas;
-
-        super.bounds = this.fabricCanvas.bounds;
-        this.rasterDrawing.bounds = super.bounds;
 
         this.subscribe();
     }

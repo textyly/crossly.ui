@@ -13,9 +13,6 @@ export class StitchDrawingCanvas extends CanvasBase implements IStitchDrawingCan
         this.stitchCanvas = stitchCanvas;
         this.rasterDrawing = rasterDrawing;
 
-        super.bounds = stitchCanvas.bounds;
-        this.rasterDrawing.bounds = super.bounds;
-
         this.subscribe();
     }
 

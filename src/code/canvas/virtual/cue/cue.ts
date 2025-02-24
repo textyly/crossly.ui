@@ -37,7 +37,6 @@ export class CueCanvas extends CueCanvasBase {
 
     protected override handleMoveStart(event: MoveStartEvent): void {
         super.handleMoveStart(event);
-
         this.removeHoveredDot();
         this.removeThread();
     }

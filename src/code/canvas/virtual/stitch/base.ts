@@ -1,5 +1,5 @@
 import { CanvasConfig } from "../../types.js";
-import { VirtualCanvasBase } from "../base.js";
+import { VirtualCanvasCalculator } from "../calculator.js";
 import { IInputCanvas } from "../../input/types.js";
 import { VoidUnsubscribe } from "../../../types.js";
 import { Messaging2 } from "../../../messaging/impl.js";
@@ -11,9 +11,9 @@ import {
     DrawStitchThreadsEvent,
     DrawStitchThreadsListener,
 } from "../types.js";
-import { VirtualCanvas } from "../virtual.js";
+import { VirtualCanvasBase } from "../virtual.js";
 
-export abstract class StitchCanvasBase extends VirtualCanvas implements IStitchCanvas {
+export abstract class StitchCanvasBase extends VirtualCanvasBase implements IStitchCanvas {
     private readonly messaging: IMessaging2<DrawStitchThreadsEvent, DrawStitchDotsEvent>;
 
     constructor(config: CanvasConfig, input: IInputCanvas) {

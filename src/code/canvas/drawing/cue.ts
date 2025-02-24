@@ -22,9 +22,6 @@ export class CueDrawingCanvas extends CanvasBase implements ICueDrawingCanvas {
         this.cueCanvas = cueCanvas;
         this.vectorDrawing = vectorDrawing;
 
-        super.bounds = cueCanvas.bounds;
-        this.vectorDrawing.bounds = super.bounds;
-
         this.svgDots = new Map<Id, SvgDot>();
         this.svgLines = new Map<Id, SvgLine>();
 

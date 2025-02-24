@@ -15,7 +15,7 @@ export class ConfigFactory {
             columns,
             rows,
             dotSpacing,
-            dot: {
+            dot: {  
                 color: "#9fa19f",
                 radius: {
                     value: 1.5,

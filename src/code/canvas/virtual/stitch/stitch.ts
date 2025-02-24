@@ -41,38 +41,6 @@ export class StitchCanvas extends StitchCanvasBase {
         this.sides = new Array<CanvasSide>();
         this.colors = new Array<string>();
 
-        // setTimeout(() => {
-        //     for (let dotIndexY = 0; dotIndexY < this.allDotsY; dotIndexY += 2) {
-        //         for (let dotIndexX = 0; dotIndexX < this.allDotsX; dotIndexX += 2) {
-        //             if (dotIndexY > 0 && dotIndexX > 0) {
-        //                 this.visible.push(true);
-        //                 this.sides.push(CanvasSide.Front);
-        //                 this.widths.push(this.threadWidth);
-        //                 this.colors.push(this.threadColor);
-
-        //                 this.fromDotsX.push(dotIndexX);
-        //                 this.fromDotsY.push(dotIndexY);
-
-        //                 this.toDotsX.push(dotIndexX + 2);
-        //                 this.toDotsY.push(dotIndexY - 2);
-
-        //                 this.visible.push(true);
-        //                 this.sides.push(CanvasSide.Front);
-        //                 this.widths.push(this.threadWidth);
-        //                 this.colors.push(this.threadColor);
-
-        //                 this.fromDotsX.push(dotIndexX);
-        //                 this.fromDotsY.push(dotIndexY);
-
-        //                 this.toDotsX.push(dotIndexX - 2);
-        //                 this.toDotsY.push(dotIndexY - 2);
-        //             }
-        //         }
-        //     }
-
-        //     this.draw();
-        // }, 1000);
-
         this.startListening();
     }
 

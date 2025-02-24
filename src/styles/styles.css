@@ -13,23 +13,18 @@ html, body {
 }
 
 #fabric {
+  background-color: bisque;
   position: absolute;
-  top: 0;
-  left: 0;
   z-index: 2;
 }
 
 #stitch {
   position: absolute;
-  top: 0;
-  left: 0;
   z-index: 3;
 }
 
 #cue {
   position: absolute;
-  top: 0;
-  left: 0;
   z-index: 4;
 }
 

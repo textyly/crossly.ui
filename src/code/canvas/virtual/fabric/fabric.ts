@@ -10,19 +10,18 @@ export class FabricCanvas extends FabricCanvasBase {
     protected override redraw(): void {
         const drawingBoundsIndexes = this.drawingBoundsIndexes;
         const leftTopIndex = drawingBoundsIndexes.leftTop;
-        const rightTopIndex = drawingBoundsIndexes.rightTop;
-        const leftBottomIndex = drawingBoundsIndexes.leftBottom;
 
-        const startIndexX = leftTopIndex.indexX % 2 === 0
-            ? leftTopIndex.indexX
-            : leftTopIndex.indexX + 1;
+        const leftTopIndexX = leftTopIndex.indexX;
+        const startIndexX = leftTopIndexX % 2 === 0 ? leftTopIndexX : leftTopIndexX + 1;
 
-        const startIndexY = leftTopIndex.indexY % 2 === 0
-            ? leftTopIndex.indexY
-            : leftTopIndex.indexY + 1;
+        const leftTopIndexY = leftTopIndex.indexY;
+        const startIndexY = leftTopIndexY % 2 === 0 ? leftTopIndexY : leftTopIndexY + 1;
 
-        this.createThreads(startIndexX, startIndexY, rightTopIndex.indexX, leftBottomIndex.indexY);
-        this.createDots(startIndexX, startIndexY, rightTopIndex.indexX, leftBottomIndex.indexY);
+        const endIndexX = drawingBoundsIndexes.rightTop.indexX;
+        const endIndexY = drawingBoundsIndexes.leftBottom.indexY;
+
+        this.createThreads(startIndexX, startIndexY, endIndexX, endIndexY);
+        this.createDots(startIndexX, startIndexY, endIndexX, endIndexY);
     }
 
     private createDots(startIndexX: number, startIndexY: number, endIndexX: number, endIndexY: number): void {
@@ -50,11 +49,11 @@ export class FabricCanvas extends FabricCanvasBase {
         // Do not extract this method in different methods
 
         // create variables otherwise nested properties must be retrieved in every loop cycle (performance optimization)
-        const drawingBounds = this.drawingBounds;
-        const drawingBoundsX = drawingBounds.left;
-        const drawingBoundsY = drawingBounds.top;
-        const drawingBoundsWidth = drawingBounds.width;
-        const drawingBoundsHeight = drawingBounds.height;
+        const bounds = this.bounds;
+        const boundsX = bounds.left;
+        const boundsY = bounds.top;
+        const boundsWidth = bounds.width;
+        const boundsHeight = bounds.height;
 
         const threadWidth = this.threadWidth;
         const threadColor = this.threadColor;
@@ -72,9 +71,9 @@ export class FabricCanvas extends FabricCanvasBase {
             const dotYPosition = super.calculateDrawingY(dotY);
 
             visible.push(true);
-            fromDotsXPos.push(drawingBoundsX);
+            fromDotsXPos.push(boundsX);
             fromDotsYPos.push(dotYPosition);
-            toDotsXPos.push(drawingBoundsX + drawingBoundsWidth);
+            toDotsXPos.push(boundsX + boundsWidth);
             toDotsYPos.push(dotYPosition);
             widths.push(threadWidth);
             colors.push(threadColor);
@@ -86,9 +85,9 @@ export class FabricCanvas extends FabricCanvasBase {
 
             visible.push(true);
             fromDotsXPos.push(dotXPosition);
-            fromDotsYPos.push(drawingBoundsY);
+            fromDotsYPos.push(boundsY);
             toDotsXPos.push(dotXPosition);
-            toDotsYPos.push(drawingBoundsY + drawingBoundsHeight);
+            toDotsYPos.push(boundsY + boundsHeight);
             widths.push(threadWidth);
             colors.push(threadColor);
         }

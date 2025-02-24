@@ -3,10 +3,10 @@ import { IMessaging2 } from "../../messaging/types.js";
 import { VoidListener, VoidUnsubscribe } from "../../types.js";
 import { IInputCanvas, MoveEvent, MoveStartEvent, MoveStopEvent } from "../input/types.js";
 import { BoundsChangeEvent, CanvasConfig, CanvasSide } from "../types.js";
-import { VirtualCanvasBase } from "./base.js";
+import { VirtualCanvasCalculator } from "./calculator.js";
 import { IVirtualCanvas } from "./types.js";
 
-export abstract class VirtualCanvas extends VirtualCanvasBase implements IVirtualCanvas {
+export abstract class VirtualCanvasBase extends VirtualCanvasCalculator implements IVirtualCanvas {
     private readonly virtualMessaging: IMessaging2<void, void>;
     protected dotColor: string;
     protected dotRadius: number;
@@ -76,6 +76,9 @@ export abstract class VirtualCanvas extends VirtualCanvasBase implements IVirtua
     }
 
     protected handleMoveStart(event: MoveStartEvent): void {
+        // TODO: 
+        this.recalculateBounds();
+        this.redraw();
         this.invokeMoveStart();
     }
 
