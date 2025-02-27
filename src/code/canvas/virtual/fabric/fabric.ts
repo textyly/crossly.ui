@@ -8,8 +8,8 @@ export class FabricCanvas extends FabricCanvasBase {
     }
 
     protected override redraw(): void {
-        const drawingBoundsIndexes = this.drawingBoundsIndexes;
-        const leftTopIndex = drawingBoundsIndexes.leftTop;
+        const boundsIndexes = this.drawingBoundsIndexes;
+        const leftTopIndex = boundsIndexes.leftTop;
 
         const leftTopIndexX = leftTopIndex.indexX;
         const startIndexX = leftTopIndexX % 2 === 0 ? leftTopIndexX : leftTopIndexX + 1;
@@ -17,10 +17,10 @@ export class FabricCanvas extends FabricCanvasBase {
         const leftTopIndexY = leftTopIndex.indexY;
         const startIndexY = leftTopIndexY % 2 === 0 ? leftTopIndexY : leftTopIndexY + 1;
 
-        const endIndexX = drawingBoundsIndexes.rightTop.indexX;
-        const endIndexY = drawingBoundsIndexes.leftBottom.indexY;
+        const endIndexX = boundsIndexes.rightTop.indexX;
+        const endIndexY = boundsIndexes.leftBottom.indexY;
 
-        this.createThreads(startIndexX, startIndexY, endIndexX, endIndexY);
+        this. createThreads(startIndexX, startIndexY, endIndexX, endIndexY);
         this.createDots(startIndexX, startIndexY, endIndexX, endIndexY);
     }
 

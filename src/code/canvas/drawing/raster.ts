@@ -60,6 +60,7 @@ export class RasterDrawingCanvas extends CanvasBase implements IRasterDrawingCan
     }
 
     public clear(): void {
+        // console.log(`clear: ${JSON.stringify(this.bounds)}`);
         this.context.clearRect(0, 0, this.bounds.width, this.bounds.height);
     }
 

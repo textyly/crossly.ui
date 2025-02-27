@@ -34,7 +34,7 @@ export interface IMoveInput extends ICanvas {
 
     onMoveStart(listener: MoveStartListener): VoidUnsubscribe;
     onMove(listener: MoveListener): VoidUnsubscribe;
-    onMoveStop(listener: MoveStartListener): VoidUnsubscribe;
+    onMoveStop(listener: MoveStopListener): VoidUnsubscribe;
 }
 
 export enum CanvasEventType {
@@ -75,7 +75,7 @@ export type ZoomInListener = Listener<ZoomInEvent>;
 export type ZoomOutEvent = {};
 export type ZoomOutListener = Listener<ZoomOutEvent>;
 
-export type MoveStartEvent = PositionEvent;
+export type MoveStartEvent = { previousPosition: Position, currentPosition: Position };
 export type MoveStartListener = Listener<MoveStartEvent>;
 
 export type MoveEvent = { previousPosition: Position, currentPosition: Position };

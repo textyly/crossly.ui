@@ -76,25 +76,86 @@ export abstract class VirtualCanvasBase extends VirtualCanvasCalculator implemen
     }
 
     protected handleMoveStart(event: MoveStartEvent): void {
-        // TODO: 
-        this.recalculateBounds();
+        const currentPosition = event.currentPosition;
+        const previousPosition = event.previousPosition;
+
+        const diffX = currentPosition.x - previousPosition.x;
+        const diffY = currentPosition.y - previousPosition.y;
+
+        const inDrawingBounds = this.inDrawingBounds(currentPosition);
+        if (!inDrawingBounds) {
+            return;
+        }
+
+        super.virtualBounds = this.calculateVirtualBounds(diffX, diffY);
+        super.bounds = this.calculateDrawingBounds(this.virtualBounds, this.visibleBounds);
+
+        const bounds = this.bounds;
+        const visibleBounds = this.visibleBounds;
+        const virtualBounds = this.virtualBounds;
+
+        const moveDownSpace = visibleBounds.height - currentPosition.y;
+        const moveUpSpace = visibleBounds.height - moveDownSpace;
+        const moveRightSpace = visibleBounds.width - currentPosition.x;
+        const moveLeftSpace = visibleBounds.width - moveRightSpace;
+
+        const suggestedTop = -1 * moveDownSpace;
+        const top = Math.max(suggestedTop, virtualBounds.top);
+        const topDiff = Math.abs(virtualBounds.top) - Math.abs(top);
+
+        const suggestedHeight = -1 * top + (bounds.top + bounds.height + moveUpSpace);
+        const height = Math.min(suggestedHeight, virtualBounds.height - topDiff);
+
+        const suggestedLeft = -1 * moveRightSpace;
+        const left = Math.max(suggestedLeft, virtualBounds.left);
+        const leftDiff = Math.abs(virtualBounds.left) - Math.abs(left);
+
+        const suggestedWidth = -1 * left + (bounds.left + bounds.width + moveLeftSpace);
+        const width = Math.min(suggestedWidth, virtualBounds.width - leftDiff);
+
+        this.bounds = { left, top, width, height };
+        this.movingBounds = this.bounds;
+
+        console.log(`bounds: ${JSON.stringify(bounds)}`);
+        console.log(`virtual bounds: ${JSON.stringify(this.virtualBounds)}`);
+        console.log(`new bounds: ${JSON.stringify(this.bounds)}`);
+
+
         this.redraw();
         this.invokeMoveStart();
     }
 
     private handleMove(event: MoveEvent): void {
         // 1. calculate the diff between last pointer position and the current one
-        const diffX = event.currentPosition.x - event.previousPosition.x;
-        const diffY = event.currentPosition.y - event.previousPosition.y;
+        const currentPosition = event.currentPosition;
+        const previousPosition = event.previousPosition;
 
-        this.recalculateMovingBounds(diffX, diffY);
+        if (!this.movingBounds) {
+            return;
+        }
 
-        //console.log(`diffX: ${diffX}, diffY: ${diffY}`);
+        const diffX = currentPosition.x - previousPosition.x;
+        const diffY = currentPosition.y - previousPosition.y;
+
+        super.virtualBounds = this.calculateVirtualBounds(diffX, diffY);
+
+        const bounds = this.bounds;
+        this.bounds = { left: bounds.left + diffX, top: bounds.top + diffY, width: bounds.width, height: bounds.height };
+
+        // TODO: use bounds width and height
+        // this.bounds = { left: bounds.left, top: bounds.top, width: this.bounds.width, height: this.bounds.height };
+
+        // console.log(`visible bounds: ${JSON.stringify(this.visibleBounds)}`);
+        // console.log(`virtual bounds: ${JSON.stringify(this.virtualBounds)}`);
+        // console.log(`bounds: ${JSON.stringify(this.bounds)}`);
     }
 
     private handleMoveStop(event: MoveStopEvent): void {
-        this.invokeMoveStop();
-        this.draw();
+        if (this.movingBounds) {
+            this.movingBounds = undefined;
+            this.invokeMoveStop();
+            this.draw();
+        }
     }
 
     private subscribe(): void {

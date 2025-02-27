@@ -130,10 +130,10 @@ export class MoveInput extends CanvasBase implements IMoveInput {
                 this.lastPointerPos = currentPosition;
 
                 if (isMoveStarting) {
-                    this.invokeMoveStart(currentPosition);
+                    this.invokeMoveStart(previousPosition, currentPosition);
+                } else {
+                    this.invokeMove(previousPosition, currentPosition);
                 }
-
-                this.invokeMove(previousPosition, currentPosition);
             }
         }
     }
@@ -149,8 +149,8 @@ export class MoveInput extends CanvasBase implements IMoveInput {
         }
     }
 
-    private invokeMoveStart(position: Position): void {
-        const event = { position };
+    private invokeMoveStart(previousPosition: Position, currentPosition: Position): void {
+        const event = { previousPosition, currentPosition };
         this.messaging.sendToChannel1(event);
     }
 

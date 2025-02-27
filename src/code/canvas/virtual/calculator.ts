@@ -14,6 +14,7 @@ export abstract class VirtualCanvasCalculator extends CanvasBase {
     private virtualHeight = 0;
 
     protected dotsSpacing: number;
+    protected movingBounds?: Bounds;
 
     constructor(config: CanvasConfig, inputCanvas: IInputCanvas) {
         super();
@@ -36,7 +37,7 @@ export abstract class VirtualCanvasCalculator extends CanvasBase {
     }
 
     protected get visibleBounds(): Bounds {
-        return this.inputCanvas.bounds;
+        return this.movingBounds ?? this.inputCanvas.bounds;
     }
 
     protected get drawingBoundsIndexes(): BoundsIndexes {
@@ -77,12 +78,12 @@ export abstract class VirtualCanvasCalculator extends CanvasBase {
         return bounds;
     }
 
-    private set virtualBounds(value: Bounds) {
+    protected set virtualBounds(value: Bounds) {
         const hasChange = (this.virtualLeft !== value.left) || (this.virtualTop !== value.top) || (this.virtualWidth !== value.width) || (this.virtualHeight !== value.height);
         if (hasChange) {
             this.virtualLeft = value.left;
             this.virtualTop = value.top;
-            this.virtualWidth = value.width; ``
+            this.virtualWidth = value.width;
             this.virtualHeight = value.height;
         }
     }
@@ -105,13 +106,6 @@ export abstract class VirtualCanvasCalculator extends CanvasBase {
     protected recalculateBounds(): void {
         this.virtualBounds = this.calculateVirtualBounds(0, 0);
         this.bounds = this.calculateDrawingBounds(this.virtualBounds, this.visibleBounds);
-    }
-
-    protected recalculateMovingBounds(differenceX: number, differenceY: number): void {
-        
-        // console.log(`visible bounds: ${JSON.stringify(this.visibleBounds)}`);
-        // console.log(`virtual bounds: ${JSON.stringify(this.virtualBounds)}`);
-        // console.log(`bounds: ${JSON.stringify(this.bounds)}`);
     }
 
     protected calculateDrawingIndex(position: Position): DotIndex {
@@ -140,7 +134,7 @@ export abstract class VirtualCanvasCalculator extends CanvasBase {
         return y;
     }
 
-    private calculateVirtualBounds(differenceX: number = 0, differenceY: number = 0): Bounds {
+    protected calculateVirtualBounds(differenceX: number = 0, differenceY: number = 0): Bounds {
         const left = this.virtualBounds.left + differenceX;
         const top = this.virtualBounds.top + differenceY;
 
@@ -150,7 +144,7 @@ export abstract class VirtualCanvasCalculator extends CanvasBase {
         return { left, top, width, height };
     }
 
-    private calculateDrawingBounds(virtualBounds: Bounds, visibleBounds: Bounds): Bounds {
+    protected calculateDrawingBounds(virtualBounds: Bounds, visibleBounds: Bounds): Bounds {
         const drawingLeftTop = this.calculateDrawingLeftTop(virtualBounds, visibleBounds);
         const drawingWidth = this.calculateDrawingWidth(virtualBounds, visibleBounds);
         const drawingHeight = this.calculateDrawingHeight(virtualBounds, visibleBounds);
@@ -180,9 +174,11 @@ export abstract class VirtualCanvasCalculator extends CanvasBase {
 
     private calculateDrawingWidth(virtualBounds: Bounds, visibleBounds: Bounds): number {
         if (virtualBounds.left < visibleBounds.left) {
-            const virtualWidth = virtualBounds.width - (Math.abs(virtualBounds.left) + Math.abs(visibleBounds.left));
+            const virtualWidth = virtualBounds.width - (Math.abs(virtualBounds.left) - Math.abs(visibleBounds.left));
             return Math.min(virtualWidth, visibleBounds.width);
-        } else {
+        }
+
+        if (virtualBounds.left > visibleBounds.left) {
             const visibleWidthOffset = visibleBounds.left + visibleBounds.width;
             const virtualWidthOffset = virtualBounds.left + virtualBounds.width;
 
@@ -192,13 +188,17 @@ export abstract class VirtualCanvasCalculator extends CanvasBase {
                 return (visibleBounds.width - virtualBounds.left);
             }
         }
+
+        return Math.min(virtualBounds.width, visibleBounds.width);
     }
 
     private calculateDrawingHeight(virtualBounds: Bounds, visibleBounds: Bounds): number {
         if (virtualBounds.top < visibleBounds.top) {
-            const virtualHeight = virtualBounds.height - (Math.abs(virtualBounds.top) + Math.abs(visibleBounds.top));
+            const virtualHeight = virtualBounds.height - (Math.abs(virtualBounds.top) - Math.abs(visibleBounds.top));
             return Math.min(virtualHeight, visibleBounds.height);
-        } else {
+        }
+
+        if (virtualBounds.top > visibleBounds.top) {
             const visibleHeightOffset = visibleBounds.top + visibleBounds.height;
             const virtualHeightOffset = virtualBounds.top + virtualBounds.height;
 
@@ -208,5 +208,7 @@ export abstract class VirtualCanvasCalculator extends CanvasBase {
                 return (visibleBounds.height - virtualBounds.top);
             }
         }
+
+        return Math.min(virtualBounds.height, visibleBounds.height);
     }
 }
