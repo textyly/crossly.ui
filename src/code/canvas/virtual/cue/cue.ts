@@ -23,23 +23,28 @@ export class CueCanvas extends CueCanvasBase {
     }
 
     protected override redraw(): void {
-        // 1. remove hovered dot and thread
-        const dotIndex = this.hoveredDotIndex;
-        this.hoveredDotIndex = undefined;
-        this.currentThreadId = undefined;
+        if (this.movingBounds) {
+            this.removeHoveredDot();
+            this.removeThread();
+        } else {
+            // 1. remove hovered dot and thread
+            const dotIndex = this.hoveredDotIndex;
+            this.hoveredDotIndex = undefined;
+            this.currentThreadId = undefined;
 
-        // 2. recreate hovered dot and thread
-        if (dotIndex) {
-            const position = super.calculateDrawingPosition(dotIndex);
-            this.handlePointerMove({ position });
+            // 2. recreate hovered dot and thread
+            if (dotIndex) {
+                const position = super.calculateDrawingPosition(dotIndex);
+                this.handlePointerMove({ position });
+            }
         }
     }
 
-    protected override handleMoveStart(event: MoveStartEvent): void {
-        super.handleMoveStart(event);
-        this.removeHoveredDot();
-        this.removeThread();
-    }
+    // protected override handleMoveStart(event: MoveStartEvent): void {
+    //     super.handleMoveStart(event);
+    //     this.removeHoveredDot();
+    //     this.removeThread();
+    // }
 
     private startListening(): void {
         const pointerMoveUn = this.inputCanvas.onPointerMove(this.handlePointerMove.bind(this));
