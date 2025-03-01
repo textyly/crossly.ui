@@ -116,10 +116,9 @@ export abstract class VirtualCanvasBase extends VirtualCanvasCalculator implemen
         this.bounds = { left, top, width, height };
         this.movingBounds = this.bounds;
 
-        console.log(`bounds: ${JSON.stringify(bounds)}`);
-        console.log(`virtual bounds: ${JSON.stringify(this.virtualBounds)}`);
-        console.log(`new bounds: ${JSON.stringify(this.bounds)}`);
-
+        // console.log(`bounds: ${JSON.stringify(bounds)}`);
+        // console.log(`virtual bounds: ${JSON.stringify(this.virtualBounds)}`);
+        // console.log(`new bounds: ${JSON.stringify(this.bounds)}`);
 
         this.redraw();
         this.invokeMoveStart();
