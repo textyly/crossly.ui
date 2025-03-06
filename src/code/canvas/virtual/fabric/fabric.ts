@@ -1,6 +1,7 @@
 import { FabricCanvasBase } from "./base.js";
 import { CanvasConfig } from "../../types.js";
 import { IInputCanvas } from "../../input/types.js";
+import calculator from "../../../utilities/canvas/calculator.js";
 
 export class FabricCanvas extends FabricCanvasBase {
     constructor(config: CanvasConfig, inputCanvas: IInputCanvas) {
@@ -28,6 +29,8 @@ export class FabricCanvas extends FabricCanvasBase {
         // CPU, GPU, memory and GC intensive code
         // Do not extract this method in different methods
 
+        const virtualBounds = this.virtualBounds;
+        const dotsSpacing = this.dotsSpacing;
         const dotsX = new Array<number>();
         const dotsY = new Array<number>();
 
@@ -35,7 +38,7 @@ export class FabricCanvas extends FabricCanvasBase {
             for (let dotX = startIndexX; dotX <= endIndexX; dotX += 2) {
 
                 const dotIndex = { indexX: dotX, indexY: dotY };
-                const dot = super.calculateDrawingPosition(dotIndex);
+                const dot = calculator.calculateDrawingPosition(virtualBounds, dotIndex, dotsSpacing);
                 dotsX.push(dot.x);
                 dotsY.push(dot.y);
             }
@@ -49,6 +52,9 @@ export class FabricCanvas extends FabricCanvasBase {
         // Do not extract this method in different methods
 
         // create variables otherwise nested properties must be retrieved in every loop cycle (performance optimization)
+        const virtualBounds = this.virtualBounds;
+        const dotsSpacing = this.dotsSpacing;
+
         const bounds = this.bounds;
         const boundsX = bounds.left;
         const boundsY = bounds.top;
@@ -68,7 +74,7 @@ export class FabricCanvas extends FabricCanvasBase {
 
 
         for (let dotY = startDotIndexY; dotY <= endDotIndexY; dotY += 2) {
-            const dotYPosition = super.calculateDrawingY(dotY);
+            const dotYPosition = calculator.calculateDrawingY(virtualBounds, dotY, dotsSpacing);
 
             visible.push(true);
             fromDotsXPos.push(boundsX);
@@ -81,7 +87,7 @@ export class FabricCanvas extends FabricCanvasBase {
 
         for (let dotX = startDotIndexX; dotX <= endDotIndexX; dotX += 2) {
 
-            const dotXPosition = super.calculateDrawingX(dotX);
+            const dotXPosition = calculator.calculateDrawingX(virtualBounds, dotX, dotsSpacing);
 
             visible.push(true);
             fromDotsXPos.push(dotXPosition);

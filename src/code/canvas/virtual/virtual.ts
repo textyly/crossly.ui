@@ -5,6 +5,7 @@ import { IInputCanvas, MoveEvent, MoveStartEvent, MoveStopEvent } from "../input
 import { BoundsChangeEvent, CanvasConfig, CanvasSide } from "../types.js";
 import { VirtualCanvasCalculator } from "./calculator.js";
 import { IVirtualCanvas } from "./types.js";
+import calculator from "../../utilities/canvas/calculator.js";
 
 export abstract class VirtualCanvasBase extends VirtualCanvasCalculator implements IVirtualCanvas {
     private readonly virtualMessaging: IMessaging2<void, void>;
@@ -82,38 +83,19 @@ export abstract class VirtualCanvasBase extends VirtualCanvasCalculator implemen
         const diffX = currentPosition.x - previousPosition.x;
         const diffY = currentPosition.y - previousPosition.y;
 
-        const inDrawingBounds = this.inDrawingBounds(currentPosition);
+        const inDrawingBounds = calculator.inDrawingBounds(this.virtualBounds, currentPosition, this.dotsSpacing);
         if (!inDrawingBounds) {
             return;
         }
 
-        super.virtualBounds = this.calculateVirtualBounds(diffX, diffY);
-        super.bounds = this.calculateDrawingBounds(this.virtualBounds, this.visibleBounds);
+        super.virtualBounds = calculator.calculateVirtualBounds(this.virtualBounds, this.allDotsX, this.allDotsY, this.dotsSpacing, diffX, diffY);
+        super.bounds = calculator.calculateDrawingBounds(this.virtualBounds, this.visibleBounds);
 
         const bounds = this.bounds;
         const visibleBounds = this.visibleBounds;
         const virtualBounds = this.virtualBounds;
 
-        const moveDownSpace = visibleBounds.height - currentPosition.y;
-        const moveUpSpace = visibleBounds.height - moveDownSpace;
-        const moveRightSpace = visibleBounds.width - currentPosition.x;
-        const moveLeftSpace = visibleBounds.width - moveRightSpace;
-
-        const suggestedTop = -1 * moveDownSpace;
-        const top = Math.max(suggestedTop, virtualBounds.top);
-        const topDiff = Math.abs(virtualBounds.top) - Math.abs(top);
-
-        const suggestedHeight = -1 * top + (bounds.top + bounds.height + moveUpSpace);
-        const height = Math.min(suggestedHeight, virtualBounds.height - topDiff);
-
-        const suggestedLeft = -1 * moveRightSpace;
-        const left = Math.max(suggestedLeft, virtualBounds.left);
-        const leftDiff = Math.abs(virtualBounds.left) - Math.abs(left);
-
-        const suggestedWidth = -1 * left + (bounds.left + bounds.width + moveLeftSpace);
-        const width = Math.min(suggestedWidth, virtualBounds.width - leftDiff);
-
-        this.bounds = { left, top, width, height };
+        this.bounds = calculator.calculateMovingBounds(currentPosition, bounds, visibleBounds, virtualBounds);
         this.movingBounds = this.bounds;
 
         // console.log(`bounds: ${JSON.stringify(bounds)}`);
@@ -136,7 +118,7 @@ export abstract class VirtualCanvasBase extends VirtualCanvasCalculator implemen
         const diffX = currentPosition.x - previousPosition.x;
         const diffY = currentPosition.y - previousPosition.y;
 
-        super.virtualBounds = this.calculateVirtualBounds(diffX, diffY);
+        super.virtualBounds = calculator.calculateVirtualBounds(this.virtualBounds, this.allDotsX, this.allDotsY, this.dotsSpacing, diffX, diffY);
 
         const bounds = this.bounds;
         this.bounds = { left: bounds.left + diffX, top: bounds.top + diffY, width: bounds.width, height: bounds.height };
