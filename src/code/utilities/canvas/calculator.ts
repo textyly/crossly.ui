@@ -1,4 +1,4 @@
-import { Bounds } from "../../canvas/types.js";
+import { Bounds, BoundsIndexes } from "../../canvas/types.js";
 import { Position } from "../../canvas/input/types.js";
 import { DotIndex } from "../../canvas/virtual/types.js";
 
@@ -25,6 +25,31 @@ class CanvasCalculator {
         const indexY = Math.round(closestY);
 
         return { indexX, indexY };
+    }
+
+    public calculateDrawingBoundsIndexes(virtualBounds: Bounds, visibleBounds: Bounds, dotsSpacing: number): BoundsIndexes {
+        const leftTop = this.calculateDrawingLeftTop(virtualBounds, visibleBounds);
+        const leftTopIndex = this.calculateDrawingIndex(virtualBounds, leftTop, dotsSpacing);
+
+        const width = this.calculateDrawingWidth(virtualBounds, visibleBounds);
+        const rightTop = { x: leftTop.x + width, y: leftTop.y };
+        const rightTopIndex = this.calculateDrawingIndex(virtualBounds, rightTop, dotsSpacing);
+
+        const height = this.calculateDrawingHeight(virtualBounds, visibleBounds);
+        const leftBottom = { x: leftTop.x, y: leftTop.y + height };
+        const leftBottomIndex = this.calculateDrawingIndex(virtualBounds, leftBottom, dotsSpacing);
+
+        const rightBottom = { x: leftTop.x + width, y: leftTop.y + height };
+        const rightBottomIndex = this.calculateDrawingIndex(virtualBounds, rightBottom, dotsSpacing);
+
+        const boundsIndexes = {
+            leftTop: leftTopIndex,
+            rightTop: rightTopIndex,
+            leftBottom: leftBottomIndex,
+            rightBottom: rightBottomIndex
+        };
+
+        return boundsIndexes;
     }
 
     public calculateDrawingPosition(virtualBounds: Bounds, index: DotIndex, dotsSpacing: number): Position {

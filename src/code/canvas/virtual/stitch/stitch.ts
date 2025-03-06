@@ -53,11 +53,11 @@ export class StitchCanvas extends StitchCanvasBase {
     protected override redraw(): void {
         // CPU, GPU, memory and GC intensive code
         // Do not extract this method in different methods
+        const boundsIndexes = calculator.calculateDrawingBoundsIndexes(this.virtualBounds, this.visibleBounds, this.dotsSpacing);
 
-        const drawingBoundsIndexes = this.drawingBoundsIndexes;
-        const leftTopIndex = drawingBoundsIndexes.leftTop;
-        const rightTopIndex = drawingBoundsIndexes.rightTop;
-        const leftBottomIndex = drawingBoundsIndexes.leftBottom;
+        const leftTopIndex = boundsIndexes.leftTop;
+        const rightTopIndex = boundsIndexes.rightTop;
+        const leftBottomIndex = boundsIndexes.leftBottom;
 
         const threadWidth = this.threadWidth;
         const threadColor = this.threadColor;

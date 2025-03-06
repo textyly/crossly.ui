@@ -9,7 +9,7 @@ export class FabricCanvas extends FabricCanvasBase {
     }
 
     protected override redraw(): void {
-        const boundsIndexes = this.drawingBoundsIndexes;
+        const boundsIndexes = calculator.calculateDrawingBoundsIndexes(this.virtualBounds, this.visibleBounds, this.dotsSpacing);
         const leftTopIndex = boundsIndexes.leftTop;
 
         const leftTopIndexX = leftTopIndex.indexX;
