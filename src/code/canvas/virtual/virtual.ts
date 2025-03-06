@@ -10,6 +10,7 @@ import { IInputCanvas, MoveEvent, MoveStartEvent, MoveStopEvent } from "../input
 export abstract class VirtualCanvasBase extends CanvasBase implements IVirtualCanvas {
     protected readonly inputCanvas: IInputCanvas;
     protected readonly config: Readonly<CanvasConfig>;
+    private readonly virtualMessaging: IMessaging2<void, void>;
 
     protected dotColor: string;
     protected dotRadius: number;
@@ -20,8 +21,6 @@ export abstract class VirtualCanvasBase extends CanvasBase implements IVirtualCa
 
     protected currentSide: CanvasSide;
     protected movingBounds?: Bounds;
-
-    private readonly virtualMessaging: IMessaging2<void, void>;
 
     private virtualLeft = 0;
     private virtualTop = 0;
@@ -37,14 +36,12 @@ export abstract class VirtualCanvasBase extends CanvasBase implements IVirtualCa
         this.virtualMessaging = new Messaging2();
         this.currentSide = CanvasSide.Back;
 
-        const dotConfig = config.dot;
-        this.dotColor = dotConfig.color;
-        this.dotRadius = dotConfig.radius.value;
+        this.dotColor = config.dot.color;
+        this.dotRadius = config.dot.radius.value;
         this.dotsSpacing = config.dotSpacing.value / 2;
 
-        const threadConfig = config.thread;
-        this.threadColor = threadConfig.color;
-        this.threadWidth = threadConfig.width.value;
+        this.threadColor = config.thread.color;
+        this.threadWidth = config.thread.width.value;
 
         this.subscribe();
     }
@@ -54,12 +51,7 @@ export abstract class VirtualCanvasBase extends CanvasBase implements IVirtualCa
     }
 
     protected get virtualBounds(): Bounds {
-        const bounds = {
-            left: this.virtualLeft,
-            top: this.virtualTop,
-            width: this.virtualWidth,
-            height: this.virtualHeight
-        };
+        const bounds = { left: this.virtualLeft, top: this.virtualTop, width: this.virtualWidth, height: this.virtualHeight };
         return bounds;
     }
 
