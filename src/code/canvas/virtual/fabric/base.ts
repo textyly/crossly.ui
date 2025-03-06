@@ -1,5 +1,4 @@
 import { CanvasConfig } from "../../types.js";
-import { VirtualCanvasCalculator } from "../calculator.js";
 import { VoidUnsubscribe } from "../../../types.js";
 import { IInputCanvas } from "../../input/types.js";
 import { Messaging2 } from "../../../messaging/impl.js";
