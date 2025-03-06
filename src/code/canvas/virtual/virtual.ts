@@ -2,7 +2,7 @@ import { CanvasBase } from "../base.js";
 import { IVirtualCanvas } from "./types.js";
 import { Messaging2 } from "../../messaging/impl.js";
 import { IMessaging2 } from "../../messaging/types.js";
-import calculator from "../../utilities/canvas/calculator.js";
+import calculator from "../utilities/canvas/calculator.js";
 import { VoidListener, VoidUnsubscribe } from "../../types.js";
 import { Bounds, BoundsChangeEvent, CanvasConfig, CanvasSide } from "../types.js";
 import { IInputCanvas, MoveEvent, MoveStartEvent, MoveStopEvent } from "../input/types.js";

@@ -1,9 +1,8 @@
-import { Bounds, BoundsIndexes } from "../../canvas/types.js";
-import { Position } from "../../canvas/input/types.js";
-import { DotIndex } from "../../canvas/virtual/types.js";
+import { Bounds, BoundsIndexes } from "../../types.js";
+import { Position } from "../../input/types.js";
+import { DotIndex } from "../../virtual/types.js";
 
 class CanvasCalculator {
-
     public inDrawingBounds(virtualBounds: Bounds, position: Position, dotsSpacing: number): boolean {
         const dotIndex = this.calculateDrawingIndex(virtualBounds, position, dotsSpacing);
         const calculatedX = virtualBounds.left + (dotIndex.indexX * dotsSpacing);

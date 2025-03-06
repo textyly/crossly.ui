@@ -1,4 +1,4 @@
-import { Dot } from "../canvas/types.js";
+import { Dot } from "../../types.js";
 
 export class DotsUtility<TDot extends Dot> {
     public areDotsEqual(dot1?: TDot, dot2?: TDot): boolean {

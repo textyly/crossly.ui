@@ -1,7 +1,7 @@
 import { FabricCanvasBase } from "./base.js";
 import { CanvasConfig } from "../../types.js";
 import { IInputCanvas } from "../../input/types.js";
-import calculator from "../../../utilities/canvas/calculator.js";
+import calculator from "../../utilities/canvas/calculator.js";
 
 export class FabricCanvas extends FabricCanvasBase {
     constructor(config: CanvasConfig, inputCanvas: IInputCanvas) {
