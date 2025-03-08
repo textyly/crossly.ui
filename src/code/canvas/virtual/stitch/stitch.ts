@@ -52,9 +52,7 @@ export class StitchCanvas extends StitchCanvasBase {
     protected override redraw(): void {
         // CPU, GPU, memory and GC intensive code
         // Do not extract this method in different methods
-
-        const drawingBounds = this.inMovingMode ? this._movingBounds! : this.visibleBounds;
-        const boundsIndexes = this.calculateDrawingBoundsIndexes(this.virtualBounds, drawingBounds, this.dotsSpacing);
+        const boundsIndexes = this.calculateBoundsIndexes();
 
         const leftTopIndex = boundsIndexes.leftTop;
         const rightTopIndex = boundsIndexes.rightTop;
@@ -63,12 +61,9 @@ export class StitchCanvas extends StitchCanvasBase {
         const threadWidth = this.threadWidth;
         const threadColor = this.threadColor;
 
-        const dotsSpacing = this.dotsSpacing;
         const dotRadius = this.dotRadius;
         const dotsX = new Array<number>();
         const dotsY = new Array<number>();
-
-        const virtualBounds = this.virtualBounds;
 
         for (let index = 0; index < this.fromDotsX.length; index++) {
             this.visible[index] = false;
@@ -101,19 +96,19 @@ export class StitchCanvas extends StitchCanvasBase {
             }
 
 
-            const fromDotXPos = this.calculateDrawingX(virtualBounds, fromDotX, dotsSpacing);
+            const fromDotXPos = this.calculateDotX(fromDotX);
             this.fromDotsXPos[index] = fromDotXPos;
             dotsX.push(fromDotXPos);
 
-            const fromDotYPos = this.calculateDrawingY(virtualBounds, fromDotY, dotsSpacing);
+            const fromDotYPos = this.calculateDotY(fromDotY);
             this.fromDotsYPos[index] = fromDotYPos;
             dotsY.push(fromDotYPos);
 
-            const toDotXPos = this.calculateDrawingX(virtualBounds, toDotX, dotsSpacing);
+            const toDotXPos = this.calculateDotX(toDotX);
             this.toDotsXPos[index] = toDotXPos;
             dotsX.push(toDotXPos);
 
-            const toDotYPos = this.calculateDrawingY(virtualBounds, toDotY, dotsSpacing);
+            const toDotYPos = this.calculateDotY(toDotY);
             this.toDotsYPos[index] = toDotYPos;
             dotsY.push(toDotYPos);
 
@@ -133,7 +128,7 @@ export class StitchCanvas extends StitchCanvasBase {
 
     private handlePointerUp(event: PointerUpEvent): void {
         const position = event.position;
-        const inVirtualBounds = this.inVirtualBounds(this.virtualBounds, position, this.dotsSpacing);
+        const inVirtualBounds = this.inVirtualBounds(position);
 
         if (inVirtualBounds) {
             this.handleDotClick(position);
@@ -141,13 +136,13 @@ export class StitchCanvas extends StitchCanvasBase {
     }
 
     private handleDotClick(position: Position): void {
-        const clickedDotIndex = this.calculateDrawingIndex(this.virtualBounds, position, this.dotsSpacing);
-        const clickedDot = this.calculateDrawingPosition(this.virtualBounds, clickedDotIndex, this.dotsSpacing);
+        const clickedDotIndex = this.calculateDotIndex(position);
+        const clickedDot = this.calculateDotPosition(clickedDotIndex);
 
         const previouslyClickedDotIndex = this.clickedDotIndex;
         if (previouslyClickedDotIndex) {
 
-            const previouslyClickedDot = this.calculateDrawingPosition(this.virtualBounds, previouslyClickedDotIndex, this.dotsSpacing);
+            const previouslyClickedDot = this.calculateDotPosition(previouslyClickedDotIndex);
             const areIdenticalClicks = this.dotsUtility.areDotsEqual(clickedDot, previouslyClickedDot);
 
             if (!areIdenticalClicks) {
@@ -172,6 +167,6 @@ export class StitchCanvas extends StitchCanvasBase {
         }
 
         this.clickedDotIndex = clickedDotIndex;
-        this.changeSide(); // TODO: bug!!! cannot change side on every click. If dots Identical than do not change sides!!! See cue impl
+        this.changeSide(); // TODO: bug!!! cannot change side on every click. If dots Identical then do not change sides!!! See cue impl
     }
 }

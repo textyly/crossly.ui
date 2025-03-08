@@ -20,10 +20,15 @@ export abstract class CanvasBase implements ICanvas {
         return this._bounds;
     }
 
-    public set bounds(value: Bounds) {
-        const hasChange = (this._bounds.left !== value.left) || (this._bounds.top !== value.top) || (this._bounds.width !== value.width) || (this._bounds.height !== value.height);
+    public set bounds(bounds: Bounds) {
+        const hasChange =
+            (this._bounds.left !== bounds.left) ||
+            (this._bounds.top !== bounds.top) ||
+            (this._bounds.width !== bounds.width) ||
+            (this._bounds.height !== bounds.height);
+
         if (hasChange) {
-            this._bounds = value;
+            this._bounds = bounds;
             this.invokeBoundsChange(this._bounds);
         }
     }

@@ -9,7 +9,6 @@ export class VirtualCanvasDimensions extends CanvasBase {
 
     protected dotRadius: number;
     protected dotsSpacing: number;
-
     protected threadWidth: number;
 
     protected _virtualBounds: Bounds;
@@ -65,19 +64,19 @@ export class VirtualCanvasDimensions extends CanvasBase {
         }
     }
 
-    protected inVirtualBounds(virtualBounds: Bounds, position: Position, dotsSpacing: number): boolean {
-        const dotIndex = this.calculateDrawingIndex(virtualBounds, position, dotsSpacing);
-        const drawingPosition = this.calculateDrawingPosition(virtualBounds, dotIndex, dotsSpacing);
+    protected inVirtualBounds(position: Position): boolean {
+        const dotIndex = this.calculateDotIndex(position);
+        const drawingPosition = this.calculateDotPosition(dotIndex);
 
-        const inVirtualX = (drawingPosition.x >= virtualBounds.left) && (drawingPosition.x <= virtualBounds.left + virtualBounds.width);
-        const inVirtualY = (drawingPosition.y >= virtualBounds.top) && (drawingPosition.y <= virtualBounds.top + virtualBounds.height);
+        const inVirtualX = (drawingPosition.x >= this.virtualBounds.left) && (drawingPosition.x <= this.virtualBounds.left + this.virtualBounds.width);
+        const inVirtualY = (drawingPosition.y >= this.virtualBounds.top) && (drawingPosition.y <= this.virtualBounds.top + this.virtualBounds.height);
 
         const inVirtualBounds = inVirtualX && inVirtualY;
         return inVirtualBounds;
     }
 
     protected canMoveTo(position: Position): boolean {
-        const inVirtualBounds = this.inVirtualBounds(this.virtualBounds, position, this.dotsSpacing);
+        const inVirtualBounds = this.inVirtualBounds(position);
         return inVirtualBounds;
     }
 
@@ -85,10 +84,10 @@ export class VirtualCanvasDimensions extends CanvasBase {
         const diffX = currentPosition.x - previousPosition.x;
         const diffY = currentPosition.y - previousPosition.y;
 
-        this.virtualBounds = this.calculateVirtualBounds(this.virtualBounds, this.allDotsX, this.allDotsY, this.dotsSpacing, diffX, diffY);
-        this.bounds = this.calculateDrawingBounds(this.virtualBounds, this.visibleBounds);
+        this.virtualBounds = this.calculateVirtualBounds(diffX, diffY);
+        this.bounds = this.calculateDrawingBounds();
 
-        const movingBounds = this.calculateMovingBounds(currentPosition, this.bounds, this.visibleBounds, this.virtualBounds);
+        const movingBounds = this.calculateMovingBounds(currentPosition);
         this._movingBounds = this.bounds = movingBounds;
     }
 
@@ -96,7 +95,7 @@ export class VirtualCanvasDimensions extends CanvasBase {
         const diffX = currentPosition.x - previousPosition.x;
         const diffY = currentPosition.y - previousPosition.y;
 
-        this.virtualBounds = this.calculateVirtualBounds(this.virtualBounds, this.allDotsX, this.allDotsY, this.dotsSpacing, diffX, diffY);
+        this.virtualBounds = this.calculateVirtualBounds(diffX, diffY);
 
         const bounds = this.bounds;
         this.bounds = { left: bounds.left + diffX, top: bounds.top + diffY, width: bounds.width, height: bounds.height };
@@ -107,29 +106,29 @@ export class VirtualCanvasDimensions extends CanvasBase {
     }
 
     protected recalculateBounds(): void {
-        this.virtualBounds = this.calculateVirtualBounds(this.virtualBounds, this.allDotsX, this.allDotsY, this.dotsSpacing, 0, 0);
-        this.bounds = this.calculateDrawingBounds(this.virtualBounds, this.visibleBounds);
+        this.virtualBounds = this.calculateVirtualBounds(0, 0);
+        this.bounds = this.calculateDrawingBounds();
     }
 
-    protected calculateDrawingPosition(virtualBounds: Bounds, index: DotIndex, dotsSpacing: number): Position {
-        const x = this.calculateDrawingX(virtualBounds, index.dotX, dotsSpacing);
-        const y = this.calculateDrawingY(virtualBounds, index.dotY, dotsSpacing);
+    protected calculateDotPosition(dotIndex: DotIndex): Position {
+        const x = this.calculateDotX(dotIndex.dotX);
+        const y = this.calculateDotY(dotIndex.dotY);
         return { x, y };
     }
 
-    protected calculateDrawingX(virtualBounds: Bounds, indexX: number, dotsSpacing: number): number {
-        const x = virtualBounds.left + (indexX * dotsSpacing);
+    protected calculateDotX(dotX: number): number {
+        const x = this.virtualBounds.left + (dotX * this.dotsSpacing);
         return x;
     }
 
-    protected calculateDrawingY(virtualBounds: Bounds, indexY: number, dotsSpacing: number): number {
-        const y = virtualBounds.top + (indexY * dotsSpacing);
+    protected calculateDotY(dotY: number): number {
+        const y = this.virtualBounds.top + (dotY * this.dotsSpacing);
         return y;
     }
 
-    protected calculateDrawingIndex(virtualBounds: Bounds, position: Position, dotsSpacing: number): DotIndex {
-        const closestX = (position.x - virtualBounds.left) / dotsSpacing;
-        const closestY = (position.y - virtualBounds.top) / dotsSpacing;
+    protected calculateDotIndex(position: Position): DotIndex {
+        const closestX = (position.x - this.virtualBounds.left) / this.dotsSpacing;
+        const closestY = (position.y - this.virtualBounds.top) / this.dotsSpacing;
 
         const indexX = Math.round(closestX);
         const indexY = Math.round(closestY);
@@ -137,20 +136,20 @@ export class VirtualCanvasDimensions extends CanvasBase {
         return { dotX: indexX, dotY: indexY };
     }
 
-    protected calculateDrawingBoundsIndexes(virtualBounds: Bounds, visibleBounds: Bounds, dotsSpacing: number): BoundsIndexes {
-        const leftTop = this.calculateDrawingLeftTop(virtualBounds, visibleBounds);
-        const leftTopIndex = this.calculateDrawingIndex(virtualBounds, leftTop, dotsSpacing);
+    protected calculateBoundsIndexes(): BoundsIndexes {
+        const leftTop = this.calculateLeftTop();
+        const leftTopIndex = this.calculateDotIndex(leftTop);
 
-        const width = this.calculateDrawingWidth(virtualBounds, visibleBounds);
+        const width = this.calculateWidth();
         const rightTop = { x: leftTop.x + width, y: leftTop.y };
-        const rightTopIndex = this.calculateDrawingIndex(virtualBounds, rightTop, dotsSpacing);
+        const rightTopIndex = this.calculateDotIndex(rightTop);
 
-        const height = this.calculateDrawingHeight(virtualBounds, visibleBounds);
+        const height = this.calculateHeight();
         const leftBottom = { x: leftTop.x, y: leftTop.y + height };
-        const leftBottomIndex = this.calculateDrawingIndex(virtualBounds, leftBottom, dotsSpacing);
+        const leftBottomIndex = this.calculateDotIndex(leftBottom);
 
         const rightBottom = { x: leftTop.x + width, y: leftTop.y + height };
-        const rightBottomIndex = this.calculateDrawingIndex(virtualBounds, rightBottom, dotsSpacing);
+        const rightBottomIndex = this.calculateDotIndex(rightBottom);
 
         const boundsIndexes = {
             leftTop: leftTopIndex,
@@ -162,20 +161,20 @@ export class VirtualCanvasDimensions extends CanvasBase {
         return boundsIndexes;
     }
 
-    protected calculateVirtualBounds(virtualBounds: Bounds, allDotsX: number, allDotsY: number, dotsSpacing: number, differenceX: number, differenceY: number): Bounds {
-        const left = virtualBounds.left + differenceX;
-        const top = virtualBounds.top + differenceY;
+    protected calculateVirtualBounds(differenceX: number, differenceY: number): Bounds {
+        const left = this.virtualBounds.left + differenceX;
+        const top = this.virtualBounds.top + differenceY;
 
-        const width = (allDotsX - 1) * dotsSpacing;
-        const height = (allDotsY - 1) * dotsSpacing;
+        const width = (this.allDotsX - 1) * this.dotsSpacing;
+        const height = (this.allDotsY - 1) * this.dotsSpacing;
 
         return { left, top, width, height };
     }
 
-    protected calculateDrawingBounds(virtualBounds: Bounds, visibleBounds: Bounds): Bounds {
-        const drawingLeftTop = this.calculateDrawingLeftTop(virtualBounds, visibleBounds);
-        const drawingWidth = this.calculateDrawingWidth(virtualBounds, visibleBounds);
-        const drawingHeight = this.calculateDrawingHeight(virtualBounds, visibleBounds);
+    protected calculateDrawingBounds(): Bounds {
+        const drawingLeftTop = this.calculateLeftTop();
+        const drawingWidth = this.calculateWidth();
+        const drawingHeight = this.calculateHeight();
 
         const drawingBounds = {
             left: drawingLeftTop.x,
@@ -187,81 +186,84 @@ export class VirtualCanvasDimensions extends CanvasBase {
         return drawingBounds;
     }
 
-    protected calculateMovingBounds(currentPosition: Position, bounds: Bounds, visibleBounds: Bounds, virtualBounds: Bounds): Bounds {
-        const moveDownSpace = visibleBounds.height - currentPosition.y;
-        const moveUpSpace = visibleBounds.height - moveDownSpace;
-        const moveRightSpace = visibleBounds.width - currentPosition.x;
-        const moveLeftSpace = visibleBounds.width - moveRightSpace;
+    protected calculateMovingBounds(position: Position): Bounds {
+        const moveDownSpace = this.visibleBounds.height - position.y;
+        const moveUpSpace = this.visibleBounds.height - moveDownSpace;
+        const moveRightSpace = this.visibleBounds.width - position.x;
+        const moveLeftSpace = this.visibleBounds.width - moveRightSpace;
 
         const suggestedTop = -1 * moveDownSpace;
-        const top = Math.max(suggestedTop, virtualBounds.top);
-        const topDiff = Math.abs(virtualBounds.top) - Math.abs(top);
+        const top = Math.max(suggestedTop, this.virtualBounds.top);
+        const topDiff = Math.abs(this.virtualBounds.top) - Math.abs(top);
 
-        const suggestedHeight = -1 * top + (bounds.top + bounds.height + moveUpSpace);
-        const height = Math.min(suggestedHeight, virtualBounds.height - topDiff);
+        const suggestedHeight = -1 * top + (this.bounds.top + this.bounds.height + moveUpSpace);
+        const height = Math.min(suggestedHeight, this.virtualBounds.height - topDiff);
 
         const suggestedLeft = -1 * moveRightSpace;
-        const left = Math.max(suggestedLeft, virtualBounds.left);
-        const leftDiff = Math.abs(virtualBounds.left) - Math.abs(left);
+        const left = Math.max(suggestedLeft, this.virtualBounds.left);
+        const leftDiff = Math.abs(this.virtualBounds.left) - Math.abs(left);
 
-        const suggestedWidth = -1 * left + (bounds.left + bounds.width + moveLeftSpace);
-        const width = Math.min(suggestedWidth, virtualBounds.width - leftDiff);
+        const suggestedWidth = -1 * left + (this.bounds.left + this.bounds.width + moveLeftSpace);
+        const width = Math.min(suggestedWidth, this.virtualBounds.width - leftDiff);
 
         const movingBounds = { left, top, width, height };
         return movingBounds;
     }
 
-    protected calculateDrawingLeftTop(virtualBounds: Bounds, visibleBounds: Bounds): Position {
-        const visibleLeftTopX = virtualBounds.left < visibleBounds.left
-            ? visibleBounds.left
-            : Math.min(virtualBounds.left, (visibleBounds.left + visibleBounds.width));
+    protected calculateLeftTop(): Position {
+        const drawingBounds = this.inMovingMode ? this._movingBounds! : this.visibleBounds;
+        const visibleLeftTopX = this.virtualBounds.left < drawingBounds.left
+            ? drawingBounds.left
+            : Math.min(this.virtualBounds.left, (drawingBounds.left + drawingBounds.width));
 
-        const visibleLeftTopY = virtualBounds.top < visibleBounds.top
-            ? visibleBounds.top
-            : Math.min(virtualBounds.top, (visibleBounds.top + visibleBounds.height));
+        const visibleLeftTopY = this.virtualBounds.top < drawingBounds.top
+            ? drawingBounds.top
+            : Math.min(this.virtualBounds.top, (drawingBounds.top + drawingBounds.height));
 
         const visibleLeftTopDot = { x: visibleLeftTopX, y: visibleLeftTopY };
         return visibleLeftTopDot;
     }
 
-    protected calculateDrawingWidth(virtualBounds: Bounds, visibleBounds: Bounds): number {
-        if (virtualBounds.left < visibleBounds.left) {
-            const virtualWidth = virtualBounds.width - (Math.abs(virtualBounds.left) - Math.abs(visibleBounds.left));
-            return Math.min(virtualWidth, visibleBounds.width);
+    protected calculateWidth(): number {
+        const drawingBounds = this.inMovingMode ? this._movingBounds! : this.visibleBounds;
+        if (this.virtualBounds.left < drawingBounds.left) {
+            const virtualWidth = this.virtualBounds.width - (Math.abs(this.virtualBounds.left) - Math.abs(drawingBounds.left));
+            return Math.min(virtualWidth, drawingBounds.width);
         }
 
-        if (virtualBounds.left > visibleBounds.left) {
-            const visibleWidthOffset = visibleBounds.left + visibleBounds.width;
-            const virtualWidthOffset = virtualBounds.left + virtualBounds.width;
+        if (this.virtualBounds.left > drawingBounds.left) {
+            const visibleWidthOffset = drawingBounds.left + drawingBounds.width;
+            const virtualWidthOffset = this.virtualBounds.left + this.virtualBounds.width;
 
             if (virtualWidthOffset <= visibleWidthOffset) {
-                return virtualBounds.width;
+                return this.virtualBounds.width;
             } else {
-                return (visibleBounds.width - virtualBounds.left);
+                return (drawingBounds.width - this.virtualBounds.left);
             }
         }
 
-        return Math.min(virtualBounds.width, visibleBounds.width);
+        return Math.min(this.virtualBounds.width, drawingBounds.width);
     }
 
-    protected calculateDrawingHeight(virtualBounds: Bounds, visibleBounds: Bounds): number {
-        if (virtualBounds.top < visibleBounds.top) {
-            const virtualHeight = virtualBounds.height - (Math.abs(virtualBounds.top) - Math.abs(visibleBounds.top));
-            return Math.min(virtualHeight, visibleBounds.height);
+    protected calculateHeight(): number {
+        const drawingBounds = this.inMovingMode ? this._movingBounds! : this.visibleBounds;
+        if (this.virtualBounds.top < drawingBounds.top) {
+            const virtualHeight = this.virtualBounds.height - (Math.abs(this.virtualBounds.top) - Math.abs(drawingBounds.top));
+            return Math.min(virtualHeight, drawingBounds.height);
         }
 
-        if (virtualBounds.top > visibleBounds.top) {
-            const visibleHeightOffset = visibleBounds.top + visibleBounds.height;
-            const virtualHeightOffset = virtualBounds.top + virtualBounds.height;
+        if (this.virtualBounds.top > drawingBounds.top) {
+            const visibleHeightOffset = drawingBounds.top + drawingBounds.height;
+            const virtualHeightOffset = this.virtualBounds.top + this.virtualBounds.height;
 
             if (virtualHeightOffset <= visibleHeightOffset) {
-                return virtualBounds.height;
+                return this.virtualBounds.height;
             } else {
-                return (visibleBounds.height - virtualBounds.top);
+                return (drawingBounds.height - this.virtualBounds.top);
             }
         }
 
-        return Math.min(virtualBounds.height, visibleBounds.height);
+        return Math.min(this.virtualBounds.height, drawingBounds.height);
     }
 
     protected zoomInSpacing(): void {

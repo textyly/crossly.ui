@@ -8,8 +8,7 @@ export class FabricCanvas extends FabricCanvasBase {
     }
 
     protected override redraw(): void {
-        const drawingBounds = this.inMovingMode ? this._movingBounds! : this.visibleBounds;
-        const boundsIndexes = this.calculateDrawingBoundsIndexes(this.virtualBounds, drawingBounds, this.dotsSpacing);
+        const boundsIndexes = this.calculateBoundsIndexes();
         const leftTopIndex = boundsIndexes.leftTop;
 
         const leftTopIndexX = leftTopIndex.dotX;
@@ -28,9 +27,6 @@ export class FabricCanvas extends FabricCanvasBase {
     private createDots(startIndexX: number, startIndexY: number, endIndexX: number, endIndexY: number): void {
         // CPU, GPU, memory and GC intensive code
         // Do not extract this method in different methods
-
-        const virtualBounds = this.virtualBounds;
-        const dotsSpacing = this.dotsSpacing;
         const dotsX = new Array<number>();
         const dotsY = new Array<number>();
 
@@ -38,7 +34,7 @@ export class FabricCanvas extends FabricCanvasBase {
             for (let dotX = startIndexX; dotX <= endIndexX; dotX += 2) {
 
                 const dotIndex = { dotX, dotY };
-                const dot = this.calculateDrawingPosition(virtualBounds, dotIndex, dotsSpacing);
+                const dot = this.calculateDotPosition(dotIndex);
                 dotsX.push(dot.x);
                 dotsY.push(dot.y);
             }
@@ -52,9 +48,6 @@ export class FabricCanvas extends FabricCanvasBase {
         // Do not extract this method in different methods
 
         // create variables otherwise nested properties must be retrieved in every loop cycle (performance optimization)
-        const virtualBounds = this.virtualBounds;
-        const dotsSpacing = this.dotsSpacing;
-
         const bounds = this.bounds;
         const boundsX = bounds.left;
         const boundsY = bounds.top;
@@ -74,7 +67,7 @@ export class FabricCanvas extends FabricCanvasBase {
 
 
         for (let dotY = startDotIndexY; dotY <= endDotIndexY; dotY += 2) {
-            const dotYPosition = this.calculateDrawingY(virtualBounds, dotY, dotsSpacing);
+            const dotYPosition = this.calculateDotY(dotY);
 
             visible.push(true);
             fromDotsXPos.push(boundsX);
@@ -87,7 +80,7 @@ export class FabricCanvas extends FabricCanvasBase {
 
         for (let dotX = startDotIndexX; dotX <= endDotIndexX; dotX += 2) {
 
-            const dotXPosition = this.calculateDrawingX(virtualBounds, dotX, dotsSpacing);
+            const dotXPosition = this.calculateDotX(dotX);
 
             visible.push(true);
             fromDotsXPos.push(dotXPosition);
