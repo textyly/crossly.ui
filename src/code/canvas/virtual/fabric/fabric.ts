@@ -34,9 +34,9 @@ export class FabricCanvas extends FabricCanvasBase {
             for (let dotX = startIndexX; dotX <= endIndexX; dotX += 2) {
 
                 const dotIndex = { dotX, dotY };
-                const dot = this.calculateDotPosition(dotIndex);
-                dotsX.push(dot.x);
-                dotsY.push(dot.y);
+                const dotPos = this.calculateDotPosition(dotIndex);
+                dotsX.push(dotPos.x);
+                dotsY.push(dotPos.y);
             }
         }
 

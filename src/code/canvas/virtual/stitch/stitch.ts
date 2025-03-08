@@ -136,14 +136,14 @@ export class StitchCanvas extends StitchCanvasBase {
     }
 
     private handleDotClick(position: Position): void {
-        const clickedDotIndex = this.calculateDotIndex(position);
-        const clickedDot = this.calculateDotPosition(clickedDotIndex);
+        const clickedDotIdx = this.calculateDotIndex(position);
+        const clickedDotPos = this.calculateDotPosition(clickedDotIdx);
 
         const previouslyClickedDotIndex = this.clickedDotIndex;
         if (previouslyClickedDotIndex) {
 
-            const previouslyClickedDot = this.calculateDotPosition(previouslyClickedDotIndex);
-            const areIdenticalClicks = this.dotsUtility.areDotsEqual(clickedDot, previouslyClickedDot);
+            const previouslyClickedDotPos = this.calculateDotPosition(previouslyClickedDotIndex);
+            const areIdenticalClicks = this.dotsUtility.areDotsEqual(clickedDotPos, previouslyClickedDotPos);
 
             if (!areIdenticalClicks) {
                 const visible = this.currentSide === CanvasSide.Front;
@@ -156,17 +156,17 @@ export class StitchCanvas extends StitchCanvasBase {
                 this.fromDotsX.push(previouslyClickedDotIndex.dotX);
                 this.fromDotsY.push(previouslyClickedDotIndex.dotY);
 
-                this.toDotsX.push(clickedDotIndex.dotX);
-                this.toDotsY.push(clickedDotIndex.dotY);
+                this.toDotsX.push(clickedDotIdx.dotX);
+                this.toDotsY.push(clickedDotIdx.dotY);
 
                 if (visible) {
-                    super.invokeDrawThreads([visible], [previouslyClickedDot.x], [previouslyClickedDot.y], [clickedDot.x], [clickedDot.y], [this.threadWidth], [this.threadColor]);
-                    super.invokeDrawDots([previouslyClickedDot.x, clickedDot.x], [previouslyClickedDot.y, clickedDot.y], this.dotRadius, this.threadColor);
+                    super.invokeDrawThreads([visible], [previouslyClickedDotPos.x], [previouslyClickedDotPos.y], [clickedDotPos.x], [clickedDotPos.y], [this.threadWidth], [this.threadColor]);
+                    super.invokeDrawDots([previouslyClickedDotPos.x, clickedDotPos.x], [previouslyClickedDotPos.y, clickedDotPos.y], this.dotRadius, this.threadColor);
                 }
             }
         }
 
-        this.clickedDotIndex = clickedDotIndex;
+        this.clickedDotIndex = clickedDotIdx;
         this.changeSide(); // TODO: bug!!! cannot change side on every click. If dots Identical then do not change sides!!! See cue impl
     }
 }

@@ -16,11 +16,11 @@ export abstract class VirtualCanvasBase extends VirtualCanvasDimensions implemen
     constructor(config: CanvasConfig, inputCanvas: IInputCanvas) {
         super(config, inputCanvas);
 
-        this.virtualMessaging = new Messaging2();
-        this.currentSide = CanvasSide.Back;
-
         this.dotColor = config.dot.color;
         this.threadColor = config.thread.color;
+
+        this.virtualMessaging = new Messaging2();
+        this.currentSide = CanvasSide.Back;
 
         this.subscribe();
     }
@@ -54,8 +54,28 @@ export abstract class VirtualCanvasBase extends VirtualCanvasDimensions implemen
         this.currentSide = this.currentSide === CanvasSide.Front ? CanvasSide.Back : CanvasSide.Front;
     }
 
+    private subscribe(): void {
+        const boundsChangeUn = this.inputCanvas.onBoundsChange(this.handleVisibleBoundsChange.bind(this));
+        super.registerUn(boundsChangeUn);
+
+        const zoomInUn = this.inputCanvas.onZoomIn(this.handleZoomIn.bind(this));
+        super.registerUn(zoomInUn);
+
+        const zoomOutUn = this.inputCanvas.onZoomOut(this.handleZoomOut.bind(this));
+        super.registerUn(zoomOutUn);
+
+        const moveStartUn = this.inputCanvas.onMoveStart(this.handleMoveStart.bind(this));
+        super.registerUn(moveStartUn);
+
+        const moveUn = this.inputCanvas.onMove(this.handleMove.bind(this));
+        super.registerUn(moveUn);
+
+        const moveStopUn = this.inputCanvas.onMoveStop(this.handleMoveStop.bind(this));
+        super.registerUn(moveStopUn);
+    }
+
     private handleVisibleBoundsChange(event: BoundsChangeEvent): void {
-        this.bounds = event.bounds;
+        this.bounds = event.bounds; // TODO: probably will stop working once visible div start changing bounds on resize and minimize/maximize/restore
     }
 
     private handleZoomIn(): void {
@@ -118,25 +138,5 @@ export abstract class VirtualCanvasBase extends VirtualCanvasDimensions implemen
         this.zoomOutDots();
         this.zoomOutThreads();
         this.draw();
-    }
-
-    private subscribe(): void {
-        const boundsChangeUn = this.inputCanvas.onBoundsChange(this.handleVisibleBoundsChange.bind(this));
-        super.registerUn(boundsChangeUn);
-
-        const zoomInUn = this.inputCanvas.onZoomIn(this.handleZoomIn.bind(this));
-        super.registerUn(zoomInUn);
-
-        const zoomOutUn = this.inputCanvas.onZoomOut(this.handleZoomOut.bind(this));
-        super.registerUn(zoomOutUn);
-
-        const moveStartUn = this.inputCanvas.onMoveStart(this.handleMoveStart.bind(this));
-        super.registerUn(moveStartUn);
-
-        const moveUn = this.inputCanvas.onMove(this.handleMove.bind(this));
-        super.registerUn(moveUn);
-
-        const moveStopUn = this.inputCanvas.onMoveStop(this.handleMoveStop.bind(this));
-        super.registerUn(moveStopUn);
     }
 }

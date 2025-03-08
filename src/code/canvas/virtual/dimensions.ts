@@ -3,7 +3,7 @@ import { CanvasBase } from "../base.js";
 import { IInputCanvas, Position } from "../input/types.js";
 import { Bounds, BoundsIndexes, CanvasConfig } from "../types.js";
 
-export class VirtualCanvasDimensions extends CanvasBase {
+export abstract class VirtualCanvasDimensions extends CanvasBase {
     protected readonly config: Readonly<CanvasConfig>;
     protected readonly inputCanvas: IInputCanvas;
 
@@ -65,11 +65,11 @@ export class VirtualCanvasDimensions extends CanvasBase {
     }
 
     protected inVirtualBounds(position: Position): boolean {
-        const dotIndex = this.calculateDotIndex(position);
-        const drawingPosition = this.calculateDotPosition(dotIndex);
+        const dotIdx = this.calculateDotIndex(position);
+        const dotPos = this.calculateDotPosition(dotIdx);
 
-        const inVirtualX = (drawingPosition.x >= this.virtualBounds.left) && (drawingPosition.x <= this.virtualBounds.left + this.virtualBounds.width);
-        const inVirtualY = (drawingPosition.y >= this.virtualBounds.top) && (drawingPosition.y <= this.virtualBounds.top + this.virtualBounds.height);
+        const inVirtualX = (dotPos.x >= this.virtualBounds.left) && (dotPos.x <= this.virtualBounds.left + this.virtualBounds.width);
+        const inVirtualY = (dotPos.y >= this.virtualBounds.top) && (dotPos.y <= this.virtualBounds.top + this.virtualBounds.height);
 
         const inVirtualBounds = inVirtualX && inVirtualY;
         return inVirtualBounds;
@@ -106,6 +106,7 @@ export class VirtualCanvasDimensions extends CanvasBase {
     }
 
     protected recalculateBounds(): void {
+        //TODO: change the name of the method since not all bounds are recalculated!!!
         this.virtualBounds = this.calculateVirtualBounds(0, 0);
         this.bounds = this.calculateDrawingBounds();
     }
@@ -137,25 +138,25 @@ export class VirtualCanvasDimensions extends CanvasBase {
     }
 
     protected calculateBoundsIndexes(): BoundsIndexes {
-        const leftTop = this.calculateLeftTop();
-        const leftTopIndex = this.calculateDotIndex(leftTop);
+        const leftTopPos = this.calculateLeftTopPosition();
+        const leftTopIdx = this.calculateDotIndex(leftTopPos);
 
         const width = this.calculateWidth();
-        const rightTop = { x: leftTop.x + width, y: leftTop.y };
+        const rightTop = { x: leftTopPos.x + width, y: leftTopPos.y };
         const rightTopIndex = this.calculateDotIndex(rightTop);
 
         const height = this.calculateHeight();
-        const leftBottom = { x: leftTop.x, y: leftTop.y + height };
-        const leftBottomIndex = this.calculateDotIndex(leftBottom);
+        const leftBottom = { x: leftTopPos.x, y: leftTopPos.y + height };
+        const leftBottomIdx = this.calculateDotIndex(leftBottom);
 
-        const rightBottom = { x: leftTop.x + width, y: leftTop.y + height };
-        const rightBottomIndex = this.calculateDotIndex(rightBottom);
+        const rightBottom = { x: leftTopPos.x + width, y: leftTopPos.y + height };
+        const rightBottomIdx = this.calculateDotIndex(rightBottom);
 
         const boundsIndexes = {
-            leftTop: leftTopIndex,
+            leftTop: leftTopIdx,
             rightTop: rightTopIndex,
-            leftBottom: leftBottomIndex,
-            rightBottom: rightBottomIndex
+            leftBottom: leftBottomIdx,
+            rightBottom: rightBottomIdx
         };
 
         return boundsIndexes;
@@ -172,18 +173,18 @@ export class VirtualCanvasDimensions extends CanvasBase {
     }
 
     protected calculateDrawingBounds(): Bounds {
-        const drawingLeftTop = this.calculateLeftTop();
-        const drawingWidth = this.calculateWidth();
-        const drawingHeight = this.calculateHeight();
+        const leftTopPos = this.calculateLeftTopPosition();
+        const width = this.calculateWidth();
+        const height = this.calculateHeight();
 
-        const drawingBounds = {
-            left: drawingLeftTop.x,
-            top: drawingLeftTop.y,
-            width: drawingWidth,
-            height: drawingHeight
+        const bounds = {
+            left: leftTopPos.x,
+            top: leftTopPos.y,
+            width,
+            height
         };
 
-        return drawingBounds;
+        return bounds;
     }
 
     protected calculateMovingBounds(position: Position): Bounds {
@@ -210,7 +211,7 @@ export class VirtualCanvasDimensions extends CanvasBase {
         return movingBounds;
     }
 
-    protected calculateLeftTop(): Position {
+    protected calculateLeftTopPosition(): Position {
         const drawingBounds = this.inMovingMode ? this._movingBounds! : this.visibleBounds;
         const visibleLeftTopX = this.virtualBounds.left < drawingBounds.left
             ? drawingBounds.left
