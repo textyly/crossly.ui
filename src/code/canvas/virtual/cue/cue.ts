@@ -3,8 +3,7 @@ import { CueCanvasBase } from "./base.js";
 import { DotsUtility } from "../../utilities/dots.js";
 import { IdGenerator } from "../../utilities/generator.js";
 import { CanvasSide, Id, CueThread, CanvasConfig, CueDot, Dot } from "../../types.js";
-import { Position, IInputCanvas, PointerUpEvent, PointerMoveEvent, MoveStartEvent } from "../../input/types.js";
-import calculator from "../../utilities/calculator.js";
+import { Position, IInputCanvas, PointerUpEvent, PointerMoveEvent } from "../../input/types.js";
 
 export class CueCanvas extends CueCanvasBase {
     private readonly ids: IdGenerator;
@@ -35,17 +34,11 @@ export class CueCanvas extends CueCanvasBase {
 
             // 2. recreate hovered dot and thread
             if (dotIndex) {
-                const position = calculator.calculateDrawingPosition(this.virtualBounds, dotIndex, this.dotsSpacing);
+                const position = this.calculateDrawingPosition(this.virtualBounds, dotIndex, this.dotsSpacing);
                 this.handlePointerMove({ position });
             }
         }
     }
-
-    // protected override handleMoveStart(event: MoveStartEvent): void {
-    //     super.handleMoveStart(event);
-    //     this.removeHoveredDot();
-    //     this.removeThread();
-    // }
 
     private startListening(): void {
         const pointerMoveUn = this.inputCanvas.onPointerMove(this.handlePointerMove.bind(this));
@@ -57,7 +50,7 @@ export class CueCanvas extends CueCanvasBase {
 
     private handlePointerMove(event: PointerMoveEvent): void {
         const position = event.position;
-        const inVirtualBounds = calculator.inVirtualBounds(this.virtualBounds, position, this.dotsSpacing);
+        const inVirtualBounds = this.inVirtualBounds(this.virtualBounds, position, this.dotsSpacing);
 
         if (inVirtualBounds) {
             this.moveDot(position);
@@ -67,7 +60,7 @@ export class CueCanvas extends CueCanvasBase {
 
     private handlePointerUp(event: PointerUpEvent): void {
         const position = event.position;
-        const inVirtualBounds = calculator.inVirtualBounds(this.virtualBounds, position, this.dotsSpacing);
+        const inVirtualBounds = this.inVirtualBounds(this.virtualBounds, position, this.dotsSpacing);
 
         if (inVirtualBounds) {
             const position = event.position;
@@ -81,16 +74,16 @@ export class CueCanvas extends CueCanvasBase {
         this.removeHoveredDot();
 
         // 2. get a newly hovered dot's position
-        const dotIndex = calculator.calculateDrawingIndex(this.virtualBounds, position, this.dotsSpacing);
-        const dotPosition = calculator.calculateDrawingPosition(this.virtualBounds, dotIndex, this.dotsSpacing);
+        const dotIndex = this.calculateDrawingIndex(this.virtualBounds, position, this.dotsSpacing);
+        const dotPosition = this.calculateDrawingPosition(this.virtualBounds, dotIndex, this.dotsSpacing);
 
         // 3. hover the new dot
         this.hoverDot(dotPosition, dotIndex);
     }
 
     private clickDot(position: Position): void {
-        const clickedDotIndex = calculator.calculateDrawingIndex(this.virtualBounds, position, this.dotsSpacing);
-        const clickedDot = calculator.calculateDrawingPosition(this.virtualBounds, clickedDotIndex, this.dotsSpacing);
+        const clickedDotIndex = this.calculateDrawingIndex(this.virtualBounds, position, this.dotsSpacing);
+        const clickedDot = this.calculateDrawingPosition(this.virtualBounds, clickedDotIndex, this.dotsSpacing);
         const previouslyClickedDotIndex = this.clickedDotIndex;
 
         if (!previouslyClickedDotIndex) {
@@ -101,7 +94,7 @@ export class CueCanvas extends CueCanvasBase {
 
         } else {
             const drawingBounds = this.inMovingMode ? this._movingBounds! : this.visibleBounds;
-            const previouslyClickedDot = calculator.calculateDrawingPosition(drawingBounds, previouslyClickedDotIndex, this.dotsSpacing);
+            const previouslyClickedDot = this.calculateDrawingPosition(drawingBounds, previouslyClickedDotIndex, this.dotsSpacing);
             const areIdenticalClicks = this.dotsUtility.areDotsEqual(clickedDot, previouslyClickedDot);
 
             if (!areIdenticalClicks) {
@@ -129,7 +122,7 @@ export class CueCanvas extends CueCanvasBase {
     private resizeThead(toPosition: Position): void {
         if (this.clickedDotIndex) {
             const fromDotIndex = this.clickedDotIndex;
-            const fromPosition = calculator.calculateDrawingPosition(this.virtualBounds, fromDotIndex, this.dotsSpacing);
+            const fromPosition = this.calculateDrawingPosition(this.virtualBounds, fromDotIndex, this.dotsSpacing);
 
             let thread: CueThread;
             if (this.currentThreadId) {

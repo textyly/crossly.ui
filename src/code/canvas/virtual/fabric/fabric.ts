@@ -1,7 +1,6 @@
 import { FabricCanvasBase } from "./base.js";
 import { CanvasConfig } from "../../types.js";
 import { IInputCanvas } from "../../input/types.js";
-import calculator from "../../utilities/calculator.js";
 
 export class FabricCanvas extends FabricCanvasBase {
     constructor(config: CanvasConfig, inputCanvas: IInputCanvas) {
@@ -10,7 +9,7 @@ export class FabricCanvas extends FabricCanvasBase {
 
     protected override redraw(): void {
         const drawingBounds = this.inMovingMode ? this._movingBounds! : this.visibleBounds;
-        const boundsIndexes = calculator.calculateDrawingBoundsIndexes(this.virtualBounds, drawingBounds, this.dotsSpacing);
+        const boundsIndexes = this.calculateDrawingBoundsIndexes(this.virtualBounds, drawingBounds, this.dotsSpacing);
         const leftTopIndex = boundsIndexes.leftTop;
 
         const leftTopIndexX = leftTopIndex.indexX;
@@ -39,7 +38,7 @@ export class FabricCanvas extends FabricCanvasBase {
             for (let dotX = startIndexX; dotX <= endIndexX; dotX += 2) {
 
                 const dotIndex = { indexX: dotX, indexY: dotY };
-                const dot = calculator.calculateDrawingPosition(virtualBounds, dotIndex, dotsSpacing);
+                const dot = this.calculateDrawingPosition(virtualBounds, dotIndex, dotsSpacing);
                 dotsX.push(dot.x);
                 dotsY.push(dot.y);
             }
@@ -75,7 +74,7 @@ export class FabricCanvas extends FabricCanvasBase {
 
 
         for (let dotY = startDotIndexY; dotY <= endDotIndexY; dotY += 2) {
-            const dotYPosition = calculator.calculateDrawingY(virtualBounds, dotY, dotsSpacing);
+            const dotYPosition = this.calculateDrawingY(virtualBounds, dotY, dotsSpacing);
 
             visible.push(true);
             fromDotsXPos.push(boundsX);
@@ -88,7 +87,7 @@ export class FabricCanvas extends FabricCanvasBase {
 
         for (let dotX = startDotIndexX; dotX <= endDotIndexX; dotX += 2) {
 
-            const dotXPosition = calculator.calculateDrawingX(virtualBounds, dotX, dotsSpacing);
+            const dotXPosition = this.calculateDrawingX(virtualBounds, dotX, dotsSpacing);
 
             visible.push(true);
             fromDotsXPos.push(dotXPosition);

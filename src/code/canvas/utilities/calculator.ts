@@ -1,22 +1,73 @@
-import { Position } from "../input/types.js";
+import { IInputCanvas, Position } from "../input/types.js";
 import { DotIndex } from "../virtual/types.js";
 import { Bounds, BoundsIndexes } from "../types.js";
+import { CanvasBase } from "../base.js";
 
-class CanvasCalculator {
-    public inVirtualBounds(virtualBounds: Bounds, position: Position, dotsSpacing: number): boolean {
-        const dotIndex = this.calculateDrawingIndex(virtualBounds, position, dotsSpacing);
+export class VirtualCanvasDimensions extends CanvasBase {
+    protected readonly inputCanvas: IInputCanvas;
 
-        const calculatedX = virtualBounds.left + (dotIndex.indexX * dotsSpacing);
-        const calculatedY = virtualBounds.top + (dotIndex.indexY * dotsSpacing);
+    private _virtualBounds: Bounds;
+    protected _movingBounds?: Bounds;
 
-        const inVirtualX = (calculatedX >= virtualBounds.left) && (calculatedX <= virtualBounds.left + virtualBounds.width);
-        const inVirtualY = (calculatedY >= virtualBounds.top) && (calculatedY <= virtualBounds.top + virtualBounds.height);
+    constructor(inputCanvas: IInputCanvas) {
+        super();
 
-        const isInVirtualBounds = inVirtualX && inVirtualY;
-        return isInVirtualBounds;
+        this.inputCanvas = inputCanvas;
+        this._virtualBounds = { left: 0, top: 0, width: 0, height: 0 };
     }
 
-    public calculateDrawingIndex(virtualBounds: Bounds, position: Position, dotsSpacing: number): DotIndex {
+    protected get inMovingMode(): boolean {
+        return this._movingBounds !== undefined;
+    }
+
+    protected get visibleBounds(): Bounds {
+        return this.inputCanvas.bounds;
+    }
+
+    protected get virtualBounds(): Bounds {
+        return this._virtualBounds;
+    }
+
+    protected set virtualBounds(bounds: Bounds) {
+        const hasChange =
+            (this._virtualBounds.left !== bounds.left) ||
+            (this._virtualBounds.top !== bounds.top) ||
+            (this._virtualBounds.width !== bounds.width) ||
+            (this._virtualBounds.height !== bounds.height);
+
+        if (hasChange) {
+            this._virtualBounds = bounds;
+        }
+    }
+
+    protected inVirtualBounds(virtualBounds: Bounds, position: Position, dotsSpacing: number): boolean {
+        const dotIndex = this.calculateDrawingIndex(virtualBounds, position, dotsSpacing);
+        const drawingPosition = this.calculateDrawingPosition(virtualBounds, dotIndex, dotsSpacing);
+
+        const inVirtualX = (drawingPosition.x >= virtualBounds.left) && (drawingPosition.x <= virtualBounds.left + virtualBounds.width);
+        const inVirtualY = (drawingPosition.y >= virtualBounds.top) && (drawingPosition.y <= virtualBounds.top + virtualBounds.height);
+
+        const inVirtualBounds = inVirtualX && inVirtualY;
+        return inVirtualBounds;
+    }
+
+    protected calculateDrawingPosition(virtualBounds: Bounds, index: DotIndex, dotsSpacing: number): Position {
+        const x = this.calculateDrawingX(virtualBounds, index.indexX, dotsSpacing);
+        const y = this.calculateDrawingY(virtualBounds, index.indexY, dotsSpacing);
+        return { x, y };
+    }
+
+    protected calculateDrawingX(virtualBounds: Bounds, indexX: number, dotsSpacing: number): number {
+        const x = virtualBounds.left + (indexX * dotsSpacing);
+        return x;
+    }
+
+    protected calculateDrawingY(virtualBounds: Bounds, indexY: number, dotsSpacing: number): number {
+        const y = virtualBounds.top + (indexY * dotsSpacing);
+        return y;
+    }
+
+    protected calculateDrawingIndex(virtualBounds: Bounds, position: Position, dotsSpacing: number): DotIndex {
         const closestX = (position.x - virtualBounds.left) / dotsSpacing;
         const closestY = (position.y - virtualBounds.top) / dotsSpacing;
 
@@ -26,7 +77,7 @@ class CanvasCalculator {
         return { indexX, indexY };
     }
 
-    public calculateDrawingBoundsIndexes(virtualBounds: Bounds, visibleBounds: Bounds, dotsSpacing: number): BoundsIndexes {
+    protected calculateDrawingBoundsIndexes(virtualBounds: Bounds, visibleBounds: Bounds, dotsSpacing: number): BoundsIndexes {
         const leftTop = this.calculateDrawingLeftTop(virtualBounds, visibleBounds);
         const leftTopIndex = this.calculateDrawingIndex(virtualBounds, leftTop, dotsSpacing);
 
@@ -51,23 +102,32 @@ class CanvasCalculator {
         return boundsIndexes;
     }
 
-    public calculateDrawingPosition(virtualBounds: Bounds, index: DotIndex, dotsSpacing: number): Position {
-        const x = this.calculateDrawingX(virtualBounds, index.indexX, dotsSpacing);
-        const y = this.calculateDrawingY(virtualBounds, index.indexY, dotsSpacing);
-        return { x, y };
+    protected calculateVirtualBounds(virtualBounds: Bounds, allDotsX: number, allDotsY: number, dotsSpacing: number, differenceX: number, differenceY: number): Bounds {
+        const left = virtualBounds.left + differenceX;
+        const top = virtualBounds.top + differenceY;
+
+        const width = (allDotsX - 1) * dotsSpacing;
+        const height = (allDotsY - 1) * dotsSpacing;
+
+        return { left, top, width, height };
     }
 
-    public calculateDrawingX(virtualBounds: Bounds, indexX: number, dotsSpacing: number): number {
-        const x = virtualBounds.left + (indexX * dotsSpacing);
-        return x;
+    protected calculateDrawingBounds(virtualBounds: Bounds, visibleBounds: Bounds): Bounds {
+        const drawingLeftTop = this.calculateDrawingLeftTop(virtualBounds, visibleBounds);
+        const drawingWidth = this.calculateDrawingWidth(virtualBounds, visibleBounds);
+        const drawingHeight = this.calculateDrawingHeight(virtualBounds, visibleBounds);
+
+        const drawingBounds = {
+            left: drawingLeftTop.x,
+            top: drawingLeftTop.y,
+            width: drawingWidth,
+            height: drawingHeight
+        };
+
+        return drawingBounds;
     }
 
-    public calculateDrawingY(virtualBounds: Bounds, indexY: number, dotsSpacing: number): number {
-        const y = virtualBounds.top + (indexY * dotsSpacing);
-        return y;
-    }
-
-    public calculateMovingBounds(currentPosition: Position, bounds: Bounds, visibleBounds: Bounds, virtualBounds: Bounds): Bounds {
+    protected calculateMovingBounds(currentPosition: Position, bounds: Bounds, visibleBounds: Bounds, virtualBounds: Bounds): Bounds {
         const moveDownSpace = visibleBounds.height - currentPosition.y;
         const moveUpSpace = visibleBounds.height - moveDownSpace;
         const moveRightSpace = visibleBounds.width - currentPosition.x;
@@ -89,31 +149,6 @@ class CanvasCalculator {
 
         const movingBounds = { left, top, width, height };
         return movingBounds;
-    }
-
-    public calculateVirtualBounds(virtualBounds: Bounds, allDotsX: number, allDotsY: number, dotsSpacing: number, differenceX: number, differenceY: number): Bounds {
-        const left = virtualBounds.left + differenceX;
-        const top = virtualBounds.top + differenceY;
-
-        const width = (allDotsX - 1) * dotsSpacing;
-        const height = (allDotsY - 1) * dotsSpacing;
-
-        return { left, top, width, height };
-    }
-
-    public calculateDrawingBounds(virtualBounds: Bounds, visibleBounds: Bounds): Bounds {
-        const drawingLeftTop = this.calculateDrawingLeftTop(virtualBounds, visibleBounds);
-        const drawingWidth = this.calculateDrawingWidth(virtualBounds, visibleBounds);
-        const drawingHeight = this.calculateDrawingHeight(virtualBounds, visibleBounds);
-
-        const drawingBounds = {
-            left: drawingLeftTop.x,
-            top: drawingLeftTop.y,
-            width: drawingWidth,
-            height: drawingHeight
-        };
-
-        return drawingBounds;
     }
 
     private calculateDrawingLeftTop(virtualBounds: Bounds, visibleBounds: Bounds): Position {
@@ -169,5 +204,3 @@ class CanvasCalculator {
         return Math.min(virtualBounds.height, visibleBounds.height);
     }
 }
-
-export default new CanvasCalculator();

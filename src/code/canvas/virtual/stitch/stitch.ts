@@ -3,7 +3,6 @@ import { StitchCanvasBase } from "./base.js";
 import { DotsUtility } from "../../utilities/dots.js";
 import { Dot, CanvasSide, CanvasConfig } from "../../types.js";
 import { IInputCanvas, PointerUpEvent, Position } from "../../input/types.js";
-import calculator from "../../utilities/calculator.js";
 
 export class StitchCanvas extends StitchCanvasBase {
     private readonly dotsUtility: DotsUtility<Dot>;
@@ -55,7 +54,7 @@ export class StitchCanvas extends StitchCanvasBase {
         // Do not extract this method in different methods
 
         const drawingBounds = this.inMovingMode ? this._movingBounds! : this.visibleBounds;
-        const boundsIndexes = calculator.calculateDrawingBoundsIndexes(this.virtualBounds, drawingBounds, this.dotsSpacing);
+        const boundsIndexes = this.calculateDrawingBoundsIndexes(this.virtualBounds, drawingBounds, this.dotsSpacing);
 
         const leftTopIndex = boundsIndexes.leftTop;
         const rightTopIndex = boundsIndexes.rightTop;
@@ -102,19 +101,19 @@ export class StitchCanvas extends StitchCanvasBase {
             }
 
 
-            const fromDotXPos = calculator.calculateDrawingX(virtualBounds, fromDotX, dotsSpacing);
+            const fromDotXPos = this.calculateDrawingX(virtualBounds, fromDotX, dotsSpacing);
             this.fromDotsXPos[index] = fromDotXPos;
             dotsX.push(fromDotXPos);
 
-            const fromDotYPos = calculator.calculateDrawingY(virtualBounds, fromDotY, dotsSpacing);
+            const fromDotYPos = this.calculateDrawingY(virtualBounds, fromDotY, dotsSpacing);
             this.fromDotsYPos[index] = fromDotYPos;
             dotsY.push(fromDotYPos);
 
-            const toDotXPos = calculator.calculateDrawingX(virtualBounds, toDotX, dotsSpacing);
+            const toDotXPos = this.calculateDrawingX(virtualBounds, toDotX, dotsSpacing);
             this.toDotsXPos[index] = toDotXPos;
             dotsX.push(toDotXPos);
 
-            const toDotYPos = calculator.calculateDrawingY(virtualBounds, toDotY, dotsSpacing);
+            const toDotYPos = this.calculateDrawingY(virtualBounds, toDotY, dotsSpacing);
             this.toDotsYPos[index] = toDotYPos;
             dotsY.push(toDotYPos);
 
@@ -134,7 +133,7 @@ export class StitchCanvas extends StitchCanvasBase {
 
     private handlePointerUp(event: PointerUpEvent): void {
         const position = event.position;
-        const inVirtualBounds = calculator.inVirtualBounds(this.virtualBounds, position, this.dotsSpacing);
+        const inVirtualBounds = this.inVirtualBounds(this.virtualBounds, position, this.dotsSpacing);
 
         if (inVirtualBounds) {
             this.handleDotClick(position);
@@ -142,13 +141,13 @@ export class StitchCanvas extends StitchCanvasBase {
     }
 
     private handleDotClick(position: Position): void {
-        const clickedDotIndex = calculator.calculateDrawingIndex(this.virtualBounds, position, this.dotsSpacing);
-        const clickedDot = calculator.calculateDrawingPosition(this.virtualBounds, clickedDotIndex, this.dotsSpacing);
+        const clickedDotIndex = this.calculateDrawingIndex(this.virtualBounds, position, this.dotsSpacing);
+        const clickedDot = this.calculateDrawingPosition(this.virtualBounds, clickedDotIndex, this.dotsSpacing);
 
         const previouslyClickedDotIndex = this.clickedDotIndex;
         if (previouslyClickedDotIndex) {
 
-            const previouslyClickedDot = calculator.calculateDrawingPosition(this.virtualBounds, previouslyClickedDotIndex, this.dotsSpacing);
+            const previouslyClickedDot = this.calculateDrawingPosition(this.virtualBounds, previouslyClickedDotIndex, this.dotsSpacing);
             const areIdenticalClicks = this.dotsUtility.areDotsEqual(clickedDot, previouslyClickedDot);
 
             if (!areIdenticalClicks) {

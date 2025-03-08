@@ -1,14 +1,12 @@
-import { CanvasBase } from "../base.js";
 import { IVirtualCanvas } from "./types.js";
-import calculator from "../utilities/calculator.js";
 import { Messaging2 } from "../../messaging/impl.js";
 import { IMessaging2 } from "../../messaging/types.js";
 import { VoidListener, VoidUnsubscribe } from "../../types.js";
-import { Bounds, BoundsChangeEvent, CanvasConfig, CanvasSide } from "../types.js";
+import { VirtualCanvasDimensions } from "../utilities/calculator.js";
+import { BoundsChangeEvent, CanvasConfig, CanvasSide } from "../types.js";
 import { IInputCanvas, MoveEvent, MoveStartEvent, MoveStopEvent } from "../input/types.js";
 
-export abstract class VirtualCanvasBase extends CanvasBase implements IVirtualCanvas {
-    protected readonly inputCanvas: IInputCanvas;
+export abstract class VirtualCanvasBase extends VirtualCanvasDimensions implements IVirtualCanvas {
     protected readonly config: Readonly<CanvasConfig>;
     private readonly virtualMessaging: IMessaging2<void, void>;
 
@@ -21,17 +19,12 @@ export abstract class VirtualCanvasBase extends CanvasBase implements IVirtualCa
 
     protected currentSide: CanvasSide;
 
-    private _virtualBounds: Bounds;
-    protected _movingBounds?: Bounds;
-
     constructor(config: CanvasConfig, inputCanvas: IInputCanvas) {
-        super();
+        super(inputCanvas);
 
-        this.inputCanvas = inputCanvas;
         this.config = config;
 
         this.virtualMessaging = new Messaging2();
-        this._virtualBounds = { left: 0, top: 0, width: 0, height: 0 };
         this.currentSide = CanvasSide.Back;
 
         this.dotColor = config.dot.color;
@@ -42,30 +35,6 @@ export abstract class VirtualCanvasBase extends CanvasBase implements IVirtualCa
         this.threadWidth = config.thread.width.value;
 
         this.subscribe();
-    }
-
-    protected get inMovingMode(): boolean {
-        return this._movingBounds !== undefined;
-    }
-
-    protected get visibleBounds(): Bounds {
-        return this.inputCanvas.bounds;
-    }
-
-    protected get virtualBounds(): Bounds {
-        return this._virtualBounds;
-    }
-
-    protected set virtualBounds(bounds: Bounds) {
-        const hasChange =
-            (this._virtualBounds.left !== bounds.left) ||
-            (this._virtualBounds.top !== bounds.top) ||
-            (this._virtualBounds.width !== bounds.width) ||
-            (this._virtualBounds.height !== bounds.height);
-
-        if (hasChange) {
-            this._virtualBounds = bounds;
-        }
     }
 
     private get allDotsY(): number {
@@ -83,8 +52,8 @@ export abstract class VirtualCanvasBase extends CanvasBase implements IVirtualCa
     public draw(): void {
         this.invokeRedraw();
 
-        this.virtualBounds = calculator.calculateVirtualBounds(this.virtualBounds, this.allDotsX, this.allDotsY, this.dotsSpacing, 0, 0);
-        this.bounds = calculator.calculateDrawingBounds(this.virtualBounds, this.visibleBounds);
+        this.virtualBounds = this.calculateVirtualBounds(this.virtualBounds, this.allDotsX, this.allDotsY, this.dotsSpacing, 0, 0);
+        this.bounds = this.calculateDrawingBounds(this.virtualBounds, this.visibleBounds);
 
         this.redraw();
     }
@@ -129,7 +98,7 @@ export abstract class VirtualCanvasBase extends CanvasBase implements IVirtualCa
         const currentPosition = event.currentPosition;
         const previousPosition = event.previousPosition;
 
-        const inVirtualBounds = calculator.inVirtualBounds(this.virtualBounds, currentPosition, this.dotsSpacing);
+        const inVirtualBounds = this.inVirtualBounds(this.virtualBounds, currentPosition, this.dotsSpacing);
         if (!inVirtualBounds) {
             return;
         }
@@ -137,10 +106,10 @@ export abstract class VirtualCanvasBase extends CanvasBase implements IVirtualCa
         const diffX = currentPosition.x - previousPosition.x;
         const diffY = currentPosition.y - previousPosition.y;
 
-        this.virtualBounds = calculator.calculateVirtualBounds(this.virtualBounds, this.allDotsX, this.allDotsY, this.dotsSpacing, diffX, diffY);
-        this.bounds = calculator.calculateDrawingBounds(this.virtualBounds, this.visibleBounds);
+        this.virtualBounds = this.calculateVirtualBounds(this.virtualBounds, this.allDotsX, this.allDotsY, this.dotsSpacing, diffX, diffY);
+        this.bounds = this.calculateDrawingBounds(this.virtualBounds, this.visibleBounds);
 
-        const movingBounds = calculator.calculateMovingBounds(currentPosition, this.bounds, this.visibleBounds, this.virtualBounds);
+        const movingBounds = this.calculateMovingBounds(currentPosition, this.bounds, this.visibleBounds, this.virtualBounds);
         this._movingBounds = this.bounds = movingBounds;
 
         this.redraw();
@@ -158,7 +127,7 @@ export abstract class VirtualCanvasBase extends CanvasBase implements IVirtualCa
         const diffX = currentPosition.x - previousPosition.x;
         const diffY = currentPosition.y - previousPosition.y;
 
-        this.virtualBounds = calculator.calculateVirtualBounds(this.virtualBounds, this.allDotsX, this.allDotsY, this.dotsSpacing, diffX, diffY);
+        this.virtualBounds = this.calculateVirtualBounds(this.virtualBounds, this.allDotsX, this.allDotsY, this.dotsSpacing, diffX, diffY);
 
         const bounds = this.bounds;
         this.bounds = { left: bounds.left + diffX, top: bounds.top + diffY, width: bounds.width, height: bounds.height };
