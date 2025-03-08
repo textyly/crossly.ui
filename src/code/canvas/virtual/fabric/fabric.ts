@@ -1,7 +1,7 @@
 import { FabricCanvasBase } from "./base.js";
 import { CanvasConfig } from "../../types.js";
 import { IInputCanvas } from "../../input/types.js";
-import calculator from "../../utilities/canvas/calculator.js";
+import calculator from "../../utilities/calculator.js";
 
 export class FabricCanvas extends FabricCanvasBase {
     constructor(config: CanvasConfig, inputCanvas: IInputCanvas) {
@@ -9,7 +9,8 @@ export class FabricCanvas extends FabricCanvasBase {
     }
 
     protected override redraw(): void {
-        const boundsIndexes = calculator.calculateDrawingBoundsIndexes(this.virtualBounds, this.visibleBounds, this.dotsSpacing);
+        const drawingBounds = this.inMovingMode ? this._movingBounds! : this.visibleBounds;
+        const boundsIndexes = calculator.calculateDrawingBoundsIndexes(this.virtualBounds, drawingBounds, this.dotsSpacing);
         const leftTopIndex = boundsIndexes.leftTop;
 
         const leftTopIndexX = leftTopIndex.indexX;
@@ -21,7 +22,7 @@ export class FabricCanvas extends FabricCanvasBase {
         const endIndexX = boundsIndexes.rightTop.indexX;
         const endIndexY = boundsIndexes.leftBottom.indexY;
 
-        this. createThreads(startIndexX, startIndexY, endIndexX, endIndexY);
+        this.createThreads(startIndexX, startIndexY, endIndexX, endIndexY);
         this.createDots(startIndexX, startIndexY, endIndexX, endIndexY);
     }
 

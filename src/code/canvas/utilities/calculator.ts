@@ -1,10 +1,11 @@
-import { Bounds, BoundsIndexes } from "../../types.js";
-import { Position } from "../../input/types.js";
-import { DotIndex } from "../../virtual/types.js";
+import { Position } from "../input/types.js";
+import { DotIndex } from "../virtual/types.js";
+import { Bounds, BoundsIndexes } from "../types.js";
 
 class CanvasCalculator {
-    public inDrawingBounds(virtualBounds: Bounds, position: Position, dotsSpacing: number): boolean {
+    public inVirtualBounds(virtualBounds: Bounds, position: Position, dotsSpacing: number): boolean {
         const dotIndex = this.calculateDrawingIndex(virtualBounds, position, dotsSpacing);
+
         const calculatedX = virtualBounds.left + (dotIndex.indexX * dotsSpacing);
         const calculatedY = virtualBounds.top + (dotIndex.indexY * dotsSpacing);
 
@@ -12,7 +13,6 @@ class CanvasCalculator {
         const inVirtualY = (calculatedY >= virtualBounds.top) && (calculatedY <= virtualBounds.top + virtualBounds.height);
 
         const isInVirtualBounds = inVirtualX && inVirtualY;
-
         return isInVirtualBounds;
     }
 
@@ -91,7 +91,7 @@ class CanvasCalculator {
         return movingBounds;
     }
 
-    public calculateVirtualBounds(virtualBounds: Bounds, allDotsX: number, allDotsY: number, dotsSpacing: number, differenceX: number = 0, differenceY: number = 0): Bounds {
+    public calculateVirtualBounds(virtualBounds: Bounds, allDotsX: number, allDotsY: number, dotsSpacing: number, differenceX: number, differenceY: number): Bounds {
         const left = virtualBounds.left + differenceX;
         const top = virtualBounds.top + differenceY;
 
@@ -116,7 +116,7 @@ class CanvasCalculator {
         return drawingBounds;
     }
 
-    public calculateDrawingLeftTop(virtualBounds: Bounds, visibleBounds: Bounds): Position {
+    private calculateDrawingLeftTop(virtualBounds: Bounds, visibleBounds: Bounds): Position {
         const visibleLeftTopX = virtualBounds.left < visibleBounds.left
             ? visibleBounds.left
             : Math.min(virtualBounds.left, (visibleBounds.left + visibleBounds.width));
@@ -129,7 +129,7 @@ class CanvasCalculator {
         return visibleLeftTopDot;
     }
 
-    public calculateDrawingWidth(virtualBounds: Bounds, visibleBounds: Bounds): number {
+    private calculateDrawingWidth(virtualBounds: Bounds, visibleBounds: Bounds): number {
         if (virtualBounds.left < visibleBounds.left) {
             const virtualWidth = virtualBounds.width - (Math.abs(virtualBounds.left) - Math.abs(visibleBounds.left));
             return Math.min(virtualWidth, visibleBounds.width);
@@ -149,7 +149,7 @@ class CanvasCalculator {
         return Math.min(virtualBounds.width, visibleBounds.width);
     }
 
-    public calculateDrawingHeight(virtualBounds: Bounds, visibleBounds: Bounds): number {
+    private calculateDrawingHeight(virtualBounds: Bounds, visibleBounds: Bounds): number {
         if (virtualBounds.top < visibleBounds.top) {
             const virtualHeight = virtualBounds.height - (Math.abs(virtualBounds.top) - Math.abs(visibleBounds.top));
             return Math.min(virtualHeight, visibleBounds.height);

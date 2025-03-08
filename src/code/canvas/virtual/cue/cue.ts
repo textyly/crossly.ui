@@ -1,10 +1,10 @@
 import { DotIndex } from "../types.js";
 import { CueCanvasBase } from "./base.js";
-import { DotsUtility } from "../../utilities/canvas/dots.js";
+import { DotsUtility } from "../../utilities/dots.js";
 import { IdGenerator } from "../../utilities/generator.js";
 import { CanvasSide, Id, CueThread, CanvasConfig, CueDot, Dot } from "../../types.js";
 import { Position, IInputCanvas, PointerUpEvent, PointerMoveEvent, MoveStartEvent } from "../../input/types.js";
-import calculator from "../../utilities/canvas/calculator.js";
+import calculator from "../../utilities/calculator.js";
 
 export class CueCanvas extends CueCanvasBase {
     private readonly ids: IdGenerator;
@@ -24,7 +24,7 @@ export class CueCanvas extends CueCanvasBase {
     }
 
     protected override redraw(): void {
-        if (this.movingBounds) {
+        if (this.inMovingMode) {
             this.removeHoveredDot();
             this.removeThread();
         } else {
@@ -57,9 +57,9 @@ export class CueCanvas extends CueCanvasBase {
 
     private handlePointerMove(event: PointerMoveEvent): void {
         const position = event.position;
-        const inDrawingBounds = calculator.inDrawingBounds(this.virtualBounds, position, this.dotsSpacing);
+        const inVirtualBounds = calculator.inVirtualBounds(this.virtualBounds, position, this.dotsSpacing);
 
-        if (inDrawingBounds) {
+        if (inVirtualBounds) {
             this.moveDot(position);
             this.resizeThead(position);
         }
@@ -67,9 +67,9 @@ export class CueCanvas extends CueCanvasBase {
 
     private handlePointerUp(event: PointerUpEvent): void {
         const position = event.position;
-        const inDrawingBounds = calculator.inDrawingBounds(this.virtualBounds, position, this.dotsSpacing);
+        const inVirtualBounds = calculator.inVirtualBounds(this.virtualBounds, position, this.dotsSpacing);
 
-        if (inDrawingBounds) {
+        if (inVirtualBounds) {
             const position = event.position;
             this.clickDot(position);
             this.removeThread();
@@ -100,7 +100,8 @@ export class CueCanvas extends CueCanvasBase {
             this.hoverDot(clickedDot, clickedDotIndex);
 
         } else {
-            const previouslyClickedDot = calculator.calculateDrawingPosition(this.visibleBounds, previouslyClickedDotIndex, this.dotsSpacing);
+            const drawingBounds = this.inMovingMode ? this._movingBounds! : this.visibleBounds;
+            const previouslyClickedDot = calculator.calculateDrawingPosition(drawingBounds, previouslyClickedDotIndex, this.dotsSpacing);
             const areIdenticalClicks = this.dotsUtility.areDotsEqual(clickedDot, previouslyClickedDot);
 
             if (!areIdenticalClicks) {

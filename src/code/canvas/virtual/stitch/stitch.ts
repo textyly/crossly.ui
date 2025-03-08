@@ -1,9 +1,9 @@
 import { DotIndex } from "../types.js";
 import { StitchCanvasBase } from "./base.js";
-import { DotsUtility } from "../../utilities/canvas/dots.js";
+import { DotsUtility } from "../../utilities/dots.js";
 import { Dot, CanvasSide, CanvasConfig } from "../../types.js";
 import { IInputCanvas, PointerUpEvent, Position } from "../../input/types.js";
-import calculator from "../../utilities/canvas/calculator.js";
+import calculator from "../../utilities/calculator.js";
 
 export class StitchCanvas extends StitchCanvasBase {
     private readonly dotsUtility: DotsUtility<Dot>;
@@ -53,7 +53,9 @@ export class StitchCanvas extends StitchCanvasBase {
     protected override redraw(): void {
         // CPU, GPU, memory and GC intensive code
         // Do not extract this method in different methods
-        const boundsIndexes = calculator.calculateDrawingBoundsIndexes(this.virtualBounds, this.visibleBounds, this.dotsSpacing);
+
+        const drawingBounds = this.inMovingMode ? this._movingBounds! : this.visibleBounds;
+        const boundsIndexes = calculator.calculateDrawingBoundsIndexes(this.virtualBounds, drawingBounds, this.dotsSpacing);
 
         const leftTopIndex = boundsIndexes.leftTop;
         const rightTopIndex = boundsIndexes.rightTop;
@@ -132,9 +134,9 @@ export class StitchCanvas extends StitchCanvasBase {
 
     private handlePointerUp(event: PointerUpEvent): void {
         const position = event.position;
-        const inDrawingBounds = calculator.inDrawingBounds(this.virtualBounds, position, this.dotsSpacing);
+        const inVirtualBounds = calculator.inVirtualBounds(this.virtualBounds, position, this.dotsSpacing);
 
-        if (inDrawingBounds) {
+        if (inVirtualBounds) {
             this.handleDotClick(position);
         }
     }

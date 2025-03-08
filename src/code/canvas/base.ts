@@ -7,29 +7,24 @@ export abstract class CanvasBase implements ICanvas {
     private readonly uns: Array<VoidUnsubscribe>;
     private readonly msg: IMessaging1<BoundsChangeEvent>;
 
-    private left = 0;
-    private top = 0;
-    private width = 0;
-    private height = 0;
+    private _bounds: Bounds;
 
     constructor() {
         this.uns = new Array<VoidUnsubscribe>;
         this.msg = new Messaging1();
+
+        this._bounds = { left: 0, top: 0, width: 0, height: 0 };
     }
 
     public get bounds(): Bounds {
-        const bounds = { left: this.left, top: this.top, width: this.width, height: this.height };
-        return bounds;
+        return this._bounds;
     }
 
     public set bounds(value: Bounds) {
-        const hasChange = (this.left !== value.left) || (this.top !== value.top) || (this.width !== value.width) || (this.height !== value.height);
+        const hasChange = (this._bounds.left !== value.left) || (this._bounds.top !== value.top) || (this._bounds.width !== value.width) || (this._bounds.height !== value.height);
         if (hasChange) {
-            this.left = value.left;
-            this.top = value.top;
-            this.width = value.width;
-            this.height = value.height;
-            this.invokeBoundsChange(value);
+            this._bounds = value;
+            this.invokeBoundsChange(this._bounds);
         }
     }
 

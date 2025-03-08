@@ -1,6 +1,5 @@
 import { Id, CueDot, ICanvas, CueThread } from "../types.js";
 import { Listener, VoidListener, VoidUnsubscribe } from "../../types.js";
-import { MoveListener } from "../input/types.js";
 
 export type DotIndex = { indexX: number, indexY: number };
 
