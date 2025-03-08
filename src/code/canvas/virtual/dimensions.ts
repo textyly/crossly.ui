@@ -68,10 +68,10 @@ export abstract class VirtualCanvasDimensions extends CanvasBase {
         const dotIdx = this.calculateDotIndex(position);
         const dotPos = this.calculateDotPosition(dotIdx);
 
-        const inVirtualX = (dotPos.x >= this.virtualBounds.left) && (dotPos.x <= this.virtualBounds.left + this.virtualBounds.width);
-        const inVirtualY = (dotPos.y >= this.virtualBounds.top) && (dotPos.y <= this.virtualBounds.top + this.virtualBounds.height);
+        const inVirtualX = (dotPos.x >= this.virtualBounds.left) && (dotPos.x <= (this.virtualBounds.left + this.virtualBounds.width));
+        const inVirtualY = (dotPos.y >= this.virtualBounds.top) && (dotPos.y <= (this.virtualBounds.top + this.virtualBounds.height));
 
-        const inVirtualBounds = inVirtualX && inVirtualY;
+        const inVirtualBounds = (inVirtualX && inVirtualY);
         return inVirtualBounds;
     }
 
@@ -81,8 +81,8 @@ export abstract class VirtualCanvasDimensions extends CanvasBase {
     }
 
     protected startMove(currentPosition: Position, previousPosition: Position): void {
-        const diffX = currentPosition.x - previousPosition.x;
-        const diffY = currentPosition.y - previousPosition.y;
+        const diffX = (currentPosition.x - previousPosition.x);
+        const diffY = (currentPosition.y - previousPosition.y);
 
         this.virtualBounds = this.calculateVirtualBounds(diffX, diffY);
         this.bounds = this.calculateDrawingBounds();
@@ -96,9 +96,7 @@ export abstract class VirtualCanvasDimensions extends CanvasBase {
         const diffY = currentPosition.y - previousPosition.y;
 
         this.virtualBounds = this.calculateVirtualBounds(diffX, diffY);
-
-        const bounds = this.bounds;
-        this.bounds = { left: bounds.left + diffX, top: bounds.top + diffY, width: bounds.width, height: bounds.height };
+        this.bounds = { left: this.bounds.left + diffX, top: this.bounds.top + diffY, width: this.bounds.width, height: this.bounds.height };
     }
 
     protected stopMove(): void {
@@ -142,14 +140,14 @@ export abstract class VirtualCanvasDimensions extends CanvasBase {
         const leftTopIdx = this.calculateDotIndex(leftTopPos);
 
         const width = this.calculateWidth();
-        const rightTop = { x: leftTopPos.x + width, y: leftTopPos.y };
+        const rightTop = { x: (leftTopPos.x + width), y: leftTopPos.y };
         const rightTopIndex = this.calculateDotIndex(rightTop);
 
         const height = this.calculateHeight();
-        const leftBottom = { x: leftTopPos.x, y: leftTopPos.y + height };
+        const leftBottom = { x: leftTopPos.x, y: (leftTopPos.y + height) };
         const leftBottomIdx = this.calculateDotIndex(leftBottom);
 
-        const rightBottom = { x: leftTopPos.x + width, y: leftTopPos.y + height };
+        const rightBottom = { x: (leftTopPos.x + width), y: leftTopPos.y + height };
         const rightBottomIdx = this.calculateDotIndex(rightBottom);
 
         const boundsIndexes = {
@@ -163,8 +161,8 @@ export abstract class VirtualCanvasDimensions extends CanvasBase {
     }
 
     protected calculateVirtualBounds(differenceX: number, differenceY: number): Bounds {
-        const left = this.virtualBounds.left + differenceX;
-        const top = this.virtualBounds.top + differenceY;
+        const left = (this.virtualBounds.left + differenceX);
+        const top = (this.virtualBounds.top + differenceY);
 
         const width = (this.allDotsX - 1) * this.dotsSpacing;
         const height = (this.allDotsY - 1) * this.dotsSpacing;
@@ -188,24 +186,24 @@ export abstract class VirtualCanvasDimensions extends CanvasBase {
     }
 
     protected calculateMovingBounds(position: Position): Bounds {
-        const moveDownSpace = this.visibleBounds.height - position.y;
-        const moveUpSpace = this.visibleBounds.height - moveDownSpace;
-        const moveRightSpace = this.visibleBounds.width - position.x;
-        const moveLeftSpace = this.visibleBounds.width - moveRightSpace;
+        const moveDownSpace = (this.visibleBounds.height - position.y);
+        const moveUpSpace = (this.visibleBounds.height - moveDownSpace);
+        const moveRightSpace = (this.visibleBounds.width - position.x);
+        const moveLeftSpace = (this.visibleBounds.width - moveRightSpace);
 
-        const suggestedTop = -1 * moveDownSpace;
+        const suggestedTop = (-1 * moveDownSpace);
         const top = Math.max(suggestedTop, this.virtualBounds.top);
-        const topDiff = Math.abs(this.virtualBounds.top) - Math.abs(top);
+        const topDiff = (Math.abs(this.virtualBounds.top) - Math.abs(top));
 
-        const suggestedHeight = -1 * top + (this.bounds.top + this.bounds.height + moveUpSpace);
-        const height = Math.min(suggestedHeight, this.virtualBounds.height - topDiff);
+        const suggestedHeight = ((-1 * top) + (this.bounds.top + this.bounds.height + moveUpSpace));
+        const height = Math.min(suggestedHeight, (this.virtualBounds.height - topDiff));
 
-        const suggestedLeft = -1 * moveRightSpace;
+        const suggestedLeft = (-1 * moveRightSpace);
         const left = Math.max(suggestedLeft, this.virtualBounds.left);
-        const leftDiff = Math.abs(this.virtualBounds.left) - Math.abs(left);
+        const leftDiff = (Math.abs(this.virtualBounds.left) - Math.abs(left));
 
-        const suggestedWidth = -1 * left + (this.bounds.left + this.bounds.width + moveLeftSpace);
-        const width = Math.min(suggestedWidth, this.virtualBounds.width - leftDiff);
+        const suggestedWidth = ((-1 * left) + (this.bounds.left + this.bounds.width + moveLeftSpace));
+        const width = Math.min(suggestedWidth, (this.virtualBounds.width - leftDiff));
 
         const movingBounds = { left, top, width, height };
         return movingBounds;
@@ -228,13 +226,13 @@ export abstract class VirtualCanvasDimensions extends CanvasBase {
     protected calculateWidth(): number {
         const drawingBounds = this.inMovingMode ? this._movingBounds! : this.visibleBounds;
         if (this.virtualBounds.left < drawingBounds.left) {
-            const virtualWidth = this.virtualBounds.width - (Math.abs(this.virtualBounds.left) - Math.abs(drawingBounds.left));
+            const virtualWidth = (this.virtualBounds.width - (Math.abs(this.virtualBounds.left) - Math.abs(drawingBounds.left)));
             return Math.min(virtualWidth, drawingBounds.width);
         }
 
         if (this.virtualBounds.left > drawingBounds.left) {
-            const visibleWidthOffset = drawingBounds.left + drawingBounds.width;
-            const virtualWidthOffset = this.virtualBounds.left + this.virtualBounds.width;
+            const visibleWidthOffset = (drawingBounds.left + drawingBounds.width);
+            const virtualWidthOffset = (this.virtualBounds.left + this.virtualBounds.width);
 
             if (virtualWidthOffset <= visibleWidthOffset) {
                 return this.virtualBounds.width;
@@ -249,13 +247,13 @@ export abstract class VirtualCanvasDimensions extends CanvasBase {
     protected calculateHeight(): number {
         const drawingBounds = this.inMovingMode ? this._movingBounds! : this.visibleBounds;
         if (this.virtualBounds.top < drawingBounds.top) {
-            const virtualHeight = this.virtualBounds.height - (Math.abs(this.virtualBounds.top) - Math.abs(drawingBounds.top));
+            const virtualHeight = (this.virtualBounds.height - (Math.abs(this.virtualBounds.top) - Math.abs(drawingBounds.top)));
             return Math.min(virtualHeight, drawingBounds.height);
         }
 
         if (this.virtualBounds.top > drawingBounds.top) {
-            const visibleHeightOffset = drawingBounds.top + drawingBounds.height;
-            const virtualHeightOffset = this.virtualBounds.top + this.virtualBounds.height;
+            const visibleHeightOffset = (drawingBounds.top + drawingBounds.height);
+            const virtualHeightOffset = (this.virtualBounds.top + this.virtualBounds.height);
 
             if (virtualHeightOffset <= visibleHeightOffset) {
                 return this.virtualBounds.height;
@@ -278,7 +276,7 @@ export abstract class VirtualCanvasDimensions extends CanvasBase {
 
     protected zoomOutSpacing(): void {
         const configSpacing = this.config.dotSpacing;
-        const spacing = (this.dotsSpacing > configSpacing.value)
+        const spacing = this.dotsSpacing > configSpacing.value
             ? (this.dotsSpacing - this.config.dotSpacing.zoomInStep)
             : (this.dotsSpacing - this.config.dotSpacing.zoomOutStep);
 
@@ -287,28 +285,28 @@ export abstract class VirtualCanvasDimensions extends CanvasBase {
 
     protected zoomInDots(): void {
         const configDotRadius = this.config.dot.radius;
-        this.dotRadius += (this.dotRadius < configDotRadius.value)
+        this.dotRadius += this.dotRadius < configDotRadius.value
             ? configDotRadius.zoomOutStep
             : configDotRadius.zoomInStep;
     }
 
     protected zoomOutDots(): void {
         const configDotRadius = this.config.dot.radius;
-        this.dotRadius -= (this.dotRadius > configDotRadius.value)
+        this.dotRadius -= this.dotRadius > configDotRadius.value
             ? configDotRadius.zoomInStep
             : configDotRadius.zoomOutStep;
     }
 
     protected zoomInThreads(): void {
         const configThreadWidth = this.config.thread.width;
-        this.threadWidth += (this.threadWidth < configThreadWidth.value)
+        this.threadWidth += this.threadWidth < configThreadWidth.value
             ? configThreadWidth.zoomOutStep
             : configThreadWidth.zoomInStep;
     }
 
     protected zoomOutThreads(): void {
         const configThreadWidth = this.config.thread.width;
-        this.threadWidth -= (this.threadWidth > configThreadWidth.value)
+        this.threadWidth -= this.threadWidth > configThreadWidth.value
             ? configThreadWidth.zoomInStep
             : configThreadWidth.zoomOutStep;
     }
