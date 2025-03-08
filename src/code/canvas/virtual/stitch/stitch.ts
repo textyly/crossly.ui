@@ -81,22 +81,22 @@ export class StitchCanvas extends StitchCanvasBase {
             const fromDotX = this.fromDotsX[index];
             const toDotX = this.toDotsX[index];
 
-            if ((fromDotX < leftTopIndex.indexX) && (toDotX < leftTopIndex.indexX)) {
+            if ((fromDotX < leftTopIndex.dotX) && (toDotX < leftTopIndex.dotX)) {
                 continue;
             }
 
-            if ((fromDotX > rightTopIndex.indexX) && (toDotX > rightTopIndex.indexX)) {
+            if ((fromDotX > rightTopIndex.dotX) && (toDotX > rightTopIndex.dotX)) {
                 continue;
             }
 
             const fromDotY = this.fromDotsY[index];
             const toDotY = this.toDotsY[index];
 
-            if ((fromDotY < leftTopIndex.indexY) && (toDotY < leftTopIndex.indexY)) {
+            if ((fromDotY < leftTopIndex.dotY) && (toDotY < leftTopIndex.dotY)) {
                 continue;
             }
 
-            if ((fromDotY > leftBottomIndex.indexY) && (toDotY > leftBottomIndex.indexY)) {
+            if ((fromDotY > leftBottomIndex.dotY) && (toDotY > leftBottomIndex.dotY)) {
                 continue;
             }
 
@@ -158,11 +158,11 @@ export class StitchCanvas extends StitchCanvasBase {
                 this.widths.push(this.threadWidth);
                 this.colors.push(this.threadColor);
 
-                this.fromDotsX.push(previouslyClickedDotIndex.indexX);
-                this.fromDotsY.push(previouslyClickedDotIndex.indexY);
+                this.fromDotsX.push(previouslyClickedDotIndex.dotX);
+                this.fromDotsY.push(previouslyClickedDotIndex.dotY);
 
-                this.toDotsX.push(clickedDotIndex.indexX);
-                this.toDotsY.push(clickedDotIndex.indexY);
+                this.toDotsX.push(clickedDotIndex.dotX);
+                this.toDotsY.push(clickedDotIndex.dotY);
 
                 if (visible) {
                     super.invokeDrawThreads([visible], [previouslyClickedDot.x], [previouslyClickedDot.y], [clickedDot.x], [clickedDot.y], [this.threadWidth], [this.threadColor]);

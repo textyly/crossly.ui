@@ -1,19 +1,44 @@
-import { IInputCanvas, Position } from "../input/types.js";
-import { DotIndex } from "../virtual/types.js";
-import { Bounds, BoundsIndexes } from "../types.js";
+import { DotIndex } from "./types.js";
 import { CanvasBase } from "../base.js";
+import { IInputCanvas, Position } from "../input/types.js";
+import { Bounds, BoundsIndexes, CanvasConfig } from "../types.js";
 
 export class VirtualCanvasDimensions extends CanvasBase {
+    protected readonly config: Readonly<CanvasConfig>;
     protected readonly inputCanvas: IInputCanvas;
 
-    private _virtualBounds: Bounds;
+    protected dotRadius: number;
+    protected dotsSpacing: number;
+
+    protected threadWidth: number;
+
+    protected _virtualBounds: Bounds;
     protected _movingBounds?: Bounds;
 
-    constructor(inputCanvas: IInputCanvas) {
+    constructor(config: CanvasConfig, inputCanvas: IInputCanvas) {
         super();
 
+        this.config = config;
         this.inputCanvas = inputCanvas;
+
+        this.dotRadius = config.dot.radius.value;
+        this.dotsSpacing = config.dotSpacing.value / 2;
+
+        this.threadWidth = config.thread.width.value;
+
         this._virtualBounds = { left: 0, top: 0, width: 0, height: 0 };
+    }
+
+    protected get allDotsY(): number {
+        const invisibleRows = this.config.rows - 1;
+        const all = this.config.rows + invisibleRows;
+        return all;
+    }
+
+    protected get allDotsX(): number {
+        const invisibleColumns = this.config.columns - 1;
+        const all = this.config.columns + invisibleColumns;
+        return all;
     }
 
     protected get inMovingMode(): boolean {
@@ -51,9 +76,44 @@ export class VirtualCanvasDimensions extends CanvasBase {
         return inVirtualBounds;
     }
 
+    protected canMoveTo(position: Position): boolean {
+        const inVirtualBounds = this.inVirtualBounds(this.virtualBounds, position, this.dotsSpacing);
+        return inVirtualBounds;
+    }
+
+    protected startMove(currentPosition: Position, previousPosition: Position): void {
+        const diffX = currentPosition.x - previousPosition.x;
+        const diffY = currentPosition.y - previousPosition.y;
+
+        this.virtualBounds = this.calculateVirtualBounds(this.virtualBounds, this.allDotsX, this.allDotsY, this.dotsSpacing, diffX, diffY);
+        this.bounds = this.calculateDrawingBounds(this.virtualBounds, this.visibleBounds);
+
+        const movingBounds = this.calculateMovingBounds(currentPosition, this.bounds, this.visibleBounds, this.virtualBounds);
+        this._movingBounds = this.bounds = movingBounds;
+    }
+
+    protected move(currentPosition: Position, previousPosition: Position): void {
+        const diffX = currentPosition.x - previousPosition.x;
+        const diffY = currentPosition.y - previousPosition.y;
+
+        this.virtualBounds = this.calculateVirtualBounds(this.virtualBounds, this.allDotsX, this.allDotsY, this.dotsSpacing, diffX, diffY);
+
+        const bounds = this.bounds;
+        this.bounds = { left: bounds.left + diffX, top: bounds.top + diffY, width: bounds.width, height: bounds.height };
+    }
+
+    protected stopMove(): void {
+        this._movingBounds = undefined;
+    }
+
+    protected recalculateBounds(): void {
+        this.virtualBounds = this.calculateVirtualBounds(this.virtualBounds, this.allDotsX, this.allDotsY, this.dotsSpacing, 0, 0);
+        this.bounds = this.calculateDrawingBounds(this.virtualBounds, this.visibleBounds);
+    }
+
     protected calculateDrawingPosition(virtualBounds: Bounds, index: DotIndex, dotsSpacing: number): Position {
-        const x = this.calculateDrawingX(virtualBounds, index.indexX, dotsSpacing);
-        const y = this.calculateDrawingY(virtualBounds, index.indexY, dotsSpacing);
+        const x = this.calculateDrawingX(virtualBounds, index.dotX, dotsSpacing);
+        const y = this.calculateDrawingY(virtualBounds, index.dotY, dotsSpacing);
         return { x, y };
     }
 
@@ -74,7 +134,7 @@ export class VirtualCanvasDimensions extends CanvasBase {
         const indexX = Math.round(closestX);
         const indexY = Math.round(closestY);
 
-        return { indexX, indexY };
+        return { dotX: indexX, dotY: indexY };
     }
 
     protected calculateDrawingBoundsIndexes(virtualBounds: Bounds, visibleBounds: Bounds, dotsSpacing: number): BoundsIndexes {
@@ -151,7 +211,7 @@ export class VirtualCanvasDimensions extends CanvasBase {
         return movingBounds;
     }
 
-    private calculateDrawingLeftTop(virtualBounds: Bounds, visibleBounds: Bounds): Position {
+    protected calculateDrawingLeftTop(virtualBounds: Bounds, visibleBounds: Bounds): Position {
         const visibleLeftTopX = virtualBounds.left < visibleBounds.left
             ? visibleBounds.left
             : Math.min(virtualBounds.left, (visibleBounds.left + visibleBounds.width));
@@ -164,7 +224,7 @@ export class VirtualCanvasDimensions extends CanvasBase {
         return visibleLeftTopDot;
     }
 
-    private calculateDrawingWidth(virtualBounds: Bounds, visibleBounds: Bounds): number {
+    protected calculateDrawingWidth(virtualBounds: Bounds, visibleBounds: Bounds): number {
         if (virtualBounds.left < visibleBounds.left) {
             const virtualWidth = virtualBounds.width - (Math.abs(virtualBounds.left) - Math.abs(visibleBounds.left));
             return Math.min(virtualWidth, visibleBounds.width);
@@ -184,7 +244,7 @@ export class VirtualCanvasDimensions extends CanvasBase {
         return Math.min(virtualBounds.width, visibleBounds.width);
     }
 
-    private calculateDrawingHeight(virtualBounds: Bounds, visibleBounds: Bounds): number {
+    protected calculateDrawingHeight(virtualBounds: Bounds, visibleBounds: Bounds): number {
         if (virtualBounds.top < visibleBounds.top) {
             const virtualHeight = virtualBounds.height - (Math.abs(virtualBounds.top) - Math.abs(visibleBounds.top));
             return Math.min(virtualHeight, visibleBounds.height);
@@ -202,5 +262,51 @@ export class VirtualCanvasDimensions extends CanvasBase {
         }
 
         return Math.min(virtualBounds.height, visibleBounds.height);
+    }
+
+    protected zoomInSpacing(): void {
+        const configSpacing = this.config.dotSpacing;
+        const spacing = (this.dotsSpacing < configSpacing.value)
+            ? (this.dotsSpacing + this.config.dotSpacing.zoomOutStep)
+            : (this.dotsSpacing + this.config.dotSpacing.zoomInStep);
+
+        this.dotsSpacing = spacing;
+    }
+
+    protected zoomOutSpacing(): void {
+        const configSpacing = this.config.dotSpacing;
+        const spacing = (this.dotsSpacing > configSpacing.value)
+            ? (this.dotsSpacing - this.config.dotSpacing.zoomInStep)
+            : (this.dotsSpacing - this.config.dotSpacing.zoomOutStep);
+
+        this.dotsSpacing = spacing;
+    }
+
+    protected zoomInDots(): void {
+        const configDotRadius = this.config.dot.radius;
+        this.dotRadius += (this.dotRadius < configDotRadius.value)
+            ? configDotRadius.zoomOutStep
+            : configDotRadius.zoomInStep;
+    }
+
+    protected zoomOutDots(): void {
+        const configDotRadius = this.config.dot.radius;
+        this.dotRadius -= (this.dotRadius > configDotRadius.value)
+            ? configDotRadius.zoomInStep
+            : configDotRadius.zoomOutStep;
+    }
+
+    protected zoomInThreads(): void {
+        const configThreadWidth = this.config.thread.width;
+        this.threadWidth += (this.threadWidth < configThreadWidth.value)
+            ? configThreadWidth.zoomOutStep
+            : configThreadWidth.zoomInStep;
+    }
+
+    protected zoomOutThreads(): void {
+        const configThreadWidth = this.config.thread.width;
+        this.threadWidth -= (this.threadWidth > configThreadWidth.value)
+            ? configThreadWidth.zoomInStep
+            : configThreadWidth.zoomOutStep;
     }
 }

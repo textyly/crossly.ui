@@ -12,14 +12,14 @@ export class FabricCanvas extends FabricCanvasBase {
         const boundsIndexes = this.calculateDrawingBoundsIndexes(this.virtualBounds, drawingBounds, this.dotsSpacing);
         const leftTopIndex = boundsIndexes.leftTop;
 
-        const leftTopIndexX = leftTopIndex.indexX;
+        const leftTopIndexX = leftTopIndex.dotX;
         const startIndexX = leftTopIndexX % 2 === 0 ? leftTopIndexX : leftTopIndexX + 1;
 
-        const leftTopIndexY = leftTopIndex.indexY;
+        const leftTopIndexY = leftTopIndex.dotY;
         const startIndexY = leftTopIndexY % 2 === 0 ? leftTopIndexY : leftTopIndexY + 1;
 
-        const endIndexX = boundsIndexes.rightTop.indexX;
-        const endIndexY = boundsIndexes.leftBottom.indexY;
+        const endIndexX = boundsIndexes.rightTop.dotX;
+        const endIndexY = boundsIndexes.leftBottom.dotY;
 
         this.createThreads(startIndexX, startIndexY, endIndexX, endIndexY);
         this.createDots(startIndexX, startIndexY, endIndexX, endIndexY);
@@ -37,7 +37,7 @@ export class FabricCanvas extends FabricCanvasBase {
         for (let dotY = startIndexY; dotY <= endIndexY; dotY += 2) {
             for (let dotX = startIndexX; dotX <= endIndexX; dotX += 2) {
 
-                const dotIndex = { indexX: dotX, indexY: dotY };
+                const dotIndex = { dotX, dotY };
                 const dot = this.calculateDrawingPosition(virtualBounds, dotIndex, dotsSpacing);
                 dotsX.push(dot.x);
                 dotsY.push(dot.y);
