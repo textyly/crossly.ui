@@ -1,4 +1,6 @@
 import { Dot, ICanvas, Thread } from "../types.js";
+import { DotArray } from "../utilities/arrays/dot/dot.js";
+import { FabricThreadArray } from "../utilities/arrays/thread/fabric.js";
 import { ICueCanvas, IFabricCanvas, IStitchCanvas } from "../virtual/types.js";
 
 export type SvgDot = SVGCircleElement;
@@ -19,8 +21,8 @@ export interface ICueDrawingCanvas extends IDrawingCanvas {
 export interface IRasterDrawingCanvas extends ICanvas {
     createBitMap(): Promise<ImageBitmap>;
     drawBitMap(bitmap: ImageBitmap): void;
-    drawDots(dotsX: Array<number>, dotsY: Array<number>, radius: number, color: string): void;
-    drawLines(included: Array<boolean>, fromDotsX: Array<number>, fromDotsY: Array<number>, toDotsX: Array<number>, toDotsY: Array<number>, width: Array<number>, colors: Array<string>): void;
+    drawDots(dots: DotArray, radius: number, color: string): void;
+    drawLines(thread: FabricThreadArray): void;
     clear(): void;
 }
 

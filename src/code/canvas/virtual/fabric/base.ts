@@ -1,8 +1,11 @@
 import { CanvasConfig } from "../../types.js";
+import { VirtualCanvasBase } from "../virtual.js";
 import { VoidUnsubscribe } from "../../../types.js";
 import { IInputCanvas } from "../../input/types.js";
 import { Messaging2 } from "../../../messaging/impl.js";
 import { IMessaging2 } from "../../../messaging/types.js";
+import { DotArray } from "../../utilities/arrays/dot/dot.js";
+import { FabricThreadArray } from "../../utilities/arrays/thread/fabric.js";
 import {
     IFabricCanvas,
     DrawFabricDotsEvent,
@@ -10,7 +13,6 @@ import {
     DrawFabricThreadsEvent,
     DrawFabricThreadsListener,
 } from "../types.js";
-import { VirtualCanvasBase } from "../virtual.js";
 
 export abstract class FabricCanvasBase extends VirtualCanvasBase implements IFabricCanvas {
     private readonly messaging: IMessaging2<DrawFabricDotsEvent, DrawFabricThreadsEvent>;
@@ -33,13 +35,13 @@ export abstract class FabricCanvasBase extends VirtualCanvasBase implements IFab
         super.dispose();
     }
 
-    protected invokeDrawDots(dotsX: Array<number>, dotsY: Array<number>, dotRadius: number, dotColor: string): void {
-        const drawDotEvent = { dotsX, dotsY, dotRadius, dotColor };
+    protected invokeDrawDots(dots: DotArray, dotRadius: number, dotColor: string): void {
+        const drawDotEvent = { dots, dotRadius, dotColor };
         this.messaging.sendToChannel1(drawDotEvent);
     }
 
-    protected invokeDrawThreads(visible: Array<boolean>, fromDotsX: Array<number>, fromDotsY: Array<number>, toDotsX: Array<number>, toDotsY: Array<number>, widths: Array<number>, colors: Array<string>): void {
-        const drawThreadsEvent = { visible, fromDotsX, fromDotsY, toDotsX, toDotsY, widths, colors };
+    protected invokeDrawThreads(threads: FabricThreadArray): void {
+        const drawThreadsEvent = { threads };
         this.messaging.sendToChannel2(drawThreadsEvent);
     }
 } 

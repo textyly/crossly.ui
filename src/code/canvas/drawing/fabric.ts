@@ -21,11 +21,11 @@ export class FabricDrawingCanvas extends CanvasBase implements IFabricDrawingCan
     }
 
     private handleDrawDots(event: DrawFabricDotsEvent): void {
-        this.rasterDrawing.drawDots(event.dotsX, event.dotsY, event.dotRadius, event.dotColor);
+        this.rasterDrawing.drawDots(event.dots, event.dotRadius, event.dotColor);
     }
 
     private handleDrawThreads(event: DrawFabricThreadsEvent): void {
-        this.rasterDrawing.drawLines(event.visible, event.fromDotsX, event.fromDotsY, event.toDotsX, event.toDotsY, event.widths, event.colors);
+        this.rasterDrawing.drawLines(event.threads);
     }
 
     private handleRedraw(): void {

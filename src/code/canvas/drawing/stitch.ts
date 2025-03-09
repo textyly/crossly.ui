@@ -22,16 +22,11 @@ export class StitchDrawingCanvas extends CanvasBase implements IStitchDrawingCan
     }
 
     private handleDrawDots(event: DrawStitchDotsEvent): void {
-        const dotsX = event.dotsX;
-        const dotsY = event.dotsY;
-        const dotRadius = event.dotRadius;
-        const dotColor = event.dotColor;
-
-        this.rasterDrawing.drawDots(dotsX, dotsY, dotRadius, dotColor);
+        this.rasterDrawing.drawDots(event.dots, event.dotRadius, event.dotColor);
     }
 
     private handleDrawThreads(event: DrawStitchThreadsEvent): void {
-        this.rasterDrawing.drawLines(event.visible, event.fromDotsX, event.fromDotsY, event.toDotsX, event.toDotsY, event.widths, event.colors);
+        this.rasterDrawing.drawLines(event.threads);
     }
 
     private handleRedraw(): void {

@@ -1,25 +1,14 @@
 import { DotIndex } from "../types.js";
 import { StitchCanvasBase } from "./base.js";
 import { DotsUtility } from "../../utilities/dots.js";
+import { DotArray } from "../../utilities/arrays/dot/dot.js";
 import { Dot, CanvasSide, CanvasConfig } from "../../types.js";
+import { StitchThreadArray } from "../../utilities/arrays/thread/stitch.js";
 import { IInputCanvas, PointerUpEvent, Position } from "../../input/types.js";
 
 export class StitchCanvas extends StitchCanvasBase {
     private readonly dotsUtility: DotsUtility<Dot>;
-
-    private visible: Array<boolean>;
-    private fromDotsX: Array<number>;
-    private fromDotsXPos: Array<number>;
-    private fromDotsY: Array<number>;
-    private fromDotsYPos: Array<number>;
-    private toDotsX: Array<number>;
-    private toDotsXPos: Array<number>;
-    private toDotsY: Array<number>;
-    private toDotsYPos: Array<number>;
-    private widths: Array<number>;
-    private sides: Array<CanvasSide>;
-    private colors: Array<string>;
-
+    private readonly threads: StitchThreadArray;
 
     private clickedDotIndex?: DotIndex;
 
@@ -27,19 +16,7 @@ export class StitchCanvas extends StitchCanvasBase {
         super(config, inputCanvas);
 
         this.dotsUtility = new DotsUtility();
-
-        this.visible = Array<boolean>();
-        this.fromDotsX = new Array<number>();
-        this.fromDotsXPos = new Array<number>();
-        this.fromDotsY = new Array<number>();
-        this.fromDotsYPos = new Array<number>();
-        this.toDotsX = new Array<number>();
-        this.toDotsXPos = new Array<number>();
-        this.toDotsY = new Array<number>();
-        this.toDotsYPos = new Array<number>();
-        this.widths = new Array<number>();
-        this.sides = new Array<CanvasSide>();
-        this.colors = new Array<string>();
+        this.threads = new StitchThreadArray();
 
         this.startListening();
     }
@@ -51,74 +28,68 @@ export class StitchCanvas extends StitchCanvasBase {
 
     protected override redraw(): void {
         // CPU, GPU, memory and GC intensive code
-        // Do not extract this method in different methods
+        // Do not extract this method in multiple methods
         const boundsIndexes = this.calculateBoundsIndexes();
 
-        const leftTopIndex = boundsIndexes.leftTop;
-        const rightTopIndex = boundsIndexes.rightTop;
-        const leftBottomIndex = boundsIndexes.leftBottom;
+        const leftTopIdx = boundsIndexes.leftTop;
+        const rightTopIdx = boundsIndexes.rightTop;
+        const leftBottomIdx = boundsIndexes.leftBottom;
 
-        const threadWidth = this.threadWidth;
-        const threadColor = this.threadColor;
+        const width = this.threadWidth;
+        const color = this.threadColor;
+        const fromDotsXIdx = this.threads.fromDotsXIdx;
+        const toDotsXIdx = this.threads.toDotsXIdx;
+        const fromDotsYIdx = this.threads.fromDotsYIdx;
+        const toDotsYIdx = this.threads.toDotsYIdx;
+        const sides = this.threads.sides;
 
         const dotRadius = this.dotRadius;
-        const dotsX = new Array<number>();
-        const dotsY = new Array<number>();
+        const dots = new DotArray();
 
-        for (let index = 0; index < this.fromDotsX.length; index++) {
-            this.visible[index] = false;
+        for (let index = 0; index < this.threads.length; index++) {
+            let visibility = false;
+            this.threads.setVisibility(index, visibility);
 
-            const side = this.sides[index];
+            const side = sides[index];
             if (side === CanvasSide.Back) {
                 continue;
             }
 
-            const fromDotX = this.fromDotsX[index];
-            const toDotX = this.toDotsX[index];
+            const fromDotXIdx = fromDotsXIdx[index];
+            const toDotXIdx = toDotsXIdx[index];
+            const fromDotYIdx = fromDotsYIdx[index];
+            const toDotYIdx = toDotsYIdx[index];
 
-            if ((fromDotX < leftTopIndex.dotX) && (toDotX < leftTopIndex.dotX)) {
+            if ((fromDotXIdx < leftTopIdx.dotX) && (toDotXIdx < leftTopIdx.dotX)) {
                 continue;
             }
 
-            if ((fromDotX > rightTopIndex.dotX) && (toDotX > rightTopIndex.dotX)) {
+            if ((fromDotXIdx > rightTopIdx.dotX) && (toDotXIdx > rightTopIdx.dotX)) {
                 continue;
             }
 
-            const fromDotY = this.fromDotsY[index];
-            const toDotY = this.toDotsY[index];
-
-            if ((fromDotY < leftTopIndex.dotY) && (toDotY < leftTopIndex.dotY)) {
+            if ((fromDotYIdx < leftTopIdx.dotY) && (toDotYIdx < leftTopIdx.dotY)) {
                 continue;
             }
 
-            if ((fromDotY > leftBottomIndex.dotY) && (toDotY > leftBottomIndex.dotY)) {
+            if ((fromDotYIdx > leftBottomIdx.dotY) && (toDotYIdx > leftBottomIdx.dotY)) {
                 continue;
             }
 
+            const fromDotXPos = this.calculateDotX(fromDotXIdx);
+            const fromDotYPos = this.calculateDotY(fromDotYIdx);
+            dots.pushCoordinates(fromDotXPos, fromDotYPos);
 
-            const fromDotXPos = this.calculateDotX(fromDotX);
-            this.fromDotsXPos[index] = fromDotXPos;
-            dotsX.push(fromDotXPos);
+            const toDotXPos = this.calculateDotX(toDotXIdx);
+            const toDotYPos = this.calculateDotY(toDotYIdx);
+            dots.pushCoordinates(toDotXPos, toDotYPos);
 
-            const fromDotYPos = this.calculateDotY(fromDotY);
-            this.fromDotsYPos[index] = fromDotYPos;
-            dotsY.push(fromDotYPos);
-
-            const toDotXPos = this.calculateDotX(toDotX);
-            this.toDotsXPos[index] = toDotXPos;
-            dotsX.push(toDotXPos);
-
-            const toDotYPos = this.calculateDotY(toDotY);
-            this.toDotsYPos[index] = toDotYPos;
-            dotsY.push(toDotYPos);
-
-            this.widths[index] = threadWidth;
-
-            this.visible[index] = true;
+            visibility = true;
+            this.threads.setThread(index, visibility, fromDotXIdx, fromDotXPos, fromDotYIdx, fromDotYPos, toDotXIdx, toDotXPos, toDotYIdx, toDotYPos, width, color, side);
         }
 
-        super.invokeDrawThreads(this.visible, this.fromDotsXPos, this.fromDotsYPos, this.toDotsXPos, this.toDotsYPos, this.widths, this.colors);
-        super.invokeDrawDots(dotsX, dotsY, dotRadius, threadColor);
+        super.invokeDrawThreads(this.threads);
+        super.invokeDrawDots(dots, dotRadius, color);
     }
 
     private startListening(): void {
@@ -139,29 +110,53 @@ export class StitchCanvas extends StitchCanvasBase {
         const clickedDotIdx = this.calculateDotIndex(position);
         const clickedDotPos = this.calculateDotPosition(clickedDotIdx);
 
-        const previouslyClickedDotIndex = this.clickedDotIndex;
-        if (previouslyClickedDotIndex) {
+        const previouslyClickedDotIdx = this.clickedDotIndex;
+        if (previouslyClickedDotIdx) {
 
-            const previouslyClickedDotPos = this.calculateDotPosition(previouslyClickedDotIndex);
+            const previouslyClickedDotPos = this.calculateDotPosition(previouslyClickedDotIdx);
             const areIdenticalClicks = this.dotsUtility.areDotsEqual(clickedDotPos, previouslyClickedDotPos);
 
             if (!areIdenticalClicks) {
-                const visible = this.currentSide === CanvasSide.Front;
+                const visibility = this.currentSide === CanvasSide.Front;
 
-                this.visible.push(visible);
-                this.sides.push(this.currentSide);
-                this.widths.push(this.threadWidth);
-                this.colors.push(this.threadColor);
+                // TODO: create a thread and push it in both collections (add such method in the array)
+                this.threads.pushThread(
+                    visibility,
+                    previouslyClickedDotIdx.dotX,
+                    previouslyClickedDotPos.x,
+                    previouslyClickedDotIdx.dotY,
+                    previouslyClickedDotPos.y,
+                    clickedDotIdx.dotX,
+                    clickedDotPos.x,
+                    clickedDotIdx.dotY,
+                    clickedDotPos.y,
+                    this.threadWidth,
+                    this.threadColor,
+                    this.currentSide
+                );
 
-                this.fromDotsX.push(previouslyClickedDotIndex.dotX);
-                this.fromDotsY.push(previouslyClickedDotIndex.dotY);
+                if (visibility) {
+                    const threads = new StitchThreadArray();
+                    threads.pushThread(
+                        visibility,
+                        previouslyClickedDotIdx.dotX,
+                        previouslyClickedDotPos.x,
+                        previouslyClickedDotIdx.dotY,
+                        previouslyClickedDotPos.y,
+                        clickedDotIdx.dotX,
+                        clickedDotPos.x,
+                        clickedDotIdx.dotY,
+                        clickedDotPos.y,
+                        this.threadWidth,
+                        this.threadColor,
+                        this.currentSide
+                    );
+                    super.invokeDrawThreads(threads);
 
-                this.toDotsX.push(clickedDotIdx.dotX);
-                this.toDotsY.push(clickedDotIdx.dotY);
-
-                if (visible) {
-                    super.invokeDrawThreads([visible], [previouslyClickedDotPos.x], [previouslyClickedDotPos.y], [clickedDotPos.x], [clickedDotPos.y], [this.threadWidth], [this.threadColor]);
-                    super.invokeDrawDots([previouslyClickedDotPos.x, clickedDotPos.x], [previouslyClickedDotPos.y, clickedDotPos.y], this.dotRadius, this.threadColor);
+                    const dots = new DotArray();
+                    dots.pushCoordinates(previouslyClickedDotPos.x, previouslyClickedDotPos.y);
+                    dots.pushCoordinates(clickedDotPos.x, clickedDotPos.y);
+                    super.invokeDrawDots(dots, this.dotRadius, this.threadColor);
                 }
             }
         }

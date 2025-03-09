@@ -1,5 +1,8 @@
 import { Id, CueDot, ICanvas, CueThread } from "../types.js";
 import { Listener, VoidListener, VoidUnsubscribe } from "../../types.js";
+import { DotArray } from "../utilities/arrays/dot/dot.js";
+import { FabricThreadArray } from "../utilities/arrays/thread/fabric.js";
+import { StitchThreadArray } from "../utilities/arrays/thread/stitch.js";
 
 export type DotIndex = { dotX: number, dotY: number };
 
@@ -32,16 +35,16 @@ export interface ICueCanvas extends IVirtualCanvas {
     onRemoveThread(listener: RemoveCueThreadListener): VoidUnsubscribe;
 }
 
-export type DrawFabricDotsEvent = { dotsX: Array<number>, dotsY: Array<number>, dotRadius: number, dotColor: string };
+export type DrawFabricDotsEvent = { dots: DotArray, dotRadius: number, dotColor: string };
 export type DrawFabricDotsListener = Listener<DrawFabricDotsEvent>;
 
-export type DrawFabricThreadsEvent = { visible: Array<boolean>, fromDotsX: Array<number>, fromDotsY: Array<number>, toDotsX: Array<number>, toDotsY: Array<number>, widths: Array<number>, colors: Array<string> };
+export type DrawFabricThreadsEvent = { threads: FabricThreadArray };
 export type DrawFabricThreadsListener = Listener<DrawFabricThreadsEvent>;
 
-export type DrawStitchDotsEvent = { dotsX: Array<number>, dotsY: Array<number>, dotRadius: number, dotColor: string };
+export type DrawStitchDotsEvent = { dots: DotArray, dotRadius: number, dotColor: string };
 export type DrawStitchDotsListener = Listener<DrawStitchDotsEvent>;
 
-export type DrawStitchThreadsEvent = { visible: Array<boolean>, fromDotsX: Array<number>, fromDotsY: Array<number>, toDotsX: Array<number>, toDotsY: Array<number>, widths: Array<number>, colors: Array<string> };
+export type DrawStitchThreadsEvent = { threads: StitchThreadArray };
 export type DrawStitchThreadsListener = Listener<DrawStitchThreadsEvent>;
 
 export type DrawCueDotEvent = { dot: CueDot, dotRadius: number, dotColor: string };

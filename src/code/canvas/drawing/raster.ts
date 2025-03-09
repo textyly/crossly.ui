@@ -1,5 +1,7 @@
+import { Bounds } from "../types.js";
 import { CanvasBase } from "../base.js";
-import { Dot, Bounds, Thread } from "../types.js";
+import { DotArray } from "../utilities/arrays/dot/dot.js";
+import { FabricThreadArray } from "../utilities/arrays/thread/fabric.js";
 import { IRasterDrawingCanvas } from "./types.js";
 
 export class RasterDrawingCanvas extends CanvasBase implements IRasterDrawingCanvas {
@@ -22,10 +24,14 @@ export class RasterDrawingCanvas extends CanvasBase implements IRasterDrawingCan
         this.context.drawImage(bitmap, 0, 0, bounds.width, bounds.height);
     }
 
-    public drawDots(dotsX: Array<number>, dotsY: Array<number>, radius: number, color: string): void {
+    public drawDots(dots: DotArray, radius: number, color: string): void {
+        // CPU, GPU, memory and GC intensive code
         this.context.beginPath();
 
-        for (let index = 0; index < dotsX.length; index++) {
+        const dotsX = dots.dotsX;
+        const dotsY = dots.dotsY;
+
+        for (let index = 0; index < dots.length; index++) {
             const x = dotsX[index] - this.bounds.left;
             const y = dotsY[index] - this.bounds.top;
 
@@ -38,12 +44,20 @@ export class RasterDrawingCanvas extends CanvasBase implements IRasterDrawingCan
         this.context.fill();
     }
 
-    public drawLines(visible: Array<boolean>, fromDotsX: Array<number>, fromDotsY: Array<number>, toDotsX: Array<number>, toDotsY: Array<number>, widths: Array<number>, colors: Array<string>): void {
+    public drawLines(threads: FabricThreadArray): void {
+        // CPU, GPU, memory and GC intensive code
         this.context.beginPath();
 
-        for (let index = 0; index < fromDotsX.length; index++) {
-            // TODO: do not supply visible!!! Remove this if
-            const isVisible = visible[index];
+        const visibility = threads.visibility;
+        const fromDotsXPos = threads.fromDotsXPos;
+        const fromDotsYPos = threads.fromDotsYPos;
+        const toDotsXPos = threads.toDotsXPos;
+        const toDotsYPos = threads.toDotsYPos;
+        const widths = threads.widths;
+        const colors = threads.colors;
+
+        for (let index = 0; index < threads.length; index++) {
+            const isVisible = visibility[index];
             if (!isVisible) {
                 continue;
             }
@@ -51,8 +65,8 @@ export class RasterDrawingCanvas extends CanvasBase implements IRasterDrawingCan
             this.context.lineWidth = widths[index];
             this.context.strokeStyle = colors[index];
 
-            this.context.moveTo(fromDotsX[index] - this.bounds.left, fromDotsY[index] - this.bounds.top);
-            this.context.lineTo(toDotsX[index] - this.bounds.left, toDotsY[index] - this.bounds.top);
+            this.context.moveTo(fromDotsXPos[index] - this.bounds.left, fromDotsYPos[index] - this.bounds.top);
+            this.context.lineTo(toDotsXPos[index] - this.bounds.left, toDotsYPos[index] - this.bounds.top);
         }
 
         this.context.stroke();
@@ -60,7 +74,6 @@ export class RasterDrawingCanvas extends CanvasBase implements IRasterDrawingCan
     }
 
     public clear(): void {
-        // console.log(`clear: ${JSON.stringify(this.bounds)}`);
         this.context.clearRect(0, 0, this.bounds.width, this.bounds.height);
     }
 

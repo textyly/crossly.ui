@@ -11,6 +11,8 @@ import {
     DrawStitchThreadsListener,
 } from "../types.js";
 import { VirtualCanvasBase } from "../virtual.js";
+import { DotArray } from "../../utilities/arrays/dot/dot.js";
+import { StitchThreadArray } from "../../utilities/arrays/thread/stitch.js";
 
 export abstract class StitchCanvasBase extends VirtualCanvasBase implements IStitchCanvas {
     private readonly messaging: IMessaging2<DrawStitchThreadsEvent, DrawStitchDotsEvent>;
@@ -33,13 +35,13 @@ export abstract class StitchCanvasBase extends VirtualCanvasBase implements ISti
         super.dispose();
     }
 
-    protected invokeDrawThreads(visible: Array<boolean>, fromDotsX: Array<number>, fromDotsY: Array<number>, toDotsX: Array<number>, toDotsY: Array<number>, widths: Array<number>, colors: Array<string>): void {
-        const event = { visible, fromDotsX, fromDotsY, toDotsX, toDotsY, widths, colors };
+    protected invokeDrawThreads(threads: StitchThreadArray): void {
+        const event = { threads };
         this.messaging.sendToChannel1(event);
     }
 
-    protected invokeDrawDots(dotsX: Array<number>, dotsY: Array<number>, dotRadius: number, dotColor: string): void {
-        const event = { dotsX, dotsY, dotRadius, dotColor };
+    protected invokeDrawDots(dots: DotArray, dotRadius: number, dotColor: string): void {
+        const event = { dots, dotRadius, dotColor };
         this.messaging.sendToChannel2(event);
     }
 }
