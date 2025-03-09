@@ -13,7 +13,7 @@ export class DotArray {
     private _colors: Array<string>;
 
     constructor() {
-        this._count = 0;
+        this._count = -1;
         this._space = this.default;
 
         this._dotsX = new Int16Array(this._space);
@@ -23,19 +23,19 @@ export class DotArray {
     }
 
     public get length(): number {
-        return this._count;
+        return this._count + 1;
     }
 
     public get dotsX(): Readonly<Int16Array> {
-        return this._dotsX.slice(0, this._count);
+        return this._dotsX.slice(0, this.length);
     }
 
     public get dotsY(): Readonly<Int16Array> {
-        return this._dotsY.slice(0, this._count);
+        return this._dotsY.slice(0, this.length);
     }
 
     public get radiuses(): Readonly<Float32Array> {
-        return this._radiuses.slice(0, this._count);
+        return this._radiuses.slice(0, this.length);
     }
 
     public get colors(): Readonly<Array<string>> {
@@ -43,13 +43,14 @@ export class DotArray {
     }
 
     public push(x: number, y: number, radius: number, color: string): void {
+        this._count++;
+
         this.ensureSpace();
 
         this._dotsX[this._count] = x;
         this._dotsY[this._count] = y;
         this._radiuses[this._count] = radius;
         this._colors.push(color);
-        this._count++;
     }
 
     private ensureSpace(): void {
