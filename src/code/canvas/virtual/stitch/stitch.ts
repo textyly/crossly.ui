@@ -79,11 +79,11 @@ export class StitchCanvas extends StitchCanvasBase {
 
             const fromDotXPos = this.calculateDotX(fromDotXIdx);
             const fromDotYPos = this.calculateDotY(fromDotYIdx);
-            dots.pushCoordinates(fromDotXPos, fromDotYPos, dotRadius, dotColor);
+            dots.push(fromDotXPos, fromDotYPos, dotRadius, dotColor);
 
             const toDotXPos = this.calculateDotX(toDotXIdx);
             const toDotYPos = this.calculateDotY(toDotYIdx);
-            dots.pushCoordinates(toDotXPos, toDotYPos, dotRadius, dotColor);
+            dots.push(toDotXPos, toDotYPos, dotRadius, dotColor);
 
             visibility = true;
             this.threads.setThread(index, visibility, fromDotXIdx, fromDotXPos, fromDotYIdx, fromDotYPos, toDotXIdx, toDotXPos, toDotYIdx, toDotYPos, width, color, side);
@@ -155,8 +155,8 @@ export class StitchCanvas extends StitchCanvasBase {
                     super.invokeDrawThreads(threads);
 
                     const dots = new DotArray();
-                    dots.pushCoordinates(previouslyClickedDotPos.x, previouslyClickedDotPos.y, this.dotRadius, this.dotColor);
-                    dots.pushCoordinates(clickedDotPos.x, clickedDotPos.y, this.dotRadius, this.dotColor);
+                    dots.push(previouslyClickedDotPos.x, previouslyClickedDotPos.y, this.dotRadius, this.dotColor);
+                    dots.push(clickedDotPos.x, clickedDotPos.y, this.dotRadius, this.dotColor);
                     super.invokeDrawDots(dots);
                 }
             }

@@ -42,11 +42,7 @@ export class DotArray {
         return this._colors;
     }
 
-    public push(dot: Dot, radius: number, color: string): void {
-        this.pushCoordinates(dot.x, dot.y, radius, color);
-    }
-
-    public pushCoordinates(x: number, y: number, radius: number, color: string): void {
+    public push(x: number, y: number, radius: number, color: string): void {
         this.ensureSpace();
 
         this._dotsX[this._count] = x;
