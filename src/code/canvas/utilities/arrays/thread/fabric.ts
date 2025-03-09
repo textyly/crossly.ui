@@ -1,6 +1,6 @@
 export class FabricThreadArray {
     private readonly default = 10;
-    private readonly step = 10;
+    private readonly step = 4;
 
     protected _count: number;
     protected _space: number;
@@ -10,7 +10,7 @@ export class FabricThreadArray {
     private _fromDotsYPos: Int32Array;
     private _toDotsXPos: Int32Array;
     private _toDotsYPos: Int32Array;
-    private _widths: Int16Array;
+    private _widths: Float32Array;
     private _colors: Array<string>;
 
     constructor() {
@@ -22,7 +22,7 @@ export class FabricThreadArray {
         this._fromDotsYPos = new Int32Array(this._space);
         this._toDotsXPos = new Int32Array(this._space);
         this._toDotsYPos = new Int32Array(this._space);
-        this._widths = new Int16Array(this._space);
+        this._widths = new Float32Array(this._space);
         this._colors = new Array<string>();
     }
 
@@ -55,7 +55,7 @@ export class FabricThreadArray {
         return this._toDotsYPos.slice(0, this.length);
     }
 
-    public get widths(): Readonly<Int16Array> {
+    public get widths(): Readonly<Float32Array> {
         return this._widths.slice(0, this.length);
     }
 
@@ -159,7 +159,7 @@ export class FabricThreadArray {
 
     private expandWidths(): void {
         const widths = this._widths;
-        this._widths = new Int16Array(this._space);
+        this._widths = new Float32Array(this._space);
 
         for (let index = 0; index < widths.length; index++) {
             this._widths[index] = widths[index];

@@ -24,21 +24,23 @@ export class RasterDrawingCanvas extends CanvasBase implements IRasterDrawingCan
         this.context.drawImage(bitmap, 0, 0, bounds.width, bounds.height);
     }
 
-    public drawDots(dots: DotArray, radius: number, color: string): void {
+    public drawDots(dots: DotArray): void {
         // CPU, GPU, memory and GC intensive code
         this.context.beginPath();
 
         const dotsX = dots.dotsX;
         const dotsY = dots.dotsY;
+        const radiuses = dots.radiuses;
+        const colors = dots.colors;
 
         for (let index = 0; index < dots.length; index++) {
             const x = dotsX[index] - this.bounds.left;
             const y = dotsY[index] - this.bounds.top;
 
-            this.context.fillStyle = color;
+            this.context.fillStyle = colors[index];
             this.context.moveTo(x, y);
 
-            this.context.arc(x, y, radius, 0, this.endAngle);
+            this.context.arc(x, y, radiuses[index], 0, this.endAngle);
         }
 
         this.context.fill();

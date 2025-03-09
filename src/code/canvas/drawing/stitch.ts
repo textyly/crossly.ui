@@ -22,7 +22,7 @@ export class StitchDrawingCanvas extends CanvasBase implements IStitchDrawingCan
     }
 
     private handleDrawDots(event: DrawStitchDotsEvent): void {
-        this.rasterDrawing.drawDots(event.dots, event.dotRadius, event.dotColor);
+        this.rasterDrawing.drawDots(event.dots);
     }
 
     private handleDrawThreads(event: DrawStitchThreadsEvent): void {

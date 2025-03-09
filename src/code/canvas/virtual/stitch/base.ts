@@ -40,8 +40,8 @@ export abstract class StitchCanvasBase extends VirtualCanvasBase implements ISti
         this.messaging.sendToChannel1(event);
     }
 
-    protected invokeDrawDots(dots: DotArray, dotRadius: number, dotColor: string): void {
-        const event = { dots, dotRadius, dotColor };
+    protected invokeDrawDots(dots: DotArray): void {
+        const event = { dots };
         this.messaging.sendToChannel2(event);
     }
 }

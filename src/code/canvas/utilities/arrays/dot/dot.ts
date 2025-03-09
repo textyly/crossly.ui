@@ -2,15 +2,15 @@ import { Dot } from "../../../types.js";
 
 export class DotArray {
     private readonly default = 10;
-    private readonly step = 10;
+    private readonly step = 4;
 
     private _count: number;
     private _space: number;
 
     private _dotsX: Int16Array;
     private _dotsY: Int16Array;
-
-    // TODO: add radius and color (stitch and cue)
+    private _radiuses: Float32Array;
+    private _colors: Array<string>;
 
     constructor() {
         this._count = 0;
@@ -18,6 +18,8 @@ export class DotArray {
 
         this._dotsX = new Int16Array(this._space);
         this._dotsY = new Int16Array(this._space);
+        this._radiuses = new Float32Array(this._space);
+        this._colors = new Array<string>();
     }
 
     public get length(): number {
@@ -32,15 +34,25 @@ export class DotArray {
         return this._dotsY.slice(0, this._count);
     }
 
-    public push(dot: Dot): void {
-        this.pushCoordinates(dot.x, dot.y);
+    public get radiuses(): Readonly<Float32Array> {
+        return this._radiuses.slice(0, this._count);
     }
 
-    public pushCoordinates(x: number, y: number): void {
+    public get colors(): Readonly<Array<string>> {
+        return this._colors;
+    }
+
+    public push(dot: Dot, radius: number, color: string): void {
+        this.pushCoordinates(dot.x, dot.y, radius, color);
+    }
+
+    public pushCoordinates(x: number, y: number, radius: number, color: string): void {
         this.ensureSpace();
 
         this._dotsX[this._count] = x;
         this._dotsY[this._count] = y;
+        this._radiuses[this._count] = radius;
+        this._colors.push(color);
         this._count++;
     }
 
@@ -55,6 +67,7 @@ export class DotArray {
         this._space = this._space * this.step;
         this.expandDotsX();
         this.expandDotsY();
+        this.expandRadiuses();
     }
 
     private expandDotsX(): void {
@@ -72,6 +85,15 @@ export class DotArray {
 
         for (let index = 0; index < dotsY.length; index++) {
             this._dotsY[index] = dotsY[index];
+        }
+    }
+
+    private expandRadiuses(): void {
+        const radiuses = this._radiuses;
+        this._radiuses = new Float32Array(this._space);
+
+        for (let index = 0; index < radiuses.length; index++) {
+            this._radiuses[index] = radiuses[index];
         }
     }
 }

@@ -35,16 +35,17 @@ export class StitchCanvas extends StitchCanvasBase {
         const rightTopIdx = boundsIndexes.rightTop;
         const leftBottomIdx = boundsIndexes.leftBottom;
 
-        const width = this.threadWidth;
-        const color = this.threadColor;
+        const width = this.threadWidth; // TODO: get from threads array 
+        const color = this.threadColor; // TODO: get from threads array
         const fromDotsXIdx = this.threads.fromDotsXIdx;
         const toDotsXIdx = this.threads.toDotsXIdx;
         const fromDotsYIdx = this.threads.fromDotsYIdx;
         const toDotsYIdx = this.threads.toDotsYIdx;
         const sides = this.threads.sides;
 
-        const dotRadius = this.dotRadius;
-        const dots = new DotArray();
+        const dotRadius = this.dotRadius; // TODO: get from threads array
+        const dotColor = this.dotColor;
+        const dots = new DotArray(); // TODO: get from threads array
 
         for (let index = 0; index < this.threads.length; index++) {
             let visibility = false;
@@ -78,18 +79,18 @@ export class StitchCanvas extends StitchCanvasBase {
 
             const fromDotXPos = this.calculateDotX(fromDotXIdx);
             const fromDotYPos = this.calculateDotY(fromDotYIdx);
-            dots.pushCoordinates(fromDotXPos, fromDotYPos);
+            dots.pushCoordinates(fromDotXPos, fromDotYPos, dotRadius, dotColor);
 
             const toDotXPos = this.calculateDotX(toDotXIdx);
             const toDotYPos = this.calculateDotY(toDotYIdx);
-            dots.pushCoordinates(toDotXPos, toDotYPos);
+            dots.pushCoordinates(toDotXPos, toDotYPos, dotRadius, dotColor);
 
             visibility = true;
             this.threads.setThread(index, visibility, fromDotXIdx, fromDotXPos, fromDotYIdx, fromDotYPos, toDotXIdx, toDotXPos, toDotYIdx, toDotYPos, width, color, side);
         }
 
         super.invokeDrawThreads(this.threads);
-        super.invokeDrawDots(dots, dotRadius, color);
+        super.invokeDrawDots(dots);
     }
 
     private startListening(): void {
@@ -154,9 +155,9 @@ export class StitchCanvas extends StitchCanvasBase {
                     super.invokeDrawThreads(threads);
 
                     const dots = new DotArray();
-                    dots.pushCoordinates(previouslyClickedDotPos.x, previouslyClickedDotPos.y);
-                    dots.pushCoordinates(clickedDotPos.x, clickedDotPos.y);
-                    super.invokeDrawDots(dots, this.dotRadius, this.threadColor);
+                    dots.pushCoordinates(previouslyClickedDotPos.x, previouslyClickedDotPos.y, this.dotRadius, this.dotColor);
+                    dots.pushCoordinates(clickedDotPos.x, clickedDotPos.y, this.dotRadius, this.dotColor);
+                    super.invokeDrawDots(dots);
                 }
             }
         }

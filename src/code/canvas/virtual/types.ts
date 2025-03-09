@@ -35,13 +35,13 @@ export interface ICueCanvas extends IVirtualCanvas {
     onRemoveThread(listener: RemoveCueThreadListener): VoidUnsubscribe;
 }
 
-export type DrawFabricDotsEvent = { dots: DotArray, dotRadius: number, dotColor: string };
+export type DrawFabricDotsEvent = { dots: DotArray };
 export type DrawFabricDotsListener = Listener<DrawFabricDotsEvent>;
 
 export type DrawFabricThreadsEvent = { threads: FabricThreadArray };
 export type DrawFabricThreadsListener = Listener<DrawFabricThreadsEvent>;
 
-export type DrawStitchDotsEvent = { dots: DotArray, dotRadius: number, dotColor: string };
+export type DrawStitchDotsEvent = { dots: DotArray };
 export type DrawStitchDotsListener = Listener<DrawStitchDotsEvent>;
 
 export type DrawStitchThreadsEvent = { threads: StitchThreadArray };

@@ -21,7 +21,7 @@ export interface ICueDrawingCanvas extends IDrawingCanvas {
 export interface IRasterDrawingCanvas extends ICanvas {
     createBitMap(): Promise<ImageBitmap>;
     drawBitMap(bitmap: ImageBitmap): void;
-    drawDots(dots: DotArray, radius: number, color: string): void;
+    drawDots(dots: DotArray): void;
     drawLines(thread: FabricThreadArray): void;
     clear(): void;
 }

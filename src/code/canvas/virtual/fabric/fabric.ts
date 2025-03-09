@@ -58,10 +58,10 @@ export class FabricCanvas extends FabricCanvasBase {
 
                 const dotIndex = { dotX, dotY };
                 const dotPos = this.calculateDotPosition(dotIndex);
-                dots.push(dotPos);
+                dots.push(dotPos, this.dotRadius, this.dotColor);
             }
         }
 
-        super.invokeDrawDots(dots, this.dotRadius, this.dotColor);
+        super.invokeDrawDots(dots);
     }
 }

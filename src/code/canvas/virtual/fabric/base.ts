@@ -35,8 +35,8 @@ export abstract class FabricCanvasBase extends VirtualCanvasBase implements IFab
         super.dispose();
     }
 
-    protected invokeDrawDots(dots: DotArray, dotRadius: number, dotColor: string): void {
-        const drawDotEvent = { dots, dotRadius, dotColor };
+    protected invokeDrawDots(dots: DotArray): void {
+        const drawDotEvent = { dots };
         this.messaging.sendToChannel1(drawDotEvent);
     }
 
