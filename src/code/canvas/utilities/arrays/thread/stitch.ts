@@ -39,6 +39,7 @@ export class StitchThreadArray extends FabricThreadArray {
     }
 
     // TODO: change to indexed prop
+    // this property is being invoked extremely intensively, so it must not accept an object because it will require a lot of GC
     public setThread(
         index: number,
         visible: boolean,
@@ -63,8 +64,9 @@ export class StitchThreadArray extends FabricThreadArray {
         this._sides[index] = side;
     }
 
-    public pushThread(
-        visible: boolean,
+    // this method is being invoked only on a thread creation, so it is safe to use an object
+    public pushThread(thread: {
+        visibility: boolean,
         fromDotXIdx: number,
         fromDotXPos: number,
         fromDotYIdx: number,
@@ -75,15 +77,16 @@ export class StitchThreadArray extends FabricThreadArray {
         toDotYPos: number,
         width: number,
         color: string,
-        side: CanvasSide): void {
+        side: CanvasSide
+    }): void {
 
-        super.push(visible, fromDotXPos, fromDotYPos, toDotXPos, toDotYPos, width, color);
+        super.push(thread.visibility, thread.fromDotXPos, thread.fromDotYPos, thread.toDotXPos, thread.toDotYPos, thread.width, thread.color);
 
-        this._fromDotsXIdx[this._count] = fromDotXIdx;
-        this._fromDotsYIdx[this._count] = fromDotYIdx;
-        this._toDotsXIdx[this._count] = toDotXIdx;
-        this._toDotsYIdx[this._count] = toDotYIdx;
-        this._sides.push(side);
+        this._fromDotsXIdx[this._count] = thread.fromDotXIdx;
+        this._fromDotsYIdx[this._count] = thread.fromDotYIdx;
+        this._toDotsXIdx[this._count] = thread.toDotXIdx;
+        this._toDotsYIdx[this._count] = thread.toDotYIdx;
+        this._sides.push(thread.side);
     }
 
     protected override expand(): void {

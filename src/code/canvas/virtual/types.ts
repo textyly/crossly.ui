@@ -1,6 +1,6 @@
+import { DotArray } from "../utilities/arrays/dot/dot.js";
 import { Id, CueDot, ICanvas, CueThread } from "../types.js";
 import { Listener, VoidListener, VoidUnsubscribe } from "../../types.js";
-import { DotArray } from "../utilities/arrays/dot/dot.js";
 import { FabricThreadArray } from "../utilities/arrays/thread/fabric.js";
 import { StitchThreadArray } from "../utilities/arrays/thread/stitch.js";
 

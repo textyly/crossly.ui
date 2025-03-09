@@ -29,6 +29,8 @@ export class StitchCanvas extends StitchCanvasBase {
     protected override redraw(): void {
         // CPU, GPU, memory and GC intensive code
         // Do not extract this method in multiple methods
+        // Do not create types/classes for dot and thread (objects are extremely slow and memory/GC consuming)
+
         const boundsIndexes = this.calculateBoundsIndexes();
 
         const leftTopIdx = boundsIndexes.leftTop;
@@ -77,12 +79,12 @@ export class StitchCanvas extends StitchCanvasBase {
                 continue;
             }
 
-            const fromDotXPos = this.calculateDotX(fromDotXIdx);
-            const fromDotYPos = this.calculateDotY(fromDotYIdx);
+            const fromDotXPos = this.calculateDotXPosition(fromDotXIdx);
+            const fromDotYPos = this.calculateDotYPosition(fromDotYIdx);
             dots.push(fromDotXPos, fromDotYPos, dotRadius, dotColor);
 
-            const toDotXPos = this.calculateDotX(toDotXIdx);
-            const toDotYPos = this.calculateDotY(toDotYIdx);
+            const toDotXPos = this.calculateDotXPosition(toDotXIdx);
+            const toDotYPos = this.calculateDotYPosition(toDotYIdx);
             dots.push(toDotXPos, toDotYPos, dotRadius, dotColor);
 
             visibility = true;
@@ -103,11 +105,11 @@ export class StitchCanvas extends StitchCanvasBase {
         const inVirtualBounds = this.inVirtualBounds(position);
 
         if (inVirtualBounds) {
-            this.handleDotClick(position);
+            this.clickDot(position);
         }
     }
 
-    private handleDotClick(position: Position): void {
+    private clickDot(position: Position): void {
         const clickedDotIdx = this.calculateDotIndex(position);
         const clickedDotPos = this.calculateDotPosition(clickedDotIdx);
 
@@ -119,39 +121,26 @@ export class StitchCanvas extends StitchCanvasBase {
 
             if (!areIdenticalClicks) {
                 const visibility = this.currentSide === CanvasSide.Front;
-
-                // TODO: create a thread and push it in both collections (add such method in the array)
-                this.threads.pushThread(
+                const thread = {
                     visibility,
-                    previouslyClickedDotIdx.dotX,
-                    previouslyClickedDotPos.x,
-                    previouslyClickedDotIdx.dotY,
-                    previouslyClickedDotPos.y,
-                    clickedDotIdx.dotX,
-                    clickedDotPos.x,
-                    clickedDotIdx.dotY,
-                    clickedDotPos.y,
-                    this.threadWidth,
-                    this.threadColor,
-                    this.currentSide
-                );
+                    fromDotXIdx: previouslyClickedDotIdx.dotX,
+                    fromDotXPos: previouslyClickedDotPos.x,
+                    fromDotYIdx: previouslyClickedDotIdx.dotY,
+                    fromDotYPos: previouslyClickedDotPos.y,
+                    toDotXIdx: clickedDotIdx.dotX,
+                    toDotXPos: clickedDotPos.x,
+                    toDotYIdx: clickedDotIdx.dotY,
+                    toDotYPos: clickedDotPos.y,
+                    width: this.threadWidth,
+                    color: this.threadColor,
+                    side: this.currentSide
+                };
+
+                this.threads.pushThread(thread);
 
                 if (visibility) {
                     const threads = new StitchThreadArray();
-                    threads.pushThread(
-                        visibility,
-                        previouslyClickedDotIdx.dotX,
-                        previouslyClickedDotPos.x,
-                        previouslyClickedDotIdx.dotY,
-                        previouslyClickedDotPos.y,
-                        clickedDotIdx.dotX,
-                        clickedDotPos.x,
-                        clickedDotIdx.dotY,
-                        clickedDotPos.y,
-                        this.threadWidth,
-                        this.threadColor,
-                        this.currentSide
-                    );
+                    threads.pushThread(thread);
                     super.invokeDrawThreads(threads);
 
                     const dots = new DotArray();

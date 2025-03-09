@@ -1,5 +1,3 @@
-import { Dot } from "../../../types.js";
-
 export class DotArray {
     private readonly default = 10;
     private readonly step = 4;

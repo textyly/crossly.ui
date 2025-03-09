@@ -84,7 +84,7 @@ export class FabricThreadArray {
     }
 
     public push(
-        visible: boolean,
+        visibility: boolean,
         fromDotXPos: number,
         fromDotYPos: number,
         toDotXPos: number,
@@ -96,7 +96,7 @@ export class FabricThreadArray {
 
         this.ensureSpace();
 
-        this._visibility.push(visible);
+        this._visibility.push(visibility);
         this._fromDotsXPos[this._count] = fromDotXPos;
         this._fromDotsYPos[this._count] = fromDotYPos;
         this._toDotsXPos[this._count] = toDotXPos;

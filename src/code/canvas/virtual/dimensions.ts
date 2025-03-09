@@ -110,17 +110,17 @@ export abstract class VirtualCanvasDimensions extends CanvasBase {
     }
 
     protected calculateDotPosition(dotIndex: DotIndex): Position {
-        const x = this.calculateDotX(dotIndex.dotX);
-        const y = this.calculateDotY(dotIndex.dotY);
+        const x = this.calculateDotXPosition(dotIndex.dotX);
+        const y = this.calculateDotYPosition(dotIndex.dotY);
         return { x, y };
     }
 
-    protected calculateDotX(dotX: number): number {
+    protected calculateDotXPosition(dotX: number): number {
         const x = this.virtualBounds.left + (dotX * this.dotsSpacing);
         return x;
     }
 
-    protected calculateDotY(dotY: number): number {
+    protected calculateDotYPosition(dotY: number): number {
         const y = this.virtualBounds.top + (dotY * this.dotsSpacing);
         return y;
     }

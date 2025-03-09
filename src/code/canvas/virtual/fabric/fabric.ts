@@ -27,6 +27,7 @@ export class FabricCanvas extends FabricCanvasBase {
 
     private createThreads(startDotIndexX: number, startDotIndexY: number, endDotIndexX: number, endDotIndexY: number): void {
         // CPU, GPU, memory and GC intensive code
+        // Do not create types/classes for thread (objects are extremely slow and memory/GC consuming)
 
         const bounds = this.bounds;
         const threadWidth = this.threadWidth;
@@ -35,13 +36,13 @@ export class FabricCanvas extends FabricCanvasBase {
 
         for (let dotY = startDotIndexY; dotY <= endDotIndexY; dotY += 2) {
 
-            const dotYPos = this.calculateDotY(dotY);
+            const dotYPos = this.calculateDotYPosition(dotY);
             threads.push(true, bounds.left, dotYPos, bounds.left + bounds.width, dotYPos, threadWidth, threadColor);
         }
 
         for (let dotX = startDotIndexX; dotX <= endDotIndexX; dotX += 2) {
 
-            const dotXPos = this.calculateDotX(dotX);
+            const dotXPos = this.calculateDotXPosition(dotX);
             threads.push(true, dotXPos, bounds.top, dotXPos, bounds.top + bounds.height, threadWidth, threadColor);
         }
 
@@ -50,6 +51,7 @@ export class FabricCanvas extends FabricCanvasBase {
 
     private createDots(startIndexX: number, startIndexY: number, endIndexX: number, endIndexY: number): void {
         // CPU, GPU, memory and GC intensive code
+        // Do not create types/classes for dot (objects are extremely slow and memory/GC consuming)
 
         const dots = new DotArray();
 
