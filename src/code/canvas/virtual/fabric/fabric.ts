@@ -30,20 +30,18 @@ export class FabricCanvas extends FabricCanvasBase {
         // Do not create types/classes for thread (objects are extremely slow and memory/GC consuming)
 
         const bounds = this.bounds;
-        const threadWidth = this.threadWidth;
-        const threadColor = this.threadColor;
         const threads = new FabricThreadArray();
 
-        for (let dotY = startDotIndexY; dotY <= endDotIndexY; dotY += 2) {
+        for (let dotYIdx = startDotIndexY; dotYIdx <= endDotIndexY; dotYIdx += 2) {
 
-            const dotYPos = this.calculateDotYPosition(dotY);
-            threads.push(true, bounds.left, dotYPos, bounds.left + bounds.width, dotYPos, threadWidth, threadColor);
+            const dotYPos = this.calculateDotYPosition(dotYIdx);
+            threads.push(true, bounds.left, dotYPos, bounds.left + bounds.width, dotYPos, this.threadWidth, this.threadColor);
         }
 
-        for (let dotX = startDotIndexX; dotX <= endDotIndexX; dotX += 2) {
+        for (let dotXIdX = startDotIndexX; dotXIdX <= endDotIndexX; dotXIdX += 2) {
 
-            const dotXPos = this.calculateDotXPosition(dotX);
-            threads.push(true, dotXPos, bounds.top, dotXPos, bounds.top + bounds.height, threadWidth, threadColor);
+            const dotXPos = this.calculateDotXPosition(dotXIdX);
+            threads.push(true, dotXPos, bounds.top, dotXPos, bounds.top + bounds.height, this.threadWidth, this.threadColor);
         }
 
         super.invokeDrawThreads(threads);
@@ -55,11 +53,11 @@ export class FabricCanvas extends FabricCanvasBase {
 
         const dots = new DotArray();
 
-        for (let dotY = startIndexY; dotY <= endIndexY; dotY += 2) {
-            for (let dotX = startIndexX; dotX <= endIndexX; dotX += 2) {
+        for (let dotYIdx = startIndexY; dotYIdx <= endIndexY; dotYIdx += 2) {
+            for (let dotXIdX = startIndexX; dotXIdX <= endIndexX; dotXIdX += 2) {
 
-                const dotIndex = { dotX, dotY };
-                const dotPos = this.calculateDotPosition(dotIndex);
+                const dotIdx = { dotX: dotXIdX, dotY: dotYIdx };
+                const dotPos = this.calculateDotPosition(dotIdx);
                 dots.push(dotPos.x, dotPos.y, this.dotRadius, this.dotColor);
             }
         }

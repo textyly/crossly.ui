@@ -10,7 +10,7 @@ export class StitchCanvas extends StitchCanvasBase {
     private readonly dotsUtility: DotsUtility<Dot>;
     private readonly threads: StitchThreadArray;
 
-    private clickedDotIndex?: DotIndex;
+    private clickedDotIdx?: DotIndex;
 
     constructor(config: CanvasConfig, inputCanvas: IInputCanvas) {
         super(config, inputCanvas);
@@ -68,18 +68,22 @@ export class StitchCanvas extends StitchCanvasBase {
             const toDotYIdx = toDotsYIndexes[index];
 
             if ((fromDotXIdx < leftTopIdx.dotX) && (toDotXIdx < leftTopIdx.dotX)) {
+                // filter out
                 continue;
             }
 
             if ((fromDotXIdx > rightTopIdx.dotX) && (toDotXIdx > rightTopIdx.dotX)) {
+                // filter out
                 continue;
             }
 
             if ((fromDotYIdx < leftTopIdx.dotY) && (toDotYIdx < leftTopIdx.dotY)) {
+                // filter out
                 continue;
             }
 
             if ((fromDotYIdx > leftBottomIdx.dotY) && (toDotYIdx > leftBottomIdx.dotY)) {
+                // filter out
                 continue;
             }
 
@@ -119,15 +123,15 @@ export class StitchCanvas extends StitchCanvasBase {
     }
 
     private clickDot(position: Position): void {
+        const previouslyClickedDotIdx = this.clickedDotIdx;
         const clickedDotIdx = this.calculateDotIndex(position);
-        const previouslyClickedDotIdx = this.clickedDotIndex;
 
         if (previouslyClickedDotIdx) {
             this.tryDrawThread(previouslyClickedDotIdx, clickedDotIdx);
         }
 
-        this.clickedDotIndex = clickedDotIdx;
-        this.changeSide(); // TODO: bug!!! cannot change side on every click. If dots Identical then do not change sides!!! See cue impl
+        this.clickedDotIdx = clickedDotIdx;
+        this.changeSide(); // TODO: bug!!! cannot change side on every click. If dots are identical then do not change sides!!! See cue impl
     }
 
     private tryDrawThread(previouslyClickedDotIdx: DotIndex, clickedDotIdx: DotIndex): void {
