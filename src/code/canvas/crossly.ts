@@ -1,14 +1,20 @@
 import { CanvasBase } from "./base.js";
 import { IInputCanvas } from "./input/types.js";
-import { CueCanvas } from "./virtual/cue/cue.js";
 import { CueDrawingCanvas } from "./drawing/cue.js";
 import { FabricCanvas } from "./virtual/fabric/fabric.js";
-import { StitchCanvas } from "./virtual/stitch/stitch.js";
 import { FabricDrawingCanvas } from "./drawing/fabric.js";
 import { StitchDrawingCanvas } from "./drawing/stitch.js";
+import { CueCanvasFacade } from "./virtual/cue/facade.js";
+import { StitchCanvasFacade } from "./virtual/stitch/facade.js";
 import { CrosslyCanvasConfig, ICrosslyCanvas } from "./types.js";
 import { ICueCanvasFacade, IFabricCanvas, IStitchCanvasFacade } from "./virtual/types.js";
-import { ICueDrawingCanvas, IFabricDrawingCanvas, IRasterDrawingCanvas, IStitchDrawingCanvas, IVectorDrawingCanvas } from "./drawing/types.js";
+import {
+    ICueDrawingCanvas,
+    IFabricDrawingCanvas,
+    IRasterDrawingCanvas,
+    IStitchDrawingCanvas,
+    IVectorDrawingCanvas
+} from "./drawing/types.js";
 
 export class CrosslyCanvas extends CanvasBase implements ICrosslyCanvas {
     private readonly config: Readonly<CrosslyCanvasConfig>;
@@ -64,12 +70,12 @@ export class CrosslyCanvas extends CanvasBase implements ICrosslyCanvas {
     }
 
     private initializeStitchCanvas(rasterDrawing: IRasterDrawingCanvas): void {
-        this.stitchCanvasFacade = new StitchCanvas(this.config.stitch, this.inputCanvas);
+        this.stitchCanvasFacade = new StitchCanvasFacade(this.config.stitch, this.inputCanvas);
         this.stitchDrawingCanvas = new StitchDrawingCanvas(this.stitchCanvasFacade, rasterDrawing);
     }
 
     private initializeCueCanvas(vectorDrawing: IVectorDrawingCanvas): void {
-        this.cueCanvasFacade = new CueCanvas(this.config.cue, this.inputCanvas);
+        this.cueCanvasFacade = new CueCanvasFacade(this.config.cue, this.inputCanvas);
         this.cueDrawingCanvas = new CueDrawingCanvas(this.cueCanvasFacade, vectorDrawing);
     }
 

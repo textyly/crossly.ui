@@ -114,6 +114,7 @@ export class RasterDrawingCanvas extends CanvasBase implements IRasterDrawingCan
     }
 
     private createGroups(length: number, widths: Readonly<Float32Array>, colors: Readonly<Array<string>>): Map<string, Map<number, Array<number>>> {
+        // TODO: Grouping not correct!!! fix it!!!
         const colorsGroup = new Map<string, Map<number, Array<number>>>();
 
         for (let index = 0; index < length; index++) {
