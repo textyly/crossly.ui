@@ -50,7 +50,7 @@ export class RasterDrawingCanvas extends CanvasBase implements IRasterDrawingCan
         // CPU, GPU, memory and GC intensive code
         this.context.beginPath();
 
-        const visibility = threads.visibility;
+        const visibility = threads.visibilities;
         const fromDotsXPos = threads.fromDotsXPos;
         const fromDotsYPos = threads.fromDotsYPos;
         const toDotsXPos = threads.toDotsXPos;

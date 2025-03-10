@@ -66,7 +66,7 @@ export class StitchThreadArray extends FabricThreadArray {
 
     // this method is being invoked only on a thread creation, so it is safe to use an object
     public pushThread(thread: {
-        visibility: boolean,
+        visible: boolean,
         fromDotXIdx: number,
         fromDotXPos: number,
         fromDotYIdx: number,
@@ -80,7 +80,7 @@ export class StitchThreadArray extends FabricThreadArray {
         side: CanvasSide
     }): void {
 
-        super.push(thread.visibility, thread.fromDotXPos, thread.fromDotYPos, thread.toDotXPos, thread.toDotYPos, thread.width, thread.color);
+        super.push(thread.visible, thread.fromDotXPos, thread.fromDotYPos, thread.toDotXPos, thread.toDotYPos, thread.width, thread.color);
 
         this._fromDotsXIdx[this._count] = thread.fromDotXIdx;
         this._fromDotsYIdx[this._count] = thread.fromDotYIdx;

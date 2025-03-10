@@ -5,7 +5,7 @@ export class FabricThreadArray {
     protected _count: number;
     protected _space: number;
 
-    private _visibility: Array<boolean>;
+    private _visibilities: Array<boolean>;
     private _fromDotsXPos: Int32Array;
     private _fromDotsYPos: Int32Array;
     private _toDotsXPos: Int32Array;
@@ -17,7 +17,7 @@ export class FabricThreadArray {
         this._count = -1;
         this._space = this.default;
 
-        this._visibility = new Array<boolean>();
+        this._visibilities = new Array<boolean>();
         this._fromDotsXPos = new Int32Array(this._space);
         this._fromDotsYPos = new Int32Array(this._space);
         this._toDotsXPos = new Int32Array(this._space);
@@ -30,13 +30,13 @@ export class FabricThreadArray {
         return this._count + 1;
     }
 
-    public get visibility(): Readonly<Array<boolean>> {
-        return this._visibility;
+    public get visibilities(): Readonly<Array<boolean>> {
+        return this._visibilities;
     }
 
     // TODO: change to indexed prop
-    public setVisibility(index: number, visibility: boolean): void {
-        this._visibility[index] = visibility;
+    public setVisibilities(index: number, visibility: boolean): void {
+        this._visibilities[index] = visibility;
     }
 
     public get fromDotsXPos(): Readonly<Int32Array> {
@@ -74,7 +74,7 @@ export class FabricThreadArray {
         width: number,
         color: string): void {
 
-        this._visibility[index] = visible;
+        this._visibilities[index] = visible;
         this._fromDotsXPos[index] = fromDotXPos;
         this._fromDotsYPos[index] = fromDotYPos;
         this._toDotsXPos[index] = toDotXPos;
@@ -84,7 +84,7 @@ export class FabricThreadArray {
     }
 
     public push(
-        visibility: boolean,
+        visible: boolean,
         fromDotXPos: number,
         fromDotYPos: number,
         toDotXPos: number,
@@ -96,7 +96,7 @@ export class FabricThreadArray {
 
         this.ensureSpace();
 
-        this._visibility.push(visibility);
+        this._visibilities.push(visible);
         this._fromDotsXPos[this._count] = fromDotXPos;
         this._fromDotsYPos[this._count] = fromDotYPos;
         this._toDotsXPos[this._count] = toDotXPos;

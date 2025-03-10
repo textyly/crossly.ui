@@ -2,7 +2,7 @@ import { DotIndex } from "../types.js";
 import { StitchCanvasBase } from "./base.js";
 import { DotsUtility } from "../../utilities/dots.js";
 import { DotArray } from "../../utilities/arrays/dot/dot.js";
-import { Dot, CanvasSide, CanvasConfig } from "../../types.js";
+import { Dot, CanvasSide, CanvasConfig, Visibility } from "../../types.js";
 import { StitchThreadArray } from "../../utilities/arrays/thread/stitch.js";
 import { IInputCanvas, PointerUpEvent, Position } from "../../input/types.js";
 
@@ -50,8 +50,7 @@ export class StitchCanvas extends StitchCanvasBase {
         const dots = new DotArray(); // TODO: get from threads array
 
         for (let index = 0; index < this.threads.length; index++) {
-            let visibility = false;
-            this.threads.setVisibility(index, visibility);
+            this.threads.setVisibilities(index, false);
 
             const side = sides[index];
             if (side === CanvasSide.Back) {
@@ -87,8 +86,7 @@ export class StitchCanvas extends StitchCanvasBase {
             const toDotYPos = this.calculateDotYPosition(toDotYIdx);
             dots.push(toDotXPos, toDotYPos, dotRadius, dotColor);
 
-            visibility = true;
-            this.threads.setThread(index, visibility, fromDotXIdx, fromDotXPos, fromDotYIdx, fromDotYPos, toDotXIdx, toDotXPos, toDotYIdx, toDotYPos, width, color, side);
+            this.threads.setThread(index, true, fromDotXIdx, fromDotXPos, fromDotYIdx, fromDotYPos, toDotXIdx, toDotXPos, toDotYIdx, toDotYPos, width, color, side);
         }
 
         super.invokeDrawThreads(this.threads);
@@ -111,47 +109,77 @@ export class StitchCanvas extends StitchCanvasBase {
 
     private clickDot(position: Position): void {
         const clickedDotIdx = this.calculateDotIndex(position);
-        const clickedDotPos = this.calculateDotPosition(clickedDotIdx);
-
         const previouslyClickedDotIdx = this.clickedDotIndex;
+
         if (previouslyClickedDotIdx) {
-
-            const previouslyClickedDotPos = this.calculateDotPosition(previouslyClickedDotIdx);
-            const areIdenticalClicks = this.dotsUtility.areDotsEqual(clickedDotPos, previouslyClickedDotPos);
-
-            if (!areIdenticalClicks) {
-                const visibility = this.currentSide === CanvasSide.Front;
-                const thread = {
-                    visibility,
-                    fromDotXIdx: previouslyClickedDotIdx.dotX,
-                    fromDotXPos: previouslyClickedDotPos.x,
-                    fromDotYIdx: previouslyClickedDotIdx.dotY,
-                    fromDotYPos: previouslyClickedDotPos.y,
-                    toDotXIdx: clickedDotIdx.dotX,
-                    toDotXPos: clickedDotPos.x,
-                    toDotYIdx: clickedDotIdx.dotY,
-                    toDotYPos: clickedDotPos.y,
-                    width: this.threadWidth,
-                    color: this.threadColor,
-                    side: this.currentSide
-                };
-
-                this.threads.pushThread(thread);
-
-                if (visibility) {
-                    const threads = new StitchThreadArray();
-                    threads.pushThread(thread);
-                    super.invokeDrawThreads(threads);
-
-                    const dots = new DotArray();
-                    dots.push(previouslyClickedDotPos.x, previouslyClickedDotPos.y, this.dotRadius, this.dotColor);
-                    dots.push(clickedDotPos.x, clickedDotPos.y, this.dotRadius, this.dotColor);
-                    super.invokeDrawDots(dots);
-                }
-            }
+            this.tryDrawThread(clickedDotIdx, previouslyClickedDotIdx);
         }
 
         this.clickedDotIndex = clickedDotIdx;
         this.changeSide(); // TODO: bug!!! cannot change side on every click. If dots Identical then do not change sides!!! See cue impl
     }
+
+    private tryDrawThread(clickedDotIdx: DotIndex, previouslyClickedDotIdx: DotIndex): void {
+        const clickedDotPos = this.calculateDotPosition(clickedDotIdx);
+        const previouslyClickedDotPos = this.calculateDotPosition(previouslyClickedDotIdx);
+
+        const areClicksIdentical = this.dotsUtility.areDotsEqual(clickedDotPos, previouslyClickedDotPos);
+        if (!areClicksIdentical) {
+            const visible = this.currentSide === CanvasSide.Front;
+
+            const thread = this.createThread(previouslyClickedDotIdx, previouslyClickedDotPos, clickedDotIdx, clickedDotPos, visible);
+            this.threads.pushThread(thread);
+
+            if (visible) {
+                this.drawThread(thread);
+            }
+        }
+    }
+
+    private drawThread(thread: StitchTread): void {
+        // draw thread
+        const threads = new StitchThreadArray();
+        threads.pushThread(thread);
+        super.invokeDrawThreads(threads);
+
+        // draw dots
+        const dots = new DotArray();
+        dots.push(thread.fromDotXPos, thread.fromDotYPos, this.dotRadius, this.dotColor);
+        dots.push(thread.toDotXPos, thread.toDotYPos, this.dotRadius, this.dotColor);
+        super.invokeDrawDots(dots);
+    }
+
+    private createThread(clickedDotIdx: DotIndex, clickedDotPos: Position, previouslyClickedDotIdx: DotIndex, previouslyClickedDotPos: Position, visible: boolean): StitchTread {
+        const thread = {
+            visible,
+            fromDotXIdx: previouslyClickedDotIdx.dotX,
+            fromDotXPos: previouslyClickedDotPos.x,
+            fromDotYIdx: previouslyClickedDotIdx.dotY,
+            fromDotYPos: previouslyClickedDotPos.y,
+            toDotXIdx: clickedDotIdx.dotX,
+            toDotXPos: clickedDotPos.x,
+            toDotYIdx: clickedDotIdx.dotY,
+            toDotYPos: clickedDotPos.y,
+            width: this.threadWidth,
+            color: this.threadColor,
+            side: this.currentSide
+        };
+
+        return thread;
+    }
 }
+
+type StitchTread = {
+    visible: boolean;
+    fromDotXIdx: number;
+    fromDotXPos: number;
+    fromDotYIdx: number;
+    fromDotYPos: number;
+    toDotXIdx: number;
+    toDotXPos: number;
+    toDotYIdx: number;
+    toDotYPos: number;
+    width: number;
+    color: string;
+    side: CanvasSide;
+};
