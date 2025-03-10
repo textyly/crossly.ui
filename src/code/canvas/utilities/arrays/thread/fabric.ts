@@ -6,10 +6,10 @@ export class FabricThreadArray {
     protected _space: number;
 
     private _visibilities: Array<boolean>;
-    private _fromDotsXPos: Int32Array;
-    private _fromDotsYPos: Int32Array;
-    private _toDotsXPos: Int32Array;
-    private _toDotsYPos: Int32Array;
+    private _fromDotsXPositions: Int32Array;
+    private _fromDotsYPositions: Int32Array;
+    private _toDotsXPositions: Int32Array;
+    private _toDotsYPositions: Int32Array;
     private _widths: Float32Array;
     private _colors: Array<string>;
 
@@ -18,10 +18,10 @@ export class FabricThreadArray {
         this._space = this.default;
 
         this._visibilities = new Array<boolean>();
-        this._fromDotsXPos = new Int32Array(this._space);
-        this._fromDotsYPos = new Int32Array(this._space);
-        this._toDotsXPos = new Int32Array(this._space);
-        this._toDotsYPos = new Int32Array(this._space);
+        this._fromDotsXPositions = new Int32Array(this._space);
+        this._fromDotsYPositions = new Int32Array(this._space);
+        this._toDotsXPositions = new Int32Array(this._space);
+        this._toDotsYPositions = new Int32Array(this._space);
         this._widths = new Float32Array(this._space);
         this._colors = new Array<string>();
     }
@@ -39,20 +39,20 @@ export class FabricThreadArray {
         this._visibilities[index] = visibility;
     }
 
-    public get fromDotsXPos(): Readonly<Int32Array> {
-        return this._fromDotsXPos.slice(0, this.length);
+    public get fromDotsXPositions(): Readonly<Int32Array> {
+        return this._fromDotsXPositions.slice(0, this.length);
     }
 
-    public get fromDotsYPos(): Readonly<Int32Array> {
-        return this._fromDotsYPos.slice(0, this.length);
+    public get fromDotsYPositions(): Readonly<Int32Array> {
+        return this._fromDotsYPositions.slice(0, this.length);
     }
 
-    public get toDotsXPos(): Readonly<Int32Array> {
-        return this._toDotsXPos.slice(0, this.length);
+    public get toDotsXPositions(): Readonly<Int32Array> {
+        return this._toDotsXPositions.slice(0, this.length);
     }
 
-    public get toDotsYPos(): Readonly<Int32Array> {
-        return this._toDotsYPos.slice(0, this.length);
+    public get toDotsYPositions(): Readonly<Int32Array> {
+        return this._toDotsYPositions.slice(0, this.length);
     }
 
     public get widths(): Readonly<Float32Array> {
@@ -67,10 +67,10 @@ export class FabricThreadArray {
     // this property is being invoked extremely intensively, so it must not accept Thread (an object) because it might require a lot of GC
     public set(index: number, visible: boolean, fromDotXPos: number, fromDotYPos: number, toDotXPos: number, toDotYPos: number, width: number, color: string): void {
         this._visibilities[index] = visible;
-        this._fromDotsXPos[index] = fromDotXPos;
-        this._fromDotsYPos[index] = fromDotYPos;
-        this._toDotsXPos[index] = toDotXPos;
-        this._toDotsYPos[index] = toDotYPos;
+        this._fromDotsXPositions[index] = fromDotXPos;
+        this._fromDotsYPositions[index] = fromDotYPos;
+        this._toDotsXPositions[index] = toDotXPos;
+        this._toDotsYPositions[index] = toDotYPos;
         this._widths[index] = width;
         this._colors[index] = color;
     }
@@ -81,10 +81,10 @@ export class FabricThreadArray {
         this.ensureSpace();
 
         this._visibilities.push(visible);
-        this._fromDotsXPos[this._count] = fromDotXPos;
-        this._fromDotsYPos[this._count] = fromDotYPos;
-        this._toDotsXPos[this._count] = toDotXPos;
-        this._toDotsYPos[this._count] = toDotYPos;
+        this._fromDotsXPositions[this._count] = fromDotXPos;
+        this._fromDotsYPositions[this._count] = fromDotYPos;
+        this._toDotsXPositions[this._count] = toDotXPos;
+        this._toDotsYPositions[this._count] = toDotYPos;
         this._widths[this._count] = width;
         this._colors.push(color);
     }
@@ -98,46 +98,46 @@ export class FabricThreadArray {
 
     protected expand(): void {
         this._space = this._space * this.step;
-        this.expandFromDotsXPos();
-        this.expandFromDotsYPos();
-        this.expandToDotsXPos();
-        this.expandToDotsYPos();
+        this.expandFromDotsXPositions();
+        this.expandFromDotsYPositions();
+        this.expandToDotsXPositions();
+        this.expandToDotsYPositions();
         this.expandWidths();
     }
 
-    private expandFromDotsXPos(): void {
-        const fromDotsXPos = this._fromDotsXPos;
-        this._fromDotsXPos = new Int32Array(this._space);
+    private expandFromDotsXPositions(): void {
+        const fromDotsXPositions = this._fromDotsXPositions;
+        this._fromDotsXPositions = new Int32Array(this._space);
 
-        for (let index = 0; index < fromDotsXPos.length; index++) {
-            this._fromDotsXPos[index] = fromDotsXPos[index];
+        for (let index = 0; index < fromDotsXPositions.length; index++) {
+            this._fromDotsXPositions[index] = fromDotsXPositions[index];
         }
     }
 
-    private expandFromDotsYPos(): void {
-        const fromDotsYPos = this._fromDotsYPos;
-        this._fromDotsYPos = new Int32Array(this._space);
+    private expandFromDotsYPositions(): void {
+        const fromDotsYPositions = this._fromDotsYPositions;
+        this._fromDotsYPositions = new Int32Array(this._space);
 
-        for (let index = 0; index < fromDotsYPos.length; index++) {
-            this._fromDotsYPos[index] = fromDotsYPos[index];
+        for (let index = 0; index < fromDotsYPositions.length; index++) {
+            this._fromDotsYPositions[index] = fromDotsYPositions[index];
         }
     }
 
-    private expandToDotsXPos(): void {
-        const toDotsXPos = this._toDotsXPos;
-        this._toDotsXPos = new Int32Array(this._space);
+    private expandToDotsXPositions(): void {
+        const toDotsXPositions = this._toDotsXPositions;
+        this._toDotsXPositions = new Int32Array(this._space);
 
-        for (let index = 0; index < toDotsXPos.length; index++) {
-            this._toDotsXPos[index] = toDotsXPos[index];
+        for (let index = 0; index < toDotsXPositions.length; index++) {
+            this._toDotsXPositions[index] = toDotsXPositions[index];
         }
     }
 
-    private expandToDotsYPos(): void {
-        const toDotsYPos = this._toDotsYPos;
-        this._toDotsYPos = new Int32Array(this._space);
+    private expandToDotsYPositions(): void {
+        const toDotsYPositions = this._toDotsYPositions;
+        this._toDotsYPositions = new Int32Array(this._space);
 
-        for (let index = 0; index < toDotsYPos.length; index++) {
-            this._toDotsYPos[index] = toDotsYPos[index];
+        for (let index = 0; index < toDotsYPositions.length; index++) {
+            this._toDotsYPositions[index] = toDotsYPositions[index];
         }
     }
 

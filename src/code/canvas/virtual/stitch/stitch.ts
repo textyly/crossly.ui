@@ -40,10 +40,10 @@ export class StitchCanvas extends StitchCanvasBase {
 
         const width = this.threadWidth; // TODO: get from threads array 
         const color = this.threadColor; // TODO: get from threads array
-        const fromDotsXIdx = this.threads.fromDotsXIdx;
-        const toDotsXIdx = this.threads.toDotsXIdx;
-        const fromDotsYIdx = this.threads.fromDotsYIdx;
-        const toDotsYIdx = this.threads.toDotsYIdx;
+        const fromDotsXIndexes = this.threads.fromDotsXIndexes;
+        const toDotsXIndexes = this.threads.toDotsXIndexes;
+        const fromDotsYIndexes = this.threads.fromDotsYIndexes;
+        const toDotsYIndexes = this.threads.toDotsYIndexes;
         const sides = this.threads.sides;
 
         const dotRadius = this.dotRadius; // TODO: get from threads array
@@ -62,10 +62,10 @@ export class StitchCanvas extends StitchCanvasBase {
             }
 
             // 4. filter by visibility, if a thread is not into the visible bounds then it won't be drawn
-            const fromDotXIdx = fromDotsXIdx[index];
-            const toDotXIdx = toDotsXIdx[index];
-            const fromDotYIdx = fromDotsYIdx[index];
-            const toDotYIdx = toDotsYIdx[index];
+            const fromDotXIdx = fromDotsXIndexes[index];
+            const toDotXIdx = toDotsXIndexes[index];
+            const fromDotYIdx = fromDotsYIndexes[index];
+            const toDotYIdx = toDotsYIndexes[index];
 
             if ((fromDotXIdx < leftTopIdx.dotX) && (toDotXIdx < leftTopIdx.dotX)) {
                 continue;

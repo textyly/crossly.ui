@@ -51,10 +51,10 @@ export class RasterDrawingCanvas extends CanvasBase implements IRasterDrawingCan
         this.context.beginPath();
 
         const visibility = threads.visibilities;
-        const fromDotsXPos = threads.fromDotsXPos;
-        const fromDotsYPos = threads.fromDotsYPos;
-        const toDotsXPos = threads.toDotsXPos;
-        const toDotsYPos = threads.toDotsYPos;
+        const fromDotsXPositions = threads.fromDotsXPositions;
+        const fromDotsYPositions = threads.fromDotsYPositions;
+        const toDotsXPositions = threads.toDotsXPositions;
+        const toDotsYPositions = threads.toDotsYPositions;
         const widths = threads.widths;
         const colors = threads.colors;
 
@@ -67,8 +67,8 @@ export class RasterDrawingCanvas extends CanvasBase implements IRasterDrawingCan
             this.context.lineWidth = widths[index];
             this.context.strokeStyle = colors[index];
 
-            this.context.moveTo(fromDotsXPos[index] - this.bounds.left, fromDotsYPos[index] - this.bounds.top);
-            this.context.lineTo(toDotsXPos[index] - this.bounds.left, toDotsYPos[index] - this.bounds.top);
+            this.context.moveTo(fromDotsXPositions[index] - this.bounds.left, fromDotsYPositions[index] - this.bounds.top);
+            this.context.lineTo(toDotsXPositions[index] - this.bounds.left, toDotsYPositions[index] - this.bounds.top);
         }
 
         this.context.stroke();
