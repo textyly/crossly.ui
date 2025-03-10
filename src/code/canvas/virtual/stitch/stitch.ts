@@ -128,10 +128,11 @@ export class StitchCanvas extends StitchCanvasBase {
 
         if (previouslyClickedDotIdx) {
             this.tryDrawThread(previouslyClickedDotIdx, clickedDotIdx);
+        } else {
+            this.changeSide();
         }
 
         this.clickedDotIdx = clickedDotIdx;
-        this.changeSide(); // TODO: bug!!! cannot change side on every click. If dots are identical then do not change sides!!! See cue impl
     }
 
     private tryDrawThread(previouslyClickedDotIdx: DotIndex, clickedDotIdx: DotIndex): void {
@@ -148,6 +149,8 @@ export class StitchCanvas extends StitchCanvasBase {
             if (visible) {
                 this.drawThread(thread);
             }
+
+            this.changeSide();
         }
     }
 

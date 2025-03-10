@@ -35,7 +35,8 @@ export class CueCanvas extends CueCanvasBase {
             // 2. recreate hovered dot and thread
             if (dotIndex) {
                 const dotPos = this.calculateDotPosition(dotIndex);
-                this.handlePointerMove({ position: dotPos });
+                const event = { position: dotPos };
+                this.handlePointerMove(event);
             }
         }
     }
