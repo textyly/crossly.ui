@@ -1,11 +1,11 @@
-import { StitchCanvasBase } from "./base.js";
+import { StitchCanvasFacade } from "./facade.js";
 import { DotsUtility } from "../../utilities/dots.js";
 import { DotArray } from "../../utilities/arrays/dot/dot.js";
 import { StitchThreadArray } from "../../utilities/arrays/thread/stitch.js";
 import { IInputCanvas, PointerUpEvent, Position } from "../../input/types.js";
 import { Dot, CanvasSide, CanvasConfig, StitchTread, DotIndex } from "../../types.js";
 
-export class StitchCanvas extends StitchCanvasBase {
+export class StitchCanvas extends StitchCanvasFacade {
     private readonly dotsUtility: DotsUtility<Dot>;
     private readonly threads: StitchThreadArray;
 

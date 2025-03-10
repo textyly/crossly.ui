@@ -1,14 +1,14 @@
 import { CanvasBase } from "./base.js";
 import { IInputCanvas } from "./input/types.js";
 import { CueCanvas } from "./virtual/cue/cue.js";
+import { CueDrawingCanvas } from "./drawing/cue.js";
 import { FabricCanvas } from "./virtual/fabric/fabric.js";
 import { StitchCanvas } from "./virtual/stitch/stitch.js";
-import { CrosslyCanvasConfig, ICrosslyCanvas, Bounds } from "./types.js";
-import { ICueCanvas, IFabricCanvas, IStitchCanvas } from "./virtual/types.js";
-import { ICueDrawingCanvas, IFabricDrawingCanvas, IRasterDrawingCanvas, IStitchDrawingCanvas, IVectorDrawingCanvas } from "./drawing/types.js";
 import { FabricDrawingCanvas } from "./drawing/fabric.js";
 import { StitchDrawingCanvas } from "./drawing/stitch.js";
-import { CueDrawingCanvas } from "./drawing/cue.js";
+import { CrosslyCanvasConfig, ICrosslyCanvas } from "./types.js";
+import { ICueCanvas, IFabricCanvas, IStitchCanvasFacade } from "./virtual/types.js";
+import { ICueDrawingCanvas, IFabricDrawingCanvas, IRasterDrawingCanvas, IStitchDrawingCanvas, IVectorDrawingCanvas } from "./drawing/types.js";
 
 export class CrosslyCanvas extends CanvasBase implements ICrosslyCanvas {
     private readonly config: Readonly<CrosslyCanvasConfig>;
@@ -17,7 +17,7 @@ export class CrosslyCanvas extends CanvasBase implements ICrosslyCanvas {
     private fabricCanvas!: IFabricCanvas;
     private fabricDrawingCanvas!: IFabricDrawingCanvas;
 
-    private stitchCanvas!: IStitchCanvas;
+    private stitchCanvasFacade!: IStitchCanvasFacade;
     private stitchDrawingCanvas!: IStitchDrawingCanvas;
 
     private cueCanvas!: ICueCanvas;
@@ -41,8 +41,12 @@ export class CrosslyCanvas extends CanvasBase implements ICrosslyCanvas {
 
     public draw(): void {
         this.fabricCanvas.draw();
-        this.stitchCanvas.draw();
+        this.stitchCanvasFacade.draw();
         this.cueCanvas.draw();
+    }
+
+    public setThreadColor(color: string): void {
+        this.stitchCanvasFacade.setThreadColor(color);
     }
 
     public override dispose(): void {
@@ -59,8 +63,8 @@ export class CrosslyCanvas extends CanvasBase implements ICrosslyCanvas {
     }
 
     private initializeStitchCanvas(rasterDrawing: IRasterDrawingCanvas): void {
-        this.stitchCanvas = new StitchCanvas(this.config.stitch, this.inputCanvas);
-        this.stitchDrawingCanvas = new StitchDrawingCanvas(this.stitchCanvas, rasterDrawing);
+        this.stitchCanvasFacade = new StitchCanvas(this.config.stitch, this.inputCanvas);
+        this.stitchDrawingCanvas = new StitchDrawingCanvas(this.stitchCanvasFacade, rasterDrawing);
     }
 
     private initializeCueCanvas(vectorDrawing: IVectorDrawingCanvas): void {
@@ -74,7 +78,7 @@ export class CrosslyCanvas extends CanvasBase implements ICrosslyCanvas {
     }
 
     private disposeStitchCanvas(): void {
-        this.stitchCanvas?.dispose();
+        this.stitchCanvasFacade?.dispose();
         this.stitchDrawingCanvas?.dispose();
     }
 

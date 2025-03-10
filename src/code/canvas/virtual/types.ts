@@ -1,7 +1,7 @@
 import { DotArray } from "../utilities/arrays/dot/dot.js";
 import { Id, CueDot, ICanvas, CueThread } from "../types.js";
-import { Listener, VoidListener, VoidUnsubscribe } from "../../types.js";
 import { ThreadArray } from "../utilities/arrays/thread/array.js";
+import { Listener, VoidListener, VoidUnsubscribe } from "../../types.js";
 import { StitchThreadArray } from "../utilities/arrays/thread/stitch.js";
 
 export interface IVirtualCanvas extends ICanvas {
@@ -21,10 +21,13 @@ export interface IStitchCanvas extends IVirtualCanvas {
     onDrawThreads(listener: DrawStitchThreadsListener): VoidUnsubscribe;
 }
 
+export interface IStitchCanvasFacade extends IStitchCanvas {
+    setThreadColor(color: string): void;
+}
+
 export interface ICueCanvas extends IVirtualCanvas {
     onDrawDot(listener: DrawCueDotListener): VoidUnsubscribe;
     onDrawDashDot(listener: DrawCueDotListener): VoidUnsubscribe;
-    // TODO:  onMoveDot(listener: MoveCueDotListener): VoidUnsubscribe;
     onRemoveDot(listener: RemoveCueDotListener): VoidUnsubscribe;
 
     onDrawThread(listener: DrawCueThreadListener): VoidUnsubscribe;
