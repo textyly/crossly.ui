@@ -1,48 +1,46 @@
 import { CanvasBase } from "./base.js";
 import { IInputCanvas } from "./input/types.js";
 import { CueCanvas } from "./virtual/cue/cue.js";
-import { IDrawingCanvas } from "./drawing/types.js";
-import { GridCanvas } from "./virtual/grid/grid.js";
-import { DotMatcher } from "./virtual/grid/matcher.js";
+import { FabricCanvas } from "./virtual/fabric/fabric.js";
 import { StitchCanvas } from "./virtual/stitch/stitch.js";
-import { ICueCanvas, IGridCanvas, IStitchCanvas } from "./virtual/types.js";
-import { CrosslyCanvasConfig, ICrosslyCanvas, SizeChangeEvent } from "./types.js";
+import { CrosslyCanvasConfig, ICrosslyCanvas, Bounds } from "./types.js";
+import { ICueCanvas, IFabricCanvas, IStitchCanvas } from "./virtual/types.js";
+import { ICueDrawingCanvas, IFabricDrawingCanvas, IRasterDrawingCanvas, IStitchDrawingCanvas, IVectorDrawingCanvas } from "./drawing/types.js";
+import { FabricDrawingCanvas } from "./drawing/fabric.js";
+import { StitchDrawingCanvas } from "./drawing/stitch.js";
+import { CueDrawingCanvas } from "./drawing/cue.js";
 
 export class CrosslyCanvas extends CanvasBase implements ICrosslyCanvas {
     private readonly config: Readonly<CrosslyCanvasConfig>;
     private readonly inputCanvas: IInputCanvas;
 
-    private gridCanvas!: IGridCanvas;
-    private gridDrawingCanvas!: IDrawingCanvas<IGridCanvas>;
+    private fabricCanvas!: IFabricCanvas;
+    private fabricDrawingCanvas!: IFabricDrawingCanvas;
 
     private stitchCanvas!: IStitchCanvas;
-    private stitchDrawingCanvas!: IDrawingCanvas<IStitchCanvas>;
+    private stitchDrawingCanvas!: IStitchDrawingCanvas;
 
     private cueCanvas!: ICueCanvas;
-    private cueDrawingCanvas!: IDrawingCanvas<ICueCanvas>;
+    private cueDrawingCanvas!: ICueDrawingCanvas;
 
     constructor(
         config: CrosslyCanvasConfig,
         inputCanvas: IInputCanvas,
-        gridDrawingCanvas: IDrawingCanvas<IGridCanvas>,
-        stitchDrawingCanvas: IDrawingCanvas<IStitchCanvas>,
-        cueDrawingCanvas: IDrawingCanvas<ICueCanvas>) {
+        fabricRasterDrawing: IRasterDrawingCanvas,
+        stitchRasterDrawing: IRasterDrawingCanvas,
+        cueVectorDrawing: IVectorDrawingCanvas) {
 
         super();
-
         this.config = config;
         this.inputCanvas = inputCanvas;
-        this.initializeGridCanvas(gridDrawingCanvas);
-        this.initializeStitchCanvas(stitchDrawingCanvas);
-        this.initializeCueCanvas(cueDrawingCanvas);
-    }
 
-    public get configuration(): CrosslyCanvasConfig {
-        return this.config;
+        this.initializeFabricCanvas(fabricRasterDrawing);
+        this.initializeStitchCanvas(stitchRasterDrawing);
+        this.initializeCueCanvas(cueVectorDrawing);
     }
 
     public draw(): void {
-        this.gridCanvas.draw();
+        this.fabricCanvas.draw();
         this.stitchCanvas.draw();
         this.cueCanvas.draw();
     }
@@ -50,39 +48,24 @@ export class CrosslyCanvas extends CanvasBase implements ICrosslyCanvas {
     public override dispose(): void {
         this.disposeCueCanvas();
         this.disposeStitchCanvas();
-        this.disposeGridCanvas();
-
-        this.inputCanvas?.dispose();
-
+        this.disposeFabricCanvas();
+        this.disposeInputCanvas();
         super.dispose();
     }
 
-    private initializeGridCanvas(dotDrawingCanvas: IDrawingCanvas<IGridCanvas>): void {
-        this.gridDrawingCanvas = dotDrawingCanvas;
-        const dotMatcher = new DotMatcher();
-        this.gridCanvas = new GridCanvas(this.configuration.grid, this.inputCanvas, dotMatcher);
-        this.gridDrawingCanvas.subscribe(this.gridCanvas);
-
-        const sizeChangeUn = this.gridCanvas.onSizeChange(this.handleSizeChange.bind(this));
-        super.registerUn(sizeChangeUn);
+    private initializeFabricCanvas(rasterDrawing: IRasterDrawingCanvas): void {
+        this.fabricCanvas = new FabricCanvas(this.config.fabric, this.inputCanvas);
+        this.fabricDrawingCanvas = new FabricDrawingCanvas(this.fabricCanvas, rasterDrawing);
     }
 
-    private initializeStitchCanvas(stitchDrawingCanvas: IDrawingCanvas<IStitchCanvas>): void {
-        this.stitchDrawingCanvas = stitchDrawingCanvas;
-        this.stitchCanvas = new StitchCanvas(this.configuration.stitch, this.inputCanvas, this.gridCanvas);
-        this.stitchDrawingCanvas.subscribe(this.stitchCanvas);
+    private initializeStitchCanvas(rasterDrawing: IRasterDrawingCanvas): void {
+        this.stitchCanvas = new StitchCanvas(this.config.stitch, this.inputCanvas);
+        this.stitchDrawingCanvas = new StitchDrawingCanvas(this.stitchCanvas, rasterDrawing);
     }
 
-    private initializeCueCanvas(cueDrawingCanvas: IDrawingCanvas<ICueCanvas>): void {
-        this.cueDrawingCanvas = cueDrawingCanvas;
-        this.cueCanvas = new CueCanvas(this.configuration.cue, this.inputCanvas, this.gridCanvas);
-        this.cueDrawingCanvas.subscribe(this.cueCanvas);
-    }
-
-    private handleSizeChange(event: SizeChangeEvent): void {
-        const size = event.size;
-        super.size = size;
-        this.inputCanvas.size = size;
+    private initializeCueCanvas(vectorDrawing: IVectorDrawingCanvas): void {
+        this.cueCanvas = new CueCanvas(this.config.cue, this.inputCanvas);
+        this.cueDrawingCanvas = new CueDrawingCanvas(this.cueCanvas, vectorDrawing);
     }
 
     private disposeCueCanvas(): void {
@@ -95,8 +78,12 @@ export class CrosslyCanvas extends CanvasBase implements ICrosslyCanvas {
         this.stitchDrawingCanvas?.dispose();
     }
 
-    private disposeGridCanvas(): void {
-        this.gridCanvas?.dispose();
-        this.gridDrawingCanvas?.dispose();
+    private disposeFabricCanvas(): void {
+        this.fabricCanvas?.dispose();
+        this.fabricDrawingCanvas?.dispose();
+    }
+
+    private disposeInputCanvas(): void {
+        this.inputCanvas?.dispose();
     }
 }

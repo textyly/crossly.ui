@@ -1,32 +1,33 @@
-import { VirtualCanvasBase } from "../base.js";
+import { CanvasConfig } from "../../types.js";
+import { VirtualCanvasBase } from "../virtual.js";
+import { IInputCanvas } from "../../input/types.js";
 import { VoidUnsubscribe } from "../../../types.js";
-import { Messaging4 } from "../../../messaging/impl.js";
-import { IMessaging4 } from "../../../messaging/types.js";
-import { CueCanvasConfig, StitchCanvasConfig, StitchDot, StitchLine } from "../../types.js";
-import { DrawStitchDotEvent, DrawStitchDotListener, DrawStitchLineEvent, DrawStitchLineListener } from "../types.js";
+import { Messaging2 } from "../../../messaging/impl.js";
+import { IMessaging2 } from "../../../messaging/types.js";
+import { DotArray } from "../../utilities/arrays/dot/dot.js";
+import { StitchThreadArray } from "../../utilities/arrays/thread/stitch.js";
+import {
+    IStitchCanvas,
+    DrawStitchDotsEvent,
+    DrawStitchDotsListener,
+    DrawStitchThreadsEvent,
+    DrawStitchThreadsListener,
+} from "../types.js";
 
-export abstract class StitchCanvasBase extends VirtualCanvasBase<CueCanvasConfig> {
-    private readonly messaging: IMessaging4<DrawStitchDotEvent, DrawStitchDotEvent, DrawStitchLineEvent, DrawStitchLineEvent>;
+export abstract class StitchCanvasBase extends VirtualCanvasBase implements IStitchCanvas {
+    private readonly messaging: IMessaging2<DrawStitchThreadsEvent, DrawStitchDotsEvent>;
 
-    constructor(config: StitchCanvasConfig) {
-        super(config);
-        this.messaging = new Messaging4();
+    constructor(config: CanvasConfig, input: IInputCanvas) {
+        super(config, input);
+        this.messaging = new Messaging2();
     }
 
-    public onDrawFrontDot(listener: DrawStitchDotListener): VoidUnsubscribe {
+    public onDrawThreads(listener: DrawStitchThreadsListener): VoidUnsubscribe {
         return this.messaging.listenOnChannel1(listener);
     }
 
-    public onDrawBackDot(listener: DrawStitchDotListener): VoidUnsubscribe {
+    public onDrawDots(listener: DrawStitchDotsListener): VoidUnsubscribe {
         return this.messaging.listenOnChannel2(listener);
-    }
-
-    public onDrawFrontLine(listener: DrawStitchLineListener): VoidUnsubscribe {
-        return this.messaging.listenOnChannel3(listener);
-    }
-
-    public onDrawBackLine(listener: DrawStitchLineListener): VoidUnsubscribe {
-        return this.messaging.listenOnChannel4(listener);
     }
 
     public override dispose(): void {
@@ -34,23 +35,13 @@ export abstract class StitchCanvasBase extends VirtualCanvasBase<CueCanvasConfig
         super.dispose();
     }
 
-    protected invokeDrawFrontDot(dot: StitchDot): void {
-        const drawDotEvent = { dot };
-        this.messaging.sendToChannel1(drawDotEvent);
+    protected invokeDrawThreads(threads: StitchThreadArray): void {
+        const event = { threads };
+        this.messaging.sendToChannel1(event);
     }
 
-    protected invokeDrawBackDot(dot: StitchDot): void {
-        const drawDotEvent = { dot };
-        this.messaging.sendToChannel2(drawDotEvent);
-    }
-
-    protected invokeDrawFrontLine(line: StitchLine): void {
-        const drawLineEvent = { line };
-        this.messaging.sendToChannel3(drawLineEvent);
-    }
-
-    protected invokeDrawBackLine(line: StitchLine): void {
-        const drawLineEvent = { line };
-        this.messaging.sendToChannel4(drawLineEvent);
+    protected invokeDrawDots(dots: DotArray): void {
+        const event = { dots };
+        this.messaging.sendToChannel2(event);
     }
 }

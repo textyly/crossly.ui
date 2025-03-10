@@ -7,10 +7,9 @@ export class IdGenerator {
         this.nextId = this.initialId;
     }
 
-    public next(): string {
+    public next(): number {
         const id = ++this.nextId;
-        const strId = id.toString();
-        return strId;
+        return id;
     }
 
     public reset(): void {

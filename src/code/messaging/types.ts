@@ -141,6 +141,21 @@ export interface IMessaging7<Data1, Data2, Data3, Data4, Data5, Data6, Data7> ex
     sendToChannel7(data: Data7): void;
 }
 
+export interface IMessaging8<Data1, Data2, Data3, Data4, Data5, Data6, Data7, Data8> extends IMessaging7<Data1, Data2, Data3, Data4, Data5, Data6, Data7> {
+
+    /**
+     * 
+     * @param listener 
+     */
+    listenOnChannel8(listener: Listener<Data8>): VoidUnsubscribe;
+
+    /**
+     * 
+     * @param data 
+     */
+    sendToChannel8(data: Data8): void;
+}
+
 export enum PublicChannels {
     Channel0 = "channel0",
     Channel1 = "channel1",
@@ -150,6 +165,7 @@ export enum PublicChannels {
     Channel5 = "channel5",
     Channel6 = "channel6",
     Channel7 = "channel7",
+    Channel8 = "channel8",
 }
 
 export enum PrivateChannels {

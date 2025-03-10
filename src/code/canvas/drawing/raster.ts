@@ -1,46 +1,97 @@
-import { Size } from "../types.js";
+import { Bounds } from "../types.js";
 import { CanvasBase } from "../base.js";
-import { IRasterDrawing } from "./types.js";
-import { StitchDot, StitchLine } from "../types.js";
+import { IRasterDrawingCanvas } from "./types.js";
+import { DotArray } from "../utilities/arrays/dot/dot.js";
+import { ThreadArray } from "../utilities/arrays/thread/array.js";
 
-export class RasterDrawing extends CanvasBase implements IRasterDrawing {
-    private readonly rasterContext: CanvasRenderingContext2D;
+export class RasterDrawingCanvas extends CanvasBase implements IRasterDrawingCanvas {
+    private readonly endAngle: number;
+    private readonly context: CanvasRenderingContext2D;
 
     constructor(private rasterCanvas: HTMLCanvasElement) {
         super();
-        this.rasterContext = rasterCanvas.getContext("2d")!;
+        this.endAngle = Math.PI * 2;
+        this.context = rasterCanvas.getContext("2d")!;
     }
 
-    public drawDot(dot: StitchDot): void {
-        this.rasterContext.fillStyle = dot.color;
-
-        this.rasterContext.beginPath();
-        this.rasterContext.arc(dot.x, dot.y, dot.radius, 0, Math.PI * 2);
-        this.rasterContext.fill();
-        this.rasterContext.closePath();
+    public async createBitMap(): Promise<ImageBitmap> {
+        const bitmap = await createImageBitmap(this.rasterCanvas);
+        return bitmap;
     }
 
-    public drawLine(line: StitchLine): void {
-        this.rasterContext.beginPath();
+    public drawBitMap(bitmap: ImageBitmap): void {
+        const bounds = this.bounds;
+        this.context.drawImage(bitmap, 0, 0, bounds.width, bounds.height);
+    }
 
-        const from = line.from;
-        this.rasterContext.moveTo(from.x, from.y);
+    public drawDots(dots: DotArray): void {
+        // CPU, GPU, memory and GC intensive code
+        this.context.beginPath();
 
-        const to = line.to;
-        this.rasterContext.lineTo(to.x, to.y);
+        const dotsX = dots.dotsX;
+        const dotsY = dots.dotsY;
+        const radiuses = dots.radiuses;
+        const colors = dots.colors;
 
-        this.rasterContext.lineWidth = line.width;
-        this.rasterContext.strokeStyle = line.color;
-        this.rasterContext.stroke();
+        for (let index = 0; index < dots.length; index++) {
+            const x = dotsX[index] - this.bounds.left;
+            const y = dotsY[index] - this.bounds.top;
+
+            this.context.fillStyle = colors[index];
+            this.context.moveTo(x, y);
+
+            this.context.arc(x, y, radiuses[index], 0, this.endAngle);
+        }
+
+        this.context.fill();
+    }
+
+    public drawLines(threads: ThreadArray): void {
+        // CPU, GPU, memory and GC intensive code
+        this.context.beginPath();
+
+        const visibility = threads.visibilities;
+        const fromDotsXPositions = threads.fromDotsXPositions;
+        const fromDotsYPositions = threads.fromDotsYPositions;
+        const toDotsXPositions = threads.toDotsXPositions;
+        const toDotsYPositions = threads.toDotsYPositions;
+        const widths = threads.widths;
+        const colors = threads.colors;
+
+        for (let index = 0; index < threads.length; index++) {
+            const isVisible = visibility[index];
+            if (!isVisible) {
+                continue;
+            }
+
+            this.context.lineWidth = widths[index];
+            this.context.strokeStyle = colors[index];
+
+            this.context.moveTo(fromDotsXPositions[index] - this.bounds.left, fromDotsYPositions[index] - this.bounds.top);
+            this.context.lineTo(toDotsXPositions[index] - this.bounds.left, toDotsYPositions[index] - this.bounds.top);
+        }
+
+        this.context.stroke();
+        this.context.closePath();
     }
 
     public clear(): void {
-        this.rasterContext.clearRect(0, 0, this.rasterCanvas.clientWidth, this.rasterCanvas.clientWidth);
+        this.context.clearRect(0, 0, this.bounds.width, this.bounds.height);
     }
 
-    public override set size(value: Size) {
-        super.size = value;
-        this.rasterCanvas.width = value.width;
-        this.rasterCanvas.height = value.height;
+    protected override invokeBoundsChange(bounds: Bounds): void {
+        super.invokeBoundsChange(bounds);
+
+        const x = bounds.left;
+        const y = bounds.top;
+        const width = bounds.width;
+        const height = bounds.height;
+
+        this.rasterCanvas.style.transform = `translate(${x}px, ${y}px)`;
+
+        if (width !== this.rasterCanvas.width || height !== this.rasterCanvas.height) {
+            this.rasterCanvas.height = height;
+            this.rasterCanvas.width = width;
+        }
     }
 }
