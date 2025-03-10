@@ -38,7 +38,6 @@ export class StitchThreadArray extends FabricThreadArray {
         return this._sides;
     }
 
-    // TODO: change to indexed prop
     // this property is being invoked extremely intensively, so it must not accept StitchThread (an object) because it might require a lot of GC
     public setThread(index: number, visible: boolean, fromDotXIdx: number, fromDotXPos: number, fromDotYIdx: number, fromDotYPos: number, toDotXIdx: number, toDotXPos: number, toDotYIdx: number, toDotYPos: number, width: number, color: string, side: CanvasSide): void {
         super.set(index, visible, fromDotXPos, fromDotYPos, toDotXPos, toDotYPos, width, color);

@@ -34,7 +34,6 @@ export class FabricThreadArray {
         return this._visibilities;
     }
 
-    // TODO: change to indexed prop
     public setVisibilities(index: number, visibility: boolean): void {
         this._visibilities[index] = visibility;
     }
@@ -63,8 +62,7 @@ export class FabricThreadArray {
         return this._colors;
     }
 
-    // TODO: change to indexed prop
-    // this property is being invoked extremely intensively, so it must not accept Thread (an object) because it might require a lot of GC
+    // this method is being invoked extremely intensively, so it must not accept Thread (an object) because it might require a lot of GC
     public set(index: number, visible: boolean, fromDotXPos: number, fromDotYPos: number, toDotXPos: number, toDotYPos: number, width: number, color: string): void {
         this._visibilities[index] = visible;
         this._fromDotsXPositions[index] = fromDotXPos;
