@@ -1,5 +1,5 @@
 import { CanvasBase } from "../base.js";
-import { Dot, Bounds, Thread } from "../types.js";
+import { Dot, Bounds, CueThread } from "../types.js";
 import { IVectorDrawingCanvas, SvgDot, SvgLine } from "./types.js";
 
 export class VectorDrawingCanvas extends CanvasBase implements IVectorDrawingCanvas {
@@ -33,14 +33,14 @@ export class VectorDrawingCanvas extends CanvasBase implements IVectorDrawingCan
         this.svgCanvas.removeChild(dot);
     }
 
-    public drawLine(thread: Thread<Dot>): SvgLine {
+    public drawLine(thread: CueThread): SvgLine {
         const svgLine = document.createElementNS("http://www.w3.org/2000/svg", "line");
         this.moveLine(thread, svgLine);
         this.svgCanvas.appendChild(svgLine);
         return svgLine;
     }
 
-    public drawDashLine(thread: Thread<Dot>): SvgLine {
+    public drawDashLine(thread: CueThread): SvgLine {
         const svgLine = document.createElementNS("http://www.w3.org/2000/svg", "line");
         this.moveLine(thread, svgLine);
         svgLine.setAttribute("stroke-dasharray", "5,2"); //TODO: move it to the config!!!
@@ -52,7 +52,7 @@ export class VectorDrawingCanvas extends CanvasBase implements IVectorDrawingCan
         this.svgCanvas.removeChild(line);
     }
 
-    public moveLine(thread: Thread<Dot>, svgLine: SvgLine): SvgLine {
+    public moveLine(thread: CueThread, svgLine: SvgLine): SvgLine {
         const x1 = (thread.from.x - this.bounds.left).toString();
         const y1 = (thread.from.y - this.bounds.top).toString();
 

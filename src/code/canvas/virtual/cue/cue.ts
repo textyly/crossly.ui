@@ -1,8 +1,7 @@
-import { DotIndex } from "../types.js";
 import { CueCanvasBase } from "./base.js";
 import { DotsUtility } from "../../utilities/dots.js";
 import { IdGenerator } from "../../utilities/generator.js";
-import { CanvasSide, Id, CueThread, CanvasConfig, CueDot, Dot } from "../../types.js";
+import { CanvasSide, Id, CueThread, CanvasConfig, CueDot, Dot, DotIndex } from "../../types.js";
 import { Position, IInputCanvas, PointerUpEvent, PointerMoveEvent } from "../../input/types.js";
 
 export class CueCanvas extends CueCanvasBase {

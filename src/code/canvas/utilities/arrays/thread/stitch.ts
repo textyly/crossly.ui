@@ -1,7 +1,7 @@
-import { FabricThreadArray } from "./fabric.js";
+import { ThreadArray } from "./array.js";
 import { CanvasSide, StitchTread } from "../../../types.js";
 
-export class StitchThreadArray extends FabricThreadArray {
+export class StitchThreadArray extends ThreadArray {
     private _fromDotsXIndexes: Int16Array;
     private _fromDotsYIndexes: Int16Array;
     private _toDotsXIndexes: Int16Array;
@@ -11,10 +11,10 @@ export class StitchThreadArray extends FabricThreadArray {
     constructor() {
         super();
 
-        this._fromDotsXIndexes = new Int16Array(this._space);
-        this._fromDotsYIndexes = new Int16Array(this._space);
-        this._toDotsXIndexes = new Int16Array(this._space);
-        this._toDotsYIndexes = new Int16Array(this._space);
+        this._fromDotsXIndexes = new Int16Array(this.space);
+        this._fromDotsYIndexes = new Int16Array(this.space);
+        this._toDotsXIndexes = new Int16Array(this.space);
+        this._toDotsYIndexes = new Int16Array(this.space);
         this._sides = new Array<CanvasSide>();
     }
 
@@ -38,7 +38,7 @@ export class StitchThreadArray extends FabricThreadArray {
         return this._sides;
     }
 
-    // this property is being invoked extremely intensively, so it must not accept StitchThread (an object) because it might require a lot of GC
+    // this method is being invoked extremely intensively, so it must not accept StitchThread (an object) because it might require a lot of GC
     public setThread(index: number, visible: boolean, fromDotXIdx: number, fromDotXPos: number, fromDotYIdx: number, fromDotYPos: number, toDotXIdx: number, toDotXPos: number, toDotYIdx: number, toDotYPos: number, width: number, color: string, side: CanvasSide): void {
         super.set(index, visible, fromDotXPos, fromDotYPos, toDotXPos, toDotYPos, width, color);
         this._fromDotsXIndexes[index] = fromDotXIdx;
@@ -48,13 +48,13 @@ export class StitchThreadArray extends FabricThreadArray {
         this._sides[index] = side;
     }
 
-    // this method is being invoked only on a thread creation, so it is safe to use an object
+    // this method is being invoked only on a thread creation, so it is safe to use an StitchTread object
     public pushThread(thread: StitchTread): void {
         super.push(thread.visible, thread.fromDotXPos, thread.fromDotYPos, thread.toDotXPos, thread.toDotYPos, thread.width, thread.color);
-        this._fromDotsXIndexes[this._count] = thread.fromDotXIdx;
-        this._fromDotsYIndexes[this._count] = thread.fromDotYIdx;
-        this._toDotsXIndexes[this._count] = thread.toDotXIdx;
-        this._toDotsYIndexes[this._count] = thread.toDotYIdx;
+        this._fromDotsXIndexes[this.count] = thread.fromDotXIdx;
+        this._fromDotsYIndexes[this.count] = thread.fromDotYIdx;
+        this._toDotsXIndexes[this.count] = thread.toDotXIdx;
+        this._toDotsYIndexes[this.count] = thread.toDotYIdx;
         this._sides.push(thread.side);
     }
 
@@ -68,7 +68,7 @@ export class StitchThreadArray extends FabricThreadArray {
 
     private expandFromDotsXIndexes(): void {
         const fromDotsXIndexes = this._fromDotsXIndexes;
-        this._fromDotsXIndexes = new Int16Array(this._space);
+        this._fromDotsXIndexes = new Int16Array(this.space);
 
         for (let index = 0; index < fromDotsXIndexes.length; index++) {
             this._fromDotsXIndexes[index] = fromDotsXIndexes[index];
@@ -77,7 +77,7 @@ export class StitchThreadArray extends FabricThreadArray {
 
     private expandFromDotsYIndexes(): void {
         const fromDotsYIndexes = this._fromDotsYIndexes;
-        this._fromDotsYIndexes = new Int16Array(this._space);
+        this._fromDotsYIndexes = new Int16Array(this.space);
 
         for (let index = 0; index < fromDotsYIndexes.length; index++) {
             this._fromDotsYIndexes[index] = fromDotsYIndexes[index];
@@ -86,7 +86,7 @@ export class StitchThreadArray extends FabricThreadArray {
 
     private expandToDotsXIndexes(): void {
         const toDotsXIndexes = this._toDotsXIndexes;
-        this._toDotsXIndexes = new Int16Array(this._space);
+        this._toDotsXIndexes = new Int16Array(this.space);
 
         for (let index = 0; index < toDotsXIndexes.length; index++) {
             this._toDotsXIndexes[index] = toDotsXIndexes[index];
@@ -95,7 +95,7 @@ export class StitchThreadArray extends FabricThreadArray {
 
     private expandToDotsYIndexes(): void {
         const toDotsYIndexes = this._toDotsYIndexes;
-        this._toDotsYIndexes = new Int16Array(this._space);
+        this._toDotsYIndexes = new Int16Array(this.space);
 
         for (let index = 0; index < toDotsYIndexes.length; index++) {
             this._toDotsYIndexes[index] = toDotsYIndexes[index];

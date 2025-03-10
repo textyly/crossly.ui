@@ -1,10 +1,8 @@
 import { DotArray } from "../utilities/arrays/dot/dot.js";
 import { Id, CueDot, ICanvas, CueThread } from "../types.js";
 import { Listener, VoidListener, VoidUnsubscribe } from "../../types.js";
-import { FabricThreadArray } from "../utilities/arrays/thread/fabric.js";
+import { ThreadArray } from "../utilities/arrays/thread/array.js";
 import { StitchThreadArray } from "../utilities/arrays/thread/stitch.js";
-
-export type DotIndex = { dotX: number, dotY: number };
 
 export interface IVirtualCanvas extends ICanvas {
     draw(): void;
@@ -38,7 +36,7 @@ export interface ICueCanvas extends IVirtualCanvas {
 export type DrawFabricDotsEvent = { dots: DotArray };
 export type DrawFabricDotsListener = Listener<DrawFabricDotsEvent>;
 
-export type DrawFabricThreadsEvent = { threads: FabricThreadArray };
+export type DrawFabricThreadsEvent = { threads: ThreadArray };
 export type DrawFabricThreadsListener = Listener<DrawFabricThreadsEvent>;
 
 export type DrawStitchDotsEvent = { dots: DotArray };

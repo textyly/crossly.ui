@@ -1,8 +1,8 @@
 import { Bounds } from "../types.js";
 import { CanvasBase } from "../base.js";
-import { DotArray } from "../utilities/arrays/dot/dot.js";
-import { FabricThreadArray } from "../utilities/arrays/thread/fabric.js";
 import { IRasterDrawingCanvas } from "./types.js";
+import { DotArray } from "../utilities/arrays/dot/dot.js";
+import { ThreadArray } from "../utilities/arrays/thread/array.js";
 
 export class RasterDrawingCanvas extends CanvasBase implements IRasterDrawingCanvas {
     private readonly endAngle: number;
@@ -46,7 +46,7 @@ export class RasterDrawingCanvas extends CanvasBase implements IRasterDrawingCan
         this.context.fill();
     }
 
-    public drawLines(threads: FabricThreadArray): void {
+    public drawLines(threads: ThreadArray): void {
         // CPU, GPU, memory and GC intensive code
         this.context.beginPath();
 

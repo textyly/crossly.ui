@@ -1,10 +1,6 @@
-export class FabricThreadArray {
-    private readonly default = 10;
-    private readonly step = 4;
+import { ArrayBase } from "../base.js";
 
-    protected _count: number;
-    protected _space: number;
-
+export class ThreadArray extends ArrayBase {
     private _visibilities: Array<boolean>;
     private _fromDotsXPositions: Int32Array;
     private _fromDotsYPositions: Int32Array;
@@ -14,20 +10,14 @@ export class FabricThreadArray {
     private _colors: Array<string>;
 
     constructor() {
-        this._count = -1;
-        this._space = this.default;
-
+        super();
         this._visibilities = new Array<boolean>();
-        this._fromDotsXPositions = new Int32Array(this._space);
-        this._fromDotsYPositions = new Int32Array(this._space);
-        this._toDotsXPositions = new Int32Array(this._space);
-        this._toDotsYPositions = new Int32Array(this._space);
-        this._widths = new Float32Array(this._space);
+        this._fromDotsXPositions = new Int32Array(this.space);
+        this._fromDotsYPositions = new Int32Array(this.space);
+        this._toDotsXPositions = new Int32Array(this.space);
+        this._toDotsYPositions = new Int32Array(this.space);
+        this._widths = new Float32Array(this.space);
         this._colors = new Array<string>();
-    }
-
-    public get length(): number {
-        return this._count + 1;
     }
 
     public get visibilities(): Readonly<Array<boolean>> {
@@ -75,27 +65,18 @@ export class FabricThreadArray {
 
     // this method is being invoked extremely intensively, so it must not accept Thread (an object) because it might require a lot of GC
     public push(visible: boolean, fromDotXPos: number, fromDotYPos: number, toDotXPos: number, toDotYPos: number, width: number, color: string): void {
-        this._count++;
-        this.ensureSpace();
+        this.occupyItemSpace();
 
         this._visibilities.push(visible);
-        this._fromDotsXPositions[this._count] = fromDotXPos;
-        this._fromDotsYPositions[this._count] = fromDotYPos;
-        this._toDotsXPositions[this._count] = toDotXPos;
-        this._toDotsYPositions[this._count] = toDotYPos;
-        this._widths[this._count] = width;
+        this._fromDotsXPositions[this.count] = fromDotXPos;
+        this._fromDotsYPositions[this.count] = fromDotYPos;
+        this._toDotsXPositions[this.count] = toDotXPos;
+        this._toDotsYPositions[this.count] = toDotYPos;
+        this._widths[this.count] = width;
         this._colors.push(color);
     }
 
-    protected ensureSpace(): void {
-        const free = (this._space - this._count);
-        if (free <= 0) {
-            this.expand();
-        }
-    }
-
-    protected expand(): void {
-        this._space = this._space * this.step;
+    protected override expand(): void {
         this.expandFromDotsXPositions();
         this.expandFromDotsYPositions();
         this.expandToDotsXPositions();
@@ -105,7 +86,7 @@ export class FabricThreadArray {
 
     private expandFromDotsXPositions(): void {
         const fromDotsXPositions = this._fromDotsXPositions;
-        this._fromDotsXPositions = new Int32Array(this._space);
+        this._fromDotsXPositions = new Int32Array(this.space);
 
         for (let index = 0; index < fromDotsXPositions.length; index++) {
             this._fromDotsXPositions[index] = fromDotsXPositions[index];
@@ -114,7 +95,7 @@ export class FabricThreadArray {
 
     private expandFromDotsYPositions(): void {
         const fromDotsYPositions = this._fromDotsYPositions;
-        this._fromDotsYPositions = new Int32Array(this._space);
+        this._fromDotsYPositions = new Int32Array(this.space);
 
         for (let index = 0; index < fromDotsYPositions.length; index++) {
             this._fromDotsYPositions[index] = fromDotsYPositions[index];
@@ -123,7 +104,7 @@ export class FabricThreadArray {
 
     private expandToDotsXPositions(): void {
         const toDotsXPositions = this._toDotsXPositions;
-        this._toDotsXPositions = new Int32Array(this._space);
+        this._toDotsXPositions = new Int32Array(this.space);
 
         for (let index = 0; index < toDotsXPositions.length; index++) {
             this._toDotsXPositions[index] = toDotsXPositions[index];
@@ -132,7 +113,7 @@ export class FabricThreadArray {
 
     private expandToDotsYPositions(): void {
         const toDotsYPositions = this._toDotsYPositions;
-        this._toDotsYPositions = new Int32Array(this._space);
+        this._toDotsYPositions = new Int32Array(this.space);
 
         for (let index = 0; index < toDotsYPositions.length; index++) {
             this._toDotsYPositions[index] = toDotsYPositions[index];
@@ -141,7 +122,7 @@ export class FabricThreadArray {
 
     private expandWidths(): void {
         const widths = this._widths;
-        this._widths = new Float32Array(this._space);
+        this._widths = new Float32Array(this.space);
 
         for (let index = 0; index < widths.length; index++) {
             this._widths[index] = widths[index];

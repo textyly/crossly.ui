@@ -2,7 +2,7 @@ import { FabricCanvasBase } from "./base.js";
 import { CanvasConfig } from "../../types.js";
 import { IInputCanvas } from "../../input/types.js";
 import { DotArray } from "../../utilities/arrays/dot/dot.js";
-import { FabricThreadArray } from "../../utilities/arrays/thread/fabric.js";
+import { ThreadArray } from "../../utilities/arrays/thread/array.js";
 
 export class FabricCanvas extends FabricCanvasBase {
     constructor(config: CanvasConfig, inputCanvas: IInputCanvas) {
@@ -30,7 +30,7 @@ export class FabricCanvas extends FabricCanvasBase {
         // Do not create types/classes for thread (objects are extremely slow and memory/GC consuming)
 
         const bounds = this.bounds;
-        const threads = new FabricThreadArray();
+        const threads = new ThreadArray();
 
         for (let dotYIdx = startDotIndexY; dotYIdx <= endDotIndexY; dotYIdx += 2) {
 
