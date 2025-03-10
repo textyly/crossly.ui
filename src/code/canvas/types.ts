@@ -12,6 +12,20 @@ export type CueDot = Dot & { id: Id };
 
 export type Thread<TDot extends Dot> = { from: TDot, to: TDot, width: number, color: string };
 export type CueThread = Thread<Dot> & { id: Id };
+export type StitchTread = {
+    visible: boolean;
+    fromDotXIdx: number;
+    fromDotXPos: number;
+    fromDotYIdx: number;
+    fromDotYPos: number;
+    toDotXIdx: number;
+    toDotXPos: number;
+    toDotYIdx: number;
+    toDotYPos: number;
+    width: number;
+    color: string;
+    side: CanvasSide;
+};
 
 export type CanvasConfig = {
     columns: number;

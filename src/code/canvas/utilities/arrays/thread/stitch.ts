@@ -1,5 +1,5 @@
-import { CanvasSide } from "../../../types.js";
 import { FabricThreadArray } from "./fabric.js";
+import { CanvasSide, StitchTread } from "../../../types.js";
 
 export class StitchThreadArray extends FabricThreadArray {
     private _fromDotsXIdx: Int16Array;
@@ -39,24 +39,9 @@ export class StitchThreadArray extends FabricThreadArray {
     }
 
     // TODO: change to indexed prop
-    // this property is being invoked extremely intensively, so it must not accept an object because it will require a lot of GC
-    public setThread(
-        index: number,
-        visible: boolean,
-        fromDotXIdx: number,
-        fromDotXPos: number,
-        fromDotYIdx: number,
-        fromDotYPos: number,
-        toDotXIdx: number,
-        toDotXPos: number,
-        toDotYIdx: number,
-        toDotYPos: number,
-        width: number,
-        color: string,
-        side: CanvasSide): void {
-
+    // this property is being invoked extremely intensively, so it must not accept StitchThread (an object) because it might require a lot of GC
+    public setThread(index: number, visible: boolean, fromDotXIdx: number, fromDotXPos: number, fromDotYIdx: number, fromDotYPos: number, toDotXIdx: number, toDotXPos: number, toDotYIdx: number, toDotYPos: number, width: number, color: string, side: CanvasSide): void {
         super.set(index, visible, fromDotXPos, fromDotYPos, toDotXPos, toDotYPos, width, color);
-
         this._fromDotsXIdx[index] = fromDotXIdx;
         this._fromDotsYIdx[index] = fromDotYIdx;
         this._toDotsXIdx[index] = toDotXIdx;
@@ -65,23 +50,8 @@ export class StitchThreadArray extends FabricThreadArray {
     }
 
     // this method is being invoked only on a thread creation, so it is safe to use an object
-    public pushThread(thread: {
-        visible: boolean,
-        fromDotXIdx: number,
-        fromDotXPos: number,
-        fromDotYIdx: number,
-        fromDotYPos: number,
-        toDotXIdx: number,
-        toDotXPos: number,
-        toDotYIdx: number,
-        toDotYPos: number,
-        width: number,
-        color: string,
-        side: CanvasSide
-    }): void {
-
+    public pushThread(thread: StitchTread): void {
         super.push(thread.visible, thread.fromDotXPos, thread.fromDotYPos, thread.toDotXPos, thread.toDotYPos, thread.width, thread.color);
-
         this._fromDotsXIdx[this._count] = thread.fromDotXIdx;
         this._fromDotsYIdx[this._count] = thread.fromDotYIdx;
         this._toDotsXIdx[this._count] = thread.toDotXIdx;

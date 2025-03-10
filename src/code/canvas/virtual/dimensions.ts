@@ -248,7 +248,7 @@ export abstract class VirtualCanvasDimensions extends CanvasBase {
 
     protected calculateHeight(): number {
         const drawingBounds = this.inMovingMode ? this._movingBounds! : this.visibleBounds;
-        
+
         if (this.virtualBounds.top < drawingBounds.top) {
             const virtualHeight = (this.virtualBounds.height - (Math.abs(this.virtualBounds.top) - Math.abs(drawingBounds.top)));
             return Math.min(virtualHeight, drawingBounds.height);

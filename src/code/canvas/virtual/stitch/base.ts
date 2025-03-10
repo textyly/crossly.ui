@@ -1,8 +1,11 @@
 import { CanvasConfig } from "../../types.js";
+import { VirtualCanvasBase } from "../virtual.js";
 import { IInputCanvas } from "../../input/types.js";
 import { VoidUnsubscribe } from "../../../types.js";
 import { Messaging2 } from "../../../messaging/impl.js";
 import { IMessaging2 } from "../../../messaging/types.js";
+import { DotArray } from "../../utilities/arrays/dot/dot.js";
+import { StitchThreadArray } from "../../utilities/arrays/thread/stitch.js";
 import {
     IStitchCanvas,
     DrawStitchDotsEvent,
@@ -10,9 +13,6 @@ import {
     DrawStitchThreadsEvent,
     DrawStitchThreadsListener,
 } from "../types.js";
-import { VirtualCanvasBase } from "../virtual.js";
-import { DotArray } from "../../utilities/arrays/dot/dot.js";
-import { StitchThreadArray } from "../../utilities/arrays/thread/stitch.js";
 
 export abstract class StitchCanvasBase extends VirtualCanvasBase implements IStitchCanvas {
     private readonly messaging: IMessaging2<DrawStitchThreadsEvent, DrawStitchDotsEvent>;

@@ -64,16 +64,8 @@ export class FabricThreadArray {
     }
 
     // TODO: change to indexed prop
-    public set(
-        index: number,
-        visible: boolean,
-        fromDotXPos: number,
-        fromDotYPos: number,
-        toDotXPos: number,
-        toDotYPos: number,
-        width: number,
-        color: string): void {
-
+    // this property is being invoked extremely intensively, so it must not accept Thread (an object) because it might require a lot of GC
+    public set(index: number, visible: boolean, fromDotXPos: number, fromDotYPos: number, toDotXPos: number, toDotYPos: number, width: number, color: string): void {
         this._visibilities[index] = visible;
         this._fromDotsXPos[index] = fromDotXPos;
         this._fromDotsYPos[index] = fromDotYPos;
@@ -83,17 +75,9 @@ export class FabricThreadArray {
         this._colors[index] = color;
     }
 
-    public push(
-        visible: boolean,
-        fromDotXPos: number,
-        fromDotYPos: number,
-        toDotXPos: number,
-        toDotYPos: number,
-        width: number,
-        color: string): void {
-
+    // this method is being invoked extremely intensively, so it must not accept Thread (an object) because it might require a lot of GC
+    public push(visible: boolean, fromDotXPos: number, fromDotYPos: number, toDotXPos: number, toDotYPos: number, width: number, color: string): void {
         this._count++;
-
         this.ensureSpace();
 
         this._visibilities.push(visible);
