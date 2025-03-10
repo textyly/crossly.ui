@@ -123,22 +123,22 @@ export class StitchCanvas extends StitchCanvasBase {
         const previouslyClickedDotIdx = this.clickedDotIndex;
 
         if (previouslyClickedDotIdx) {
-            this.tryDrawThread(clickedDotIdx, previouslyClickedDotIdx);
+            this.tryDrawThread(previouslyClickedDotIdx, clickedDotIdx);
         }
 
         this.clickedDotIndex = clickedDotIdx;
         this.changeSide(); // TODO: bug!!! cannot change side on every click. If dots Identical then do not change sides!!! See cue impl
     }
 
-    private tryDrawThread(clickedDotIdx: DotIndex, previouslyClickedDotIdx: DotIndex): void {
+    private tryDrawThread(previouslyClickedDotIdx: DotIndex, clickedDotIdx: DotIndex): void {
         const clickedDotPos = this.calculateDotPosition(clickedDotIdx);
         const previouslyClickedDotPos = this.calculateDotPosition(previouslyClickedDotIdx);
 
-        const areClicksIdentical = this.dotsUtility.areDotsEqual(clickedDotPos, previouslyClickedDotPos);
+        const areClicksIdentical = this.dotsUtility.areDotsEqual(previouslyClickedDotPos, clickedDotPos);
         if (!areClicksIdentical) {
             const visible = this.currentSide === CanvasSide.Front;
 
-            const thread = this.createThread(previouslyClickedDotIdx, previouslyClickedDotPos, clickedDotIdx, clickedDotPos, visible);
+            const thread = this.createThread(clickedDotIdx, clickedDotPos, previouslyClickedDotIdx, previouslyClickedDotPos, visible);
             this.threads.pushThread(thread);
 
             if (visible) {
@@ -160,7 +160,7 @@ export class StitchCanvas extends StitchCanvasBase {
         super.invokeDrawDots(dots);
     }
 
-    private createThread(clickedDotIdx: DotIndex, clickedDotPos: Position, previouslyClickedDotIdx: DotIndex, previouslyClickedDotPos: Position, visible: boolean): StitchTread {
+    private createThread(previouslyClickedDotIdx: DotIndex, previouslyClickedDotPos: Position, clickedDotIdx: DotIndex, clickedDotPos: Position, visible: boolean): StitchTread {
         const thread = {
             visible,
             fromDotXIdx: previouslyClickedDotIdx.dotX,
