@@ -1,35 +1,56 @@
-import { ICanvas, IDisposable, SizeChangeListener } from "../types";
-import { Listener, VoidUnsubscribe } from "../../types";
+import { ICanvas } from "../types";
+import { Listener, VoidListener, VoidUnsubscribe } from "../../types";
 
-export type CanvasEvent = { type: CanvasEventsType, value?: Position };
+
+export type CanvasEvent = { type: CanvasEventType, event?: any };
 export type ActiveTouches = { currentDistance: number };
 
 export interface IInputCanvas extends ICanvas {
+    onMoveStart(listener: MoveStartListener): VoidUnsubscribe;
+    onMove(listener: MoveListener): VoidUnsubscribe;
+    onMoveStop(listener: MoveStopListener): VoidUnsubscribe;
+
     onZoomIn(listener: ZoomInListener): VoidUnsubscribe;
     onZoomOut(listener: ZoomOutListener): VoidUnsubscribe;
 
-    onPointerMove(listener: PointerMoveListener): VoidUnsubscribe;
     onPointerUp(listener: PointerUpListener): VoidUnsubscribe;
-    onPointerHoldingDown(listener: PointerDownListener): VoidUnsubscribe;
-
-    onSizeChange(listener: SizeChangeListener): VoidUnsubscribe;
+    onPointerMove(listener: PointerMoveListener): VoidUnsubscribe;
+    // TODO: pointer leave
 }
 
-export interface ITouchInput extends IDisposable {
+export interface ITouchInput extends ICanvas {
     get inZoomMode(): boolean;
+
+    subscribe(): void;
 
     onZoomIn(listener: ZoomInListener): VoidUnsubscribe;
     onZoomOut(listener: ZoomOutListener): VoidUnsubscribe
 }
 
-export enum CanvasEventsType {
+export interface IMoveInput extends ICanvas {
+    get inMoveMode(): boolean;
+
+    subscribe(): void;
+
+    onMoveStart(listener: MoveStartListener): VoidUnsubscribe;
+    onMove(listener: MoveListener): VoidUnsubscribe;
+    onMoveStop(listener: MoveStopListener): VoidUnsubscribe;
+}
+
+export enum CanvasEventType {
     WheelChange = "wheel",
     ZoomIn = "zoomin",
     ZoomOut = "zoomout",
+
+    MoveStart = "movestart",
+    Move = "move",
+    MoveStop = "movestop",
+
     PointerMove = "pointermove",
     PointerDown = "pointerdown",
     PointerUp = "pointerup",
     PointerCancel = "pointercancel",
+
     TouchStart = "touchstart",
     TouchEnd = "touchend",
     TouchMove = "touchmove",
@@ -53,6 +74,15 @@ export type ZoomInListener = Listener<ZoomInEvent>;
 
 export type ZoomOutEvent = {};
 export type ZoomOutListener = Listener<ZoomOutEvent>;
+
+export type MoveStartEvent = { previousPosition: Position, currentPosition: Position };
+export type MoveStartListener = Listener<MoveStartEvent>;
+
+export type MoveEvent = { previousPosition: Position, currentPosition: Position };
+export type MoveListener = Listener<MoveEvent>;
+
+export type MoveStopEvent = PositionEvent;
+export type MoveStopListener = Listener<MoveStopEvent>;
 
 export type PointerEventHandler = Listener<PointerEvent>;
 export type TouchEventHandler = Listener<TouchEvent>;

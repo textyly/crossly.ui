@@ -1,35 +1,37 @@
-import { Dot, ICanvas, Thread } from "../types.js";
-import { ICueCanvas, IGridCanvas, IStitchCanvas } from "../virtual/types.js";
+import { CueThread, Dot, ICanvas } from "../types.js";
+import { DotArray } from "../utilities/arrays/dot/dot.js";
+import { ThreadArray } from "../utilities/arrays/thread/array.js";
 
 export type SvgDot = SVGCircleElement;
 export type SvgLine = SVGLineElement;
 
-export interface IDrawingCanvas<TCanvas> extends ICanvas {
-    subscribe(canvas: TCanvas): void;
-}
-
-export interface IGridDrawingCanvas extends IDrawingCanvas<IGridCanvas> {
-}
-
-export interface IStitchDrawingCanvas extends IDrawingCanvas<IStitchCanvas> {
-}
-
-export interface ICueDrawingCanvas extends IDrawingCanvas<ICueCanvas> {
-}
-
-export interface IRasterDrawing extends ICanvas {
-    drawDots(dots: Array<Dot>): void;
-    drawLines(thread: Array<Thread<Dot>>): void;
+export interface IRasterDrawingCanvas extends ICanvas {
+    createBitMap(): Promise<ImageBitmap>;
+    drawBitMap(bitmap: ImageBitmap): void;
+    drawDots(dots: DotArray): void;
+    drawLines(threads: ThreadArray): void;
     clear(): void;
 }
 
-export interface IVectorDrawing extends ICanvas {
-    drawDot(dot: Dot): SvgDot;
-    drawDashDot(dot: Dot): SvgDot;
+export interface IVectorDrawingCanvas extends ICanvas {
+    drawDot(dot: Dot, radius: number, color: string): SvgDot;
+    drawDashDot(dot: Dot, radius: number, color: string): SvgDot;
     removeDot(dot: SvgDot): void;
 
-    drawLine(thread: Thread<Dot>): SvgLine;
-    drawDashLine(thread: Thread<Dot>): SvgLine;
-    moveLine(thread: Thread<Dot>, svgLine: SvgLine): void;
+    drawLine(thread: CueThread): SvgLine;
+    drawDashLine(thread: CueThread): SvgLine;
+    moveLine(thread: CueThread, svgLine: SvgLine): void;
     removeLine(thread: SvgLine): void;
+}
+
+export interface IDrawingCanvas extends ICanvas {
+}
+
+export interface IFabricDrawingCanvas extends IDrawingCanvas {
+}
+
+export interface IStitchDrawingCanvas extends IDrawingCanvas {
+}
+
+export interface ICueDrawingCanvas extends IDrawingCanvas {
 }

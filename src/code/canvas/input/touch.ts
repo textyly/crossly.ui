@@ -1,18 +1,20 @@
+import { Bounds } from "../types.js";
+import { CanvasBase } from "../base.js";
 import { VoidUnsubscribe } from "../../types.js";
 import { Messaging2 } from "../../messaging/impl.js";
 import { IMessaging2 } from "../../messaging/types.js";
 import {
-    ActiveTouches,
-    CanvasEventsType,
-    ITouchInput,
-    TouchEventHandler,
     ZoomInEvent,
-    ZoomInListener,
+    ITouchInput,
     ZoomOutEvent,
-    ZoomOutListener
+    ActiveTouches,
+    ZoomInListener,
+    ZoomOutListener,
+    CanvasEventType,
+    TouchEventHandler,
 } from "./types.js";
 
-export class TouchInput implements ITouchInput {
+export class TouchInput extends CanvasBase implements ITouchInput {
     private readonly messaging: IMessaging2<ZoomInEvent, ZoomOutEvent>;
 
     private readonly htmlElement: HTMLElement;
@@ -25,6 +27,8 @@ export class TouchInput implements ITouchInput {
     private lastTouchTime?: number;
 
     constructor(htmlElement: HTMLElement) {
+        super();
+
         this.htmlElement = htmlElement;
         this.messaging = new Messaging2();
 
@@ -32,8 +36,10 @@ export class TouchInput implements ITouchInput {
         this.touchEndHandler = this.handleTouchEnd.bind(this);
         this.touchMoveHandler = this.handleTouchMove.bind(this);
         this.touchCancelHandler = this.handleTouchCancel.bind(this);
+    }
 
-        this.subscribe();
+    public override set bounds(value: Bounds) {
+        super.bounds = value;
     }
 
     public get inZoomMode(): boolean {
@@ -59,51 +65,67 @@ export class TouchInput implements ITouchInput {
         return this.messaging.listenOnChannel2(listener);
     }
 
+    public subscribe(): void {
+        this.htmlElement.addEventListener(CanvasEventType.TouchStart, this.touchStartHandler);
+        this.htmlElement.addEventListener(CanvasEventType.TouchMove, this.touchMoveHandler);
+        this.htmlElement.addEventListener(CanvasEventType.TouchEnd, this.touchEndHandler);
+        this.htmlElement.addEventListener(CanvasEventType.TouchCancel, this.touchCancelHandler);
+    }
+
     public dispose(): void {
         this.unsubscribe();
         this.messaging.dispose();
     }
 
-    private subscribe(): void {
-        this.htmlElement.addEventListener(CanvasEventsType.TouchStart, this.touchStartHandler);
-        this.htmlElement.addEventListener(CanvasEventsType.TouchEnd, this.touchEndHandler);
-        this.htmlElement.addEventListener(CanvasEventsType.TouchMove, this.touchMoveHandler);
-        this.htmlElement.addEventListener(CanvasEventsType.TouchCancel, this.touchCancelHandler);
-    }
-
     private unsubscribe(): void {
-        this.htmlElement.removeEventListener(CanvasEventsType.TouchStart, this.touchStartHandler);
-        this.htmlElement.removeEventListener(CanvasEventsType.TouchEnd, this.touchEndHandler);
-        this.htmlElement.removeEventListener(CanvasEventsType.TouchMove, this.touchMoveHandler);
-        this.htmlElement.removeEventListener(CanvasEventsType.TouchCancel, this.touchCancelHandler);
+        this.htmlElement.removeEventListener(CanvasEventType.TouchStart, this.touchStartHandler);
+        this.htmlElement.removeEventListener(CanvasEventType.TouchMove, this.touchMoveHandler);
+        this.htmlElement.removeEventListener(CanvasEventType.TouchEnd, this.touchEndHandler);
+        this.htmlElement.removeEventListener(CanvasEventType.TouchCancel, this.touchCancelHandler);
     }
 
     private handleTouchStart(event: TouchEvent): void {
         const touches = event.touches;
-        if (touches.length > 1) {
-            this.handleMultipleTouches(touches[0], touches[1]);
-        }
-        event.preventDefault();
-    }
+        this.startZoom(touches);
 
-    private handleTouchEnd(event: TouchEvent): void {
-        this.removeMultipleTouches();
         event.preventDefault();
     }
 
     private handleTouchMove(event: TouchEvent): void {
         const touches = event.touches;
+        this.zoom(touches);
+
+        event.preventDefault();
+    }
+
+    private handleTouchEnd(event: TouchEvent): void {
+        this.stopZoom();
+
+        event.preventDefault();
+    }
+
+    private handleTouchCancel(event: TouchEvent): void {
+        this.stopZoom();
+
+        event.preventDefault();
+    }
+
+    private startZoom(touches: TouchList): void {
+        if (touches.length > 1) {
+            this.handleMultipleTouches(touches[0], touches[1]);
+        }
+    }
+
+    private zoom(touches: TouchList): void {
         if (touches.length > 1) {
             this.handleMultipleTouches(touches[0], touches[1]);
         } else {
             this.removeMultipleTouches();
         }
-        event.preventDefault();
     }
 
-    private handleTouchCancel(event: TouchEvent): void {
+    private stopZoom(): void {
         this.removeMultipleTouches();
-        event.preventDefault();
     }
 
     private handleMultipleTouches(touch1: Touch, touch2: Touch): void {
@@ -126,6 +148,7 @@ export class TouchInput implements ITouchInput {
             }
             this.currentActiveTouches = newActiveTouches;
         }
+
         this.lastTouchTime = Date.now();
     }
 
@@ -135,6 +158,7 @@ export class TouchInput implements ITouchInput {
         }
     }
 
+    // TODO: look for better algorithm
     private calculateDistance(finger1: Touch, finger2: Touch) {
         const dx = finger1.clientX - finger2.clientX;
         const dy = finger1.clientY - finger2.clientY;

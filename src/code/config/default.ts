@@ -1,79 +1,84 @@
-import { CrosslyCanvasConfig, CueCanvasConfig, GridCanvasConfig, StitchCanvasConfig } from "../canvas/types.js";
+import { CanvasConfig, CrosslyCanvasConfig, SpacingConfig } from "../canvas/types.js";
 
 export class ConfigFactory {
     public create(): CrosslyCanvasConfig {
+        const columns = 300;
+        const rows = 300;
 
-        const gridConfig: GridCanvasConfig = {
-            columns: 30,
-            rows: 30,
-            spacing: {
-                value: 25,
-                zoomInStep: 0.5,
-                zoomOutStep: 0.5
-            },
-            dot: {
+        const dotSpacing: SpacingConfig = {
+            value: 25,
+            zoomInStep: 0.5,
+            zoomOutStep: 0.5
+        }
+
+        const fabricConfig: CanvasConfig = {
+            columns,
+            rows,
+            dotSpacing,
+            dot: {  
                 color: "#9fa19f",
                 radius: {
-                    value: 2,
-                    zoomInStep: 0.2,
-                    zoomOutStep: 0.1
+                    value: 1.5,
+                    zoomInStep: 0.05,
+                    zoomOutStep: 0.05
                 }
-            },
-            dotMatchDistance: {
-                value: 4, // twice as dot radius, so that it is easier to click on a dot
-                zoomInStep: 0.7, // spacing zoomInStep + dot radius zoomInStep (for better touch support)
-                zoomOutStep: 0.1
             },
             thread: {
                 color: "#d2d4d2",
                 width: {
                     value: 1,
-                    zoomInStep: 0.1,
+                    zoomInStep: 0.05,
                     zoomOutStep: 0.05
                 }
             }
         };
 
-        const stitchConfig: StitchCanvasConfig = {
+        const stitchConfig: CanvasConfig = {
+            columns,
+            rows,
+            dotSpacing,
             dot: {
                 color: "gray",
                 radius: {
-                    value: 2,
-                    zoomInStep: 0.2,
-                    zoomOutStep: 0.1
-                },
+                    value: 3,
+                    zoomInStep: 0.1,
+                    zoomOutStep: 0.05
+                }
             },
             thread: {
                 color: "gray",
                 width: {
-                    value: 5,
-                    zoomInStep: 0.3,
-                    zoomOutStep: 0.3
+                    value: 6.1,
+                    zoomInStep: 0.2,
+                    zoomOutStep: 0.1
                 }
             }
         };
 
-        const cueConfig: CueCanvasConfig = {
+        const cueConfig: CanvasConfig = {
+            columns,
+            rows,
+            dotSpacing,
             dot: {
                 color: "gray",
                 radius: {
-                    value: 4,
-                    zoomInStep: 0.4,
-                    zoomOutStep: 0.2
-                },
+                    value: 5,
+                    zoomInStep: 0.2,
+                    zoomOutStep: 0.05
+                }
             },
             thread: {
                 color: "gray",
                 width: {
-                    value: 5,
-                    zoomInStep: 0.3,
-                    zoomOutStep: 0.3
+                    value: 6.1,
+                    zoomInStep: 0.2,
+                    zoomOutStep: 0.1
                 }
             }
         };
 
         const canvasConfig: CrosslyCanvasConfig = {
-            grid: gridConfig,
+            fabric: fabricConfig,
             stitch: stitchConfig,
             cue: cueConfig
         };

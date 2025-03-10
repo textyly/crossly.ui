@@ -1,23 +1,32 @@
-import { VirtualCanvasBase } from "../base.js";
+import { CanvasConfig } from "../../types.js";
+import { VirtualCanvasBase } from "../virtual.js";
+import { IInputCanvas } from "../../input/types.js";
 import { VoidUnsubscribe } from "../../../types.js";
 import { Messaging2 } from "../../../messaging/impl.js";
 import { IMessaging2 } from "../../../messaging/types.js";
-import { CueCanvasConfig, StitchCanvasConfig, StitchThread } from "../../types.js";
-import { DrawStitchThreadsEvent, DrawStitchThreadsListener } from "../types.js";
+import { DotArray } from "../../utilities/arrays/dot/dot.js";
+import { StitchThreadArray } from "../../utilities/arrays/thread/stitch.js";
+import {
+    IStitchCanvas,
+    DrawStitchDotsEvent,
+    DrawStitchDotsListener,
+    DrawStitchThreadsEvent,
+    DrawStitchThreadsListener,
+} from "../types.js";
 
-export abstract class StitchCanvasBase extends VirtualCanvasBase<CueCanvasConfig> {
-    private readonly messaging: IMessaging2<DrawStitchThreadsEvent, DrawStitchThreadsEvent>;
+export abstract class StitchCanvasBase extends VirtualCanvasBase implements IStitchCanvas {
+    private readonly messaging: IMessaging2<DrawStitchThreadsEvent, DrawStitchDotsEvent>;
 
-    constructor(config: StitchCanvasConfig) {
-        super(config);
+    constructor(config: CanvasConfig, input: IInputCanvas) {
+        super(config, input);
         this.messaging = new Messaging2();
     }
 
-    public onDrawFrontThreads(listener: DrawStitchThreadsListener): VoidUnsubscribe {
+    public onDrawThreads(listener: DrawStitchThreadsListener): VoidUnsubscribe {
         return this.messaging.listenOnChannel1(listener);
     }
 
-    public onDrawBackThreads(listener: DrawStitchThreadsListener): VoidUnsubscribe {
+    public onDrawDots(listener: DrawStitchDotsListener): VoidUnsubscribe {
         return this.messaging.listenOnChannel2(listener);
     }
 
@@ -26,13 +35,13 @@ export abstract class StitchCanvasBase extends VirtualCanvasBase<CueCanvasConfig
         super.dispose();
     }
 
-    protected invokeDrawFrontThreads(threads: Array<StitchThread>): void {
-        const drawThreadsEvent = { threads };
-        this.messaging.sendToChannel1(drawThreadsEvent);
+    protected invokeDrawThreads(threads: StitchThreadArray): void {
+        const event = { threads };
+        this.messaging.sendToChannel1(event);
     }
 
-    protected invokeDrawBackThreads(threads: Array<StitchThread>): void {
-        const drawThreadsEvent = { threads };
-        this.messaging.sendToChannel2(drawThreadsEvent);
+    protected invokeDrawDots(dots: DotArray): void {
+        const event = { dots };
+        this.messaging.sendToChannel2(event);
     }
 }

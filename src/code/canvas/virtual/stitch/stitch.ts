@@ -1,147 +1,187 @@
 import { StitchCanvasBase } from "./base.js";
-import { IGridCanvas, IStitchCanvas } from "../types.js";
-import { DotsUtility } from "../../../utilities/dots.js";
-import { Converter } from "../../../utilities/converter.js";
+import { DotsUtility } from "../../utilities/dots.js";
+import { DotArray } from "../../utilities/arrays/dot/dot.js";
+import { StitchThreadArray } from "../../utilities/arrays/thread/stitch.js";
 import { IInputCanvas, PointerUpEvent, Position } from "../../input/types.js";
-import { CanvasSide, Id, StitchThread, SizeChangeEvent, GridDot, Size, StitchCanvasConfig } from "../../types.js";
+import { Dot, CanvasSide, CanvasConfig, StitchTread, DotIndex } from "../../types.js";
 
-export class StitchCanvas extends StitchCanvasBase implements IStitchCanvas {
-    private readonly inputCanvas: IInputCanvas;
-    private readonly gridCanvas: IGridCanvas;
-    private readonly converter: Converter;
-    private readonly dotsUtility: DotsUtility<GridDot>;
+export class StitchCanvas extends StitchCanvasBase {
+    private readonly dotsUtility: DotsUtility<Dot>;
+    private readonly threads: StitchThreadArray;
 
-    private threads: Array<StitchThread>;
-    private currentSide: CanvasSide;
-    private previousClickedDotId?: Id;
+    private clickedDotIdx?: DotIndex;
 
-    constructor(config: StitchCanvasConfig, inputCanvas: IInputCanvas, gridCanvas: IGridCanvas) {
-        super(config);
+    constructor(config: CanvasConfig, inputCanvas: IInputCanvas) {
+        super(config, inputCanvas);
 
-        this.inputCanvas = inputCanvas;
-        this.gridCanvas = gridCanvas;
-
-        this.converter = new Converter();
         this.dotsUtility = new DotsUtility();
+        this.threads = new StitchThreadArray();
 
-        this.threads = [];
-        this.currentSide = CanvasSide.Back;
-
-        this.subscribe();
-    }
-
-    public draw(): void {
-        this.invokeRedraw();
-        this.redraw();
+        this.startListening();
     }
 
     public override dispose(): void {
-        this.threads = [];
+        // TODO: ARRAYS!!!
         super.dispose();
     }
 
-    private redraw(): void {
-        this.createThreads();
-        this.drawThreads();
+    protected override redraw(): void {
+        // CPU, GPU, memory and GC intensive code
+        // Do not extract this method in multiple methods
+        // Do not create types/classes for dot and thread (objects are extremely slow and memory/GC consuming)
+
+        // 1. make initial calculations and create new constants for nested props
+
+        // get bounds indexes
+        const boundsIndexes = this.calculateBoundsIndexes();
+        const leftTopIdx = boundsIndexes.leftTop;
+        const rightTopIdx = boundsIndexes.rightTop;
+        const leftBottomIdx = boundsIndexes.leftBottom;
+
+        // get threads props
+        const fromDotsXIndexes = this.threads.fromDotsXIndexes;
+        const fromDotsYIndexes = this.threads.fromDotsYIndexes;
+        const toDotsXIndexes = this.threads.toDotsXIndexes;
+        const toDotsYIndexes = this.threads.toDotsYIndexes;
+        const widths = this.threads.widths;
+        const colors = this.threads.colors;
+        const sides = this.threads.sides;
+
+        // 2. recalculate threads and dots
+        const dots = new DotArray();
+        for (let index = 0; index < this.threads.length; index++) {
+
+            // 3. set visibility to false by default, if visible then true will be set later
+            this.threads.setVisibilities(index, false);
+
+            // 4. filter by canvas side, back threads won't be drawn
+            const side = sides[index];
+            if (side === CanvasSide.Back) {
+                continue;
+            }
+
+            // 5. filter by visibility, if a thread is not into the visible bounds then it won't be drawn
+            const fromDotXIdx = fromDotsXIndexes[index];
+            const toDotXIdx = toDotsXIndexes[index];
+            const fromDotYIdx = fromDotsYIndexes[index];
+            const toDotYIdx = toDotsYIndexes[index];
+
+            if ((fromDotXIdx < leftTopIdx.dotX) && (toDotXIdx < leftTopIdx.dotX)) {
+                // filter out
+                continue;
+            }
+
+            if ((fromDotXIdx > rightTopIdx.dotX) && (toDotXIdx > rightTopIdx.dotX)) {
+                // filter out
+                continue;
+            }
+
+            if ((fromDotYIdx < leftTopIdx.dotY) && (toDotYIdx < leftTopIdx.dotY)) {
+                // filter out
+                continue;
+            }
+
+            if ((fromDotYIdx > leftBottomIdx.dotY) && (toDotYIdx > leftBottomIdx.dotY)) {
+                // filter out
+                continue;
+            }
+
+            // 6. thread is visible and must be drawn, make calculations
+            const color = colors[index];
+            const width = widths[index];
+
+            const fromDotXPos = this.calculateDotXPosition(fromDotXIdx);
+            const fromDotYPos = this.calculateDotYPosition(fromDotYIdx);
+            dots.push(fromDotXPos, fromDotYPos, width / 2, color);
+
+            const toDotXPos = this.calculateDotXPosition(toDotXIdx);
+            const toDotYPos = this.calculateDotYPosition(toDotYIdx);
+            dots.push(toDotXPos, toDotYPos, width / 2, color);
+
+            // 7. set the updated pros before drawing
+            this.threads.setThread(index, true, fromDotXIdx, fromDotXPos, fromDotYIdx, fromDotYPos, toDotXIdx, toDotXPos, toDotYIdx, toDotYPos, width, color, side);
+        }
+
+        // 8. draw threads, each thread consist of one thread and two dots
+        super.invokeDrawThreads(this.threads);
+        super.invokeDrawDots(dots);
     }
 
-    private subscribe(): void {
-        const zoomInUn = this.inputCanvas.onZoomIn(this.handleZoomIn.bind(this));
-        super.registerUn(zoomInUn);
-
-        const zoomOutUn = this.inputCanvas.onZoomOut(this.handleZoomOut.bind(this));
-        super.registerUn(zoomOutUn);
-
+    private startListening(): void {
         const pointerUpUn = this.inputCanvas.onPointerUp(this.handlePointerUp.bind(this));
         super.registerUn(pointerUpUn);
-
-        const sizeChangeUn = this.gridCanvas.onSizeChange(this.handleSizeChange.bind(this));
-        super.registerUn(sizeChangeUn);
-    }
-
-    private handleZoomIn(): void {
-        super.zoomIn();
-    }
-
-    private handleZoomOut(): void {
-        super.zoomOut();
     }
 
     private handlePointerUp(event: PointerUpEvent): void {
         const position = event.position;
-        this.handleDotClick(position);
-    }
+        const inVirtualBounds = this.inVirtualBounds(position);
 
-    private handleSizeChange(event: SizeChangeEvent): void {
-        const size = event.size;
-        this.changeSize(size);
-    }
-
-    private handleDotClick(position: Position): void {
-        const currentlyClickedDot = this.gridCanvas.getDotByPosition(position);
-        if (!currentlyClickedDot) {
-            return;
+        if (inVirtualBounds) {
+            this.clickDot(position);
         }
-
-        if (currentlyClickedDot.id === this.previousClickedDotId) {
-            return;
-        }
-
-        if (this.previousClickedDotId) {
-            const recreated = this.createThread(this.previousClickedDotId, currentlyClickedDot.id, this.currentSide);
-            this.threads.push(recreated);
-            this.drawThread(recreated);
-        }
-
-        this.previousClickedDotId = currentlyClickedDot.id;
-        this.changeSide();
     }
 
-    private createThreads(): void {
-        const copy = this.threads;
-        this.threads = [];
+    private clickDot(position: Position): void {
+        const previouslyClickedDotIdx = this.clickedDotIdx;
+        const clickedDotIdx = this.calculateDotIndex(position);
 
-        copy.forEach((thread) => {
-            const recreated = this.createThread(thread.from.id, thread.to.id, thread.side);
-            this.threads.push(recreated);
-        });
-    }
-
-    private createThread(fromId: string, toId: string, side: CanvasSide): StitchThread {
-        const fromGridDot = this.gridCanvas.getDotById(fromId);
-        const toGridDot = this.gridCanvas.getDotById(toId);
-
-        const dots = this.dotsUtility.ensureDots(fromGridDot, toGridDot);
-
-        const from = this.converter.convertToStitchDot(dots.from, this.dotColor, side);
-        const to = this.converter.convertToStitchDot(dots.to, this.dotColor, side);
-
-        const thread = { from, to, side, width: this.threadWidth, color: this.threadColor };
-        return thread;
-    }
-
-    private drawThreads(): void {
-        const frontThreads = this.threads.filter((thread) => thread.side === CanvasSide.Front);
-        super.invokeDrawFrontThreads(frontThreads);
-
-        const backThreads = this.threads.filter((thread) => thread.side === CanvasSide.Back);
-        super.invokeDrawBackThreads(backThreads);
-    }
-
-    private drawThread(thread: StitchThread): void {
-        if (thread.side == CanvasSide.Front) {
-            super.invokeDrawFrontThreads([thread]);
+        if (previouslyClickedDotIdx) {
+            this.tryDrawThread(previouslyClickedDotIdx, clickedDotIdx);
         } else {
-            super.invokeDrawBackThreads([thread]);
+            this.changeSide();
+        }
+
+        this.clickedDotIdx = clickedDotIdx;
+    }
+
+    private tryDrawThread(previouslyClickedDotIdx: DotIndex, clickedDotIdx: DotIndex): void {
+        const clickedDotPos = this.calculateDotPosition(clickedDotIdx);
+        const previouslyClickedDotPos = this.calculateDotPosition(previouslyClickedDotIdx);
+
+        const areClicksIdentical = this.dotsUtility.areDotsEqual(previouslyClickedDotPos, clickedDotPos);
+        if (!areClicksIdentical) {
+            const visible = this.currentSide === CanvasSide.Front;
+
+            const thread = this.createThread(clickedDotIdx, clickedDotPos, previouslyClickedDotIdx, previouslyClickedDotPos, visible);
+            this.threads.pushThread(thread);
+
+            if (visible) {
+                this.drawThread(thread);
+            }
+
+            this.changeSide();
         }
     }
 
-    private changeSize(size: Size): void {
-        super.size = size;
-        this.draw();
+    private drawThread(thread: StitchTread): void {
+        // draw thread
+        const threads = new StitchThreadArray();
+        threads.pushThread(thread);
+        super.invokeDrawThreads(threads);
+
+        // draw dots
+        const dots = new DotArray();
+        dots.push(thread.fromDotXPos, thread.fromDotYPos, thread.width / 2, thread.color);
+        dots.push(thread.toDotXPos, thread.toDotYPos, thread.width / 2, thread.color);
+        super.invokeDrawDots(dots);
     }
 
-    private changeSide(): void {
-        this.currentSide = this.currentSide === CanvasSide.Front ? CanvasSide.Back : CanvasSide.Front;
+    private createThread(previouslyClickedDotIdx: DotIndex, previouslyClickedDotPos: Position, clickedDotIdx: DotIndex, clickedDotPos: Position, visible: boolean): StitchTread {
+        const thread = {
+            visible,
+            fromDotXIdx: previouslyClickedDotIdx.dotX,
+            fromDotXPos: previouslyClickedDotPos.x,
+            fromDotYIdx: previouslyClickedDotIdx.dotY,
+            fromDotYPos: previouslyClickedDotPos.y,
+            toDotXIdx: clickedDotIdx.dotX,
+            toDotXPos: clickedDotPos.x,
+            toDotYIdx: clickedDotIdx.dotY,
+            toDotYPos: clickedDotPos.y,
+            width: this.threadWidth,
+            color: this.threadColor,
+            side: this.currentSide
+        };
+
+        return thread;
     }
 }

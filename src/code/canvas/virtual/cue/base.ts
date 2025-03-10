@@ -1,26 +1,28 @@
-import { VirtualCanvasBase } from "../base.js";
 import { VoidUnsubscribe } from "../../../types.js";
 import { Messaging7 } from "../../../messaging/impl.js";
 import { IMessaging7 } from "../../../messaging/types.js";
-import { CueThread, CueDot, CueCanvasConfig } from "../../types.js";
+import { CueThread, CueDot, CanvasConfig, Id } from "../../types.js";
 import {
-    DrawCueThreadEvent,
-    DrawCueThreadListener,
+    ICueCanvas,
     DrawCueDotEvent,
-    DrawCueDotListener,
     RemoveCueDotEvent,
+    DrawCueDotListener,
     MoveCueThreadEvent,
+    DrawCueThreadEvent,
     RemoveCueDotListener,
-    MoveCueThreadListener,
     RemoveCueThreadEvent,
+    DrawCueThreadListener,
+    MoveCueThreadListener,
     RemoveCueThreadListener,
 } from "../types.js";
+import { IInputCanvas } from "../../input/types.js";
+import { VirtualCanvasBase } from "../virtual.js";
 
-export abstract class CueCanvasBase extends VirtualCanvasBase<CueCanvasConfig> {
+export abstract class CueCanvasBase extends VirtualCanvasBase implements ICueCanvas {
     private readonly messaging: IMessaging7<DrawCueDotEvent, DrawCueDotEvent, DrawCueThreadEvent, RemoveCueDotEvent, MoveCueThreadEvent, DrawCueThreadEvent, RemoveCueThreadEvent>;
 
-    constructor(config: CueCanvasConfig) {
-        super(config);
+    constructor(config: CanvasConfig, input: IInputCanvas) {
+        super(config, input);
         this.messaging = new Messaging7();
     }
 
@@ -57,13 +59,13 @@ export abstract class CueCanvasBase extends VirtualCanvasBase<CueCanvasConfig> {
         super.dispose();
     }
 
-    protected invokeDrawDot(dot: CueDot): void {
-        const drawDotEvent = { dot };
+    protected invokeDrawDot(dot: CueDot, dotRadius: number, dotColor: string): void {
+        const drawDotEvent = { dot, dotRadius, dotColor };
         this.messaging.sendToChannel1(drawDotEvent);
     }
 
-    protected invokeDrawDashDot(dot: CueDot): void {
-        const drawDotEvent = { dot };
+    protected invokeDrawDashDot(dot: CueDot, dotRadius: number, dotColor: string): void {
+        const drawDotEvent = { dot, dotRadius, dotColor };
         this.messaging.sendToChannel2(drawDotEvent);
     }
 
@@ -72,8 +74,8 @@ export abstract class CueCanvasBase extends VirtualCanvasBase<CueCanvasConfig> {
         this.messaging.sendToChannel3(drawThreadEvent);
     }
 
-    protected invokeRemoveDot(dot: CueDot): void {
-        const drawDotEvent = { dot };
+    protected invokeRemoveDot(dotId: Id): void {
+        const drawDotEvent = { dotId };
         this.messaging.sendToChannel4(drawDotEvent);
     }
 
@@ -87,8 +89,8 @@ export abstract class CueCanvasBase extends VirtualCanvasBase<CueCanvasConfig> {
         this.messaging.sendToChannel6(drawThreadEvent);
     }
 
-    protected invokeRemoveThread(thread: CueThread): void {
-        const drawThreadEvent = { thread };
+    protected invokeRemoveThread(threadId: Id): void {
+        const drawThreadEvent = { threadId };
         this.messaging.sendToChannel7(drawThreadEvent);
     }
 }
