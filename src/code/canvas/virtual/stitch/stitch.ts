@@ -32,36 +32,36 @@ export class StitchCanvas extends StitchCanvasBase {
         // Do not create types/classes for dot and thread (objects are extremely slow and memory/GC consuming)
 
         // 1. make initial calculations and create new constants for nested props
-        const boundsIndexes = this.calculateBoundsIndexes();
 
+        // get bounds indexes
+        const boundsIndexes = this.calculateBoundsIndexes();
         const leftTopIdx = boundsIndexes.leftTop;
         const rightTopIdx = boundsIndexes.rightTop;
         const leftBottomIdx = boundsIndexes.leftBottom;
 
-        const width = this.threadWidth; // TODO: get from threads array 
-        const color = this.threadColor; // TODO: get from threads array
+        // get threads props
         const fromDotsXIndexes = this.threads.fromDotsXIndexes;
-        const toDotsXIndexes = this.threads.toDotsXIndexes;
         const fromDotsYIndexes = this.threads.fromDotsYIndexes;
+        const toDotsXIndexes = this.threads.toDotsXIndexes;
         const toDotsYIndexes = this.threads.toDotsYIndexes;
+        const widths = this.threads.widths;
+        const colors = this.threads.colors;
         const sides = this.threads.sides;
 
-        const dotRadius = this.dotRadius; // TODO: get from threads array
-        const dotColor = this.dotColor;
-        const dots = new DotArray(); // TODO: get from threads array
-
+        // 2. recalculate threads and dots
+        const dots = new DotArray();
         for (let index = 0; index < this.threads.length; index++) {
 
-            // 2. set visibility to false by default, if visible then true will be set later
+            // 3. set visibility to false by default, if visible then true will be set later
             this.threads.setVisibilities(index, false);
 
-            // 3. filter by canvas side, back threads won't be drawn
+            // 4. filter by canvas side, back threads won't be drawn
             const side = sides[index];
             if (side === CanvasSide.Back) {
                 continue;
             }
 
-            // 4. filter by visibility, if a thread is not into the visible bounds then it won't be drawn
+            // 5. filter by visibility, if a thread is not into the visible bounds then it won't be drawn
             const fromDotXIdx = fromDotsXIndexes[index];
             const toDotXIdx = toDotsXIndexes[index];
             const fromDotYIdx = fromDotsYIndexes[index];
@@ -83,20 +83,23 @@ export class StitchCanvas extends StitchCanvasBase {
                 continue;
             }
 
-            // 5. thread is visible and must be drawn, make calculations
+            // 6. thread is visible and must be drawn, make calculations
+            const color = colors[index];
+            const width = widths[index];
+
             const fromDotXPos = this.calculateDotXPosition(fromDotXIdx);
             const fromDotYPos = this.calculateDotYPosition(fromDotYIdx);
-            dots.push(fromDotXPos, fromDotYPos, dotRadius, dotColor);
+            dots.push(fromDotXPos, fromDotYPos, width / 2, color);
 
             const toDotXPos = this.calculateDotXPosition(toDotXIdx);
             const toDotYPos = this.calculateDotYPosition(toDotYIdx);
-            dots.push(toDotXPos, toDotYPos, dotRadius, dotColor);
+            dots.push(toDotXPos, toDotYPos, width / 2, color);
 
-            // 6. set the updated pros before drawing
+            // 7. set the updated pros before drawing
             this.threads.setThread(index, true, fromDotXIdx, fromDotXPos, fromDotYIdx, fromDotYPos, toDotXIdx, toDotXPos, toDotYIdx, toDotYPos, width, color, side);
         }
 
-        // 7. draw threads, each thread consist of one thread and two dots
+        // 8. draw threads, each thread consist of one thread and two dots
         super.invokeDrawThreads(this.threads);
         super.invokeDrawDots(dots);
     }
@@ -152,8 +155,8 @@ export class StitchCanvas extends StitchCanvasBase {
 
         // draw dots
         const dots = new DotArray();
-        dots.push(thread.fromDotXPos, thread.fromDotYPos, this.dotRadius, this.dotColor);
-        dots.push(thread.toDotXPos, thread.toDotYPos, this.dotRadius, this.dotColor);
+        dots.push(thread.fromDotXPos, thread.fromDotYPos, thread.width / 2, thread.color);
+        dots.push(thread.toDotXPos, thread.toDotYPos, thread.width / 2, thread.color);
         super.invokeDrawDots(dots);
     }
 

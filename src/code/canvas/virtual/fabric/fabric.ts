@@ -21,11 +21,11 @@ export class FabricCanvas extends FabricCanvasBase {
         const endIndexX = boundsIndexes.rightTop.dotX;
         const endIndexY = boundsIndexes.leftBottom.dotY;
 
-        this.createThreads(startIndexX, startIndexY, endIndexX, endIndexY);
-        this.createDots(startIndexX, startIndexY, endIndexX, endIndexY);
+        this.redrawThreads(startIndexX, startIndexY, endIndexX, endIndexY);
+        this.redrawDots(startIndexX, startIndexY, endIndexX, endIndexY);
     }
 
-    private createThreads(startDotIndexX: number, startDotIndexY: number, endDotIndexX: number, endDotIndexY: number): void {
+    private redrawThreads(startDotIndexX: number, startDotIndexY: number, endDotIndexX: number, endDotIndexY: number): void {
         // CPU, GPU, memory and GC intensive code
         // Do not create types/classes for thread (objects are extremely slow and memory/GC consuming)
 
@@ -49,7 +49,7 @@ export class FabricCanvas extends FabricCanvasBase {
         super.invokeDrawThreads(threads);
     }
 
-    private createDots(startIndexX: number, startIndexY: number, endIndexX: number, endIndexY: number): void {
+    private redrawDots(startIndexX: number, startIndexY: number, endIndexX: number, endIndexY: number): void {
         // CPU, GPU, memory and GC intensive code
         // Do not create types/classes for dot (objects are extremely slow and memory/GC consuming)
 
