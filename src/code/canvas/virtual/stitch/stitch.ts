@@ -1,6 +1,5 @@
 import { StitchCanvasBase } from "./base.js";
 import { DotsUtility } from "../../utilities/dots.js";
-import { DotArray } from "../../utilities/arrays/dot/dot.js";
 import { StitchThreadArray } from "../../utilities/arrays/thread/stitch.js";
 import { IInputCanvas, PointerUpEvent, Position } from "../../input/types.js";
 import { Dot, CanvasSide, CanvasConfig, StitchTread, DotIndex } from "../../types.js";
@@ -28,7 +27,7 @@ export abstract class StitchCanvas extends StitchCanvasBase {
     protected override redraw(): void {
         // CPU, GPU, memory and GC intensive code
         // Do not extract this method in multiple methods
-        // Do not create types/classes for dot and thread (objects are extremely slow and memory/GC consuming)
+        // Do not create types/classes a thread (objects are extremely slow and memory/GC consuming)
 
         // 1. make initial calculations and create new constants for nested props
 
@@ -47,8 +46,7 @@ export abstract class StitchCanvas extends StitchCanvasBase {
         const colors = this.threads.colors;
         const sides = this.threads.sides;
 
-        // 2. recalculate threads and dots
-        const dots = new DotArray();
+        // 2. recalculate threads
         for (let index = 0; index < this.threads.length; index++) {
 
             // 3. set visibility to false by default, if visible then true will be set later
@@ -92,11 +90,8 @@ export abstract class StitchCanvas extends StitchCanvasBase {
 
             const fromDotXPos = this.calculateDotXPosition(fromDotXIdx);
             const fromDotYPos = this.calculateDotYPosition(fromDotYIdx);
-            dots.push(fromDotXPos, fromDotYPos, width / 2, color);
-
             const toDotXPos = this.calculateDotXPosition(toDotXIdx);
             const toDotYPos = this.calculateDotYPosition(toDotYIdx);
-            dots.push(toDotXPos, toDotYPos, width / 2, color);
 
             // 7. set the updated pros before drawing
             this.threads.setThread(index, true, fromDotXIdx, fromDotXPos, fromDotYIdx, fromDotYPos, toDotXIdx, toDotXPos, toDotYIdx, toDotYPos, width, color, side);
@@ -104,7 +99,6 @@ export abstract class StitchCanvas extends StitchCanvasBase {
 
         // 8. draw threads, each thread consist of one thread and two dots
         super.invokeDrawThreads(this.threads);
-        super.invokeDrawDots(dots);
     }
 
     private startListening(): void {
@@ -158,12 +152,6 @@ export abstract class StitchCanvas extends StitchCanvasBase {
         const threads = new StitchThreadArray();
         threads.pushThread(thread);
         super.invokeDrawThreads(threads);
-
-        // draw dots
-        const dots = new DotArray();
-        dots.push(thread.fromDotXPos, thread.fromDotYPos, thread.width / 2, thread.color);
-        dots.push(thread.toDotXPos, thread.toDotYPos, thread.width / 2, thread.color);
-        super.invokeDrawDots(dots);
     }
 
     private createThread(previouslyClickedDotIdx: DotIndex, previouslyClickedDotPos: Position, clickedDotIdx: DotIndex, clickedDotPos: Position, visible: boolean): StitchTread {
