@@ -5,7 +5,7 @@ import { StitchThreadArray } from "../../utilities/arrays/thread/stitch.js";
 import { IInputCanvas, PointerUpEvent, Position } from "../../input/types.js";
 import { Dot, CanvasSide, CanvasConfig, StitchTread, DotIndex } from "../../types.js";
 
-export class StitchCanvas extends StitchCanvasBase {
+export abstract class StitchCanvas extends StitchCanvasBase {
     private readonly dotsUtility: DotsUtility<Dot>;
     private readonly threads: StitchThreadArray;
 
@@ -88,7 +88,7 @@ export class StitchCanvas extends StitchCanvasBase {
 
             // 6. thread is visible and must be drawn, make calculations
             const color = colors[index];
-            const width = widths[index]; // TODO: apply zoom factor!!!
+            const width = widths[index] + this.zoomThreadWidthFactor;
 
             const fromDotXPos = this.calculateDotXPosition(fromDotXIdx);
             const fromDotYPos = this.calculateDotYPosition(fromDotYIdx);
