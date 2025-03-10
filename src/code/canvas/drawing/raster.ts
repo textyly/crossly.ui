@@ -25,57 +25,12 @@ export class RasterDrawingCanvas extends CanvasBase implements IRasterDrawingCan
     }
 
     public drawDots(dots: DotArray): void {
-        // color -> (radius -> indexes)
-        const radiuses = dots.radiuses;
-        const colors = dots.colors;
-
-        const groups = new Map<string, Map<number, Array<number>>>();
-
-        for (let index = 0; index < dots.length; index++) {
-            const radius = radiuses[index];
-            const color = colors[index];
-
-            if (!groups.has(color)) {
-                const rs = new Map<number, Array<number>>();
-                groups.set(color, rs);
-            }
-
-            const rs = groups.get(color)!;
-            if (!rs.has(radius)) {
-                rs.set(radius, []);
-            }
-
-            const indexes = rs.get(radius)!;
-            indexes.push(index);
-        }
-
+        const groups = this.createGroups(dots.length, dots.radiuses, dots.colors);
         this.drawDotsCore(dots, groups);
     }
 
     public drawLines(threads: ThreadArray): void {
-        const widths = threads.widths;
-        const colors = threads.colors;
-
-        const groups = new Map<string, Map<number, Array<number>>>();
-
-        for (let index = 0; index < threads.length; index++) {
-            const width = widths[index];
-            const color = colors[index];
-
-            if (!groups.has(color)) {
-                const ws = new Map<number, Array<number>>();
-                groups.set(color, ws);
-            }
-
-            const ws = groups.get(color)!;
-            if (!ws.has(width)) {
-                ws.set(width, []);
-            }
-
-            const indexes = ws.get(width)!;
-            indexes.push(index);
-        }
-
+        const groups = this.createGroups(threads.length, threads.widths, threads.colors);
         this.drawLinesCore(threads, groups);
     }
 
@@ -103,16 +58,16 @@ export class RasterDrawingCanvas extends CanvasBase implements IRasterDrawingCan
         // CPU, GPU, memory and GC intensive code
 
         groups.forEach((radiuses, color) => {
-            radiuses.forEach((indexes, radius) => {
+            radiuses.forEach((dotIndexes, radius) => {
                 this.context.beginPath();
 
                 const dotsX = dots.dotsX;
                 const dotsY = dots.dotsY;
 
-                for (let index = 0; index < indexes.length; index++) {
-                    const idx = indexes[index];
-                    const x = dotsX[idx] - this.bounds.left;
-                    const y = dotsY[idx] - this.bounds.top;
+                for (let index = 0; index < dotIndexes.length; index++) {
+                    const dotIdX = dotIndexes[index];
+                    const x = dotsX[dotIdX] - this.bounds.left;
+                    const y = dotsY[dotIdX] - this.bounds.top;
 
                     this.context.fillStyle = color;
                     this.context.moveTo(x, y);
@@ -127,8 +82,9 @@ export class RasterDrawingCanvas extends CanvasBase implements IRasterDrawingCan
 
     private drawLinesCore(threads: ThreadArray, groups: Map<string, Map<number, Array<number>>>): void {
         // CPU, GPU, memory and GC intensive code
+
         groups.forEach((widths, color) => {
-            widths.forEach((indexes, width) => {
+            widths.forEach((threadIndexes, width) => {
                 this.context.beginPath();
 
                 const visibility = threads.visibilities;
@@ -138,22 +94,46 @@ export class RasterDrawingCanvas extends CanvasBase implements IRasterDrawingCan
                 const toDotsYPositions = threads.toDotsYPositions;
 
                 for (let index = 0; index < threads.length; index++) {
-                    const idx = indexes[index];
-                    const isVisible = visibility[idx];
+                    const threadIdx = threadIndexes[index];
+                    const isVisible = visibility[threadIdx];
                     if (!isVisible) {
                         continue;
-                    }ф
+                    }
 
                     this.context.lineWidth = width;
                     this.context.strokeStyle = color;
 
-                    this.context.moveTo(fromDotsXPositions[idx] - this.bounds.left, fromDotsYPositions[idx] - this.bounds.top);
-                    this.context.lineTo(toDotsXPositions[idx] - this.bounds.left, toDotsYPositions[idx] - this.bounds.top);
+                    this.context.moveTo(fromDotsXPositions[threadIdx] - this.bounds.left, fromDotsYPositions[threadIdx] - this.bounds.top);
+                    this.context.lineTo(toDotsXPositions[threadIdx] - this.bounds.left, toDotsYPositions[threadIdx] - this.bounds.top);
                 }
 
                 this.context.stroke();
                 this.context.closePath();
             });
         });
+    }
+
+    private createGroups(length: number, widths: Readonly<Float32Array>, colors: Readonly<Array<string>>): Map<string, Map<number, Array<number>>> {
+        const colorsGroup = new Map<string, Map<number, Array<number>>>();
+
+        for (let index = 0; index < length; index++) {
+
+            const color = colors[index];
+            if (!colorsGroup.has(color)) {
+                const widthsGroup = new Map<number, Array<number>>();
+                colorsGroup.set(color, widthsGroup);
+            }
+
+            const width = widths[index];
+            const widthsGroup = colorsGroup.get(color)!;
+            if (!widthsGroup.has(width)) {
+                widthsGroup.set(width, []);
+            }
+
+            const indexes = widthsGroup.get(width)!;
+            indexes.push(index);
+        }
+
+        return colorsGroup;
     }
 }

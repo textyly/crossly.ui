@@ -36,6 +36,10 @@ export interface ICueCanvas extends IVirtualCanvas {
     onRemoveThread(listener: RemoveCueThreadListener): VoidUnsubscribe;
 }
 
+export interface ICueCanvasFacade extends ICueCanvas {
+    setThreadColor(color: string): void;
+}
+
 export type DrawFabricDotsEvent = { dots: DotArray };
 export type DrawFabricDotsListener = Listener<DrawFabricDotsEvent>;
 

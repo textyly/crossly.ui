@@ -7,7 +7,7 @@ import { StitchCanvas } from "./virtual/stitch/stitch.js";
 import { FabricDrawingCanvas } from "./drawing/fabric.js";
 import { StitchDrawingCanvas } from "./drawing/stitch.js";
 import { CrosslyCanvasConfig, ICrosslyCanvas } from "./types.js";
-import { ICueCanvas, IFabricCanvas, IStitchCanvasFacade } from "./virtual/types.js";
+import { ICueCanvasFacade, IFabricCanvas, IStitchCanvasFacade } from "./virtual/types.js";
 import { ICueDrawingCanvas, IFabricDrawingCanvas, IRasterDrawingCanvas, IStitchDrawingCanvas, IVectorDrawingCanvas } from "./drawing/types.js";
 
 export class CrosslyCanvas extends CanvasBase implements ICrosslyCanvas {
@@ -20,7 +20,7 @@ export class CrosslyCanvas extends CanvasBase implements ICrosslyCanvas {
     private stitchCanvasFacade!: IStitchCanvasFacade;
     private stitchDrawingCanvas!: IStitchDrawingCanvas;
 
-    private cueCanvas!: ICueCanvas;
+    private cueCanvasFacade!: ICueCanvasFacade;
     private cueDrawingCanvas!: ICueDrawingCanvas;
 
     constructor(
@@ -42,11 +42,12 @@ export class CrosslyCanvas extends CanvasBase implements ICrosslyCanvas {
     public draw(): void {
         this.fabricCanvas.draw();
         this.stitchCanvasFacade.draw();
-        this.cueCanvas.draw();
+        this.cueCanvasFacade.draw();
     }
 
     public setThreadColor(color: string): void {
         this.stitchCanvasFacade.setThreadColor(color);
+        this.cueCanvasFacade.setThreadColor(color);
     }
 
     public override dispose(): void {
@@ -68,12 +69,12 @@ export class CrosslyCanvas extends CanvasBase implements ICrosslyCanvas {
     }
 
     private initializeCueCanvas(vectorDrawing: IVectorDrawingCanvas): void {
-        this.cueCanvas = new CueCanvas(this.config.cue, this.inputCanvas);
-        this.cueDrawingCanvas = new CueDrawingCanvas(this.cueCanvas, vectorDrawing);
+        this.cueCanvasFacade = new CueCanvas(this.config.cue, this.inputCanvas);
+        this.cueDrawingCanvas = new CueDrawingCanvas(this.cueCanvasFacade, vectorDrawing);
     }
 
     private disposeCueCanvas(): void {
-        this.cueCanvas?.dispose();
+        this.cueCanvasFacade?.dispose();
         this.cueDrawingCanvas?.dispose();
     }
 

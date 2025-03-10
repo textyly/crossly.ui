@@ -1,10 +1,10 @@
-import { CueCanvasBase } from "./base.js";
+import { CueCanvasFacade } from "./facade.js";
 import { DotsUtility } from "../../utilities/dots.js";
 import { IdGenerator } from "../../utilities/generator.js";
 import { CanvasSide, Id, CueThread, CanvasConfig, CueDot, Dot, DotIndex } from "../../types.js";
 import { Position, IInputCanvas, PointerUpEvent, PointerMoveEvent } from "../../input/types.js";
 
-export class CueCanvas extends CueCanvasBase {
+export class CueCanvas extends CueCanvasFacade {
     private readonly ids: IdGenerator;
     private readonly dotsUtility: DotsUtility<Dot>;
 
