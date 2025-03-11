@@ -16,50 +16,6 @@ export abstract class StitchCanvas extends StitchCanvasBase {
         this.dotsUtility = new DotsUtility();
         this.threads = new StitchThreadArray();
 
-        setTimeout(() => {
-            for (let dotIndexY = 0; dotIndexY < this.allDotsY; dotIndexY += 2) {
-                for (let dotIndexX = 0; dotIndexX < this.allDotsX; dotIndexX += 2) {
-                    if (dotIndexY > 0 && dotIndexX > 0) {
-                        const thread1 = {
-                            visible: true,
-                            fromDotXIdx: dotIndexX,
-                            fromDotXPos: 0,
-                            fromDotYIdx: dotIndexY,
-                            fromDotYPos: 0,
-                            toDotXIdx: dotIndexX + 2,
-                            toDotXPos: 0,
-                            toDotYIdx: dotIndexY - 2,
-                            toDotYPos: 0,
-                            width: this.threadWidth,
-                            color: this.threadColor,
-                            side: CanvasSide.Front
-                        };
-
-                        this.threads.pushThread(thread1);
-
-                        const thread2 = {
-                            visible: true,
-                            fromDotXIdx: dotIndexX,
-                            fromDotXPos: 0,
-                            fromDotYIdx: dotIndexY,
-                            fromDotYPos: 0,
-                            toDotXIdx: dotIndexX - 2,
-                            toDotXPos: 0,
-                            toDotYIdx: dotIndexY - 2,
-                            toDotYPos: 0,
-                            width: this.threadWidth,
-                            color: this.threadColor,
-                            side: CanvasSide.Front
-                        };
-
-                        this.threads.pushThread(thread2);
-                    }
-                }
-            }
-
-            this.draw();
-        }, 1000);
-
         this.startListening();
     }
 

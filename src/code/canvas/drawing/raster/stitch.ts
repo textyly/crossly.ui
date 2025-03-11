@@ -1,16 +1,14 @@
-import { Bounds } from "../types.js";
-import { CanvasBase } from "../base.js";
-import { IRasterDrawingCanvas } from "./types.js";
-import { DotArray } from "../utilities/arrays/dot/dot.js";
-import { ThreadArray } from "../utilities/arrays/thread/array.js";
+import { Bounds } from "../../types.js";
+import { CanvasBase } from "../../base.js";
+import { IRasterDrawingCanvas } from "../types.js";
+import { DotArray } from "../../utilities/arrays/dot/dot.js";
+import { ThreadArray } from "../../utilities/arrays/thread/array.js";
 
-export class RasterDrawingCanvas extends CanvasBase implements IRasterDrawingCanvas {
-    private readonly endAngle: number;
+export class RasterDrawingStitchCanvas extends CanvasBase implements IRasterDrawingCanvas {
     private readonly context: CanvasRenderingContext2D;
 
     constructor(private rasterCanvas: HTMLCanvasElement) {
         super();
-        this.endAngle = Math.PI * 2;
         this.context = rasterCanvas.getContext("2d")!;
     }
 
@@ -25,7 +23,7 @@ export class RasterDrawingCanvas extends CanvasBase implements IRasterDrawingCan
     }
 
     public drawDots(dots: DotArray): void {
-        // TODO: not implemented, throw exception
+        throw new Error("not implemented");
     }
 
     public drawLines(threads: ThreadArray): void {
@@ -33,8 +31,6 @@ export class RasterDrawingCanvas extends CanvasBase implements IRasterDrawingCan
         if (threads.length <= 0) {
             return;
         }
-
-        //const start = performance.now();
 
         const visibilities = threads.visibilities;
         const fromDotsXPositions = threads.fromDotsXPositions;
@@ -46,7 +42,7 @@ export class RasterDrawingCanvas extends CanvasBase implements IRasterDrawingCan
 
         let previousColor = colors[0];
         let previousWidth = widths[0];
-        this.context.beginPath();
+        let path = new Path2D();
         for (let threadIdx = 0; threadIdx < threads.length; threadIdx++) {
             const isVisible = visibilities[threadIdx];
             if (!isVisible) {
@@ -54,13 +50,9 @@ export class RasterDrawingCanvas extends CanvasBase implements IRasterDrawingCan
                     this.context.strokeStyle = previousColor;
                     // this.context.lineWidth = 0.1;
 
-                    //const start1 = performance.now();
-                    this.context.stroke();
+                    this.context.stroke(path);
                     this.context.fillStyle = previousColor;
-                    this.context.fill();
-                    this.context.closePath();
-                    //const end1 = performance.now();
-                    //console.log("drawing: ", end1 - start1);
+                    this.context.fill(path);
                 }
                 continue;
             }
@@ -72,14 +64,13 @@ export class RasterDrawingCanvas extends CanvasBase implements IRasterDrawingCan
             if (hasDifference) {
                 this.context.strokeStyle = previousColor;
                 // this.context.lineWidth = 0.1;
-                this.context.stroke();
+                this.context.stroke(path);
                 this.context.fillStyle = previousColor;
-                this.context.fill();
-                this.context.closePath();
+                this.context.fill(path);
             }
 
             if (hasDifference) {
-                this.context.beginPath();
+                path = new Path2D();
                 previousColor = currentColor;
                 previousWidth = currentWidth;
             }
@@ -90,113 +81,109 @@ export class RasterDrawingCanvas extends CanvasBase implements IRasterDrawingCan
             const toY = toDotsYPositions[threadIdx] - this.bounds.top;
 
             const leg = 1; //Math.sqrt((currentWidth * currentWidth) / 2);
-            this.draw(fromX, fromY, toX, toY, leg);
+            this.draw(fromX, fromY, toX, toY, leg, path);
 
             if (threadIdx === (threads.length - 1)) {
                 this.context.strokeStyle = currentColor;
                 // this.context.lineWidth = 0.1;
-                this.context.stroke();
+                this.context.stroke(path);
                 this.context.fillStyle = currentColor;
-                this.context.fill();
-                this.context.closePath();
+                this.context.fill(path);
             }
         }
-
-        //const end = performance.now();
-        //console.log("all: ", end - start);
     }
 
-    private draw(fromX: number, fromY: number, toX: number, toY: number, leg: number): void {
+    private draw(fromX: number, fromY: number, toX: number, toY: number, leg: number, path: Path2D): void {
         // leftTop to rightBottom stitch (diagonal)
         if (fromX < toX && fromY < toY) {
-            this.context.moveTo(fromX, fromY);
-            this.context.lineTo(fromX, fromY + leg);
-            this.context.lineTo(toX - leg, toY);
-            this.context.lineTo(toX, toY);
-            this.context.lineTo(toX, toY - leg);
-            this.context.lineTo(fromX + leg, fromY);
-            this.context.lineTo(fromX, fromY);
+            path.moveTo(fromX, fromY);
+            path.lineTo(fromX, fromY + leg);
+            path.lineTo(toX - leg, toY);
+            path.lineTo(toX, toY);
+            path.lineTo(toX, toY - leg);
+            path.lineTo(fromX + leg, fromY);
+            path.lineTo(fromX, fromY);
         }
 
         // rightBottom to leftTop stitch (diagonal)
         if (fromX > toX && fromY > toY) {
-            this.context.moveTo(toX, toY);
-            this.context.lineTo(toX, toY + leg);
-            this.context.lineTo(fromX - leg, fromY);
-            this.context.lineTo(fromX, fromY);
-            this.context.lineTo(fromX, fromY - leg);
-            this.context.lineTo(toX + leg, toY);
-            this.context.lineTo(toX, toY);
+            path.moveTo(toX, toY);
+            path.lineTo(toX, toY + leg);
+            path.lineTo(fromX - leg, fromY);
+            path.lineTo(fromX, fromY);
+            path.lineTo(fromX, fromY - leg);
+            path.lineTo(toX + leg, toY);
+            path.lineTo(toX, toY);
         }
 
         // rightTop to leftBottom stitch (diagonal)
         if (fromX > toX && fromY < toY) {
-            this.context.moveTo(fromX, fromY);
-            this.context.lineTo(fromX - leg, fromY);
-            this.context.lineTo(toX, toY - leg);
-            this.context.lineTo(toX, toY);
-            this.context.lineTo(toX + leg, toY);
-            this.context.lineTo(fromX, fromY + leg);
-            this.context.lineTo(fromX, fromY);
+            path.moveTo(fromX, fromY);
+            path.lineTo(fromX - leg, fromY);
+            path.lineTo(toX, toY - leg);
+            path.lineTo(toX, toY);
+            path.lineTo(toX + leg, toY);
+            path.lineTo(fromX, fromY + leg);
+            path.lineTo(fromX, fromY);
         }
 
         // leftBottom to rightTop stitch (diagonal)
         if (fromX < toX && fromY > toY) {
-            this.context.moveTo(toX, toY);
-            this.context.lineTo(toX - leg, toY);
-            this.context.lineTo(fromX, fromY - leg);
-            this.context.lineTo(fromX, fromY);
-            this.context.lineTo(fromX + leg, fromY);
-            this.context.lineTo(toX, toY + leg);
-            this.context.lineTo(toX, toY);
+            path.moveTo(toX, toY);
+            path.lineTo(toX - leg, toY);
+            path.lineTo(fromX, fromY - leg);
+            path.lineTo(fromX, fromY);
+            path.lineTo(fromX + leg, fromY);
+            path.lineTo(toX, toY + leg);
+            path.lineTo(toX, toY);
         }
 
         // left to right stitch (horizontal)
         if (fromX < toX && fromY == toY) {
             const l = Math.sqrt((leg * leg) / 2);
-            this.context.moveTo(fromX, fromY);
-            this.context.lineTo(fromX + l, fromY + l);
-            this.context.lineTo(toX - l, toY + l);
-            this.context.lineTo(toX, toY);
-            this.context.lineTo(toX - l, toY - l);
-            this.context.lineTo(fromX + l, fromY - l);
-            this.context.lineTo(fromX, fromY);
+            path.moveTo(fromX, fromY);
+            path.lineTo(fromX + l, fromY + l);
+            path.lineTo(toX - l, toY + l);
+            path.lineTo(toX, toY);
+            path.lineTo(toX - l, toY - l);
+            path.lineTo(fromX + l, fromY - l);
+            path.lineTo(fromX, fromY);
         }
 
         // right to left stitch (horizontal)
         if (fromX > toX && fromY == toY) {
             const l = Math.sqrt((leg * leg) / 2);
-            this.context.moveTo(fromX, fromY);
-            this.context.lineTo(fromX - l, fromY - l);
-            this.context.lineTo(toX + l, toY - l);
-            this.context.lineTo(toX, toY);
-            this.context.lineTo(toX + l, toY + l);
-            this.context.lineTo(fromX - l, fromY + l);
-            this.context.lineTo(fromX, fromY);
+            path.moveTo(fromX, fromY);
+            path.lineTo(fromX - l, fromY - l);
+            path.lineTo(toX + l, toY - l);
+            path.lineTo(toX, toY);
+            path.lineTo(toX + l, toY + l);
+            path.lineTo(fromX - l, fromY + l);
+            path.lineTo(fromX, fromY);
         }
 
         // top to bottom stitch (vertical)
         if (fromX == toX && fromY < toY) {
             const l = Math.sqrt((leg * leg) / 2);
-            this.context.moveTo(fromX, fromY);
-            this.context.lineTo(fromX - l, fromY + l);
-            this.context.lineTo(toX - l, toY - l);
-            this.context.lineTo(toX, toY);
-            this.context.lineTo(toX + l, toY - l);
-            this.context.lineTo(fromX + l, fromY + l);
-            this.context.lineTo(fromX, fromY);
+            path.moveTo(fromX, fromY);
+            path.lineTo(fromX - l, fromY + l);
+            path.lineTo(toX - l, toY - l);
+            path.lineTo(toX, toY);
+            path.lineTo(toX + l, toY - l);
+            path.lineTo(fromX + l, fromY + l);
+            path.lineTo(fromX, fromY);
         }
 
         // bottom to top stitch (vertical)
         if (fromX == toX && fromY > toY) {
             const l = Math.sqrt((leg * leg) / 2);
-            this.context.moveTo(fromX, fromY);
-            this.context.lineTo(fromX + l, fromY - l);
-            this.context.lineTo(toX + l, toY + l);
-            this.context.lineTo(toX, toY);
-            this.context.lineTo(toX - l, toY + l);
-            this.context.lineTo(fromX - l, fromY - l);
-            this.context.lineTo(fromX, fromY);
+            path.moveTo(fromX, fromY);
+            path.lineTo(fromX + l, fromY - l);
+            path.lineTo(toX + l, toY + l);
+            path.lineTo(toX, toY);
+            path.lineTo(toX - l, toY + l);
+            path.lineTo(fromX - l, fromY - l);
+            path.lineTo(fromX, fromY);
         }
     }
 
