@@ -25,13 +25,179 @@ export class RasterDrawingCanvas extends CanvasBase implements IRasterDrawingCan
     }
 
     public drawDots(dots: DotArray): void {
-        const groups = this.createGroups(dots.length, dots.radiuses, dots.colors);
-        this.drawDotsCore(dots, groups);
+        // TODO: not implemented, throw exception
     }
 
     public drawLines(threads: ThreadArray): void {
-        const groups = this.createGroups(threads.length, threads.widths, threads.colors);
-        this.drawLinesCore(threads, groups);
+        // CPU, GPU, memory and GC intensive code, do not extract in multiple methods!!!
+        if (threads.length <= 0) {
+            return;
+        }
+
+        //const start = performance.now();
+
+        const visibilities = threads.visibilities;
+        const fromDotsXPositions = threads.fromDotsXPositions;
+        const fromDotsYPositions = threads.fromDotsYPositions;
+        const toDotsXPositions = threads.toDotsXPositions;
+        const toDotsYPositions = threads.toDotsYPositions;
+        const widths = threads.widths;
+        const colors = threads.colors;
+
+        let previousColor = colors[0];
+        let previousWidth = widths[0];
+        this.context.beginPath();
+        for (let threadIdx = 0; threadIdx < threads.length; threadIdx++) {
+            const isVisible = visibilities[threadIdx];
+            if (!isVisible) {
+                if (threadIdx === (threads.length - 1)) {
+                    this.context.strokeStyle = previousColor;
+                    // this.context.lineWidth = 0.1;
+
+                    //const start1 = performance.now();
+                    this.context.stroke();
+                    this.context.fillStyle = previousColor;
+                    this.context.fill();
+                    this.context.closePath();
+                    //const end1 = performance.now();
+                    //console.log("drawing: ", end1 - start1);
+                }
+                continue;
+            }
+
+            const currentWidth = widths[threadIdx];
+            const currentColor = colors[threadIdx];
+
+            const hasDifference = (currentColor !== previousColor) || (currentWidth !== previousWidth);
+            if (hasDifference) {
+                this.context.strokeStyle = previousColor;
+                // this.context.lineWidth = 0.1;
+                this.context.stroke();
+                this.context.fillStyle = previousColor;
+                this.context.fill();
+                this.context.closePath();
+            }
+
+            if (hasDifference) {
+                this.context.beginPath();
+                previousColor = currentColor;
+                previousWidth = currentWidth;
+            }
+
+            const fromX = fromDotsXPositions[threadIdx] - this.bounds.left;
+            const fromY = fromDotsYPositions[threadIdx] - this.bounds.top;
+            const toX = toDotsXPositions[threadIdx] - this.bounds.left;
+            const toY = toDotsYPositions[threadIdx] - this.bounds.top;
+
+            const leg = 1; //Math.sqrt((currentWidth * currentWidth) / 2);
+            this.draw(fromX, fromY, toX, toY, leg);
+
+            if (threadIdx === (threads.length - 1)) {
+                this.context.strokeStyle = currentColor;
+                // this.context.lineWidth = 0.1;
+                this.context.stroke();
+                this.context.fillStyle = currentColor;
+                this.context.fill();
+                this.context.closePath();
+            }
+        }
+
+        //const end = performance.now();
+        //console.log("all: ", end - start);
+    }
+
+    private draw(fromX: number, fromY: number, toX: number, toY: number, leg: number): void {
+        // leftTop to rightBottom stitch (diagonal)
+        if (fromX < toX && fromY < toY) {
+            this.context.moveTo(fromX, fromY);
+            this.context.lineTo(fromX, fromY + leg);
+            this.context.lineTo(toX - leg, toY);
+            this.context.lineTo(toX, toY);
+            this.context.lineTo(toX, toY - leg);
+            this.context.lineTo(fromX + leg, fromY);
+            this.context.lineTo(fromX, fromY);
+        }
+
+        // rightBottom to leftTop stitch (diagonal)
+        if (fromX > toX && fromY > toY) {
+            this.context.moveTo(toX, toY);
+            this.context.lineTo(toX, toY + leg);
+            this.context.lineTo(fromX - leg, fromY);
+            this.context.lineTo(fromX, fromY);
+            this.context.lineTo(fromX, fromY - leg);
+            this.context.lineTo(toX + leg, toY);
+            this.context.lineTo(toX, toY);
+        }
+
+        // rightTop to leftBottom stitch (diagonal)
+        if (fromX > toX && fromY < toY) {
+            this.context.moveTo(fromX, fromY);
+            this.context.lineTo(fromX - leg, fromY);
+            this.context.lineTo(toX, toY - leg);
+            this.context.lineTo(toX, toY);
+            this.context.lineTo(toX + leg, toY);
+            this.context.lineTo(fromX, fromY + leg);
+            this.context.lineTo(fromX, fromY);
+        }
+
+        // leftBottom to rightTop stitch (diagonal)
+        if (fromX < toX && fromY > toY) {
+            this.context.moveTo(toX, toY);
+            this.context.lineTo(toX - leg, toY);
+            this.context.lineTo(fromX, fromY - leg);
+            this.context.lineTo(fromX, fromY);
+            this.context.lineTo(fromX + leg, fromY);
+            this.context.lineTo(toX, toY + leg);
+            this.context.lineTo(toX, toY);
+        }
+
+        // left to right stitch (horizontal)
+        if (fromX < toX && fromY == toY) {
+            const l = Math.sqrt((leg * leg) / 2);
+            this.context.moveTo(fromX, fromY);
+            this.context.lineTo(fromX + l, fromY + l);
+            this.context.lineTo(toX - l, toY + l);
+            this.context.lineTo(toX, toY);
+            this.context.lineTo(toX - l, toY - l);
+            this.context.lineTo(fromX + l, fromY - l);
+            this.context.lineTo(fromX, fromY);
+        }
+
+        // right to left stitch (horizontal)
+        if (fromX > toX && fromY == toY) {
+            const l = Math.sqrt((leg * leg) / 2);
+            this.context.moveTo(fromX, fromY);
+            this.context.lineTo(fromX - l, fromY - l);
+            this.context.lineTo(toX + l, toY - l);
+            this.context.lineTo(toX, toY);
+            this.context.lineTo(toX + l, toY + l);
+            this.context.lineTo(fromX - l, fromY + l);
+            this.context.lineTo(fromX, fromY);
+        }
+
+        // top to bottom stitch (vertical)
+        if (fromX == toX && fromY < toY) {
+            const l = Math.sqrt((leg * leg) / 2);
+            this.context.moveTo(fromX, fromY);
+            this.context.lineTo(fromX - l, fromY + l);
+            this.context.lineTo(toX - l, toY - l);
+            this.context.lineTo(toX, toY);
+            this.context.lineTo(toX + l, toY - l);
+            this.context.lineTo(fromX + l, fromY + l);
+            this.context.lineTo(fromX, fromY);
+        }
+
+        // bottom to top stitch (vertical)
+        if (fromX == toX && fromY > toY) {
+            const l = Math.sqrt((leg * leg) / 2);
+            this.context.moveTo(fromX, fromY);
+            this.context.lineTo(fromX + l, fromY - l);
+            this.context.lineTo(toX + l, toY + l);
+            this.context.lineTo(toX, toY);
+            this.context.lineTo(toX - l, toY + l);
+            this.context.lineTo(fromX - l, fromY - l);
+            this.context.lineTo(fromX, fromY);
+        }
     }
 
     public clear(): void {
@@ -52,186 +218,5 @@ export class RasterDrawingCanvas extends CanvasBase implements IRasterDrawingCan
             this.rasterCanvas.height = height;
             this.rasterCanvas.width = width;
         }
-    }
-
-    private drawDotsCore(dots: DotArray, groups: Map<string, Map<number, Array<number>>>): void {
-        // CPU, GPU, memory and GC intensive code
-
-        groups.forEach((radiuses, color) => {
-            radiuses.forEach((dotIndexes, radius) => {
-                this.context.beginPath();
-
-                const dotsX = dots.dotsX;
-                const dotsY = dots.dotsY;
-
-                for (let index = 0; index < dotIndexes.length; index++) {
-                    const dotIdX = dotIndexes[index];
-                    const x = dotsX[dotIdX] - this.bounds.left;
-                    const y = dotsY[dotIdX] - this.bounds.top;
-
-                    this.context.fillStyle = color;
-                    this.context.moveTo(x, y);
-                    this.context.arc(x, y, radius, 0, this.endAngle);
-                }
-
-                this.context.fill();
-
-            });
-        });
-    }
-
-    private drawLinesCore(threads: ThreadArray, groups: Map<string, Map<number, Array<number>>>): void {
-        // CPU, GPU, memory and GC intensive code, do not extract in multiple methods!!!
-
-        groups.forEach((widths, color) => {
-            widths.forEach((threadIndexes, width) => {
-                this.context.beginPath();
-
-                const visibility = threads.visibilities;
-                const fromDotsXPositions = threads.fromDotsXPositions;
-                const fromDotsYPositions = threads.fromDotsYPositions;
-                const toDotsXPositions = threads.toDotsXPositions;
-                const toDotsYPositions = threads.toDotsYPositions;
-
-                for (let index = 0; index < threadIndexes.length; index++) {
-                    const threadIdx = threadIndexes[index];
-                    const isVisible = visibility[threadIdx];
-                    if (!isVisible) {
-                        continue;
-                    }
-
-                    const fromX = fromDotsXPositions[threadIdx] - this.bounds.left;
-                    const fromY = fromDotsYPositions[threadIdx] - this.bounds.top;
-                    const toX = toDotsXPositions[threadIdx] - this.bounds.left;
-                    const toY = toDotsYPositions[threadIdx] - this.bounds.top;
-
-                    const leg = Math.sqrt((width * width) / 2);
-
-                    // leftTop to rightBottom stitch (diagonal)
-                    if (fromX < toX && fromY < toY) {
-                        this.context.moveTo(fromX, fromY);
-                        this.context.lineTo(fromX, fromY + leg);
-                        this.context.lineTo(toX - leg, toY);
-                        this.context.lineTo(toX, toY);
-                        this.context.lineTo(toX, toY - leg);
-                        this.context.lineTo(fromX + leg, fromY);
-                        this.context.lineTo(fromX, fromY);
-                    }
-
-                    // rightBottom to leftTop stitch (diagonal)
-                    if (fromX > toX && fromY > toY) {
-                        this.context.moveTo(toX, toY);
-                        this.context.lineTo(toX, toY + leg);
-                        this.context.lineTo(fromX - leg, fromY);
-                        this.context.lineTo(fromX, fromY);
-                        this.context.lineTo(fromX, fromY - leg);
-                        this.context.lineTo(toX + leg, toY);
-                        this.context.lineTo(toX, toY);
-                    }
-
-                    // rightTop to leftBottom stitch (diagonal)
-                    if (fromX > toX && fromY < toY) {
-                        this.context.moveTo(fromX, fromY);
-                        this.context.lineTo(fromX - leg, fromY);
-                        this.context.lineTo(toX, toY - leg);
-                        this.context.lineTo(toX, toY);
-                        this.context.lineTo(toX + leg, toY);
-                        this.context.lineTo(fromX, fromY + leg);
-                        this.context.lineTo(fromX, fromY);
-                    }
-
-                    // leftBottom to rightTop stitch (diagonal)
-                    if (fromX < toX && fromY > toY) {
-                        this.context.moveTo(toX, toY);
-                        this.context.lineTo(toX - leg, toY);
-                        this.context.lineTo(fromX, fromY - leg);
-                        this.context.lineTo(fromX, fromY);
-                        this.context.lineTo(fromX + leg, fromY);
-                        this.context.lineTo(toX, toY + leg);
-                        this.context.lineTo(toX, toY);
-                    }
-
-                    // left to right stitch (horizontal)
-                    if (fromX < toX && fromY == toY) {
-                        const l = Math.sqrt((leg * leg) / 2);
-                        this.context.moveTo(fromX, fromY);
-                        this.context.lineTo(fromX + l, fromY + l);
-                        this.context.lineTo(toX - l, toY + l);
-                        this.context.lineTo(toX, toY);
-                        this.context.lineTo(toX - l, toY - l);
-                        this.context.lineTo(fromX + l, fromY - l);
-                        this.context.lineTo(fromX, fromY);
-                    }
-
-                    // right to left stitch (horizontal)
-                    if (fromX > toX && fromY == toY) {
-                        const l = Math.sqrt((leg * leg) / 2);
-                        this.context.moveTo(fromX, fromY);
-                        this.context.lineTo(fromX - l, fromY - l);
-                        this.context.lineTo(toX + l, toY - l);
-                        this.context.lineTo(toX, toY);
-                        this.context.lineTo(toX + l, toY + l);
-                        this.context.lineTo(fromX - l, fromY + l);
-                        this.context.lineTo(fromX, fromY);
-                    }
-
-                    // top to bottom stitch (vertical)
-                    if (fromX == toX && fromY < toY) {
-                        const l = Math.sqrt((leg * leg) / 2);
-                        this.context.moveTo(fromX, fromY);
-                        this.context.lineTo(fromX - l, fromY + l);
-                        this.context.lineTo(toX - l, toY - l);
-                        this.context.lineTo(toX, toY);
-                        this.context.lineTo(toX + l, toY - l);
-                        this.context.lineTo(fromX + l, fromY + l);
-                        this.context.lineTo(fromX, fromY);
-                    }
-
-                    // bottom to top stitch (vertical)
-                    if (fromX == toX && fromY > toY) {
-                        const l = Math.sqrt((leg * leg) / 2);
-                        this.context.moveTo(fromX, fromY);
-                        this.context.lineTo(fromX + l, fromY - l);
-                        this.context.lineTo(toX + l, toY + l);
-                        this.context.lineTo(toX, toY);
-                        this.context.lineTo(toX - l, toY + l);
-                        this.context.lineTo(fromX - l, fromY - l);
-                        this.context.lineTo(fromX, fromY);
-                    }
-                }
-
-                this.context.strokeStyle = color;
-                this.context.lineWidth = 0.1;
-                this.context.stroke();
-                this.context.fillStyle = color;
-                this.context.fill();
-                this.context.closePath();
-            });
-        });
-    }
-
-    private createGroups(length: number, widths: Readonly<Float32Array>, colors: Readonly<Array<string>>): Map<string, Map<number, Array<number>>> {
-
-        const colorsGroup = new Map<string, Map<number, Array<number>>>();
-
-        for (let index = 0; index < length; index++) {
-
-            const color = colors[index];
-            if (!colorsGroup.has(color)) {
-                const widthsGroup = new Map<number, Array<number>>();
-                colorsGroup.set(color, widthsGroup);
-            }
-
-            const width = widths[index];
-            const widthsGroup = colorsGroup.get(color)!;
-            if (!widthsGroup.has(width)) {
-                widthsGroup.set(width, []);
-            }
-
-            const indexes = widthsGroup.get(width)!;
-            indexes.push(index);
-        }
-
-        return colorsGroup;
     }
 }

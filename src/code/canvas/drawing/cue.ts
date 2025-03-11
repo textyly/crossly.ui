@@ -25,7 +25,7 @@ export class CueDrawingCanvas extends CanvasBase implements ICueDrawingCanvas {
         this.svgDots = new Map<Id, SvgDot>();
         this.svgLines = new Map<Id, SvgLine>();
 
-        this.subscribe();
+        // this.subscribe();
     }
 
     public override dispose(): void {

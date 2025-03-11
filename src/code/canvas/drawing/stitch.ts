@@ -1,8 +1,7 @@
 import { CanvasBase } from "../base.js";
-import { BoundsChangeEvent, Dot } from "../types.js";
+import { BoundsChangeEvent } from "../types.js";
 import { IRasterDrawingCanvas, IStitchDrawingCanvas } from "./types.js";
-import { DrawStitchDotsEvent, DrawStitchThreadsEvent, IStitchCanvas } from "../virtual/types.js";
-import { MoveEvent } from "../input/types.js";
+import { DrawStitchThreadsEvent, IStitchCanvas } from "../virtual/types.js";
 
 export class StitchDrawingCanvas extends CanvasBase implements IStitchDrawingCanvas {
     private readonly stitchCanvas: IStitchCanvas;
@@ -19,10 +18,6 @@ export class StitchDrawingCanvas extends CanvasBase implements IStitchDrawingCan
     public override dispose(): void {
         this.clear();
         super.dispose();
-    }
-
-    private handleDrawDots(event: DrawStitchDotsEvent): void {
-        this.rasterDrawing.drawDots(event.dots);
     }
 
     private handleDrawThreads(event: DrawStitchThreadsEvent): void {
@@ -43,9 +38,7 @@ export class StitchDrawingCanvas extends CanvasBase implements IStitchDrawingCan
         const bitmap = await this.rasterDrawing.createBitMap();
         this.clear();
 
-        requestAnimationFrame(() => {
-            this.rasterDrawing.drawBitMap(bitmap);
-        });
+        this.rasterDrawing.drawBitMap(bitmap);
     }
 
     private handleMoveStop(): void {
@@ -68,9 +61,6 @@ export class StitchDrawingCanvas extends CanvasBase implements IStitchDrawingCan
 
         const moveStopUn = this.stitchCanvas.onMoveStop(this.handleMoveStop.bind(this));
         super.registerUn(moveStopUn);
-
-        const drawDotsUn = this.stitchCanvas.onDrawDots(this.handleDrawDots.bind(this));
-        super.registerUn(drawDotsUn);
 
         const drawThreadsUn = this.stitchCanvas.onDrawThreads(this.handleDrawThreads.bind(this));
         super.registerUn(drawThreadsUn);

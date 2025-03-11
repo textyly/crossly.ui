@@ -7,28 +7,28 @@ export class ConfigFactory {
 
         const dotSpacing: SpacingConfig = {
             value: 25,
-            zoomInStep: 0.5,
-            zoomOutStep: 0.5
+            zoomInStep: 1,
+            zoomOutStep: 1
         }
 
         const fabricConfig: CanvasConfig = {
             columns,
             rows,
             dotSpacing,
-            dot: {  
+            dot: {
                 color: "#9fa19f",
                 radius: {
-                    value: 1.5,
-                    zoomInStep: 0.05,
-                    zoomOutStep: 0.05
+                    value: 1,
+                    zoomInStep: 0,
+                    zoomOutStep: 0
                 }
             },
             thread: {
                 color: "#d2d4d2",
                 width: {
                     value: 1,
-                    zoomInStep: 0.05,
-                    zoomOutStep: 0.05
+                    zoomInStep: 0,
+                    zoomOutStep: 0
                 }
             }
         };
@@ -41,16 +41,16 @@ export class ConfigFactory {
                 color: "gray",
                 radius: {
                     value: 3,
-                    zoomInStep: 0.1,
-                    zoomOutStep: 0.05
+                    zoomInStep: 0,
+                    zoomOutStep: 0
                 }
             },
             thread: {
                 color: "gray",
                 width: {
-                    value: 6.1,
-                    zoomInStep: 0.2,
-                    zoomOutStep: 0.1
+                    value: 2,
+                    zoomInStep: 0,
+                    zoomOutStep: 0
                 }
             }
         };
@@ -62,17 +62,17 @@ export class ConfigFactory {
             dot: {
                 color: "gray",
                 radius: {
-                    value: 5,
-                    zoomInStep: 0.2,
-                    zoomOutStep: 0.05
+                    value: 2,
+                    zoomInStep: 0,
+                    zoomOutStep: 0
                 }
             },
             thread: {
                 color: "gray",
                 width: {
-                    value: 6.1,
-                    zoomInStep: 0.2,
-                    zoomOutStep: 0.1
+                    value: 2,
+                    zoomInStep: 0,
+                    zoomOutStep: 0
                 }
             }
         };

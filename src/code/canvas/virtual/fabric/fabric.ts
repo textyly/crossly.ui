@@ -21,8 +21,8 @@ export class FabricCanvas extends FabricCanvasBase {
         const endIndexX = boundsIndexes.rightTop.dotX;
         const endIndexY = boundsIndexes.leftBottom.dotY;
 
-        this.redrawThreads(startIndexX, startIndexY, endIndexX, endIndexY);
-        this.redrawDots(startIndexX, startIndexY, endIndexX, endIndexY);
+        //this.redrawThreads(startIndexX, startIndexY, endIndexX, endIndexY);
+        //this.redrawDots(startIndexX, startIndexY, endIndexX, endIndexY);
     }
 
     private redrawThreads(startDotIndexX: number, startDotIndexY: number, endDotIndexX: number, endDotIndexY: number): void {

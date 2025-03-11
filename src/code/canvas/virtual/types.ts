@@ -17,7 +17,6 @@ export interface IFabricCanvas extends IVirtualCanvas {
 }
 
 export interface IStitchCanvas extends IVirtualCanvas {
-    onDrawDots(listener: DrawStitchDotsListener): VoidUnsubscribe;
     onDrawThreads(listener: DrawStitchThreadsListener): VoidUnsubscribe;
 }
 
@@ -45,9 +44,6 @@ export type DrawFabricDotsListener = Listener<DrawFabricDotsEvent>;
 
 export type DrawFabricThreadsEvent = { threads: ThreadArray };
 export type DrawFabricThreadsListener = Listener<DrawFabricThreadsEvent>;
-
-export type DrawStitchDotsEvent = { dots: DotArray };
-export type DrawStitchDotsListener = Listener<DrawStitchDotsEvent>;
 
 export type DrawStitchThreadsEvent = { threads: StitchThreadArray };
 export type DrawStitchThreadsListener = Listener<DrawStitchThreadsEvent>;

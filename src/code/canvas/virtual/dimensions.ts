@@ -295,10 +295,10 @@ export abstract class VirtualCanvasDimensions extends CanvasBase {
 
         if (this.dotRadius < configDotRadius.value) {
             this.dotRadius += configDotRadius.zoomOutStep;
-            this.zoomDotRadiusFactor = configDotRadius.zoomOutStep;
+            this.zoomDotRadiusFactor += configDotRadius.zoomOutStep;
         } else {
             this.dotRadius += configDotRadius.zoomInStep;
-            this.zoomDotRadiusFactor = configDotRadius.zoomInStep;
+            this.zoomDotRadiusFactor += configDotRadius.zoomInStep;
         }
     }
 
@@ -307,10 +307,10 @@ export abstract class VirtualCanvasDimensions extends CanvasBase {
 
         if (this.dotRadius > configDotRadius.value) {
             this.dotRadius -= configDotRadius.zoomInStep;
-            this.zoomDotRadiusFactor = -configDotRadius.zoomInStep;
+            this.zoomDotRadiusFactor -= configDotRadius.zoomInStep;
         } else {
             this.dotRadius -= configDotRadius.zoomOutStep;
-            this.zoomDotRadiusFactor = -configDotRadius.zoomOutStep;
+            this.zoomDotRadiusFactor -= configDotRadius.zoomOutStep;
         }
     }
 
@@ -319,10 +319,10 @@ export abstract class VirtualCanvasDimensions extends CanvasBase {
 
         if (this.threadWidth < configThreadWidth.value) {
             this.threadWidth += configThreadWidth.zoomOutStep;
-            this.zoomThreadWidthFactor = configThreadWidth.zoomOutStep;
+            this.zoomThreadWidthFactor += configThreadWidth.zoomOutStep;
         } else {
             this.threadWidth += configThreadWidth.zoomInStep;
-            this.zoomThreadWidthFactor = configThreadWidth.zoomInStep;
+            this.zoomThreadWidthFactor += configThreadWidth.zoomInStep;
         }
     }
 
@@ -331,10 +331,10 @@ export abstract class VirtualCanvasDimensions extends CanvasBase {
 
         if (this.threadWidth > configThreadWidth.value) {
             this.threadWidth -= configThreadWidth.zoomInStep;
-            this.zoomThreadWidthFactor = -configThreadWidth.zoomInStep;
+            this.zoomThreadWidthFactor -= configThreadWidth.zoomInStep;
         } else {
             this.threadWidth -= configThreadWidth.zoomOutStep;
-            this.zoomThreadWidthFactor = -configThreadWidth.zoomOutStep;
+            this.zoomThreadWidthFactor -= configThreadWidth.zoomOutStep;
         }
     }
 }
