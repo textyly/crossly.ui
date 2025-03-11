@@ -80,7 +80,7 @@ export class RasterDrawingStitchCanvas extends CanvasBase implements IRasterDraw
             const toX = toDotsXPositions[threadIdx] - this.bounds.left;
             const toY = toDotsYPositions[threadIdx] - this.bounds.top;
 
-            const leg = 1; //Math.sqrt((currentWidth * currentWidth) / 2);
+            const leg = Math.floor(Math.sqrt((currentWidth * currentWidth) / 2));
             this.draw(fromX, fromY, toX, toY, leg, path);
 
             if (threadIdx === (threads.length - 1)) {

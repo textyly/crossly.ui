@@ -37,6 +37,7 @@ export class ConfigFactory {
             columns,
             rows,
             dotSpacing,
+            // TODO: delete, but config reorganization needed
             dot: {
                 color: "gray",
                 radius: {
@@ -48,7 +49,7 @@ export class ConfigFactory {
             thread: {
                 color: "gray",
                 width: {
-                    value: 2,
+                    value: 6,
                     zoomInStep: 0,
                     zoomOutStep: 0
                 }
@@ -62,7 +63,7 @@ export class ConfigFactory {
             dot: {
                 color: "gray",
                 radius: {
-                    value: 2,
+                    value: 6,
                     zoomInStep: 0,
                     zoomOutStep: 0
                 }
@@ -70,7 +71,7 @@ export class ConfigFactory {
             thread: {
                 color: "gray",
                 width: {
-                    value: 2,
+                    value: 6,
                     zoomInStep: 0,
                     zoomOutStep: 0
                 }
