@@ -136,7 +136,7 @@ export abstract class StitchCanvas extends StitchCanvasBase {
         if (!areClicksIdentical) {
             const visible = this.currentSide === CanvasSide.Front;
 
-            const thread = this.createThread(clickedDotIdx, clickedDotPos, previouslyClickedDotIdx, previouslyClickedDotPos, visible);
+            const thread = this.createThread(previouslyClickedDotIdx, previouslyClickedDotPos, clickedDotIdx, clickedDotPos, visible);
             this.threads.pushThread(thread);
 
             if (visible) {

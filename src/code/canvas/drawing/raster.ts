@@ -81,7 +81,7 @@ export class RasterDrawingCanvas extends CanvasBase implements IRasterDrawingCan
     }
 
     private drawLinesCore(threads: ThreadArray, groups: Map<string, Map<number, Array<number>>>): void {
-        // CPU, GPU, memory and GC intensive code
+        // CPU, GPU, memory and GC intensive code, do not extract in multiple methods!!!
 
         groups.forEach((widths, color) => {
             widths.forEach((threadIndexes, width) => {
@@ -100,14 +100,104 @@ export class RasterDrawingCanvas extends CanvasBase implements IRasterDrawingCan
                         continue;
                     }
 
-                    this.context.lineWidth = width;
-                    this.context.strokeStyle = color;
+                    const fromX = fromDotsXPositions[threadIdx] - this.bounds.left;
+                    const fromY = fromDotsYPositions[threadIdx] - this.bounds.top;
+                    const toX = toDotsXPositions[threadIdx] - this.bounds.left;
+                    const toY = toDotsYPositions[threadIdx] - this.bounds.top;
 
-                    this.context.moveTo(fromDotsXPositions[threadIdx] - this.bounds.left, fromDotsYPositions[threadIdx] - this.bounds.top);
-                    this.context.lineTo(toDotsXPositions[threadIdx] - this.bounds.left, toDotsYPositions[threadIdx] - this.bounds.top);
+                    const leg = Math.sqrt((width * width) / 2);
+
+
+                    if (fromX < toX && fromY < toY) {
+                        this.context.moveTo(fromX, fromY);
+                        this.context.lineTo(fromX, fromY + leg);
+                        this.context.lineTo(toX - leg, toY);
+                        this.context.lineTo(toX, toY);
+                        this.context.lineTo(toX, toY - leg);
+                        this.context.lineTo(fromX + leg, fromY);
+                        this.context.lineTo(fromX, fromY);
+                    }
+
+                    if (fromX > toX && fromY > toY) {
+                        this.context.moveTo(toX, toY);
+                        this.context.lineTo(toX, toY + leg);
+                        this.context.lineTo(fromX - leg, fromY);
+                        this.context.lineTo(fromX, fromY);
+                        this.context.lineTo(fromX, fromY - leg);
+                        this.context.lineTo(toX + leg, toY);
+                        this.context.lineTo(toX, toY);
+                    }
+
+                    if (fromX > toX && fromY < toY) {
+                        this.context.moveTo(fromX, fromY);
+                        this.context.lineTo(fromX - leg, fromY);
+                        this.context.lineTo(toX, toY - leg);
+                        this.context.lineTo(toX, toY);
+                        this.context.lineTo(toX + leg, toY);
+                        this.context.lineTo(fromX, fromY + leg);
+                        this.context.lineTo(fromX, fromY);
+                    }
+
+                    if (fromX < toX && fromY > toY) {
+                        this.context.moveTo(toX, toY);
+                        this.context.lineTo(toX - leg, toY);
+                        this.context.lineTo(fromX, fromY - leg);
+                        this.context.lineTo(fromX, fromY);
+                        this.context.lineTo(fromX + leg, fromY);
+                        this.context.lineTo(toX, toY + leg);
+                        this.context.lineTo(toX, toY);
+                    }
+
+                    if (fromX < toX && fromY == toY) {
+                        const l = Math.sqrt((leg * leg) / 2);
+                        this.context.moveTo(fromX, fromY);
+                        this.context.lineTo(fromX + l, fromY + l);
+                        this.context.lineTo(toX - l, toY + l);
+                        this.context.lineTo(toX, toY);
+                        this.context.lineTo(toX - l, toY - l);
+                        this.context.lineTo(fromX + l, fromY - l);
+                        this.context.lineTo(fromX, fromY);
+                    }
+
+                    if (fromX > toX && fromY == toY) {
+                        const l = Math.sqrt((leg * leg) / 2);
+                        this.context.moveTo(fromX, fromY);
+                        this.context.lineTo(fromX - l, fromY - l);
+                        this.context.lineTo(toX + l, toY - l);
+                        this.context.lineTo(toX, toY);
+                        this.context.lineTo(toX + l, toY + l);
+                        this.context.lineTo(fromX - l, fromY + l);
+                        this.context.lineTo(fromX, fromY);
+                    }
+
+                    if (fromX == toX && fromY < toY) {
+                        const l = Math.sqrt((leg * leg) / 2);
+                        this.context.moveTo(fromX, fromY);
+                        this.context.lineTo(fromX - l, fromY + l);
+                        this.context.lineTo(toX - l, toY - l);
+                        this.context.lineTo(toX, toY);
+                        this.context.lineTo(toX + l, toY - l);
+                        this.context.lineTo(fromX + l, fromY + l);
+                        this.context.lineTo(fromX, fromY);
+                    }
+
+                    if (fromX == toX && fromY > toY) {
+                        const l = Math.sqrt((leg * leg) / 2);
+                        this.context.moveTo(fromX, fromY);
+                        this.context.lineTo(fromX + l, fromY - l);
+                        this.context.lineTo(toX + l, toY + l);
+                        this.context.lineTo(toX, toY);
+                        this.context.lineTo(toX - l, toY + l);
+                        this.context.lineTo(fromX - l, fromY - l);
+                        this.context.lineTo(fromX, fromY);
+                    }
                 }
 
-                this.context.stroke();
+                this.context.strokeStyle = color; // Border color
+                this.context.lineWidth = 0.1;
+                this.context.stroke();              // Draw the outline
+                this.context.fillStyle = color; // Fill color
+                this.context.fill();
                 this.context.closePath();
             });
         });
