@@ -93,7 +93,7 @@ export class RasterDrawingCanvas extends CanvasBase implements IRasterDrawingCan
                 const toDotsXPositions = threads.toDotsXPositions;
                 const toDotsYPositions = threads.toDotsYPositions;
 
-                for (let index = 0; index < threads.length; index++) {
+                for (let index = 0; index < threadIndexes.length; index++) {
                     const threadIdx = threadIndexes[index];
                     const isVisible = visibility[threadIdx];
                     if (!isVisible) {
@@ -107,7 +107,7 @@ export class RasterDrawingCanvas extends CanvasBase implements IRasterDrawingCan
 
                     const leg = Math.sqrt((width * width) / 2);
 
-
+                    // leftTop to rightBottom stitch (diagonal)
                     if (fromX < toX && fromY < toY) {
                         this.context.moveTo(fromX, fromY);
                         this.context.lineTo(fromX, fromY + leg);
@@ -118,6 +118,7 @@ export class RasterDrawingCanvas extends CanvasBase implements IRasterDrawingCan
                         this.context.lineTo(fromX, fromY);
                     }
 
+                    // rightBottom to leftTop stitch (diagonal)
                     if (fromX > toX && fromY > toY) {
                         this.context.moveTo(toX, toY);
                         this.context.lineTo(toX, toY + leg);
@@ -128,6 +129,7 @@ export class RasterDrawingCanvas extends CanvasBase implements IRasterDrawingCan
                         this.context.lineTo(toX, toY);
                     }
 
+                    // rightTop to leftBottom stitch (diagonal)
                     if (fromX > toX && fromY < toY) {
                         this.context.moveTo(fromX, fromY);
                         this.context.lineTo(fromX - leg, fromY);
@@ -138,6 +140,7 @@ export class RasterDrawingCanvas extends CanvasBase implements IRasterDrawingCan
                         this.context.lineTo(fromX, fromY);
                     }
 
+                    // leftBottom to rightTop stitch (diagonal)
                     if (fromX < toX && fromY > toY) {
                         this.context.moveTo(toX, toY);
                         this.context.lineTo(toX - leg, toY);
@@ -148,6 +151,7 @@ export class RasterDrawingCanvas extends CanvasBase implements IRasterDrawingCan
                         this.context.lineTo(toX, toY);
                     }
 
+                    // left to right stitch (horizontal)
                     if (fromX < toX && fromY == toY) {
                         const l = Math.sqrt((leg * leg) / 2);
                         this.context.moveTo(fromX, fromY);
@@ -159,6 +163,7 @@ export class RasterDrawingCanvas extends CanvasBase implements IRasterDrawingCan
                         this.context.lineTo(fromX, fromY);
                     }
 
+                    // right to left stitch (horizontal)
                     if (fromX > toX && fromY == toY) {
                         const l = Math.sqrt((leg * leg) / 2);
                         this.context.moveTo(fromX, fromY);
@@ -170,6 +175,7 @@ export class RasterDrawingCanvas extends CanvasBase implements IRasterDrawingCan
                         this.context.lineTo(fromX, fromY);
                     }
 
+                    // top to bottom stitch (vertical)
                     if (fromX == toX && fromY < toY) {
                         const l = Math.sqrt((leg * leg) / 2);
                         this.context.moveTo(fromX, fromY);
@@ -181,6 +187,7 @@ export class RasterDrawingCanvas extends CanvasBase implements IRasterDrawingCan
                         this.context.lineTo(fromX, fromY);
                     }
 
+                    // bottom to top stitch (vertical)
                     if (fromX == toX && fromY > toY) {
                         const l = Math.sqrt((leg * leg) / 2);
                         this.context.moveTo(fromX, fromY);
@@ -193,10 +200,10 @@ export class RasterDrawingCanvas extends CanvasBase implements IRasterDrawingCan
                     }
                 }
 
-                this.context.strokeStyle = color; // Border color
+                this.context.strokeStyle = color;
                 this.context.lineWidth = 0.1;
-                this.context.stroke();              // Draw the outline
-                this.context.fillStyle = color; // Fill color
+                this.context.stroke();
+                this.context.fillStyle = color;
                 this.context.fill();
                 this.context.closePath();
             });
