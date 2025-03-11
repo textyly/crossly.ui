@@ -10,6 +10,5 @@ export class StitchCanvasFacade extends StitchCanvas implements IStitchCanvasFac
 
     public setThreadColor(color: string): void {
         this.threadColor = color;
-        this.dotColor = color;
     }
 }
