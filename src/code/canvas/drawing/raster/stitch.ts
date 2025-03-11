@@ -139,8 +139,8 @@ export class RasterDrawingStitchCanvas extends CanvasBase implements IRasterDraw
         }
 
         // left to right stitch (horizontal)
+        const l = Math.floor(Math.sqrt((leg * leg) / 2));
         if (fromX < toX && fromY == toY) {
-            const l = Math.sqrt((leg * leg) / 2);
             path.moveTo(fromX, fromY);
             path.lineTo(fromX + l, fromY + l);
             path.lineTo(toX - l, toY + l);
@@ -152,7 +152,6 @@ export class RasterDrawingStitchCanvas extends CanvasBase implements IRasterDraw
 
         // right to left stitch (horizontal)
         if (fromX > toX && fromY == toY) {
-            const l = Math.sqrt((leg * leg) / 2);
             path.moveTo(fromX, fromY);
             path.lineTo(fromX - l, fromY - l);
             path.lineTo(toX + l, toY - l);
@@ -164,7 +163,6 @@ export class RasterDrawingStitchCanvas extends CanvasBase implements IRasterDraw
 
         // top to bottom stitch (vertical)
         if (fromX == toX && fromY < toY) {
-            const l = Math.sqrt((leg * leg) / 2);
             path.moveTo(fromX, fromY);
             path.lineTo(fromX - l, fromY + l);
             path.lineTo(toX - l, toY - l);
@@ -176,7 +174,6 @@ export class RasterDrawingStitchCanvas extends CanvasBase implements IRasterDraw
 
         // bottom to top stitch (vertical)
         if (fromX == toX && fromY > toY) {
-            const l = Math.sqrt((leg * leg) / 2);
             path.moveTo(fromX, fromY);
             path.lineTo(fromX + l, fromY - l);
             path.lineTo(toX + l, toY + l);
