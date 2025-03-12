@@ -9,7 +9,7 @@ export class StitchRasterDrawingCanvas extends RasterDrawingCanvas implements IR
     }
 
     public drawDots(dots: DotArray): void {
-        // stitch canvas does not draw dots because they have a huge performance impact when more than 300x300 stitches in grid are being used
+        // stitch canvas does not draw dots because they have a huge perf impact when more than 300x300 stitches in grid are being used
         // better throw an error if someone decides to start drawing dots, hopefully will see this comment
         throw new Error("not implemented because of high performance impact");
     }
@@ -52,7 +52,7 @@ export class StitchRasterDrawingCanvas extends RasterDrawingCanvas implements IR
                 const leg = Math.floor(Math.sqrt((currentWidth * currentWidth) / 2));
 
                 // drawing logic is too big and make the code too unreadable, 
-                // that is why it is extracted in the drawLineInPath method (even though additional function invocation will impact the performance since it will be executed for each and every visible stitch)
+                // that is why it is extracted in the drawLineInPath method (even though additional function invocation will impact the perf since it will be executed for each and every visible stitch)
                 this.drawLineInPath(path, fromX, fromY, toX, toY, leg);
             }
 
