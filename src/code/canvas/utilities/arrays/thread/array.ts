@@ -6,7 +6,7 @@ export class ThreadArray extends ArrayBase {
     private _fromDotsYPositions: Int32Array;
     private _toDotsXPositions: Int32Array;
     private _toDotsYPositions: Int32Array;
-    private _widths: Int32Array;
+    private _widths: Int16Array;
     private _colors: Array<string>;
 
     constructor() {
@@ -16,7 +16,7 @@ export class ThreadArray extends ArrayBase {
         this._fromDotsYPositions = new Int32Array(this.space);
         this._toDotsXPositions = new Int32Array(this.space);
         this._toDotsYPositions = new Int32Array(this.space);
-        this._widths = new Int32Array(this.space);
+        this._widths = new Int16Array(this.space);
         this._colors = new Array<string>();
     }
 
@@ -44,7 +44,7 @@ export class ThreadArray extends ArrayBase {
         return this._toDotsYPositions.slice(0, this.length);
     }
 
-    public get widths(): Readonly<Int32Array> {
+    public get widths(): Readonly<Int16Array> {
         return this._widths.slice(0, this.length);
     }
 
@@ -122,7 +122,7 @@ export class ThreadArray extends ArrayBase {
 
     private expandWidths(): void {
         const widths = this._widths;
-        this._widths = new Int32Array(this.space);
+        this._widths = new Int16Array(this.space);
 
         for (let index = 0; index < widths.length; index++) {
             this._widths[index] = widths[index];

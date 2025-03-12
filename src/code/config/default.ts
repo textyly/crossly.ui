@@ -2,13 +2,13 @@ import { CanvasConfig, CrosslyCanvasConfig, SpacingConfig } from "../canvas/type
 
 export class ConfigFactory {
     public create(): CrosslyCanvasConfig {
-        const columns = 300;
-        const rows = 300;
+        const columns = 30;
+        const rows = 30;
 
         const dotSpacing: SpacingConfig = {
-            value: 25,
-            zoomInStep: 1,
-            zoomOutStep: 1
+            value: 20,
+            zoomInStep: 2,
+            zoomOutStep: 2
         }
 
         const fabricConfig: CanvasConfig = {
