@@ -23,15 +23,13 @@ export class RasterDrawingStitchCanvas extends CanvasBase implements IRasterDraw
     }
 
     public drawDots(dots: DotArray): void {
-        throw new Error("not implemented");
+        // stitch canvas does not draw dots because they have a huge performance impact when more than 300x300 stitch grid is being used
+        // better throw an error if someone decides to start drawing dots, hopefully will see this comment
+        throw new Error("not implemented because of high performance impact");
     }
 
     public drawLines(threads: ThreadArray): void {
         // CPU, GPU, memory and GC intensive code, do not extract in multiple methods!!!
-        if (threads.length <= 0) {
-            return;
-        }
-
         const visibilities = threads.visibilities;
         const fromDotsXPositions = threads.fromDotsXPositions;
         const fromDotsYPositions = threads.fromDotsYPositions;
@@ -40,60 +38,50 @@ export class RasterDrawingStitchCanvas extends CanvasBase implements IRasterDraw
         const widths = threads.widths;
         const colors = threads.colors;
 
+        let path = this.createPath();
         let previousColor = colors[0];
-        let previousWidth = widths[0];
-        let path = new Path2D();
+        const lastIdX = threads.length - 1;
+
         for (let threadIdx = 0; threadIdx < threads.length; threadIdx++) {
-            const isVisible = visibilities[threadIdx];
-            if (!isVisible) {
-                if (threadIdx === (threads.length - 1)) {
-                    this.context.strokeStyle = previousColor;
-                    // this.context.lineWidth = 0.1;
-
-                    this.context.stroke(path);
-                    this.context.fillStyle = previousColor;
-                    this.context.fill(path);
-                }
-                continue;
-            }
-
             const currentWidth = widths[threadIdx];
             const currentColor = colors[threadIdx];
+            const isVisible = visibilities[threadIdx];
 
-            const hasDifference = (currentColor !== previousColor) || (currentWidth !== previousWidth);
-            if (hasDifference) {
-                this.context.strokeStyle = previousColor;
-                // this.context.lineWidth = 0.1;
-                this.context.stroke(path);
-                this.context.fillStyle = previousColor;
-                this.context.fill(path);
+            if (isVisible) {
+
+                if (currentColor !== previousColor) {
+                    // fillPath and createPath will be executed only on color change (very rare but depending on the pattern's complexity)
+                    this.fillPath(path, previousColor);
+                    path = this.createPath();
+                    previousColor = currentColor;
+                }
+
+                const fromX = fromDotsXPositions[threadIdx] - this.bounds.left;
+                const fromY = fromDotsYPositions[threadIdx] - this.bounds.top;
+                const toX = toDotsXPositions[threadIdx] - this.bounds.left;
+                const toY = toDotsYPositions[threadIdx] - this.bounds.top;
+
+                // pythagorean equation
+                const leg = Math.floor(Math.sqrt((currentWidth * currentWidth) / 2));
+
+                // drawing logic is too big and make the code too unreadable, 
+                // that is why it is extracted in the drawInPath method (even though additional function invocation will impact the performance since it will be executed for each and every visible stitch)
+                this.drawInPath(path, fromX, fromY, toX, toY, leg);
             }
 
-            if (hasDifference) {
-                path = new Path2D();
-                previousColor = currentColor;
-                previousWidth = currentWidth;
-            }
-
-            const fromX = fromDotsXPositions[threadIdx] - this.bounds.left;
-            const fromY = fromDotsYPositions[threadIdx] - this.bounds.top;
-            const toX = toDotsXPositions[threadIdx] - this.bounds.left;
-            const toY = toDotsYPositions[threadIdx] - this.bounds.top;
-
-            const leg = Math.floor(Math.sqrt((currentWidth * currentWidth) / 2));
-            this.draw(fromX, fromY, toX, toY, leg, path);
-
-            if (threadIdx === (threads.length - 1)) {
-                this.context.strokeStyle = currentColor;
-                // this.context.lineWidth = 0.1;
-                this.context.stroke(path);
-                this.context.fillStyle = currentColor;
-                this.context.fill(path);
+            if (threadIdx === lastIdX) {
+                // fillPath will be executed only once 
+                this.fillPath(path, currentColor);
             }
         }
     }
 
-    private draw(fromX: number, fromY: number, toX: number, toY: number, leg: number, path: Path2D): void {
+    private createPath(): Path2D {
+        const path = new Path2D();
+        return path;
+    }
+
+    private drawInPath(path: Path2D, fromX: number, fromY: number, toX: number, toY: number, leg: number): void {
         // leftTop to rightBottom stitch (diagonal)
         if (fromX < toX && fromY < toY) {
             path.moveTo(fromX, fromY);
@@ -182,6 +170,13 @@ export class RasterDrawingStitchCanvas extends CanvasBase implements IRasterDraw
             path.lineTo(fromX - l, fromY - l);
             path.lineTo(fromX, fromY);
         }
+    }
+
+    private fillPath(path: Path2D, color: string): void {
+        this.context.strokeStyle = color;
+        this.context.stroke(path);
+        this.context.fillStyle = color;
+        this.context.fill(path);
     }
 
     public clear(): void {

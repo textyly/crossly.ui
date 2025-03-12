@@ -21,7 +21,10 @@ export class StitchDrawingCanvas extends CanvasBase implements IStitchDrawingCan
     }
 
     private handleDrawThreads(event: DrawStitchThreadsEvent): void {
-        this.rasterDrawing.drawLines(event.threads);
+        const threads = event.threads;
+        if (threads.length > 0) {
+            this.rasterDrawing.drawLines(threads);
+        }
     }
 
     private handleRedraw(): void {

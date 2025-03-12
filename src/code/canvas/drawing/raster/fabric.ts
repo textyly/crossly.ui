@@ -25,13 +25,13 @@ export class RasterDrawingFabricCanvas extends CanvasBase implements IRasterDraw
     }
 
     public drawDots(dots: DotArray): void {
-        // CPU, GPU, memory and GC intensive code
-        this.context.beginPath();
-
+        // CPU, GPU, memory and GC intensive code, do not extract logic in multiple methods!!!
         const dotsX = dots.dotsX;
         const dotsY = dots.dotsY;
         const radiuses = dots.radiuses;
         const colors = dots.colors;
+
+        this.context.beginPath();
 
         for (let index = 0; index < dots.length; index++) {
             const x = dotsX[index] - this.bounds.left;
@@ -47,9 +47,7 @@ export class RasterDrawingFabricCanvas extends CanvasBase implements IRasterDraw
     }
 
     public drawLines(threads: ThreadArray): void {
-        // CPU, GPU, memory and GC intensive code
-        this.context.beginPath();
-
+        // CPU, GPU, memory and GC intensive code, do not extract logic in multiple methods!!!
         const visibility = threads.visibilities;
         const fromDotsXPositions = threads.fromDotsXPositions;
         const fromDotsYPositions = threads.fromDotsYPositions;
@@ -57,6 +55,8 @@ export class RasterDrawingFabricCanvas extends CanvasBase implements IRasterDraw
         const toDotsYPositions = threads.toDotsYPositions;
         const widths = threads.widths;
         const colors = threads.colors;
+
+        this.context.beginPath();
 
         for (let index = 0; index < threads.length; index++) {
             const isVisible = visibility[index];
