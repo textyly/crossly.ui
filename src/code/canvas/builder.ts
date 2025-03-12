@@ -3,12 +3,12 @@ import { InputCanvas } from "./input/input.js";
 import { IInputCanvas } from "./input/types.js";
 import { CueDrawingCanvas } from "./drawing/cue.js";
 import { FabricDrawingCanvas } from "./drawing/fabric.js";
-import { RasterDrawingStitchCanvas } from "./drawing/raster/stitch.js";
+import { StitchRasterDrawingCanvas } from "./drawing/raster/stitch.js";
 import { VectorDrawingCanvas } from "./drawing/vector.js";
 import { StitchDrawingCanvas } from "./drawing/stitch.js";
 import { CrosslyCanvasConfig, ICrosslyCanvas } from "./types.js";
 import { ICueDrawingCanvas, IFabricDrawingCanvas, IRasterDrawingCanvas, IStitchDrawingCanvas, IVectorDrawingCanvas } from "./drawing/types.js";
-import { RasterDrawingFabricCanvas } from "./drawing/raster/fabric.js";
+import { FabricRasterDrawingCanvas } from "./drawing/raster/fabric.js";
 
 export class CrosslyCanvasBuilder {
     private config!: CrosslyCanvasConfig;
@@ -39,12 +39,12 @@ export class CrosslyCanvasBuilder {
     }
 
     public withFabricCanvas(fabricCanvasElement: HTMLCanvasElement): CrosslyCanvasBuilder {
-        this.fabricRasterDrawing = new RasterDrawingFabricCanvas(fabricCanvasElement);
+        this.fabricRasterDrawing = new FabricRasterDrawingCanvas(fabricCanvasElement);
         return this;
     }
 
     public withStitchCanvas(stitchCanvasElement: HTMLCanvasElement): CrosslyCanvasBuilder {
-        this.stitchRasterDrawing = new RasterDrawingStitchCanvas(stitchCanvasElement);
+        this.stitchRasterDrawing = new StitchRasterDrawingCanvas(stitchCanvasElement);
         return this;
     }
 

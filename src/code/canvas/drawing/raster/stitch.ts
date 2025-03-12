@@ -1,25 +1,11 @@
-import { Bounds } from "../../types.js";
-import { CanvasBase } from "../../base.js";
+import { RasterDrawingCanvas } from "./base.js";
 import { IRasterDrawingCanvas } from "../types.js";
 import { DotArray } from "../../utilities/arrays/dot/dot.js";
 import { ThreadArray } from "../../utilities/arrays/thread/array.js";
 
-export class RasterDrawingStitchCanvas extends CanvasBase implements IRasterDrawingCanvas {
-    private readonly context: CanvasRenderingContext2D;
-
-    constructor(private rasterCanvas: HTMLCanvasElement) {
-        super();
-        this.context = rasterCanvas.getContext("2d")!;
-    }
-
-    public async createBitMap(): Promise<ImageBitmap> {
-        const bitmap = await createImageBitmap(this.rasterCanvas);
-        return bitmap;
-    }
-
-    public drawBitMap(bitmap: ImageBitmap): void {
-        const bounds = this.bounds;
-        this.context.drawImage(bitmap, 0, 0, bounds.width, bounds.height);
+export class StitchRasterDrawingCanvas extends RasterDrawingCanvas implements IRasterDrawingCanvas {
+    constructor(rasterCanvas: HTMLCanvasElement) {
+        super(rasterCanvas);
     }
 
     public drawDots(dots: DotArray): void {
@@ -50,8 +36,8 @@ export class RasterDrawingStitchCanvas extends CanvasBase implements IRasterDraw
             if (isVisible) {
 
                 if (currentColor !== previousColor) {
-                    // fillPath and createPath will be executed only on color change (very rare but depending on the pattern's complexity)
-                    this.fillPath(path, previousColor);
+                    // closePath and createPath will be executed only on color change (very rare but depending on the pattern's complexity)
+                    this.closePath(path, previousColor);
                     path = this.createPath();
                     previousColor = currentColor;
                 }
@@ -70,8 +56,8 @@ export class RasterDrawingStitchCanvas extends CanvasBase implements IRasterDraw
             }
 
             if (threadIdx === lastIdX) {
-                // fillPath will be executed only once 
-                this.fillPath(path, currentColor);
+                // closePath will be executed only once 
+                this.closePath(path, currentColor);
             }
         }
     }
@@ -82,6 +68,8 @@ export class RasterDrawingStitchCanvas extends CanvasBase implements IRasterDraw
     }
 
     private drawInPath(path: Path2D, fromX: number, fromY: number, toX: number, toY: number, leg: number): void {
+        // CPU, GPU, memory and GC intensive code, do not extract in multiple methods!!!
+
         // leftTop to rightBottom stitch (diagonal)
         if (fromX < toX && fromY < toY) {
             path.moveTo(fromX, fromY);
@@ -126,8 +114,10 @@ export class RasterDrawingStitchCanvas extends CanvasBase implements IRasterDraw
             path.lineTo(toX, toY);
         }
 
-        // left to right stitch (horizontal)
+        // pythagorean equation
         const l = Math.floor(Math.sqrt((leg * leg) / 2));
+
+        // left to right stitch (horizontal)
         if (fromX < toX && fromY == toY) {
             path.moveTo(fromX, fromY);
             path.lineTo(fromX + l, fromY + l);
@@ -172,30 +162,10 @@ export class RasterDrawingStitchCanvas extends CanvasBase implements IRasterDraw
         }
     }
 
-    private fillPath(path: Path2D, color: string): void {
+    private closePath(path: Path2D, color: string): void {
         this.context.strokeStyle = color;
         this.context.stroke(path);
         this.context.fillStyle = color;
         this.context.fill(path);
-    }
-
-    public clear(): void {
-        this.context.clearRect(0, 0, this.bounds.width, this.bounds.height);
-    }
-
-    protected override invokeBoundsChange(bounds: Bounds): void {
-        super.invokeBoundsChange(bounds);
-
-        const x = bounds.left;
-        const y = bounds.top;
-        const width = bounds.width;
-        const height = bounds.height;
-
-        this.rasterCanvas.style.transform = `translate(${x}px, ${y}px)`;
-
-        if (width !== this.rasterCanvas.width || height !== this.rasterCanvas.height) {
-            this.rasterCanvas.height = height;
-            this.rasterCanvas.width = width;
-        }
     }
 }
