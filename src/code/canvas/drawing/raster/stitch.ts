@@ -9,7 +9,7 @@ export class StitchRasterDrawingCanvas extends RasterDrawingCanvas implements IR
     }
 
     public drawDots(dots: DotArray): void {
-        // stitch canvas does not draw dots because they have a huge performance impact when more than 300x300 stitch grid is being used
+        // stitch canvas does not draw dots because they have a huge performance impact when more than 300x300 stitches in grid are being used
         // better throw an error if someone decides to start drawing dots, hopefully will see this comment
         throw new Error("not implemented because of high performance impact");
     }
@@ -24,6 +24,7 @@ export class StitchRasterDrawingCanvas extends RasterDrawingCanvas implements IR
         const widths = threads.widths;
         const colors = threads.colors;
 
+        // Path2D is being used for perf optimization otherwise lineTo has a huge negative perf impact
         let path = this.createPath();
         let previousColor = colors[0];
         const lastIdX = threads.length - 1;
@@ -36,7 +37,7 @@ export class StitchRasterDrawingCanvas extends RasterDrawingCanvas implements IR
             if (isVisible) {
 
                 if (currentColor !== previousColor) {
-                    // closePath and createPath will be executed only on color change (very rare but depending on the pattern's complexity)
+                    // closePath and createPath will be executed only on color change (very rare but it depends on the pattern's complexity)
                     this.closePath(path, previousColor);
                     path = this.createPath();
                     previousColor = currentColor;
@@ -51,8 +52,8 @@ export class StitchRasterDrawingCanvas extends RasterDrawingCanvas implements IR
                 const leg = Math.floor(Math.sqrt((currentWidth * currentWidth) / 2));
 
                 // drawing logic is too big and make the code too unreadable, 
-                // that is why it is extracted in the drawInPath method (even though additional function invocation will impact the performance since it will be executed for each and every visible stitch)
-                this.drawInPath(path, fromX, fromY, toX, toY, leg);
+                // that is why it is extracted in the drawLineInPath method (even though additional function invocation will impact the performance since it will be executed for each and every visible stitch)
+                this.drawLineInPath(path, fromX, fromY, toX, toY, leg);
             }
 
             if (threadIdx === lastIdX) {
@@ -67,7 +68,15 @@ export class StitchRasterDrawingCanvas extends RasterDrawingCanvas implements IR
         return path;
     }
 
-    private drawInPath(path: Path2D, fromX: number, fromY: number, toX: number, toY: number, leg: number): void {
+    private closePath(path: Path2D, color: string): void {
+        this.context.strokeStyle = color;
+        this.context.stroke(path);
+
+        this.context.fillStyle = color;
+        this.context.fill(path);
+    }
+
+    private drawLineInPath(path: Path2D, fromX: number, fromY: number, toX: number, toY: number, leg: number): void {
         // CPU, GPU, memory and GC intensive code, do not extract in multiple methods!!!
 
         // leftTop to rightBottom stitch (diagonal)
@@ -160,12 +169,5 @@ export class StitchRasterDrawingCanvas extends RasterDrawingCanvas implements IR
             path.lineTo(fromX - l, fromY - l);
             path.lineTo(fromX, fromY);
         }
-    }
-
-    private closePath(path: Path2D, color: string): void {
-        this.context.strokeStyle = color;
-        this.context.stroke(path);
-        this.context.fillStyle = color;
-        this.context.fill(path);
     }
 }
