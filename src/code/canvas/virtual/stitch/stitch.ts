@@ -62,7 +62,6 @@ export abstract class StitchCanvas extends StitchCanvasBase {
         const toDotsXIndexes = this.threads.toDotsXIndexes;
         const toDotsYIndexes = this.threads.toDotsYIndexes;
         const widths = this.threads.widths;
-        const zoomWidths = this.threads.zoomWidths;
         const sides = this.threads.sides;
 
         // 2. recalculate threads
@@ -109,7 +108,8 @@ export abstract class StitchCanvas extends StitchCanvasBase {
             const toDotXPos = this.calculateDotXPosition(toDotXIdx);
             const toDotYPos = this.calculateDotYPosition(toDotYIdx);
 
-            const zoomedWidth = widths[index] + (this.zooms * zoomWidths[index]);
+            let zoomedWidth = widths[index] + (this.zooms * this.threadWidthZoomStep);
+            zoomedWidth = Math.max(zoomedWidth, 1);
 
             // 7. set the updated pros before drawing
             this.threads.setThread(index, true, fromDotXPos, fromDotYPos, toDotXPos, toDotYPos, zoomedWidth);

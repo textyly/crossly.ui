@@ -6,7 +6,6 @@ export class StitchThreadArray extends ThreadArray {
     private _fromDotsYIndexes: Int16Array;
     private _toDotsXIndexes: Int16Array;
     private _toDotsYIndexes: Int16Array;
-    private _zoomWidths: Int16Array;
     private _zoomedWidths: Int16Array;
     private _sides: Array<CanvasSide>;
 
@@ -17,7 +16,6 @@ export class StitchThreadArray extends ThreadArray {
         this._fromDotsYIndexes = new Int16Array(this.space);
         this._toDotsXIndexes = new Int16Array(this.space);
         this._toDotsYIndexes = new Int16Array(this.space);
-        this._zoomWidths = new Int16Array(this.space);
         this._zoomedWidths = new Int16Array(this.space);
         this._sides = new Array<CanvasSide>();
     }
@@ -36,10 +34,6 @@ export class StitchThreadArray extends ThreadArray {
 
     public get toDotsYIndexes(): Readonly<Int16Array> {
         return this._toDotsYIndexes.slice(0, this.length);
-    }
-
-    public get zoomWidths(): Readonly<Int16Array> {
-        return this._zoomWidths.slice(0, this.length);
     }
 
     public get zoomedWidths(): Readonly<Int16Array> {
@@ -62,7 +56,6 @@ export class StitchThreadArray extends ThreadArray {
         this._fromDotsYIndexes[this.count] = thread.fromDotYIdx;
         this._toDotsXIndexes[this.count] = thread.toDotXIdx;
         this._toDotsYIndexes[this.count] = thread.toDotYIdx;
-        this._zoomWidths[this.count] = thread.zoomWidth;
         this._zoomedWidths[this.count] = thread.zoomedWidth;
         this._sides.push(thread.side);
     }
@@ -73,7 +66,6 @@ export class StitchThreadArray extends ThreadArray {
         this.expandFromDotsYIndexes();
         this.expandToDotsXIndexes();
         this.expandToDotsYIndexes();
-        this.expandZoomWidths();
         this.expandZoomedWidths();
     }
 
@@ -110,15 +102,6 @@ export class StitchThreadArray extends ThreadArray {
 
         for (let index = 0; index < toDotsYIndexes.length; index++) {
             this._toDotsYIndexes[index] = toDotsYIndexes[index];
-        }
-    }
-
-    private expandZoomWidths(): void {
-        const zoomWidths = this._zoomWidths;
-        this._zoomWidths = new Int16Array(this.space);
-
-        for (let index = 0; index < zoomWidths.length; index++) {
-            this._zoomWidths[index] = zoomWidths[index];
         }
     }
 

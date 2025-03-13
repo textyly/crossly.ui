@@ -2,8 +2,8 @@ import { CrosslyCanvasConfig, CueCanvasConfig, FabricCanvasConfig, SpacingConfig
 
 export class ConfigFactory {
     public create(): CrosslyCanvasConfig {
-        const columns = 30;
-        const rows = 30;
+        const columns = 300;
+        const rows = 300;
 
         const dotSpacing: SpacingConfig = {
             space: 28,
@@ -16,13 +16,13 @@ export class ConfigFactory {
             dotSpacing,
             dot: {
                 color: "#9fa19f",
-                radius: 1,
-                radiusZoomStep: 1
+                radius: 1.4,
+                radiusZoomStep: 0.1
             },
             thread: {
                 color: "#d2d4d2",
-                width: 1,
-                widthZoomStep: 1
+                width: 1.4,
+                widthZoomStep: 0.1
             }
         };
 
@@ -42,7 +42,7 @@ export class ConfigFactory {
             rows,
             dotSpacing,
             dot: {
-                color: "#403939",
+                color: "#615858",
                 radius: 10,
                 radiusZoomStep: 1
             },

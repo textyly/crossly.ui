@@ -18,10 +18,10 @@ export class VectorDrawingCanvas extends CanvasBase implements IVectorDrawingCan
 
     public drawDashDot(dot: Dot, radius: number, color: string): SvgDot {
         const svgDot = this.createDot(dot, radius, color);
-        const width = (radius / 2).toString();
+        const width = (radius / 3).toString();
 
         svgDot.setAttribute("fill", "none");
-        svgDot.setAttribute("stroke-dasharray", "5,1"); // TODO: config
+        svgDot.setAttribute("stroke-dasharray", "5,3"); // TODO: config
         svgDot.setAttribute("stroke", color);
         svgDot.setAttribute("stroke-width", width);
 
@@ -43,7 +43,7 @@ export class VectorDrawingCanvas extends CanvasBase implements IVectorDrawingCan
     public drawDashLine(thread: CueThread): SvgLine {
         const svgLine = document.createElementNS("http://www.w3.org/2000/svg", "line");
         this.moveLine(thread, svgLine);
-        svgLine.setAttribute("stroke-dasharray", "5,2"); //TODO: move it to the config!!!
+        svgLine.setAttribute("stroke-dasharray", "5,3"); //TODO: move it to the config!!!
         this.svgCanvas.appendChild(svgLine);
         return svgLine;
     }

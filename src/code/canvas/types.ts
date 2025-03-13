@@ -23,7 +23,6 @@ export type StitchTread = {
     toDotYIdx: number;
     toDotYPos: number;
     width: number;
-    zoomWidth: number;
     zoomedWidth: number;
     color: string;
     side: CanvasSide;
