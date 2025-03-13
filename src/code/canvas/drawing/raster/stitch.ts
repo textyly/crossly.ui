@@ -1,7 +1,7 @@
 import { RasterDrawingCanvas } from "./base.js";
 import { IRasterDrawingCanvas } from "../types.js";
 import { DotArray } from "../../utilities/arrays/dot/dot.js";
-import { ThreadArray } from "../../utilities/arrays/thread/array.js";
+import { StitchThreadArray } from "../../utilities/arrays/thread/stitch.js";
 
 export class StitchRasterDrawingCanvas extends RasterDrawingCanvas implements IRasterDrawingCanvas {
     constructor(rasterCanvas: HTMLCanvasElement) {
@@ -14,14 +14,14 @@ export class StitchRasterDrawingCanvas extends RasterDrawingCanvas implements IR
         throw new Error("not implemented because of high performance impact");
     }
 
-    public drawLines(threads: ThreadArray): void {
+    public drawLines(threads: StitchThreadArray): void {
         // CPU, GPU, memory and GC intensive code, do not extract in multiple methods!!!
         const visibilities = threads.visibilities;
         const fromDotsXPositions = threads.fromDotsXPositions;
         const fromDotsYPositions = threads.fromDotsYPositions;
         const toDotsXPositions = threads.toDotsXPositions;
         const toDotsYPositions = threads.toDotsYPositions;
-        const widths = threads.widths;
+        const widths = threads.zoomedWidths;
         const colors = threads.colors;
 
         // Path2D is being used for perf optimization otherwise lineTo has a huge negative perf impact

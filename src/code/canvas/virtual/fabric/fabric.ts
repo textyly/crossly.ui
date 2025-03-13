@@ -1,12 +1,34 @@
 import { FabricCanvasBase } from "./base.js";
-import { CanvasConfig } from "../../types.js";
+import { FabricCanvasConfig } from "../../types.js";
 import { IInputCanvas } from "../../input/types.js";
 import { DotArray } from "../../utilities/arrays/dot/dot.js";
 import { ThreadArray } from "../../utilities/arrays/thread/array.js";
 
 export class FabricCanvas extends FabricCanvasBase {
-    constructor(config: CanvasConfig, inputCanvas: IInputCanvas) {
+    private dotRadius: number;
+    private dotColor: string;
+
+    private threadWidth: number;
+    private threadColor: string;
+
+    constructor(config: FabricCanvasConfig, inputCanvas: IInputCanvas) {
         super(config, inputCanvas);
+
+        const dotConfig = config.dot;
+        this.dotRadius = dotConfig.radius;
+        this.dotColor = dotConfig.color;
+
+        const threadConfig = config.thread;
+        this.threadWidth = threadConfig.width;
+        this.threadColor = threadConfig.color;
+    }
+
+    protected override zoomIn(): void {
+
+    }
+
+    protected override zoomOut(): void {
+
     }
 
     protected override redraw(): void {
@@ -21,8 +43,13 @@ export class FabricCanvas extends FabricCanvasBase {
         const endIndexX = boundsIndexes.rightTop.dotX;
         const endIndexY = boundsIndexes.leftBottom.dotY;
 
-        this.redrawThreads(startIndexX, startIndexY, endIndexX, endIndexY);
-        this.redrawDots(startIndexX, startIndexY, endIndexX, endIndexY);
+        if (this.threadWidth > 0) {
+            this.redrawThreads(startIndexX, startIndexY, endIndexX, endIndexY);
+        }
+
+        if (this.dotRadius > 0) {
+            this.redrawDots(startIndexX, startIndexY, endIndexX, endIndexY);
+        }
     }
 
     private redrawThreads(startDotIndexX: number, startDotIndexY: number, endDotIndexX: number, endDotIndexY: number): void {

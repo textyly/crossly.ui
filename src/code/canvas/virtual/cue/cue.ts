@@ -1,24 +1,52 @@
 import { CueCanvasBase } from "./base.js";
 import { DotsUtility } from "../../utilities/dots.js";
 import { IdGenerator } from "../../utilities/generator.js";
-import { CanvasSide, Id, CueThread, CanvasConfig, CueDot, Dot, DotIndex } from "../../types.js";
 import { Position, IInputCanvas, PointerUpEvent, PointerMoveEvent } from "../../input/types.js";
+import { CanvasSide, Id, CueThread, CueDot, Dot, DotIndex, CueCanvasConfig } from "../../types.js";
 
 export abstract class CueCanvas extends CueCanvasBase {
     private readonly ids: IdGenerator;
     private readonly dotsUtility: DotsUtility<Dot>;
 
+    private dotRadius: number;
+    private dotColor: string;
+    private dotRadiusZoomStep: number;
+
+    protected threadWidth: number;
+    protected threadColor: string;
+    private threadWidthZoomStep: number;
+
     private currentThreadId?: Id;
     private clickedDotIndex?: DotIndex;
     private hoveredDotIndex?: DotIndex & { id: Id };
 
-    constructor(config: CanvasConfig, input: IInputCanvas) {
+    constructor(config: CueCanvasConfig, input: IInputCanvas) {
         super(config, input);
 
         this.ids = new IdGenerator();
         this.dotsUtility = new DotsUtility();
 
+        const dotConfig = config.dot;
+        this.dotColor = dotConfig.color;
+        this.dotRadius = dotConfig.radius;
+        this.dotRadiusZoomStep = dotConfig.radiusZoomStep;
+
+        const threadConfig = config.thread;
+        this.threadColor = threadConfig.color;
+        this.threadWidth = threadConfig.width;
+        this.threadWidthZoomStep = threadConfig.widthZoomStep;
+
         this.startListening();
+    }
+
+    protected override zoomIn(): void {
+        this.dotRadius += this.dotRadiusZoomStep;
+        this.threadWidth += this.threadWidthZoomStep;
+    }
+
+    protected override zoomOut(): void {
+        this.dotRadius -= this.dotRadiusZoomStep;
+        this.threadWidth -= this.threadWidthZoomStep;
     }
 
     protected override redraw(): void {

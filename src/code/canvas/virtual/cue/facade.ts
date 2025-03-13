@@ -1,10 +1,10 @@
 import { CueCanvas } from "./cue.js";
-import { CanvasConfig } from "../../types.js";
 import { ICueCanvasFacade } from "../types.js";
+import { CueCanvasConfig } from "../../types.js";
 import { IInputCanvas } from "../../input/types.js";
 
 export class CueCanvasFacade extends CueCanvas implements ICueCanvasFacade {
-    constructor(config: CanvasConfig, input: IInputCanvas) {
+    constructor(config: CueCanvasConfig, input: IInputCanvas) {
         super(config, input);
     }
 

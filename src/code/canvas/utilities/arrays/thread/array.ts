@@ -53,14 +53,12 @@ export class ThreadArray extends ArrayBase {
     }
 
     // this method is being invoked extremely intensively, so it must not accept Thread (an object) because it might require a lot of GC
-    public set(index: number, visible: boolean, fromDotXPos: number, fromDotYPos: number, toDotXPos: number, toDotYPos: number, width: number, color: string): void {
+    public set(index: number, visible: boolean, fromDotXPos: number, fromDotYPos: number, toDotXPos: number, toDotYPos: number): void {
         this._visibilities[index] = visible;
         this._fromDotsXPositions[index] = fromDotXPos;
         this._fromDotsYPositions[index] = fromDotYPos;
         this._toDotsXPositions[index] = toDotXPos;
         this._toDotsYPositions[index] = toDotYPos;
-        this._widths[index] = width;
-        this._colors[index] = color;
     }
 
     // this method is being invoked extremely intensively, so it must not accept Thread (an object) because it might require a lot of GC

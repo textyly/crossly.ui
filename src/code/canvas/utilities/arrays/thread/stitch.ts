@@ -6,6 +6,8 @@ export class StitchThreadArray extends ThreadArray {
     private _fromDotsYIndexes: Int16Array;
     private _toDotsXIndexes: Int16Array;
     private _toDotsYIndexes: Int16Array;
+    private _zoomWidths: Int16Array;
+    private _zoomedWidths: Int16Array;
     private _sides: Array<CanvasSide>;
 
     constructor() {
@@ -15,6 +17,8 @@ export class StitchThreadArray extends ThreadArray {
         this._fromDotsYIndexes = new Int16Array(this.space);
         this._toDotsXIndexes = new Int16Array(this.space);
         this._toDotsYIndexes = new Int16Array(this.space);
+        this._zoomWidths = new Int16Array(this.space);
+        this._zoomedWidths = new Int16Array(this.space);
         this._sides = new Array<CanvasSide>();
     }
 
@@ -34,18 +38,21 @@ export class StitchThreadArray extends ThreadArray {
         return this._toDotsYIndexes.slice(0, this.length);
     }
 
+    public get zoomWidths(): Readonly<Int16Array> {
+        return this._zoomWidths.slice(0, this.length);
+    }
+
+    public get zoomedWidths(): Readonly<Int16Array> {
+        return this._zoomedWidths.slice(0, this.length);
+    }
+
     public get sides(): Array<CanvasSide> {
         return this._sides;
     }
 
-    // this method is being invoked extremely intensively, so it must not accept StitchThread (an object) because it might require a lot of GC
-    public setThread(index: number, visible: boolean, fromDotXIdx: number, fromDotXPos: number, fromDotYIdx: number, fromDotYPos: number, toDotXIdx: number, toDotXPos: number, toDotYIdx: number, toDotYPos: number, width: number, color: string, side: CanvasSide): void {
-        super.set(index, visible, fromDotXPos, fromDotYPos, toDotXPos, toDotYPos, width, color);
-        this._fromDotsXIndexes[index] = fromDotXIdx;
-        this._fromDotsYIndexes[index] = fromDotYIdx;
-        this._toDotsXIndexes[index] = toDotXIdx;
-        this._toDotsYIndexes[index] = toDotYIdx;
-        this._sides[index] = side;
+    public setThread(index: number, visible: boolean, fromDotXPos: number, fromDotYPos: number, toDotXPos: number, toDotYPos: number, zoomedWidth: number) {
+        super.set(index, visible, fromDotXPos, fromDotYPos, toDotXPos, toDotYPos);
+        this._zoomedWidths[index] = zoomedWidth;
     }
 
     // this method is being invoked only on a thread creation, so it is safe to use an StitchTread object
@@ -55,6 +62,8 @@ export class StitchThreadArray extends ThreadArray {
         this._fromDotsYIndexes[this.count] = thread.fromDotYIdx;
         this._toDotsXIndexes[this.count] = thread.toDotXIdx;
         this._toDotsYIndexes[this.count] = thread.toDotYIdx;
+        this._zoomWidths[this.count] = thread.zoomWidth;
+        this._zoomedWidths[this.count] = thread.zoomedWidth;
         this._sides.push(thread.side);
     }
 
@@ -64,6 +73,8 @@ export class StitchThreadArray extends ThreadArray {
         this.expandFromDotsYIndexes();
         this.expandToDotsXIndexes();
         this.expandToDotsYIndexes();
+        this.expandZoomWidths();
+        this.expandZoomedWidths();
     }
 
     private expandFromDotsXIndexes(): void {
@@ -99,6 +110,24 @@ export class StitchThreadArray extends ThreadArray {
 
         for (let index = 0; index < toDotsYIndexes.length; index++) {
             this._toDotsYIndexes[index] = toDotsYIndexes[index];
+        }
+    }
+
+    private expandZoomWidths(): void {
+        const zoomWidths = this._zoomWidths;
+        this._zoomWidths = new Int16Array(this.space);
+
+        for (let index = 0; index < zoomWidths.length; index++) {
+            this._zoomWidths[index] = zoomWidths[index];
+        }
+    }
+
+    private expandZoomedWidths(): void {
+        const zoomedWidths = this._zoomedWidths;
+        this._zoomedWidths = new Int16Array(this.space);
+
+        for (let index = 0; index < zoomedWidths.length; index++) {
+            this._zoomedWidths[index] = zoomedWidths[index];
         }
     }
 }

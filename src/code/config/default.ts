@@ -1,4 +1,4 @@
-import { CanvasConfig, CrosslyCanvasConfig, SpacingConfig } from "../canvas/types.js";
+import { CrosslyCanvasConfig, CueCanvasConfig, FabricCanvasConfig, SpacingConfig, StitchCanvasConfig } from "../canvas/types.js";
 
 export class ConfigFactory {
     public create(): CrosslyCanvasConfig {
@@ -6,75 +6,50 @@ export class ConfigFactory {
         const rows = 30;
 
         const dotSpacing: SpacingConfig = {
-            value: 30,
-            zoomInStep: 2,
-            zoomOutStep: 2
+            space: 28,
+            spaceZoomStep: 2
         }
 
-        const fabricConfig: CanvasConfig = {
+        const fabricConfig: FabricCanvasConfig = {
             columns,
             rows,
             dotSpacing,
             dot: {
                 color: "#9fa19f",
-                radius: {
-                    value: 1,
-                    zoomInStep: 0,
-                    zoomOutStep: 0
-                }
+                radius: 1,
+                radiusZoomStep: 1
             },
             thread: {
                 color: "#d2d4d2",
-                width: {
-                    value: 1,
-                    zoomInStep: 0,
-                    zoomOutStep: 0
-                }
+                width: 1,
+                widthZoomStep: 1
             }
         };
 
-        const stitchConfig: CanvasConfig = {
+        const stitchConfig: StitchCanvasConfig = {
             columns,
             rows,
             dotSpacing,
-            // TODO: delete, but config reorganization needed
-            dot: {
-                color: "gray",
-                radius: {
-                    value: 3,
-                    zoomInStep: 0,
-                    zoomOutStep: 0
-                }
-            },
             thread: {
                 color: "gray",
-                width: {
-                    value: 6,
-                    zoomInStep: 0,
-                    zoomOutStep: 0
-                }
+                width: 10,
+                widthZoomStep: 1
             }
         };
 
-        const cueConfig: CanvasConfig = {
+        const cueConfig: CueCanvasConfig = {
             columns,
             rows,
             dotSpacing,
             dot: {
-                color: "gray",
-                radius: {
-                    value: 6,
-                    zoomInStep: 0,
-                    zoomOutStep: 0
-                }
+                color: "#403939",
+                radius: 10,
+                radiusZoomStep: 1
             },
             thread: {
                 color: "gray",
-                width: {
-                    value: 6,
-                    zoomInStep: 0,
-                    zoomOutStep: 0
-                }
+                width: 10,
+                widthZoomStep: 1
             }
         };
 
