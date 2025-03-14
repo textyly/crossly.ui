@@ -48,8 +48,8 @@ export type CueCanvasConfig = CanvasConfig & {
     thread: ThreadConfig;
 };
 
-export type DotConfig = { color: string; radius: number, radiusZoomStep: number; };
-export type ThreadConfig = { color: string; width: number, widthZoomStep: number; };
+export type DotConfig = { color: string; radius: number, minRadius: number, radiusZoomStep: number; };
+export type ThreadConfig = { color: string; width: number, minWidth: number, widthZoomStep: number; };
 export type SpacingConfig = { space: number, spaceZoomStep: number; };
 
 

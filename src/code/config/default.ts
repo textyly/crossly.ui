@@ -17,11 +17,13 @@ export class ConfigFactory {
             dot: {
                 color: "#9fa19f",
                 radius: 1.4,
+                minRadius: 0.6,
                 radiusZoomStep: 0.2
             },
             thread: {
                 color: "#d2d4d2",
                 width: 1.4,
+                minWidth: 0.8,
                 widthZoomStep: 0.2
             }
         };
@@ -33,6 +35,7 @@ export class ConfigFactory {
             thread: {
                 color: "gray",
                 width: 10,
+                minWidth: 1,
                 widthZoomStep: 1
             }
         };
@@ -44,11 +47,13 @@ export class ConfigFactory {
             dot: {
                 color: "#615858",
                 radius: 10,
+                minRadius: 1,
                 radiusZoomStep: 1
             },
             thread: {
                 color: "gray",
                 width: 10,
+                minWidth: 1,
                 widthZoomStep: 1
             }
         };

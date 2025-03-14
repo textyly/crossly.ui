@@ -21,7 +21,7 @@ export class VectorDrawingCanvas extends CanvasBase implements IVectorDrawingCan
         const width = (radius / 3).toString();
 
         svgDot.setAttribute("fill", "none");
-        svgDot.setAttribute("stroke-dasharray", "5,3"); // TODO: config
+        svgDot.setAttribute("stroke-dasharray", "5,3");
         svgDot.setAttribute("stroke", color);
         svgDot.setAttribute("stroke-width", width);
 

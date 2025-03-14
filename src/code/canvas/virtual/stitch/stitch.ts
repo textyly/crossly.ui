@@ -8,8 +8,9 @@ export abstract class StitchCanvas extends StitchCanvasBase {
     private readonly dotsUtility: DotsUtility<Dot>;
     private readonly threads: StitchThreadArray;
 
-    protected threadWidth: number;
     protected threadColor: string;
+    protected threadWidth: number;
+    private minThreadWidth: number;
     private threadWidthZoomStep: number;
     private zooms: number;
 
@@ -24,6 +25,7 @@ export abstract class StitchCanvas extends StitchCanvasBase {
         const threadConfig = config.thread;
         this.threadColor = threadConfig.color;
         this.threadWidth = threadConfig.width;
+        this.minThreadWidth = threadConfig.minWidth;
         this.threadWidthZoomStep = threadConfig.widthZoomStep;
         this.zooms = 0;
 
@@ -109,7 +111,7 @@ export abstract class StitchCanvas extends StitchCanvasBase {
             const toDotYPos = this.calculateDotYPosition(toDotYIdx);
 
             let zoomedWidth = widths[index] + (this.zooms * this.threadWidthZoomStep);
-            zoomedWidth = Math.max(zoomedWidth, 1);
+            zoomedWidth = Math.max(zoomedWidth, this.minThreadWidth);
 
             // 7. set the updated pros before drawing
             this.threads.setThread(index, true, fromDotXPos, fromDotYPos, toDotXPos, toDotYPos, zoomedWidth);
