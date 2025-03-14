@@ -50,12 +50,12 @@ export class FabricCanvas extends FabricCanvasBase {
         const endIndexY = boundsIndexes.leftBottom.dotY;
 
         // TODO: config
-        if (this.threadWidth >= 0.8) {
+        if (this.threadWidth >= 0.6) {
             this.redrawThreads(startIndexX, startIndexY, endIndexX, endIndexY);
         }
 
         // TODO: config
-        if (this.dotRadius >= 1) {
+        if (this.dotRadius >= 0.8) {
             this.redrawDots(startIndexX, startIndexY, endIndexX, endIndexY);
         }
     }
