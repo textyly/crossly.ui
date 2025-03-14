@@ -11,4 +11,8 @@ export class StitchCanvasFacade extends StitchCanvas implements IStitchCanvasFac
     public setThreadColor(color: string): void {
         this.threadColor = color;
     }
+
+    public setThreadWidth(width: number): void {
+        this.threadWidth = width;
+    }
 }

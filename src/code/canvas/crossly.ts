@@ -56,6 +56,11 @@ export class CrosslyCanvas extends CanvasBase implements ICrosslyCanvas {
         this.cueCanvasFacade.setThreadColor(color);
     }
 
+    public setThreadWidth(width: number): void {
+        this.stitchCanvasFacade.setThreadWidth(width);
+        this.cueCanvasFacade.setThreadWidth(width);
+    }
+
     public override dispose(): void {
         this.disposeCueCanvas();
         this.disposeStitchCanvas();

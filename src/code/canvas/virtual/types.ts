@@ -20,10 +20,6 @@ export interface IStitchCanvas extends IVirtualCanvas {
     onDrawThreads(listener: DrawStitchThreadsListener): VoidUnsubscribe;
 }
 
-export interface IStitchCanvasFacade extends IStitchCanvas {
-    setThreadColor(color: string): void;
-}
-
 export interface ICueCanvas extends IVirtualCanvas {
     onDrawDot(listener: DrawCueDotListener): VoidUnsubscribe;
     onDrawDashDot(listener: DrawCueDotListener): VoidUnsubscribe;
@@ -35,8 +31,14 @@ export interface ICueCanvas extends IVirtualCanvas {
     onRemoveThread(listener: RemoveCueThreadListener): VoidUnsubscribe;
 }
 
+export interface IStitchCanvasFacade extends IStitchCanvas {
+    setThreadColor(color: string): void;
+    setThreadWidth(width: number): void;
+}
+
 export interface ICueCanvasFacade extends ICueCanvas {
     setThreadColor(color: string): void;
+    setThreadWidth(width: number): void;
 }
 
 export type DrawFabricDotsEvent = { dots: DotArray };

@@ -12,6 +12,7 @@ export abstract class CueCanvas extends CueCanvasBase {
     private dotRadius: number;
     private minDotRadius: number;
     private dotRadiusZoomStep: number;
+    private zooms: number;
 
     protected threadColor: string;
     protected threadWidth: number;
@@ -40,17 +41,17 @@ export abstract class CueCanvas extends CueCanvasBase {
         this.minThreadWidth = threadConfig.minWidth;
         this.threadWidthZoomStep = threadConfig.widthZoomStep;
 
+        this.zooms = 0;
+
         this.startListening();
     }
 
     protected override zoomIn(): void {
-        this.dotRadius += this.dotRadiusZoomStep;
-        this.threadWidth += this.threadWidthZoomStep;
+        this.zooms += 1;
     }
 
     protected override zoomOut(): void {
-        this.dotRadius -= this.dotRadiusZoomStep;
-        this.threadWidth -= this.threadWidthZoomStep;
+        this.zooms -= 1;
     }
 
     protected override redraw(): void {
@@ -143,7 +144,9 @@ export abstract class CueCanvas extends CueCanvasBase {
         const hoveredDot: CueDot = { id, ...dot };
 
         const dotColor = this.dotColor;
-        const dotRadius = Math.max(this.dotRadius, this.minDotRadius);
+
+        let dotRadius = this.dotRadius + (this.zooms * this.dotRadiusZoomStep);
+        dotRadius = Math.max(dotRadius, this.minDotRadius);
 
         this.currentSide === CanvasSide.Back
             ? super.invokeDrawDashDot(hoveredDot, dotRadius, dotColor)
@@ -173,7 +176,9 @@ export abstract class CueCanvas extends CueCanvasBase {
 
     private createThread(from: Position, to: Position, id: number): CueThread {
         const color = this.threadColor;
-        const width = Math.max(this.threadWidth, this.minThreadWidth);
+
+        let width = this.threadWidth + (this.zooms * this.threadWidthZoomStep);
+        width = Math.max(width, this.minThreadWidth);
 
         const thread = { id, from, to, width, color };
         return thread;
