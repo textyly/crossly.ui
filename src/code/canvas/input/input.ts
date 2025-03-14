@@ -1,4 +1,3 @@
-import { Bounds } from "../types.js";
 import { MoveInput } from "./move.js";
 import { TouchInput } from "./touch.js";
 import { InputCanvasBase } from "./base.js";
@@ -13,8 +12,10 @@ import {
     MoveStartEvent,
     MoveStopEvent,
 } from "./types.js";
+import { InputCanvasConfig } from "../types.js";
 
 export class InputCanvas extends InputCanvasBase {
+    private readonly config: InputCanvasConfig;
     private readonly htmlElement: HTMLElement;
     private readonly touchInput: ITouchInput;
     private readonly moveInput: IMoveInput;
@@ -24,16 +25,16 @@ export class InputCanvas extends InputCanvasBase {
     private readonly pointerMoveHandler: PointerEventHandler;
     private readonly pointerDownHandler: PointerEventHandler;
 
-    constructor(htmlElement: HTMLElement) {
+    constructor(config: InputCanvasConfig,  htmlElement: HTMLElement) {
         super();
-
+        this.config = config;
         this.htmlElement = htmlElement;
 
         const bounds = { left: htmlElement.clientLeft, top: htmlElement.clientTop, width: htmlElement.clientWidth, height: htmlElement.clientHeight };
         super.bounds = bounds;
 
         this.touchInput = new TouchInput(htmlElement);
-        this.moveInput = new MoveInput(htmlElement, this.touchInput);
+        this.moveInput = new MoveInput(htmlElement, this.touchInput, this.config.ignoreMoveUntil);
 
         this.wheelChangeHandler = this.handleWheelChange.bind(this);
         this.pointerUpHandler = this.handlePointerUp.bind(this);

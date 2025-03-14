@@ -34,7 +34,7 @@ export class CrosslyCanvasBuilder {
     }
 
     public withInputCanvas(inputElement: HTMLElement): CrosslyCanvasBuilder {
-        this.inputCanvas = new InputCanvas(inputElement);
+        this.inputCanvas = new InputCanvas(this.config.input, inputElement);
         return this;
     }
 

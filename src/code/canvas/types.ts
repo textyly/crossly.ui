@@ -34,6 +34,10 @@ export type CanvasConfig = {
     dotSpacing: SpacingConfig;
 };
 
+export type InputCanvasConfig = {
+    ignoreMoveUntil: number;
+};
+
 export type FabricCanvasConfig = CanvasConfig & {
     dot: DotConfig;
     thread: ThreadConfig;
@@ -54,6 +58,7 @@ export type SpacingConfig = { space: number, spaceZoomStep: number; };
 
 
 export type CrosslyCanvasConfig = {
+    input: InputCanvasConfig;
     fabric: FabricCanvasConfig,
     stitch: StitchCanvasConfig,
     cue: CueCanvasConfig
