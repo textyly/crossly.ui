@@ -9,15 +9,10 @@ import { IInputCanvas, MoveEvent, MoveStartEvent, MoveStopEvent } from "../input
 export abstract class VirtualCanvasBase extends VirtualCanvasDimensions implements IVirtualCanvas {
     private readonly virtualMessaging: IMessaging2<void, void>;
 
-    protected dotColor: string;
-    protected threadColor: string;
     protected currentSide: CanvasSide;
 
     constructor(config: CanvasConfig, inputCanvas: IInputCanvas) {
         super(config, inputCanvas);
-
-        this.dotColor = config.dot.color;
-        this.threadColor = config.thread.color;
 
         this.virtualMessaging = new Messaging2();
         this.currentSide = CanvasSide.Back;
@@ -49,6 +44,8 @@ export abstract class VirtualCanvasBase extends VirtualCanvasDimensions implemen
     }
 
     protected abstract redraw(): void;
+    protected abstract zoomIn(): void;
+    protected abstract zoomOut(): void;
 
     protected changeSide(): void {
         this.currentSide = this.currentSide === CanvasSide.Front ? CanvasSide.Back : CanvasSide.Front;
@@ -79,11 +76,17 @@ export abstract class VirtualCanvasBase extends VirtualCanvasDimensions implemen
     }
 
     private handleZoomIn(): void {
+        this.zoomInSpacing();
         this.zoomIn();
+        this.draw();
     }
 
     private handleZoomOut(): void {
-        this.zoomOut();
+        if (this.dotsSpacing > 2) { // TODO: min space 
+            this.zoomOutSpacing();
+            this.zoomOut();
+            this.draw();
+        }
     }
 
     private handleMoveStart(event: MoveStartEvent): void {
@@ -124,19 +127,5 @@ export abstract class VirtualCanvasBase extends VirtualCanvasDimensions implemen
 
     private invokeMoveStop(): void {
         this.virtualMessaging.sendToChannel2();
-    }
-
-    private zoomIn(): void {
-        this.zoomInSpacing();
-        this.zoomInDots();
-        this.zoomInThreads();
-        this.draw();
-    }
-
-    private zoomOut(): void {
-        this.zoomOutSpacing();
-        this.zoomOutDots();
-        this.zoomOutThreads();
-        this.draw();
     }
 }

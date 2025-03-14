@@ -1,20 +1,20 @@
 import { Bounds } from "../types.js";
 import { CanvasBase } from "../base.js";
-import { Messaging2, Messaging3 } from "../../messaging/impl.js";
-import { IMessaging2, IMessaging3 } from "../../messaging/types.js";
-import { VoidListener, VoidUnsubscribe } from "../../types.js";
+import { VoidUnsubscribe } from "../../types.js";
+import { Messaging3 } from "../../messaging/impl.js";
+import { IMessaging3 } from "../../messaging/types.js";
 import {
     Position,
     MoveEvent,
     IMoveInput,
     ITouchInput,
     MoveListener,
-    CanvasEventType,
-    PointerEventHandler,
-    MoveStartEvent,
     MoveStopEvent,
-    MoveStartListener,
+    MoveStartEvent,
+    CanvasEventType,
     MoveStopListener,
+    MoveStartListener,
+    PointerEventHandler,
 } from "./types.js";
 
 export class MoveInput extends CanvasBase implements IMoveInput {
@@ -22,6 +22,7 @@ export class MoveInput extends CanvasBase implements IMoveInput {
 
     private readonly htmlElement: HTMLElement;
     private readonly touchInput: ITouchInput;
+    private readonly ignoreMoveUntil: number;
 
     private readonly pointerUpHandler: PointerEventHandler;
     private readonly pointerMoveHandler: PointerEventHandler;
@@ -30,10 +31,11 @@ export class MoveInput extends CanvasBase implements IMoveInput {
     private lastDifference?: Position;
     private lastPointerPos?: Position;
 
-    constructor(htmlElement: HTMLElement, touchInput: ITouchInput) {
+    constructor(htmlElement: HTMLElement, touchInput: ITouchInput, ignoreMoveUntil: number) {
         super();
         this.htmlElement = htmlElement;
         this.touchInput = touchInput;
+        this.ignoreMoveUntil = ignoreMoveUntil;
 
         this.messaging = new Messaging3();
 
@@ -117,8 +119,7 @@ export class MoveInput extends CanvasBase implements IMoveInput {
             const diffY = currentPosition.y - this.lastPointerPos.y;
 
             // 2. check whether there is enough difference to start moving (filter out some small moving requests cause they might not be intended)
-            const ignoreUntil = 10; // TODO: config
-            const hasEnoughDiff = (ignoreUntil < Math.abs(diffX)) || (ignoreUntil < Math.abs(diffY));
+            const hasEnoughDiff = (this.ignoreMoveUntil < Math.abs(diffX)) || (this.ignoreMoveUntil < Math.abs(diffY));
 
             if (hasEnoughDiff || this.lastDifference) {
                 const isMoveStarting = !this.lastDifference;
@@ -164,7 +165,6 @@ export class MoveInput extends CanvasBase implements IMoveInput {
         this.messaging.sendToChannel3(event);
     }
 
-    // TODO: extract in different class since more than one classes are using it
     private getPosition(event: PointerEvent): Position {
         const x = event.layerX;
         const y = event.layerY;

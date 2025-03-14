@@ -1,12 +1,44 @@
 import { FabricCanvasBase } from "./base.js";
-import { CanvasConfig } from "../../types.js";
+import { FabricCanvasConfig } from "../../types.js";
 import { IInputCanvas } from "../../input/types.js";
 import { DotArray } from "../../utilities/arrays/dot/dot.js";
 import { ThreadArray } from "../../utilities/arrays/thread/array.js";
 
 export class FabricCanvas extends FabricCanvasBase {
-    constructor(config: CanvasConfig, inputCanvas: IInputCanvas) {
+    private dotColor: string;
+    private dotRadius: number;
+    private minDotRadius: number;
+    private dotRadiusZoomStep: number;
+
+    private threadColor: string;
+    private threadWidth: number;
+    private minThreadWidth: number;
+    private threadWidthZoomStep: number;
+
+    constructor(config: FabricCanvasConfig, inputCanvas: IInputCanvas) {
         super(config, inputCanvas);
+
+        const dotConfig = config.dot;
+        this.dotColor = dotConfig.color;
+        this.dotRadius = dotConfig.radius;
+        this.minDotRadius = dotConfig.minRadius;
+        this.dotRadiusZoomStep = dotConfig.radiusZoomStep;
+
+        const threadConfig = config.thread;
+        this.threadColor = threadConfig.color;
+        this.threadWidth = threadConfig.width;
+        this.minThreadWidth = threadConfig.minWidth;
+        this.threadWidthZoomStep = threadConfig.widthZoomStep;
+    }
+
+    protected override zoomIn(): void {
+        this.dotRadius += this.dotRadiusZoomStep;
+        this.threadWidth += this.threadWidthZoomStep;
+    }
+
+    protected override zoomOut(): void {
+        this.dotRadius -= this.dotRadiusZoomStep;
+        this.threadWidth -= this.threadWidthZoomStep;
     }
 
     protected override redraw(): void {
@@ -21,8 +53,13 @@ export class FabricCanvas extends FabricCanvasBase {
         const endIndexX = boundsIndexes.rightTop.dotX;
         const endIndexY = boundsIndexes.leftBottom.dotY;
 
-        this.redrawThreads(startIndexX, startIndexY, endIndexX, endIndexY);
-        this.redrawDots(startIndexX, startIndexY, endIndexX, endIndexY);
+        if (this.threadWidth >= this.minDotRadius) {
+            this.redrawThreads(startIndexX, startIndexY, endIndexX, endIndexY);
+        }
+
+        if (this.dotRadius >= this.minThreadWidth) {
+            this.redrawDots(startIndexX, startIndexY, endIndexX, endIndexY);
+        }
     }
 
     private redrawThreads(startDotIndexX: number, startDotIndexY: number, endDotIndexX: number, endDotIndexY: number): void {

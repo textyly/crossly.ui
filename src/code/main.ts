@@ -8,4 +8,5 @@ const config = configFactory.create();
 canvasBuilder.withConfig(config);
 
 const canvas = canvasBuilder.build();
+(window as any).crossly = canvas;
 canvas.draw();

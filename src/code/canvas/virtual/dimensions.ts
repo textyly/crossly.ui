@@ -6,9 +6,7 @@ export abstract class VirtualCanvasDimensions extends CanvasBase {
     protected readonly config: Readonly<CanvasConfig>;
     protected readonly inputCanvas: IInputCanvas;
 
-    protected dotRadius: number;
     protected dotsSpacing: number;
-    protected threadWidth: number;
 
     protected _virtualBounds: Bounds;
     protected _movingBounds?: Bounds;
@@ -19,11 +17,7 @@ export abstract class VirtualCanvasDimensions extends CanvasBase {
         this.config = config;
         this.inputCanvas = inputCanvas;
 
-        this.dotRadius = config.dot.radius.value;
-        this.dotsSpacing = config.dotSpacing.value / 2;
-
-        this.threadWidth = config.thread.width.value;
-
+        this.dotsSpacing = config.dotSpacing.space / 2;
         this._virtualBounds = { left: 0, top: 0, width: 0, height: 0 };
     }
 
@@ -268,48 +262,10 @@ export abstract class VirtualCanvasDimensions extends CanvasBase {
     }
 
     protected zoomInSpacing(): void {
-        const configSpacing = this.config.dotSpacing;
-        const spacing = (this.dotsSpacing < configSpacing.value)
-            ? (this.dotsSpacing + this.config.dotSpacing.zoomOutStep)
-            : (this.dotsSpacing + this.config.dotSpacing.zoomInStep);
-
-        this.dotsSpacing = spacing;
+        this.dotsSpacing += this.config.dotSpacing.spaceZoomStep;
     }
 
     protected zoomOutSpacing(): void {
-        const configSpacing = this.config.dotSpacing;
-        const spacing = this.dotsSpacing > configSpacing.value
-            ? (this.dotsSpacing - this.config.dotSpacing.zoomInStep)
-            : (this.dotsSpacing - this.config.dotSpacing.zoomOutStep);
-
-        this.dotsSpacing = spacing;
-    }
-
-    protected zoomInDots(): void {
-        const configDotRadius = this.config.dot.radius;
-        this.dotRadius += this.dotRadius < configDotRadius.value
-            ? configDotRadius.zoomOutStep
-            : configDotRadius.zoomInStep;
-    }
-
-    protected zoomOutDots(): void {
-        const configDotRadius = this.config.dot.radius;
-        this.dotRadius -= this.dotRadius > configDotRadius.value
-            ? configDotRadius.zoomInStep
-            : configDotRadius.zoomOutStep;
-    }
-
-    protected zoomInThreads(): void {
-        const configThreadWidth = this.config.thread.width;
-        this.threadWidth += this.threadWidth < configThreadWidth.value
-            ? configThreadWidth.zoomOutStep
-            : configThreadWidth.zoomInStep;
-    }
-
-    protected zoomOutThreads(): void {
-        const configThreadWidth = this.config.thread.width;
-        this.threadWidth -= this.threadWidth > configThreadWidth.value
-            ? configThreadWidth.zoomInStep
-            : configThreadWidth.zoomOutStep;
+        this.dotsSpacing -= this.config.dotSpacing.spaceZoomStep;
     }
 }

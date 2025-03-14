@@ -23,6 +23,7 @@ export type StitchTread = {
     toDotYIdx: number;
     toDotYPos: number;
     width: number;
+    zoomedWidth: number;
     color: string;
     side: CanvasSide;
 };
@@ -30,21 +31,37 @@ export type StitchTread = {
 export type CanvasConfig = {
     columns: number;
     rows: number;
-    dot: DotConfig;
     dotSpacing: SpacingConfig;
+};
+
+export type InputCanvasConfig = {
+    ignoreMoveUntil: number;
+};
+
+export type FabricCanvasConfig = CanvasConfig & {
+    dot: DotConfig;
     thread: ThreadConfig;
 };
 
-export type ZoomItemConfig = { value: number; zoomInStep: number; zoomOutStep: number };
-export type DotConfig = { color: string; radius: ZoomItemConfig; };
-export type ThreadConfig = { color: string; width: ZoomItemConfig; };
-export type SpacingConfig = ZoomItemConfig;
+export type StitchCanvasConfig = CanvasConfig & {
+    thread: ThreadConfig;
+};
+
+export type CueCanvasConfig = CanvasConfig & {
+    dot: DotConfig;
+    thread: ThreadConfig;
+};
+
+export type DotConfig = { color: string; radius: number, minRadius: number, radiusZoomStep: number; };
+export type ThreadConfig = { color: string; width: number, minWidth: number, widthZoomStep: number; };
+export type SpacingConfig = { space: number, spaceZoomStep: number; };
 
 
 export type CrosslyCanvasConfig = {
-    fabric: CanvasConfig,
-    stitch: CanvasConfig,
-    cue: CanvasConfig
+    input: InputCanvasConfig;
+    fabric: FabricCanvasConfig,
+    stitch: StitchCanvasConfig,
+    cue: CueCanvasConfig
 };
 
 export interface IDisposable {
@@ -60,6 +77,8 @@ export interface ICanvas extends IDisposable {
 
 export interface ICrosslyCanvas extends ICanvas {
     draw(): void;
+
+    setThreadColor(color: string): void;
 }
 
 export enum CanvasSide {

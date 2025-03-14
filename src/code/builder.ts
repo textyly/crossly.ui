@@ -11,6 +11,8 @@ export class CanvasBuilder {
     }
 
     public build(): ICrosslyCanvas {
+        this.crosslyCanvasBuilder.withConfig(this.config);
+
         const inputHTMLElement = this.buildInputHTMLElement();
         this.crosslyCanvasBuilder.withInputCanvas(inputHTMLElement);
 
@@ -23,7 +25,6 @@ export class CanvasBuilder {
         const cueHTMLElement = this.buildCueHTMLElement();
         this.crosslyCanvasBuilder.withCueCanvas(cueHTMLElement);
 
-        this.crosslyCanvasBuilder.withConfig(this.config);
         const crosslyCanvas = this.crosslyCanvasBuilder.build();
         return crosslyCanvas;
     }
