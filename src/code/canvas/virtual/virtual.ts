@@ -76,16 +76,20 @@ export abstract class VirtualCanvasBase extends VirtualCanvasDimensions implemen
     }
 
     private handleZoomIn(event: ZoomInEvent): void {
-        this.zoomInSpacing();
-        this.zoomIn();
-        this.draw();
+        const inBounds = this.inBounds(event.currentPosition);
+        if (inBounds) {
+            this.zoomInCanvas(event.currentPosition);
+            this.zoomIn();
+            this.draw();
+        }
     }
 
     private handleZoomOut(event: ZoomOutEvent): void {
-        const minSpace = this.config.dotsSpacing.minSpace;
+        const inBounds = this.inBounds(event.currentPosition);
+        const minSpace = this.config.dotsSpacing.minSpace / 2;
 
-        if (this.dotsSpace > minSpace) { 
-            this.zoomOutSpacing();
+        if (inBounds && (this.dotsSpace > minSpace)) {
+            this.zoomOutCanvas(event.currentPosition);
             this.zoomOut();
             this.draw();
         }
@@ -95,8 +99,8 @@ export abstract class VirtualCanvasBase extends VirtualCanvasDimensions implemen
         const currentPosition = event.currentPosition;
         const previousPosition = event.previousPosition;
 
-        const canMove = this.canMoveTo(currentPosition);
-        if (canMove) {
+        const inBounds = this.inBounds(currentPosition);
+        if (inBounds) {
             this.startMove(currentPosition, previousPosition);
             this.redraw(); // TODO: should be draw but it does not work
             this.invokeMoveStart();

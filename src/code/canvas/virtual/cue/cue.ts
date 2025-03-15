@@ -83,9 +83,9 @@ export abstract class CueCanvas extends CueCanvasBase {
 
     private handlePointerMove(event: PointerMoveEvent): void {
         const position = event.position;
-        const inVirtualBounds = this.canMoveTo(position);
+        const inBounds = this.inBounds(position);
 
-        if (inVirtualBounds) {
+        if (inBounds) {
             this.moveDot(position);
             this.resizeThead(position);
         }
@@ -93,9 +93,9 @@ export abstract class CueCanvas extends CueCanvasBase {
 
     private handlePointerUp(event: PointerUpEvent): void {
         const position = event.position;
-        const inVirtualBounds = this.canMoveTo(position);
+        const inBounds = this.inBounds(position);
 
-        if (inVirtualBounds) {
+        if (inBounds) {
             const position = event.position;
             this.clickDot(position);
             this.removeThread();

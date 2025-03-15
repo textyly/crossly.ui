@@ -12,8 +12,8 @@ export class ConfigFactory {
 
         const dotsSpacing: DotsSpacingConfig = {
             space: 28,
-            minSpace: 2,
-            spaceZoomStep: 2
+            minSpace: 4,
+            spaceZoomStep: 4
         };
 
         const fabricConfig: FabricCanvasConfig = {
