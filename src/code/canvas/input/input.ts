@@ -1,18 +1,20 @@
 import { MoveInput } from "./move.js";
 import { TouchInput } from "./touch.js";
 import { InputCanvasBase } from "./base.js";
+import { InputCanvasConfig } from "../types.js";
 import {
     Position,
     MoveEvent,
     IMoveInput,
     ITouchInput,
+    MoveStopEvent,
+    MoveStartEvent,
     CanvasEventType,
     WheelChangeHandler,
     PointerEventHandler,
-    MoveStartEvent,
-    MoveStopEvent,
+    ZoomInEvent,
+    ZoomOutEvent,
 } from "./types.js";
-import { InputCanvasConfig } from "../types.js";
 
 export class InputCanvas extends InputCanvasBase {
     private readonly config: InputCanvasConfig;
@@ -25,7 +27,7 @@ export class InputCanvas extends InputCanvasBase {
     private readonly pointerMoveHandler: PointerEventHandler;
     private readonly pointerDownHandler: PointerEventHandler;
 
-    constructor(config: InputCanvasConfig,  htmlElement: HTMLElement) {
+    constructor(config: InputCanvasConfig, htmlElement: HTMLElement) {
         super();
         this.config = config;
         this.htmlElement = htmlElement;
@@ -33,8 +35,11 @@ export class InputCanvas extends InputCanvasBase {
         const bounds = { left: htmlElement.clientLeft, top: htmlElement.clientTop, width: htmlElement.clientWidth, height: htmlElement.clientHeight };
         super.bounds = bounds;
 
-        this.touchInput = new TouchInput(htmlElement);
-        this.moveInput = new MoveInput(htmlElement, this.touchInput, this.config.ignoreMoveUntil);
+        const ignoreZoomUntil = this.config.ignoreZoomUntil;
+        this.touchInput = new TouchInput(htmlElement, ignoreZoomUntil);
+
+        const ignoreMoveUntil = this.config.ignoreMoveUntil;
+        this.moveInput = new MoveInput(htmlElement, this.touchInput, ignoreMoveUntil);
 
         this.wheelChangeHandler = this.handleWheelChange.bind(this);
         this.pointerUpHandler = this.handlePointerUp.bind(this);
@@ -87,16 +92,20 @@ export class InputCanvas extends InputCanvasBase {
 
     private handleWheelChange(event: WheelEvent): void {
         const deltaY = event.deltaY;
-        deltaY < 0 ? this.handleZoomIn() : this.handleZoomOut();
+
+        const currentPosition = this.getPosition(event);
+        const e = { currentPosition };
+        deltaY < 0 ? this.handleZoomIn(e) : this.handleZoomOut(e);
+
         event.preventDefault();
     }
 
-    private handleZoomIn(): void {
-        super.invokeZoomIn();
+    private handleZoomIn(event: ZoomInEvent): void {
+        super.invokeZoomIn(event.currentPosition);
     }
 
-    private handleZoomOut(): void {
-        super.invokeZoomOut();
+    private handleZoomOut(event: ZoomOutEvent): void {
+        super.invokeZoomOut(event.currentPosition);
     }
 
     private handleMoveStart(event: MoveStartEvent): void {
@@ -123,7 +132,8 @@ export class InputCanvas extends InputCanvasBase {
         const position = this.getPosition(event);
         const leftButton = 0;
         if (event.button === leftButton) {
-            super.invokePointerUp({ position });
+            const e = { position };
+            super.invokePointerUp(e);
         }
     }
 
@@ -137,7 +147,8 @@ export class InputCanvas extends InputCanvasBase {
         }
 
         const position = this.getPosition(event);
-        super.invokePointerMove({ position });
+        const e = { position };
+        super.invokePointerMove(e);
     }
 
     private handlePointerDown(event: PointerEvent): void {
@@ -148,7 +159,7 @@ export class InputCanvas extends InputCanvasBase {
         // TODO: create move held event
     }
 
-    private getPosition(event: PointerEvent): Position {
+    private getPosition(event: MouseEvent): Position {
         const x = event.layerX;
         const y = event.layerY;
         return { x, y };

@@ -4,7 +4,7 @@ import { IMessaging2 } from "../../messaging/types.js";
 import { VirtualCanvasDimensions } from "./dimensions.js";
 import { VoidListener, VoidUnsubscribe } from "../../types.js";
 import { BoundsChangeEvent, CanvasConfig, CanvasSide } from "../types.js";
-import { IInputCanvas, MoveEvent, MoveStartEvent, MoveStopEvent } from "../input/types.js";
+import { IInputCanvas, MoveEvent, MoveStartEvent, MoveStopEvent, ZoomInEvent, ZoomOutEvent } from "../input/types.js";
 
 export abstract class VirtualCanvasBase extends VirtualCanvasDimensions implements IVirtualCanvas {
     private readonly virtualMessaging: IMessaging2<void, void>;
@@ -75,15 +75,21 @@ export abstract class VirtualCanvasBase extends VirtualCanvasDimensions implemen
         this.bounds = event.bounds; // TODO: probably will stop working once visible div start changing bounds on resize and minimize/maximize/restore
     }
 
-    private handleZoomIn(): void {
-        this.zoomInSpacing();
-        this.zoomIn();
-        this.draw();
+    private handleZoomIn(event: ZoomInEvent): void {
+        const inBounds = this.inBounds(event.currentPosition);
+        if (inBounds) {
+            this.zoomInCanvas(event.currentPosition);
+            this.zoomIn();
+            this.draw();
+        }
     }
 
-    private handleZoomOut(): void {
-        if (this.dotsSpacing > 2) { // TODO: min space 
-            this.zoomOutSpacing();
+    private handleZoomOut(event: ZoomOutEvent): void {
+        const inBounds = this.inBounds(event.currentPosition);
+        const minSpace = this.config.dotsSpacing.minSpace / 2;
+
+        if (inBounds && (this.dotsSpace > minSpace)) {
+            this.zoomOutCanvas(event.currentPosition);
             this.zoomOut();
             this.draw();
         }
@@ -93,8 +99,8 @@ export abstract class VirtualCanvasBase extends VirtualCanvasDimensions implemen
         const currentPosition = event.currentPosition;
         const previousPosition = event.previousPosition;
 
-        const canMove = this.canMoveTo(currentPosition);
-        if (canMove) {
+        const inBounds = this.inBounds(currentPosition);
+        if (inBounds) {
             this.startMove(currentPosition, previousPosition);
             this.redraw(); // TODO: should be draw but it does not work
             this.invokeMoveStart();

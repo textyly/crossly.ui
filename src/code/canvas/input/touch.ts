@@ -4,6 +4,7 @@ import { VoidUnsubscribe } from "../../types.js";
 import { Messaging2 } from "../../messaging/impl.js";
 import { IMessaging2 } from "../../messaging/types.js";
 import {
+    Position,
     ZoomInEvent,
     ITouchInput,
     ZoomOutEvent,
@@ -22,14 +23,16 @@ export class TouchInput extends CanvasBase implements ITouchInput {
     private readonly touchEndHandler: TouchEventHandler;
     private readonly touchMoveHandler: TouchEventHandler;
     private readonly touchCancelHandler: TouchEventHandler;
+    private readonly ignoreZoomUntil: number;
 
     private currentActiveTouches?: ActiveTouches;
     private lastTouchTime?: number;
 
-    constructor(htmlElement: HTMLElement) {
+    constructor(htmlElement: HTMLElement, ignoreZoomUntil: number) {
         super();
 
         this.htmlElement = htmlElement;
+        this.ignoreZoomUntil = ignoreZoomUntil;
         this.messaging = new Messaging2();
 
         this.touchStartHandler = this.handleTouchStart.bind(this);
@@ -52,7 +55,7 @@ export class TouchInput extends CanvasBase implements ITouchInput {
                 const now = Date.now();
 
                 // TODO: point to documentation why is that!!! 
-                return (now - this.lastTouchTime) < 200;
+                return (now - this.lastTouchTime) < 200; // TODO: config
             }
         }
     }
@@ -112,20 +115,24 @@ export class TouchInput extends CanvasBase implements ITouchInput {
 
     private startZoom(touches: TouchList): void {
         if (touches.length > 1) {
-            this.handleMultipleTouches(touches[0], touches[1]);
+            const touch1 = touches[0];
+            const touch2 = touches[1];
+            this.handleMultipleTouches(touch1, touch2);
         }
     }
 
     private zoom(touches: TouchList): void {
-        if (touches.length > 1) {
-            this.handleMultipleTouches(touches[0], touches[1]);
+        if (touches.length <= 1) {
+            this.stopHandlingMultipleTouches();
         } else {
-            this.removeMultipleTouches();
+            const touch1 = touches[0];
+            const touch2 = touches[1];
+            this.handleMultipleTouches(touch1, touch2);
         }
     }
 
     private stopZoom(): void {
-        this.removeMultipleTouches();
+        this.stopHandlingMultipleTouches();
     }
 
     private handleMultipleTouches(touch1: Touch, touch2: Touch): void {
@@ -136,9 +143,11 @@ export class TouchInput extends CanvasBase implements ITouchInput {
             const isZoomIn = distanceDelta > 0;
             distanceDelta = Math.abs(distanceDelta);
 
-            // TODO: 10 must become config 
-            if (distanceDelta > 10) {
-                this.invokeZoom(isZoomIn);
+            if (distanceDelta > this.ignoreZoomUntil) {
+
+                const middlePos = this.getMiddle(touch1, touch2);
+                this.invokeZoom(isZoomIn, middlePos);
+
                 this.currentActiveTouches.currentDistance = currentDistance;
             }
         } else {
@@ -152,32 +161,55 @@ export class TouchInput extends CanvasBase implements ITouchInput {
         this.lastTouchTime = Date.now();
     }
 
-    private removeMultipleTouches(): void {
+    private stopHandlingMultipleTouches(): void {
         if (this.currentActiveTouches) {
             this.currentActiveTouches = undefined;
         }
     }
 
-    // TODO: look for better algorithm
     private calculateDistance(finger1: Touch, finger2: Touch) {
         const dx = finger1.clientX - finger2.clientX;
         const dy = finger1.clientY - finger2.clientY;
         return Math.sqrt(dx * dx + dy * dy);
     }
 
-    private invokeZoom(isZoomIn: boolean): void {
+    private invokeZoom(isZoomIn: boolean, position: Position): void {
         if (isZoomIn) {
-            this.invokeZoomIn();
+            this.invokeZoomIn(position);
         } else {
-            this.invokeZoomOut();
+            this.invokeZoomOut(position);
         }
     }
 
-    private invokeZoomIn(): void {
-        this.messaging.sendToChannel1({});
+    private invokeZoomIn(currentPosition: Position): void {
+        const event = { currentPosition };
+        this.messaging.sendToChannel1(event);
     }
 
-    private invokeZoomOut(): void {
-        this.messaging.sendToChannel2({});
+    private invokeZoomOut(currentPosition: Position): void {
+        const event = { currentPosition };
+        this.messaging.sendToChannel2(event);
+    }
+
+    private getMiddle(touch1: Touch, touch2: Touch): Position {
+        const pos1 = this.getPosition(touch1);
+        const pos2 = this.getPosition(touch2);
+
+        const posXDiff = Math.abs(pos1.x - pos2.x);
+        const topXTouch = Math.min(pos1.x, pos2.x);
+        const x = topXTouch + (posXDiff / 2);
+
+        const posYDiff = Math.abs(pos1.y - pos2.y);
+        const topYTouch = Math.min(pos1.y, pos2.y);
+        const y = topYTouch + (posYDiff / 2);
+
+        const middle = { x, y };
+        return middle;
+    }
+
+    private getPosition(touch: Touch): Position {
+        const x = touch.clientX;
+        const y = touch.clientY;
+        return { x, y };
     }
 }
