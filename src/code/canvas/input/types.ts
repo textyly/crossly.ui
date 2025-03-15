@@ -69,10 +69,10 @@ export type PointerUpListener = Listener<PointerUpEvent>;
 export type PointerDownEvent = PositionEvent;
 export type PointerDownListener = Listener<PointerDownEvent>;
 
-export type ZoomInEvent = {};
+export type ZoomInEvent = { currentPosition: Position };
 export type ZoomInListener = Listener<ZoomInEvent>;
 
-export type ZoomOutEvent = {};
+export type ZoomOutEvent = { currentPosition: Position };
 export type ZoomOutListener = Listener<ZoomOutEvent>;
 
 export type MoveStartEvent = { previousPosition: Position, currentPosition: Position };

@@ -12,6 +12,7 @@ import {
     ZoomOutListener,
     CanvasEventType,
     TouchEventHandler,
+    Position,
 } from "./types.js";
 
 export class TouchInput extends CanvasBase implements ITouchInput {
@@ -136,9 +137,10 @@ export class TouchInput extends CanvasBase implements ITouchInput {
             const isZoomIn = distanceDelta > 0;
             distanceDelta = Math.abs(distanceDelta);
 
-            // TODO: 10 must become config 
+            // TODO: config 
             if (distanceDelta > 10) {
-                this.invokeZoom(isZoomIn);
+                const position = this.getPosition(touch1);
+                this.invokeZoom(isZoomIn, position);
                 this.currentActiveTouches.currentDistance = currentDistance;
             }
         } else {
@@ -165,19 +167,25 @@ export class TouchInput extends CanvasBase implements ITouchInput {
         return Math.sqrt(dx * dx + dy * dy);
     }
 
-    private invokeZoom(isZoomIn: boolean): void {
+    private invokeZoom(isZoomIn: boolean, position: Position): void {
         if (isZoomIn) {
-            this.invokeZoomIn();
+            this.invokeZoomIn(position);
         } else {
-            this.invokeZoomOut();
+            this.invokeZoomOut(position);
         }
     }
 
-    private invokeZoomIn(): void {
-        this.messaging.sendToChannel1({});
+    private invokeZoomIn(currentPosition: Position): void {
+        this.messaging.sendToChannel1({ currentPosition });
     }
 
-    private invokeZoomOut(): void {
-        this.messaging.sendToChannel2({});
+    private invokeZoomOut(currentPosition: Position): void {
+        this.messaging.sendToChannel2({ currentPosition });
+    }
+
+    private getPosition(touch: Touch): Position {
+        const x = touch.clientX;
+        const y = touch.clientY;
+        return { x, y };
     }
 }

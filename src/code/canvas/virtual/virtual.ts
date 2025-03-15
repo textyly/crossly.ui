@@ -4,7 +4,7 @@ import { IMessaging2 } from "../../messaging/types.js";
 import { VirtualCanvasDimensions } from "./dimensions.js";
 import { VoidListener, VoidUnsubscribe } from "../../types.js";
 import { BoundsChangeEvent, CanvasConfig, CanvasSide } from "../types.js";
-import { IInputCanvas, MoveEvent, MoveStartEvent, MoveStopEvent } from "../input/types.js";
+import { IInputCanvas, MoveEvent, MoveStartEvent, MoveStopEvent, ZoomInEvent, ZoomOutEvent } from "../input/types.js";
 
 export abstract class VirtualCanvasBase extends VirtualCanvasDimensions implements IVirtualCanvas {
     private readonly virtualMessaging: IMessaging2<void, void>;
@@ -75,13 +75,13 @@ export abstract class VirtualCanvasBase extends VirtualCanvasDimensions implemen
         this.bounds = event.bounds; // TODO: probably will stop working once visible div start changing bounds on resize and minimize/maximize/restore
     }
 
-    private handleZoomIn(): void {
+    private handleZoomIn(event: ZoomInEvent): void {
         this.zoomInSpacing();
         this.zoomIn();
         this.draw();
     }
 
-    private handleZoomOut(): void {
+    private handleZoomOut(event: ZoomOutEvent): void {
         if (this.dotsSpacing > 2) { // TODO: min space 
             this.zoomOutSpacing();
             this.zoomOut();
