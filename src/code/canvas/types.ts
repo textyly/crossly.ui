@@ -31,7 +31,7 @@ export type StitchTread = {
 export type CanvasConfig = {
     columns: number;
     rows: number;
-    dotSpacing: SpacingConfig;
+    dotsSpacing: DotsSpacingConfig;
 };
 
 export type InputCanvasConfig = {
@@ -55,7 +55,7 @@ export type CueCanvasConfig = CanvasConfig & {
 
 export type DotConfig = { color: string; radius: number, minRadius: number, radiusZoomStep: number; };
 export type ThreadConfig = { color: string; width: number, minWidth: number, widthZoomStep: number; };
-export type SpacingConfig = { space: number, minSpace: number, spaceZoomStep: number; };
+export type DotsSpacingConfig = { space: number, minSpace: number, spaceZoomStep: number; };
 
 
 export type CrosslyCanvasConfig = {

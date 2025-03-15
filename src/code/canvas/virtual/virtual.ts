@@ -82,9 +82,9 @@ export abstract class VirtualCanvasBase extends VirtualCanvasDimensions implemen
     }
 
     private handleZoomOut(event: ZoomOutEvent): void {
-        const minSpace = this.config.dotSpacing.minSpace;
+        const minSpace = this.config.dotsSpacing.minSpace;
 
-        if (this.dotsSpacing > minSpace) { 
+        if (this.dotsSpace > minSpace) { 
             this.zoomOutSpacing();
             this.zoomOut();
             this.draw();

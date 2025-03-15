@@ -1,4 +1,4 @@
-import { CrosslyCanvasConfig, CueCanvasConfig, FabricCanvasConfig, InputCanvasConfig, SpacingConfig, StitchCanvasConfig } from "../canvas/types.js";
+import { CrosslyCanvasConfig, CueCanvasConfig, FabricCanvasConfig, InputCanvasConfig, DotsSpacingConfig, StitchCanvasConfig } from "../canvas/types.js";
 
 export class ConfigFactory {
     public create(): CrosslyCanvasConfig {
@@ -10,7 +10,7 @@ export class ConfigFactory {
             ignoreZoomUntil: 10
         }
 
-        const dotSpacing: SpacingConfig = {
+        const dotsSpacing: DotsSpacingConfig = {
             space: 28,
             minSpace: 2,
             spaceZoomStep: 2
@@ -19,7 +19,7 @@ export class ConfigFactory {
         const fabricConfig: FabricCanvasConfig = {
             columns,
             rows,
-            dotSpacing,
+            dotsSpacing: dotsSpacing,
             dot: {
                 color: "#9fa19f",
                 radius: 1.4,
@@ -37,7 +37,7 @@ export class ConfigFactory {
         const stitchConfig: StitchCanvasConfig = {
             columns,
             rows,
-            dotSpacing,
+            dotsSpacing: dotsSpacing,
             thread: {
                 color: "gray",
                 width: 10,
@@ -49,7 +49,7 @@ export class ConfigFactory {
         const cueConfig: CueCanvasConfig = {
             columns,
             rows,
-            dotSpacing,
+            dotsSpacing: dotsSpacing,
             dot: {
                 color: "#615858",
                 radius: 10,

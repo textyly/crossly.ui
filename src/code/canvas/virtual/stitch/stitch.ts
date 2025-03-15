@@ -129,7 +129,7 @@ export abstract class StitchCanvas extends StitchCanvasBase {
 
     private handlePointerUp(event: PointerUpEvent): void {
         const position = event.position;
-        const inVirtualBounds = this.inVirtualBounds(position);
+        const inVirtualBounds = this.canMoveTo(position);
 
         if (inVirtualBounds) {
             this.clickDot(position);
