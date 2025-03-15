@@ -36,6 +36,7 @@ export type CanvasConfig = {
 
 export type InputCanvasConfig = {
     ignoreMoveUntil: number;
+    ignoreZoomUntil: number; // only touch zoom related 
 };
 
 export type FabricCanvasConfig = CanvasConfig & {
@@ -54,7 +55,7 @@ export type CueCanvasConfig = CanvasConfig & {
 
 export type DotConfig = { color: string; radius: number, minRadius: number, radiusZoomStep: number; };
 export type ThreadConfig = { color: string; width: number, minWidth: number, widthZoomStep: number; };
-export type SpacingConfig = { space: number, spaceZoomStep: number; };
+export type SpacingConfig = { space: number, minSpace: number, spaceZoomStep: number; };
 
 
 export type CrosslyCanvasConfig = {

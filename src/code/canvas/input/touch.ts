@@ -23,14 +23,16 @@ export class TouchInput extends CanvasBase implements ITouchInput {
     private readonly touchEndHandler: TouchEventHandler;
     private readonly touchMoveHandler: TouchEventHandler;
     private readonly touchCancelHandler: TouchEventHandler;
+    private readonly ignoreZoomUntil: number;
 
     private currentActiveTouches?: ActiveTouches;
     private lastTouchTime?: number;
 
-    constructor(htmlElement: HTMLElement) {
+    constructor(htmlElement: HTMLElement, ignoreZoomUntil: number) {
         super();
 
         this.htmlElement = htmlElement;
+        this.ignoreZoomUntil = ignoreZoomUntil;
         this.messaging = new Messaging2();
 
         this.touchStartHandler = this.handleTouchStart.bind(this);
@@ -137,8 +139,7 @@ export class TouchInput extends CanvasBase implements ITouchInput {
             const isZoomIn = distanceDelta > 0;
             distanceDelta = Math.abs(distanceDelta);
 
-            // TODO: config 
-            if (distanceDelta > 10) {
+            if (distanceDelta > this.ignoreZoomUntil) {
                 const position = this.getPosition(touch1);
                 this.invokeZoom(isZoomIn, position);
                 this.currentActiveTouches.currentDistance = currentDistance;

@@ -6,11 +6,13 @@ export class ConfigFactory {
         const rows = 30;
 
         const inputConfig: InputCanvasConfig = {
-            ignoreMoveUntil: 10
+            ignoreMoveUntil: 10,
+            ignoreZoomUntil: 10
         }
 
         const dotSpacing: SpacingConfig = {
             space: 28,
+            minSpace: 2,
             spaceZoomStep: 2
         };
 

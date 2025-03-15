@@ -35,8 +35,11 @@ export class InputCanvas extends InputCanvasBase {
         const bounds = { left: htmlElement.clientLeft, top: htmlElement.clientTop, width: htmlElement.clientWidth, height: htmlElement.clientHeight };
         super.bounds = bounds;
 
-        this.touchInput = new TouchInput(htmlElement);
-        this.moveInput = new MoveInput(htmlElement, this.touchInput, this.config.ignoreMoveUntil);
+        const ignoreZoomUntil = this.config.ignoreZoomUntil;
+        this.touchInput = new TouchInput(htmlElement, ignoreZoomUntil);
+
+        const ignoreMoveUntil = this.config.ignoreMoveUntil;
+        this.moveInput = new MoveInput(htmlElement, this.touchInput, ignoreMoveUntil);
 
         this.wheelChangeHandler = this.handleWheelChange.bind(this);
         this.pointerUpHandler = this.handlePointerUp.bind(this);
