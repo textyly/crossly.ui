@@ -145,9 +145,9 @@ export class TouchInput extends CanvasBase implements ITouchInput {
 
             if (distanceDelta > this.ignoreZoomUntil) {
 
-                // TODO: this position is not correct, must be the middle of the two fingers
-                const position = this.getPosition(touch1);
-                this.invokeZoom(isZoomIn, position);
+                const middlePos = this.getMiddle(touch1, touch2);
+                this.invokeZoom(isZoomIn, middlePos);
+
                 this.currentActiveTouches.currentDistance = currentDistance;
             }
         } else {
@@ -189,6 +189,22 @@ export class TouchInput extends CanvasBase implements ITouchInput {
     private invokeZoomOut(currentPosition: Position): void {
         const event = { currentPosition };
         this.messaging.sendToChannel2(event);
+    }
+
+    private getMiddle(touch1: Touch, touch2: Touch): Position {
+        const pos1 = this.getPosition(touch1);
+        const pos2 = this.getPosition(touch2);
+
+        const posXDiff = Math.abs(pos1.x - pos2.x);
+        const topXTouch = Math.min(pos1.x, pos2.x);
+        const x = topXTouch + (posXDiff / 2);
+
+        const posYDiff = Math.abs(pos1.y - pos2.y);
+        const topYTouch = Math.min(pos1.y, pos2.y);
+        const y = topYTouch + (posYDiff / 2);
+
+        const middle = { x, y };
+        return middle;
     }
 
     private getPosition(touch: Touch): Position {
