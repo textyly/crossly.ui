@@ -1,7 +1,7 @@
 import { CueCanvasBase } from "./base.js";
 import { DotsUtility } from "../../utilities/dots.js";
 import { IdGenerator } from "../../utilities/generator.js";
-import { Position, IInputCanvas, PointerUpEvent, PointerMoveEvent } from "../../input/types.js";
+import { Position, IInputCanvas, PointerUpEvent, PointerMoveEvent, MoveStartEvent, MoveStopEvent, MoveEvent } from "../../input/types.js";
 import { CanvasSide, Id, CueThread, CueDot, Dot, DotIndex, CueCanvasConfig } from "../../types.js";
 
 export abstract class CueCanvas extends CueCanvasBase {
@@ -55,21 +55,34 @@ export abstract class CueCanvas extends CueCanvasBase {
     }
 
     protected override redraw(): void {
-        if (this.inMovingMode) {
-            this.removeHoveredDot();
-            this.removeThread();
+        if (!this.inMovingMode) {
+            this.redrawWhileNotMoving();
         } else {
-            // 1. remove hovered dot and thread
-            const dotIndex = this.hoveredDotIndex;
-            this.hoveredDotIndex = undefined;
-            this.currentThreadId = undefined;
+            this.redrawWhileMoving();
+        }
+    }
 
-            // 2. recreate hovered dot and thread
-            if (dotIndex) {
-                const dotPos = this.calculateDotPosition(dotIndex);
-                const event = { position: dotPos };
-                this.handlePointerMove(event);
-            }
+    private redrawWhileNotMoving(): void {
+        // 1. remove hovered dot and thread
+        const hoveredDotIndex = this.hoveredDotIndex;
+        this.hoveredDotIndex = undefined;
+        this.currentThreadId = undefined;
+
+        // 2. recreate hovered dot and thread
+        if (hoveredDotIndex) {
+            const dotPos = this.calculateDotPosition(hoveredDotIndex);
+            const event = { position: dotPos };
+            this.handlePointerMove(event);
+        }
+    }
+
+    private redrawWhileMoving(): void {
+        this.removeThread();
+
+        const dotIndex = this.clickedDotIndex ?? this.hoveredDotIndex;
+        if (dotIndex) {
+            const dotPos = this.calculateDotPosition(dotIndex);
+            this.moveDot(dotPos);
         }
     }
 

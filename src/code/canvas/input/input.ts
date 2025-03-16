@@ -6,14 +6,14 @@ import {
     Position,
     MoveEvent,
     IMoveInput,
+    ZoomInEvent,
     ITouchInput,
+    ZoomOutEvent,
     MoveStopEvent,
     MoveStartEvent,
     CanvasEventType,
     WheelChangeHandler,
     PointerEventHandler,
-    ZoomInEvent,
-    ZoomOutEvent,
 } from "./types.js";
 
 export class InputCanvas extends InputCanvasBase {
@@ -24,8 +24,10 @@ export class InputCanvas extends InputCanvasBase {
 
     private readonly wheelChangeHandler: WheelChangeHandler;
     private readonly pointerUpHandler: PointerEventHandler;
-    private readonly pointerMoveHandler: PointerEventHandler;
     private readonly pointerDownHandler: PointerEventHandler;
+    private readonly pointerMoveHandler: PointerEventHandler;
+
+    private isPointerDown: boolean;
 
     constructor(config: InputCanvasConfig, htmlElement: HTMLElement) {
         super();
@@ -41,10 +43,12 @@ export class InputCanvas extends InputCanvasBase {
         const ignoreMoveUntil = this.config.ignoreMoveUntil;
         this.moveInput = new MoveInput(htmlElement, this.touchInput, ignoreMoveUntil);
 
+        this.isPointerDown = false;
+
         this.wheelChangeHandler = this.handleWheelChange.bind(this);
         this.pointerUpHandler = this.handlePointerUp.bind(this);
-        this.pointerMoveHandler = this.handlePointerMove.bind(this);
         this.pointerDownHandler = this.handlePointerDown.bind(this);
+        this.pointerMoveHandler = this.handlePointerMove.bind(this);
 
         this.subscribe();
     }
@@ -60,9 +64,9 @@ export class InputCanvas extends InputCanvasBase {
 
     private subscribe(): void {
         this.htmlElement.addEventListener(CanvasEventType.WheelChange, this.wheelChangeHandler);
-        this.htmlElement.addEventListener(CanvasEventType.PointerMove, this.pointerMoveHandler);
-        this.htmlElement.addEventListener(CanvasEventType.PointerDown, this.pointerDownHandler);
         this.htmlElement.addEventListener(CanvasEventType.PointerUp, this.pointerUpHandler);
+        this.htmlElement.addEventListener(CanvasEventType.PointerDown, this.pointerDownHandler);
+        this.htmlElement.addEventListener(CanvasEventType.PointerMove, this.pointerMoveHandler);
 
         const touchZoomInUn = this.touchInput.onZoomIn(this.handleZoomIn.bind(this));
         super.registerUn(touchZoomInUn);
@@ -85,19 +89,9 @@ export class InputCanvas extends InputCanvasBase {
 
     private unsubscribe(): void {
         this.htmlElement.removeEventListener(CanvasEventType.WheelChange, this.wheelChangeHandler);
+        this.htmlElement.removeEventListener(CanvasEventType.PointerUp, this.pointerUpHandler);
         this.htmlElement.removeEventListener(CanvasEventType.PointerMove, this.pointerMoveHandler);
         this.htmlElement.removeEventListener(CanvasEventType.PointerDown, this.pointerDownHandler);
-        this.htmlElement.removeEventListener(CanvasEventType.PointerUp, this.pointerUpHandler);
-    }
-
-    private handleWheelChange(event: WheelEvent): void {
-        const deltaY = event.deltaY;
-
-        const currentPosition = this.getPosition(event);
-        const e = { currentPosition };
-        deltaY < 0 ? this.handleZoomIn(e) : this.handleZoomOut(e);
-
-        event.preventDefault();
     }
 
     private handleZoomIn(event: ZoomInEvent): void {
@@ -120,7 +114,15 @@ export class InputCanvas extends InputCanvasBase {
         super.invokeMoveStop(event);
     }
 
+    private handleWheelChange(event: WheelEvent): void {
+        this.wheelChange(event);
+
+        event.preventDefault();
+    }
+
     private handlePointerUp(event: PointerEvent): void {
+        this.isPointerDown = false;
+
         if (this.touchInput.inZoomMode) {
             return;
         }
@@ -129,12 +131,11 @@ export class InputCanvas extends InputCanvasBase {
             return;
         }
 
-        const position = this.getPosition(event);
-        const leftButton = 0;
-        if (event.button === leftButton) {
-            const e = { position };
-            super.invokePointerUp(e);
-        }
+        this.pointerUp(event);
+    }
+
+    private handlePointerDown(event: PointerEvent): void {
+        this.isPointerDown = true;
     }
 
     private handlePointerMove(event: PointerEvent): void {
@@ -146,17 +147,32 @@ export class InputCanvas extends InputCanvasBase {
             return;
         }
 
+        if (!this.isPointerDown) {
+            this.pointerMove(event);
+        }
+    }
+
+    private wheelChange(event: WheelEvent): void {
+        const deltaY = event.deltaY;
+
+        const currentPosition = this.getPosition(event);
+        const e = { currentPosition };
+        deltaY < 0 ? this.handleZoomIn(e) : this.handleZoomOut(e);
+    }
+
+    private pointerUp(event: PointerEvent): void {
+        const position = this.getPosition(event);
+        const leftButton = 0;
+        if (event.button === leftButton) {
+            const e = { position };
+            super.invokePointerUp(e);
+        }
+    }
+
+    private pointerMove(event: PointerEvent): void {
         const position = this.getPosition(event);
         const e = { position };
         super.invokePointerMove(e);
-    }
-
-    private handlePointerDown(event: PointerEvent): void {
-        if (this.touchInput.inZoomMode) {
-            return;
-        }
-
-        // TODO: create move held event
     }
 
     private getPosition(event: MouseEvent): Position {
