@@ -55,10 +55,20 @@ export abstract class CueCanvas extends CueCanvasBase {
     }
 
     protected override redraw(): void {
-        if (!this.inMovingMode) {
-            this.redrawWhileNotMoving();
-        } else {
+        if (this.inMovingMode) {
             this.redrawWhileMoving();
+        } else {
+            this.redrawWhileNotMoving();
+        }
+    }
+
+    private redrawWhileMoving(): void {
+        this.removeThread();
+
+        const dotIndex = this.clickedDotIndex ?? this.hoveredDotIndex;
+        if (dotIndex) {
+            const dotPos = this.calculateDotPosition(dotIndex);
+            this.moveDot(dotPos);
         }
     }
 
@@ -73,16 +83,6 @@ export abstract class CueCanvas extends CueCanvasBase {
             const dotPos = this.calculateDotPosition(hoveredDotIndex);
             const event = { position: dotPos };
             this.handlePointerMove(event);
-        }
-    }
-
-    private redrawWhileMoving(): void {
-        this.removeThread();
-
-        const dotIndex = this.clickedDotIndex ?? this.hoveredDotIndex;
-        if (dotIndex) {
-            const dotPos = this.calculateDotPosition(dotIndex);
-            this.moveDot(dotPos);
         }
     }
 
