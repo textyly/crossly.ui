@@ -8,9 +8,9 @@ import {
     IMessaging5,
     IMessaging6,
     IMessaging7,
+    IMessaging8,
     PublicChannels,
     IVoidMessaging,
-    IMessaging8,
 } from "./types.js";
 
 export class VoidMessaging extends Messaging implements IVoidMessaging {
