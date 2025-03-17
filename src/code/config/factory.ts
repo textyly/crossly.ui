@@ -35,9 +35,7 @@ export class ConfigFactory {
 
     private createFabricCanvasConfig(columns: number, rows: number, dotsSpacing: DotsSpacingConfig): FabricCanvasConfig {
         const fabricConfig = {
-            columns,
-            rows,
-            dotsSpacing,
+            columns, rows, dotsSpacing,
             dot: {
                 color: "#9fa19f",
                 radius: 1.4,
@@ -56,9 +54,7 @@ export class ConfigFactory {
 
     private createStitchCanvasConfig(columns: number, rows: number, dotsSpacing: DotsSpacingConfig): StitchCanvasConfig {
         const stitchConfig = {
-            columns,
-            rows,
-            dotsSpacing: dotsSpacing,
+            columns, rows, dotsSpacing,
             thread: {
                 color: "gray",
                 width: 14,
@@ -71,9 +67,7 @@ export class ConfigFactory {
 
     private createCueCanvasConfig(columns: number, rows: number, dotsSpacing: DotsSpacingConfig): CueCanvasConfig {
         const cueConfig = {
-            columns,
-            rows,
-            dotsSpacing: dotsSpacing,
+            columns, rows, dotsSpacing,
             dot: {
                 color: "#615858",
                 radius: 10,
