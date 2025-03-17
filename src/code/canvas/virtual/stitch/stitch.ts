@@ -144,7 +144,7 @@ export abstract class StitchCanvas extends StitchCanvasBase {
         if (previouslyClickedDotIdx) {
             this.tryDrawThread(previouslyClickedDotIdx, clickedDotIdx);
         } else {
-            this.changeSide();
+            this.changeCanvasSide();
         }
 
         this.clickedDotIdx = clickedDotIdx;
@@ -165,7 +165,7 @@ export abstract class StitchCanvas extends StitchCanvasBase {
                 this.drawThread(thread);
             }
 
-            this.changeSide();
+            this.changeCanvasSide();
         }
     }
 
