@@ -5,21 +5,39 @@ export class ConfigFactory {
         const columns = 30;
         const rows = 30;
 
-        const inputConfig: InputCanvasConfig = {
+        const input = this.createInputConfig();
+        const dotsSpacing = this.createDotsSpacingConfig();
+
+        const fabric = this.createFabricCanvasConfig(columns, rows, dotsSpacing);
+        const stitch = this.createStitchCanvasConfig(columns, rows, dotsSpacing);
+        const cue = this.createCueCanvasConfig(columns, rows, dotsSpacing);
+
+        const canvasConfig = { input, fabric, stitch, cue };
+        return canvasConfig;
+    }
+
+    private createInputConfig(): InputCanvasConfig {
+        const inputConfig = {
             ignoreMoveUntil: 10,
             ignoreZoomUntil: 10
         }
+        return inputConfig;
+    }
 
-        const dotsSpacing: DotsSpacingConfig = {
+    private createDotsSpacingConfig(): DotsSpacingConfig {
+        const dotsSpacing = {
             space: 28,
             minSpace: 4,
             spaceZoomStep: 4
         };
+        return dotsSpacing;
+    }
 
-        const fabricConfig: FabricCanvasConfig = {
+    private createFabricCanvasConfig(columns: number, rows: number, dotsSpacing: DotsSpacingConfig): FabricCanvasConfig {
+        const fabricConfig = {
             columns,
             rows,
-            dotsSpacing: dotsSpacing,
+            dotsSpacing,
             dot: {
                 color: "#9fa19f",
                 radius: 1.4,
@@ -33,8 +51,11 @@ export class ConfigFactory {
                 widthZoomStep: 0.2
             }
         };
+        return fabricConfig;
+    }
 
-        const stitchConfig: StitchCanvasConfig = {
+    private createStitchCanvasConfig(columns: number, rows: number, dotsSpacing: DotsSpacingConfig): StitchCanvasConfig {
+        const stitchConfig = {
             columns,
             rows,
             dotsSpacing: dotsSpacing,
@@ -45,32 +66,27 @@ export class ConfigFactory {
                 widthZoomStep: 2
             }
         };
+        return stitchConfig;
+    }
 
-        const cueConfig: CueCanvasConfig = {
+    private createCueCanvasConfig(columns: number, rows: number, dotsSpacing: DotsSpacingConfig): CueCanvasConfig {
+        const cueConfig = {
             columns,
             rows,
             dotsSpacing: dotsSpacing,
             dot: {
                 color: "#615858",
-                radius: 14,
-                minRadius: 2,
-                radiusZoomStep: 2
+                radius: 10,
+                minRadius: 1,
+                radiusZoomStep: 1
             },
             thread: {
                 color: "gray",
-                width: 14,
-                minWidth: 2,
-                widthZoomStep: 2
+                width: 10,
+                minWidth: 1,
+                widthZoomStep: 1
             }
         };
-
-        const canvasConfig: CrosslyCanvasConfig = {
-            input: inputConfig,
-            fabric: fabricConfig,
-            stitch: stitchConfig,
-            cue: cueConfig
-        };
-
-        return canvasConfig;
+        return cueConfig;
     }
 }
