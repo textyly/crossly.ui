@@ -1,5 +1,5 @@
 import { CueCanvasBase } from "./base.js";
-import { IdGenerator } from "../../utilities/id.js";
+import { IdGenerator } from "../../utilities/generator.js";
 import { DotsUtility } from "../../utilities/dots.js";
 import { Position, IInputCanvas, PointerUpEvent, PointerMoveEvent } from "../../input/types.js";
 import { CanvasSide, Id, CueThread, CueDot, Dot, DotIndex, CueCanvasConfig } from "../../types.js";
