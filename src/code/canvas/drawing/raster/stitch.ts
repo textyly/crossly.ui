@@ -24,7 +24,7 @@ export class StitchRasterDrawingCanvas extends RasterDrawingCanvas implements IR
         const widths = threads.zoomedWidths;
         const colors = threads.colors;
 
-        // Path2D is being used for perf optimization otherwise lineTo has a huge negative perf impact
+        // Path2D is being used for perf optimization otherwise this.context.lineTo has a huge negative perf impact
         let path = this.createPath();
         let previousColor = colors[0];
         const lastIdX = threads.length - 1;
@@ -51,9 +51,9 @@ export class StitchRasterDrawingCanvas extends RasterDrawingCanvas implements IR
                 // pythagorean equation
                 const leg = Math.floor(Math.sqrt((currentWidth * currentWidth) / 2));
 
-                // drawing logic is too big and make the code too unreadable, 
-                // that is why it is extracted in the drawLineInPath method (even though additional function invocation will impact the perf since it will be executed for each and every visible stitch)
-                this.drawLineInPath(path, fromX, fromY, toX, toY, leg);
+                // drawing logic is too big and makes the code too unreadable, 
+                // that is why it is extracted in the drawLineInPath/drawPolygonInPath methods (even though additional function invocation will impact the perf since it will be executed for each and every visible stitch)
+                this.drawPolygonInPath(path, fromX, fromY, toX, toY, leg);
             }
 
             if (threadIdx === lastIdX) {
@@ -77,6 +77,53 @@ export class StitchRasterDrawingCanvas extends RasterDrawingCanvas implements IR
     }
 
     private drawLineInPath(path: Path2D, fromX: number, fromY: number, toX: number, toY: number, leg: number): void {
+        // CPU, GPU, memory and GC intensive code, do not extract in multiple methods!!!
+
+        // leftTop to rightBottom stitch (diagonal)
+        if (fromX < toX && fromY < toY) {
+
+        }
+
+        // rightBottom to leftTop stitch (diagonal)
+        if (fromX > toX && fromY > toY) {
+
+        }
+
+        // rightTop to leftBottom stitch (diagonal)
+        if (fromX > toX && fromY < toY) {
+
+        }
+
+        // leftBottom to rightTop stitch (diagonal)
+        if (fromX < toX && fromY > toY) {
+
+        }
+
+        // pythagorean equation
+        const l = Math.floor(Math.sqrt((leg * leg) / 2));
+
+        // left to right stitch (horizontal)
+        if (fromX < toX && fromY == toY) {
+
+
+            // right to left stitch (horizontal)
+            if (fromX > toX && fromY == toY) {
+
+            }
+
+            // top to bottom stitch (vertical)
+            if (fromX == toX && fromY < toY) {
+
+            }
+
+            // bottom to top stitch (vertical)
+            if (fromX == toX && fromY > toY) {
+
+            }
+        }
+    }
+
+    private drawPolygonInPath(path: Path2D, fromX: number, fromY: number, toX: number, toY: number, leg: number): void {
         // CPU, GPU, memory and GC intensive code, do not extract in multiple methods!!!
 
         // leftTop to rightBottom stitch (diagonal)

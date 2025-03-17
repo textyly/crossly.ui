@@ -78,8 +78,11 @@ export interface ICanvas extends IDisposable {
 
 export interface ICrosslyCanvas extends ICanvas {
     draw(): void;
+}
 
+export interface ICrosslyCanvasFacade extends ICrosslyCanvas {
     setThreadColor(color: string): void;
+    setThreadWidth(width: number): void;
 }
 
 export enum CanvasSide {

@@ -16,17 +16,17 @@ import {
     IVectorDrawingCanvas
 } from "./drawing/types.js";
 
-export class CrosslyCanvas extends CanvasBase implements ICrosslyCanvas {
+export abstract class CrosslyCanvas extends CanvasBase implements ICrosslyCanvas {
     private readonly config: Readonly<CrosslyCanvasConfig>;
     private readonly inputCanvas: IInputCanvas;
 
-    private fabricCanvas!: IFabricCanvas;
+    protected fabricCanvas!: IFabricCanvas;
     private fabricDrawingCanvas!: IFabricDrawingCanvas;
 
-    private stitchCanvasFacade!: IStitchCanvasFacade;
+    protected stitchCanvasFacade!: IStitchCanvasFacade;
     private stitchDrawingCanvas!: IStitchDrawingCanvas;
 
-    private cueCanvasFacade!: ICueCanvasFacade;
+    protected cueCanvasFacade!: ICueCanvasFacade;
     private cueDrawingCanvas!: ICueDrawingCanvas;
 
     constructor(
@@ -49,16 +49,6 @@ export class CrosslyCanvas extends CanvasBase implements ICrosslyCanvas {
         this.fabricCanvas.draw();
         this.stitchCanvasFacade.draw();
         this.cueCanvasFacade.draw();
-    }
-
-    public setThreadColor(color: string): void {
-        this.stitchCanvasFacade.setThreadColor(color);
-        this.cueCanvasFacade.setThreadColor(color);
-    }
-
-    public setThreadWidth(width: number): void {
-        this.stitchCanvasFacade.setThreadWidth(width);
-        this.cueCanvasFacade.setThreadWidth(width);
     }
 
     public override dispose(): void {

@@ -1,9 +1,11 @@
 import { expect } from "chai";
+import { ConfigFactory } from "../../src/code/config/factory.js";
 
-describe('app builder', () => {
-    it('return canvas must be defined', () => {
-        // const canvasBuilder = new CanvasBuilder();
-        // const canvas = canvasBuilder.build();
-        expect(true).to.equals(true);
+describe('config factory', () => {
+    it('returns canvas config different than undefined', () => {
+        const configFactory = new ConfigFactory();
+        const config = configFactory.create();
+
+        expect(config).not.equal(undefined);
     });
 });
