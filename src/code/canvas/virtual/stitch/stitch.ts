@@ -27,7 +27,7 @@ export abstract class StitchCanvas extends StitchCanvasBase {
         this.threadWidth = threadConfig.width;
         this.minThreadWidth = threadConfig.minWidth;
         this.threadWidthZoomStep = threadConfig.widthZoomStep;
-        
+
         this.zooms = 0;
 
         this.startListening();
@@ -111,14 +111,15 @@ export abstract class StitchCanvas extends StitchCanvasBase {
             const toDotXPos = this.calculateDotXPosition(toDotXIdx);
             const toDotYPos = this.calculateDotYPosition(toDotYIdx);
 
-            let zoomedWidth = widths[index] + (this.zooms * this.threadWidthZoomStep);
-            zoomedWidth = Math.max(zoomedWidth, this.minThreadWidth);
+            const zoomedThreadWidth = this.calculateZoomedThreadWidth(widths[index]);
 
             // 7. set the updated pros before drawing
-            this.threads.setThread(index, true, fromDotXPos, fromDotYPos, toDotXPos, toDotYPos, zoomedWidth);
+            this.threads.setThread(index, true, fromDotXPos, fromDotYPos, toDotXPos, toDotYPos, zoomedThreadWidth);
         }
 
         // 8. draw threads, each thread consist of one thread and two dots
+        const zoomedThreadWidth = this.calculateZoomedThreadWidth(this.threadWidth);
+        console.log(`dotsSpace: ${this.dotsSpace}, current zoomed thread width: ${zoomedThreadWidth}`);
         super.invokeDrawThreads(this.threads);
     }
 
@@ -188,11 +189,17 @@ export abstract class StitchCanvas extends StitchCanvasBase {
             toDotYPos: clickedDotPos.y,
             width: this.threadWidth,
             zoomWidth: this.threadWidthZoomStep,
-            zoomedWidth: this.threadWidth + (this.zooms * this.threadWidthZoomStep),
+            zoomedWidth: this.calculateZoomedThreadWidth(this.threadWidth),
             color: this.threadColor,
             side: this.currentSide
         };
 
         return thread;
+    }
+
+    private calculateZoomedThreadWidth(threadWidth: number): number {
+        let calculated = threadWidth + (this.zooms * this.threadWidthZoomStep);
+        calculated = Math.max(calculated, this.minThreadWidth);
+        return calculated;
     }
 }

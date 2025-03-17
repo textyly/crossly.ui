@@ -40,9 +40,9 @@ export class ConfigFactory {
             dotsSpacing: dotsSpacing,
             thread: {
                 color: "gray",
-                width: 10,
-                minWidth: 1,
-                widthZoomStep: 1
+                width: 14,
+                minWidth: 2,
+                widthZoomStep: 2
             }
         };
 
@@ -52,15 +52,15 @@ export class ConfigFactory {
             dotsSpacing: dotsSpacing,
             dot: {
                 color: "#615858",
-                radius: 10,
-                minRadius: 1,
-                radiusZoomStep: 1
+                radius: 14,
+                minRadius: 2,
+                radiusZoomStep: 2
             },
             thread: {
                 color: "gray",
-                width: 10,
-                minWidth: 1,
-                widthZoomStep: 1
+                width: 14,
+                minWidth: 2,
+                widthZoomStep: 2
             }
         };
 

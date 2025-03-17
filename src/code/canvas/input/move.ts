@@ -125,7 +125,7 @@ export class MoveInput extends CanvasBase implements IMoveInput {
                 const isMoveStarting = !this.lastDifference;
                 const previousPosition = this.lastPointerPos;
 
-                // 4. invoke canvas move
+                // 3. invoke canvas move
                 const difference = { x: diffX, y: diffY };
                 this.lastDifference = difference;
                 this.lastPointerPos = currentPosition;
