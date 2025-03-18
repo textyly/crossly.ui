@@ -27,7 +27,7 @@ export abstract class StitchCanvas extends StitchCanvasBase {
         this.threadWidth = threadConfig.width;
         this.minThreadWidth = threadConfig.minWidth;
         this.threadWidthZoomStep = threadConfig.widthZoomStep;
-
+        
         this.zooms = 0;
 
         this.startListening();

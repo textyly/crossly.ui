@@ -2,8 +2,8 @@ import { CrosslyCanvasConfig, CueCanvasConfig, FabricCanvasConfig, InputCanvasCo
 
 export class ConfigFactory {
     public create(): CrosslyCanvasConfig {
-        const columns = 30;
-        const rows = 30;
+        const columns = 300;
+        const rows = 300;
 
         const input = this.createInputConfig();
         const dotsSpacing = this.createDotsSpacingConfig();
@@ -26,9 +26,9 @@ export class ConfigFactory {
 
     private createDotsSpacingConfig(): DotsSpacingConfig {
         const dotsSpacing = {
-            space: 28,
-            minSpace: 4,
-            spaceZoomStep: 4
+            space: 26,
+            minSpace: 2,
+            spaceZoomStep: 2
         };
         return dotsSpacing;
     }
@@ -40,13 +40,13 @@ export class ConfigFactory {
                 color: "#9fa19f",
                 radius: 1.4,
                 minRadius: 0.6,
-                radiusZoomStep: 0.2
+                radiusZoomStep: 0.1
             },
             thread: {
                 color: "#d2d4d2",
                 width: 1.4,
                 minWidth: 0.8,
-                widthZoomStep: 0.2
+                widthZoomStep: 0.1
             }
         };
         return fabricConfig;
@@ -57,9 +57,9 @@ export class ConfigFactory {
             columns, rows, dotsSpacing,
             thread: {
                 color: "gray",
-                width: 14,
-                minWidth: 2,
-                widthZoomStep: 2
+                width: 12,
+                minWidth: 1,
+                widthZoomStep: 1
             }
         };
         return stitchConfig;
