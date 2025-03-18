@@ -38,10 +38,10 @@ export class InputCanvas extends InputCanvasBase {
         super.bounds = bounds;
 
         const ignoreZoomUntil = this.config.ignoreZoomUntil;
-        this.touchInput = new TouchInput(htmlElement, ignoreZoomUntil);
+        this.touchInput = new TouchInput(ignoreZoomUntil, htmlElement);
 
         const ignoreMoveUntil = this.config.ignoreMoveUntil;
-        this.moveInput = new MoveInput(htmlElement, this.touchInput, ignoreMoveUntil);
+        this.moveInput = new MoveInput(ignoreMoveUntil, htmlElement, this.touchInput);
 
         this.isPointerDown = false;
 

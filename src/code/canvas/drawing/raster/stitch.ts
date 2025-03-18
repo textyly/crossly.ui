@@ -4,8 +4,12 @@ import { DotArray } from "../../utilities/arrays/dot/dot.js";
 import { StitchThreadArray } from "../../utilities/arrays/thread/stitch.js";
 
 export class StitchRasterDrawingCanvas extends RasterDrawingCanvas implements IRasterDrawingCanvas {
-    constructor(rasterCanvas: HTMLCanvasElement) {
+    private minThreadWidth: number;
+
+    constructor(minThreadWidth: number, rasterCanvas: HTMLCanvasElement) {
         super(rasterCanvas);
+
+        this.minThreadWidth = minThreadWidth;
     }
 
     public drawDots(dots: DotArray): void {
@@ -50,8 +54,7 @@ export class StitchRasterDrawingCanvas extends RasterDrawingCanvas implements IR
 
                 // drawing logic is too big and makes the code too unreadable, 
                 // that is why it is extracted in the drawLineInPath/drawPolygonInPath methods (even though additional function invocation will impact the perf since it will be executed for each and every visible stitch)
-                // TODO: config
-                if (currentWidth <= 2) {
+                if (currentWidth <= this.minThreadWidth) {
                     // less drawing which means better performance
                     this.drawLineInPath(path, fromX, fromY, toX, toY, currentWidth);
                 } else {
