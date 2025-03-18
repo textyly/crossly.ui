@@ -48,12 +48,14 @@ export class StitchRasterDrawingCanvas extends RasterDrawingCanvas implements IR
                 const toX = toDotsXPositions[threadIdx] - this.bounds.left;
                 const toY = toDotsYPositions[threadIdx] - this.bounds.top;
 
-                // pythagorean equation
-                const leg = Math.floor(Math.sqrt((currentWidth * currentWidth) / 2));
-
                 // drawing logic is too big and makes the code too unreadable, 
                 // that is why it is extracted in the drawLineInPath/drawPolygonInPath methods (even though additional function invocation will impact the perf since it will be executed for each and every visible stitch)
-                this.drawPolygonInPath(path, fromX, fromY, toX, toY, leg);
+                // TODO: config
+                if (currentWidth <= 2) {
+                    this.drawLineInPath(path, fromX, fromY, toX, toY, currentWidth);
+                } else {
+                    this.drawPolygonInPath(path, fromX, fromY, toX, toY, currentWidth);
+                }
             }
 
             if (threadIdx === lastIdX) {
@@ -76,55 +78,63 @@ export class StitchRasterDrawingCanvas extends RasterDrawingCanvas implements IR
         this.context.fill(path);
     }
 
-    private drawLineInPath(path: Path2D, fromX: number, fromY: number, toX: number, toY: number, leg: number): void {
+    private drawLineInPath(path: Path2D, fromX: number, fromY: number, toX: number, toY: number, width: number): void {
         // CPU, GPU, memory and GC intensive code, do not extract in multiple methods!!!
+
+        let w = width / 4;
 
         // leftTop to rightBottom stitch (diagonal)
         if (fromX < toX && fromY < toY) {
-
+            path.moveTo(fromX + w, fromY + w);
+            path.lineTo(toX - w, toY - w);
         }
 
         // rightBottom to leftTop stitch (diagonal)
         if (fromX > toX && fromY > toY) {
-
+            path.moveTo(fromX - w, fromY - w);
+            path.lineTo(toX + w, toY + w);
         }
 
         // rightTop to leftBottom stitch (diagonal)
         if (fromX > toX && fromY < toY) {
-
+            path.moveTo(fromX - w, fromY + w);
+            path.lineTo(toX + w, toY - w);
         }
 
         // leftBottom to rightTop stitch (diagonal)
         if (fromX < toX && fromY > toY) {
-
+            path.moveTo(fromX + w, fromY - w);
+            path.lineTo(toX - w, toY + w);
         }
-
-        // pythagorean equation
-        const l = Math.floor(Math.sqrt((leg * leg) / 2));
 
         // left to right stitch (horizontal)
         if (fromX < toX && fromY == toY) {
+            path.moveTo(fromX + w, fromY);
+            path.lineTo(toX - w, toY);
+        }
 
+        // right to left stitch (horizontal)
+        if (fromX > toX && fromY == toY) {
+            path.moveTo(fromX - w, fromY);
+            path.lineTo(toX + w, toY);
+        }
 
-            // right to left stitch (horizontal)
-            if (fromX > toX && fromY == toY) {
+        // top to bottom stitch (vertical)
+        if (fromX == toX && fromY < toY) {
+            path.moveTo(fromX, fromY + w);
+            path.lineTo(toX, toY - w);
+        }
 
-            }
-
-            // top to bottom stitch (vertical)
-            if (fromX == toX && fromY < toY) {
-
-            }
-
-            // bottom to top stitch (vertical)
-            if (fromX == toX && fromY > toY) {
-
-            }
+        // bottom to top stitch (vertical)
+        if (fromX == toX && fromY > toY) {
+            path.moveTo(fromX, fromY - w);
+            path.lineTo(toX, toY + w);
         }
     }
 
-    private drawPolygonInPath(path: Path2D, fromX: number, fromY: number, toX: number, toY: number, leg: number): void {
+    private drawPolygonInPath(path: Path2D, fromX: number, fromY: number, toX: number, toY: number, width: number): void {
         // CPU, GPU, memory and GC intensive code, do not extract in multiple methods!!!
+        const leg = Math.floor(Math.sqrt((width * width) / 2));
 
         // leftTop to rightBottom stitch (diagonal)
         if (fromX < toX && fromY < toY) {
