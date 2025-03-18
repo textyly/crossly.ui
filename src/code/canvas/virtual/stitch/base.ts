@@ -1,8 +1,8 @@
-import { CanvasConfig } from "../../types.js";
 import { VirtualCanvasBase } from "../virtual.js";
 import { IInputCanvas } from "../../input/types.js";
 import { VoidUnsubscribe } from "../../../types.js";
 import { Messaging1 } from "../../../messaging/impl.js";
+import { CanvasConfig } from "../../../config/types.js";
 import { IMessaging1 } from "../../../messaging/types.js";
 import { StitchThreadArray } from "../../utilities/arrays/thread/stitch.js";
 import { IStitchCanvas, DrawStitchThreadsEvent, DrawStitchThreadsListener } from "../types.js";

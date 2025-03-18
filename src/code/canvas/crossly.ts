@@ -1,12 +1,13 @@
 import { CanvasBase } from "./base.js";
+import { ICrosslyCanvas } from "./types.js";
 import { IInputCanvas } from "./input/types.js";
 import { CueDrawingCanvas } from "./drawing/cue.js";
+import { CrosslyCanvasConfig } from "../config/types.js";
 import { FabricCanvas } from "./virtual/fabric/fabric.js";
 import { FabricDrawingCanvas } from "./drawing/fabric.js";
 import { StitchDrawingCanvas } from "./drawing/stitch.js";
 import { CueCanvasFacade } from "./virtual/cue/facade.js";
 import { StitchCanvasFacade } from "./virtual/stitch/facade.js";
-import { CrosslyCanvasConfig, ICrosslyCanvas } from "./types.js";
 import { ICueCanvasFacade, IFabricCanvas, IStitchCanvasFacade } from "./virtual/types.js";
 import {
     ICueDrawingCanvas,

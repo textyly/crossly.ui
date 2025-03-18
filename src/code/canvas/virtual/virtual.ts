@@ -1,9 +1,10 @@
 import { IVirtualCanvas } from "./types.js";
 import { Messaging2 } from "../../messaging/impl.js";
+import { CanvasConfig } from "../../config/types.js";
 import { IMessaging2 } from "../../messaging/types.js";
 import { VirtualCanvasDimensions } from "./dimensions.js";
+import { BoundsChangeEvent, CanvasSide } from "../types.js";
 import { VoidListener, VoidUnsubscribe } from "../../types.js";
-import { BoundsChangeEvent, CanvasConfig, CanvasSide } from "../types.js";
 import { IInputCanvas, MoveEvent, MoveStartEvent, MoveStopEvent, ZoomInEvent, ZoomOutEvent } from "../input/types.js";
 
 export abstract class VirtualCanvasBase extends VirtualCanvasDimensions implements IVirtualCanvas {

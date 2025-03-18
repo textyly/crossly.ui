@@ -1,5 +1,5 @@
 import { ICanvas } from "../types";
-import { Listener, VoidListener, VoidUnsubscribe } from "../../types";
+import { Listener, VoidUnsubscribe } from "../../types";
 
 
 export type CanvasEvent = { type: CanvasEventType, event?: any };

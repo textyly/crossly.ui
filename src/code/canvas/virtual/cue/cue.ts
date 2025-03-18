@@ -1,8 +1,9 @@
 import { CueCanvasBase } from "./base.js";
-import { IdGenerator } from "../../utilities/generator.js";
 import { DotsUtility } from "../../utilities/dots.js";
+import { IdGenerator } from "../../utilities/generator.js";
+import { CueCanvasConfig } from "../../../config/types.js";
+import { CanvasSide, Id, CueThread, CueDot, Dot, DotIndex } from "../../types.js";
 import { Position, IInputCanvas, PointerUpEvent, PointerMoveEvent } from "../../input/types.js";
-import { CanvasSide, Id, CueThread, CueDot, Dot, DotIndex, CueCanvasConfig } from "../../types.js";
 
 export abstract class CueCanvas extends CueCanvasBase {
     private readonly ids: IdGenerator;

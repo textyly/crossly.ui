@@ -1,6 +1,6 @@
 import { FabricCanvasBase } from "./base.js";
-import { FabricCanvasConfig } from "../../types.js";
 import { IInputCanvas } from "../../input/types.js";
+import { FabricCanvasConfig } from "../../../config/types.js";
 import { DotArray } from "../../utilities/arrays/dot/dot.js";
 import { ThreadArray } from "../../utilities/arrays/thread/array.js";
 

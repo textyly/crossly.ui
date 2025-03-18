@@ -1,7 +1,7 @@
 import { MoveInput } from "./move.js";
 import { TouchInput } from "./touch.js";
 import { InputCanvasBase } from "./base.js";
-import { InputCanvasConfig } from "../types.js";
+import { InputCanvasConfig } from "../../config/types.js";
 import {
     Position,
     MoveEvent,

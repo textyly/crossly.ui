@@ -1,6 +1,7 @@
 import { CanvasBase } from "../base.js";
+import { CanvasConfig } from "../../config/types.js";
 import { IInputCanvas, Position } from "../input/types.js";
-import { Bounds, BoundsIndexes, CanvasConfig, DotIndex } from "../types.js";
+import { Bounds, BoundsIndexes, DotIndex } from "../types.js";
 
 export abstract class VirtualCanvasDimensions extends CanvasBase {
     protected readonly config: Readonly<CanvasConfig>;

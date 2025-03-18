@@ -1,9 +1,10 @@
 import { VirtualCanvasBase } from "../virtual.js";
 import { IInputCanvas } from "../../input/types.js";
 import { VoidUnsubscribe } from "../../../types.js";
+import { CueThread, CueDot, Id } from "../../types.js";
+import { CanvasConfig } from "../../../config/types.js";
 import { Messaging7 } from "../../../messaging/impl.js";
 import { IMessaging7 } from "../../../messaging/types.js";
-import { CueThread, CueDot, CanvasConfig, Id } from "../../types.js";
 import {
     ICueCanvas,
     DrawCueDotEvent,

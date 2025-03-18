@@ -1,7 +1,7 @@
-import { CanvasConfig } from "../../types.js";
 import { VirtualCanvasBase } from "../virtual.js";
 import { VoidUnsubscribe } from "../../../types.js";
 import { IInputCanvas } from "../../input/types.js";
+import { CanvasConfig } from "../../../config/types.js";
 import { Messaging2 } from "../../../messaging/impl.js";
 import { IMessaging2 } from "../../../messaging/types.js";
 import { DotArray } from "../../utilities/arrays/dot/dot.js";

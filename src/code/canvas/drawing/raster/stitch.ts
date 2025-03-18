@@ -1,10 +1,10 @@
-import { RasterPolygonDrawing } from "./polygon.js";
+import { RasterLineDrawing } from "./line.js";
 import { RasterDrawingCanvas } from "./base.js";
+import { RasterPolygonDrawing } from "./polygon.js";
+import { RasterRectangleDrawing } from "./rectangle.js";
 import { DotArray } from "../../utilities/arrays/dot/dot.js";
 import { IRasterDrawingCanvas, IShapeDrawing } from "../types.js";
 import { StitchThreadArray } from "../../utilities/arrays/thread/stitch.js";
-import { RasterRectangleDrawing } from "./rectangle.js";
-import { RasterLineDrawing } from "./line.js";
 
 export class StitchRasterDrawingCanvas extends RasterDrawingCanvas implements IRasterDrawingCanvas {
     private line: IShapeDrawing;

@@ -1,4 +1,4 @@
-import { CrosslyCanvasConfig, CueCanvasConfig, FabricCanvasConfig, InputCanvasConfig, DotsSpacingConfig, StitchCanvasConfig } from "../canvas/types.js";
+import { CrosslyCanvasConfig, CueCanvasConfig, FabricCanvasConfig, InputCanvasConfig, DotsSpacingConfig, StitchCanvasConfig } from "../config/types.js";
 
 export class ConfigFactory {
     public create(): CrosslyCanvasConfig {
