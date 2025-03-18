@@ -5,6 +5,10 @@ import { ThreadArray } from "../utilities/arrays/thread/array.js";
 export type SvgDot = SVGCircleElement;
 export type SvgLine = SVGLineElement;
 
+export interface IShapeDrawing {
+    draw(path: Path2D, fromX: number, fromY: number, toX: number, toY: number, width: number): void;
+}
+
 export interface IRasterDrawingCanvas extends ICanvas {
     createBitMap(): Promise<ImageBitmap>;
     drawBitMap(bitmap: ImageBitmap): void;

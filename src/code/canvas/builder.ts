@@ -42,7 +42,7 @@ export class CrosslyCanvasBuilder {
 
     public withStitchCanvas(stitchCanvasElement: HTMLCanvasElement): CrosslyCanvasBuilder {
         const minThreadWidth = this.config.stitch.thread.minWidth;
-        this.stitchRasterDrawing = new StitchRasterDrawingCanvas(minThreadWidth, stitchCanvasElement);
+        this.stitchRasterDrawing = new StitchRasterDrawingCanvas(stitchCanvasElement);
         return this;
     }
 

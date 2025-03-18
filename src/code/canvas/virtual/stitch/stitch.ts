@@ -27,7 +27,7 @@ export abstract class StitchCanvas extends StitchCanvasBase {
         this.threadWidth = threadConfig.width;
         this.minThreadWidth = threadConfig.minWidth;
         this.threadWidthZoomStep = threadConfig.widthZoomStep;
-        
+
         this.zooms = 0;
 
         this.startListening();
@@ -118,8 +118,6 @@ export abstract class StitchCanvas extends StitchCanvasBase {
         }
 
         // 8. draw threads, each thread consist of one thread and two dots
-        const zoomedThreadWidth = this.calculateZoomedThreadWidth(this.threadWidth);
-        console.log(`dotsSpace: ${this.dotsSpace}, current zoomed thread width: ${zoomedThreadWidth}`);
         super.invokeDrawThreads(this.threads);
     }
 
