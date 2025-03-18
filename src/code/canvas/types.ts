@@ -1,5 +1,5 @@
-import { Listener, VoidUnsubscribe } from "../types";
 import { Position } from "./input/types.js";
+import { Listener, VoidUnsubscribe } from "../types";
 
 export type Bounds = { left: number, top: number, width: number, height: number };
 export type BoundsIndexes = { leftTop: DotIndex, rightTop: DotIndex, leftBottom: DotIndex, rightBottom: DotIndex };

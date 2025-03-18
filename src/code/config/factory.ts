@@ -2,8 +2,8 @@ import { CrosslyCanvasConfig, CueCanvasConfig, FabricCanvasConfig, InputCanvasCo
 
 export class ConfigFactory {
     public create(): CrosslyCanvasConfig {
-        const columns = 300;
-        const rows = 300;
+        const columns = 30;
+        const rows = 30;
 
         const input = this.createInputConfig();
         const dotsSpacing = this.createDotsSpacingConfig();
