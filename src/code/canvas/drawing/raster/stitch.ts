@@ -52,8 +52,10 @@ export class StitchRasterDrawingCanvas extends RasterDrawingCanvas implements IR
                 // that is why it is extracted in the drawLineInPath/drawPolygonInPath methods (even though additional function invocation will impact the perf since it will be executed for each and every visible stitch)
                 // TODO: config
                 if (currentWidth <= 2) {
+                    // less drawing which means better performance
                     this.drawLineInPath(path, fromX, fromY, toX, toY, currentWidth);
                 } else {
+                    // more drawing which means worse performance
                     this.drawPolygonInPath(path, fromX, fromY, toX, toY, currentWidth);
                 }
             }
