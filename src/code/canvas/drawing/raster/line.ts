@@ -3,7 +3,7 @@ import { IShapeDrawing } from "../types.js";
 export class RasterLineDrawing implements IShapeDrawing {
 
     public draw(path: Path2D, fromX: number, fromY: number, toX: number, toY: number, width: number): void {
-        let w = Math.floor(width / 4);
+        let w = Math.ceil(width / 4);
 
         // leftTop to rightBottom stitch (diagonal)
         if (fromX < toX && fromY < toY) {
