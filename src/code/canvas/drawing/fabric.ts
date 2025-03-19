@@ -1,7 +1,7 @@
 import { CanvasBase } from "../base.js";
 import { BoundsChangeEvent } from "../types.js";
 import { IFabricDrawingCanvas, IRasterDrawingCanvas } from "./types.js";
-import { DrawFabricDotsEvent, DrawFabricThreadsEvent, IFabricCanvas } from "../virtual/types.js";
+import { Density, DrawFabricDotsEvent, DrawFabricThreadsEvent, IFabricCanvas } from "../virtual/types.js";
 
 export class FabricDrawingCanvas extends CanvasBase implements IFabricDrawingCanvas {
     private readonly fabricCanvas: IFabricCanvas;
@@ -25,7 +25,8 @@ export class FabricDrawingCanvas extends CanvasBase implements IFabricDrawingCan
     }
 
     private handleDrawThreads(event: DrawFabricThreadsEvent): void {
-        this.rasterDrawing.drawLines(event.threads);
+        const density = Density.Low;
+        this.rasterDrawing.drawLines(event.threads, density);
     }
 
     private handleRedraw(): void {

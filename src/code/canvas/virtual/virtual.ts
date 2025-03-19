@@ -1,9 +1,10 @@
 import { IVirtualCanvas } from "./types.js";
 import { Messaging2 } from "../../messaging/impl.js";
+import { CanvasConfig } from "../../config/types.js";
 import { IMessaging2 } from "../../messaging/types.js";
 import { VirtualCanvasDimensions } from "./dimensions.js";
+import { BoundsChangeEvent, CanvasSide } from "../types.js";
 import { VoidListener, VoidUnsubscribe } from "../../types.js";
-import { BoundsChangeEvent, CanvasConfig, CanvasSide } from "../types.js";
 import { IInputCanvas, MoveEvent, MoveStartEvent, MoveStopEvent, ZoomInEvent, ZoomOutEvent } from "../input/types.js";
 
 export abstract class VirtualCanvasBase extends VirtualCanvasDimensions implements IVirtualCanvas {
@@ -47,7 +48,7 @@ export abstract class VirtualCanvasBase extends VirtualCanvasDimensions implemen
     protected abstract zoomIn(): void;
     protected abstract zoomOut(): void;
 
-    protected changeSide(): void {
+    protected changeCanvasSide(): void {
         this.currentSide = this.currentSide === CanvasSide.Front ? CanvasSide.Back : CanvasSide.Front;
     }
 
@@ -88,7 +89,7 @@ export abstract class VirtualCanvasBase extends VirtualCanvasDimensions implemen
         const inBounds = this.inBounds(event.currentPosition);
         const minSpace = this.config.dotsSpacing.minSpace / 2;
 
-        if (inBounds && (this.dotsSpace > minSpace)) {
+        if (inBounds && (this.currentDotsSpace > minSpace)) {
             this.zoomOutCanvas(event.currentPosition);
             this.zoomOut();
             this.draw();

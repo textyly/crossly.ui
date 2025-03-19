@@ -31,11 +31,12 @@ export class MoveInput extends CanvasBase implements IMoveInput {
     private lastDifference?: Position;
     private lastPointerPos?: Position;
 
-    constructor(htmlElement: HTMLElement, touchInput: ITouchInput, ignoreMoveUntil: number) {
+    constructor(ignoreMoveUntil: number, htmlElement: HTMLElement, touchInput: ITouchInput) {
         super();
+
+        this.ignoreMoveUntil = ignoreMoveUntil;
         this.htmlElement = htmlElement;
         this.touchInput = touchInput;
-        this.ignoreMoveUntil = ignoreMoveUntil;
 
         this.messaging = new Messaging3();
 
@@ -125,7 +126,7 @@ export class MoveInput extends CanvasBase implements IMoveInput {
                 const isMoveStarting = !this.lastDifference;
                 const previousPosition = this.lastPointerPos;
 
-                // 4. invoke canvas move
+                // 3. invoke canvas move
                 const difference = { x: diffX, y: diffY };
                 this.lastDifference = difference;
                 this.lastPointerPos = currentPosition;

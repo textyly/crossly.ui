@@ -1,8 +1,9 @@
 import { CueCanvasBase } from "./base.js";
 import { DotsUtility } from "../../utilities/dots.js";
 import { IdGenerator } from "../../utilities/generator.js";
-import { Position, IInputCanvas, PointerUpEvent, PointerMoveEvent, MoveStartEvent, MoveStopEvent, MoveEvent } from "../../input/types.js";
-import { CanvasSide, Id, CueThread, CueDot, Dot, DotIndex, CueCanvasConfig } from "../../types.js";
+import { CueCanvasConfig } from "../../../config/types.js";
+import { CanvasSide, Id, CueThread, CueDot, Dot, DotIndex } from "../../types.js";
+import { Position, IInputCanvas, PointerUpEvent, PointerMoveEvent } from "../../input/types.js";
 
 export abstract class CueCanvas extends CueCanvasBase {
     private readonly ids: IdGenerator;
@@ -133,23 +134,24 @@ export abstract class CueCanvas extends CueCanvasBase {
         const previouslyClickedDotIndex = this.clickedDotIndex;
 
         if (!previouslyClickedDotIndex) {
-            // TODO: move in a method
-            this.changeSide();
-            this.removeHoveredDot();
-            this.hoverDot(clickedDotPos, clickedDotIdx);
+            this.changeSide(clickedDotPos, clickedDotIdx);
 
         } else {
             const previouslyClickedDotPos = this.calculateDotPosition(previouslyClickedDotIndex);
             const areIdenticalClicks = this.dotsUtility.areDotsEqual(clickedDotPos, previouslyClickedDotPos);
 
             if (!areIdenticalClicks) {
-                this.changeSide();
-                this.removeHoveredDot();
-                this.hoverDot(clickedDotPos, clickedDotIdx);
+                this.changeSide(clickedDotPos, clickedDotIdx);
             }
         }
 
         this.clickedDotIndex = clickedDotIdx;
+    }
+
+    private changeSide(clickedDotPos: Position, clickedDotIdx: DotIndex): void {
+        this.changeCanvasSide();
+        this.removeHoveredDot();
+        this.hoverDot(clickedDotPos, clickedDotIdx);
     }
 
     private hoverDot(dot: Dot, dotIndex: DotIndex): void {

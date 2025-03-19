@@ -1,14 +1,12 @@
-import { CrosslyCanvas } from "./crossly.js";
 import { InputCanvas } from "./input/input.js";
 import { IInputCanvas } from "./input/types.js";
-import { CueDrawingCanvas } from "./drawing/cue.js";
-import { FabricDrawingCanvas } from "./drawing/fabric.js";
-import { StitchRasterDrawingCanvas } from "./drawing/raster/stitch.js";
+import { ICrosslyCanvasFacade } from "./types.js";
+import { CrosslyCanvasFacade } from "./facade.js";
+import { CrosslyCanvasConfig } from "../config/types.js";
 import { VectorDrawingCanvas } from "./drawing/vector.js";
-import { StitchDrawingCanvas } from "./drawing/stitch.js";
-import { CrosslyCanvasConfig, ICrosslyCanvas } from "./types.js";
-import { ICueDrawingCanvas, IFabricDrawingCanvas, IRasterDrawingCanvas, IStitchDrawingCanvas, IVectorDrawingCanvas } from "./drawing/types.js";
+import { StitchRasterDrawingCanvas } from "./drawing/raster/stitch.js";
 import { FabricRasterDrawingCanvas } from "./drawing/raster/fabric.js";
+import { IRasterDrawingCanvas, IVectorDrawingCanvas } from "./drawing/types.js";
 
 export class CrosslyCanvasBuilder {
     private config!: CrosslyCanvasConfig;
@@ -17,15 +15,15 @@ export class CrosslyCanvasBuilder {
     private stitchRasterDrawing!: IRasterDrawingCanvas;
     private cueVectorDrawing!: IVectorDrawingCanvas;
 
-    public build(): ICrosslyCanvas {
-        const crosslyCanvas = new CrosslyCanvas(
+    public build(): ICrosslyCanvasFacade {
+        const crosslyCanvasFacade = new CrosslyCanvasFacade(
             this.config,
             this.inputCanvas,
             this.fabricRasterDrawing,
             this.stitchRasterDrawing,
             this.cueVectorDrawing);
 
-        return crosslyCanvas;
+        return crosslyCanvasFacade;
     }
 
     public withConfig(config: CrosslyCanvasConfig): CrosslyCanvasBuilder {
@@ -44,6 +42,7 @@ export class CrosslyCanvasBuilder {
     }
 
     public withStitchCanvas(stitchCanvasElement: HTMLCanvasElement): CrosslyCanvasBuilder {
+        const minThreadWidth = this.config.stitch.thread.minWidth;
         this.stitchRasterDrawing = new StitchRasterDrawingCanvas(stitchCanvasElement);
         return this;
     }

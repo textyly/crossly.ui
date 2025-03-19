@@ -47,7 +47,7 @@ export type DrawFabricDotsListener = Listener<DrawFabricDotsEvent>;
 export type DrawFabricThreadsEvent = { threads: ThreadArray };
 export type DrawFabricThreadsListener = Listener<DrawFabricThreadsEvent>;
 
-export type DrawStitchThreadsEvent = { threads: StitchThreadArray };
+export type DrawStitchThreadsEvent = { threads: StitchThreadArray, density: Density };
 export type DrawStitchThreadsListener = Listener<DrawStitchThreadsEvent>;
 
 export type DrawCueDotEvent = { dot: CueDot, dotRadius: number, dotColor: string };
@@ -64,3 +64,9 @@ export type MoveCueThreadListener = Listener<MoveCueThreadEvent>;
 
 export type RemoveCueThreadEvent = { threadId: Id };
 export type RemoveCueThreadListener = Listener<RemoveCueThreadEvent>;
+
+export enum Density {
+    Low,
+    Medium,
+    High
+}

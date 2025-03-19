@@ -49,7 +49,7 @@ export class StitchThreadArray extends ThreadArray {
         this._zoomedWidths[index] = zoomedWidth;
     }
 
-    // this method is being invoked only on a thread creation, so it is safe to use an StitchTread object
+    // this method is being invoked only on a thread creation, so it is safe to use a StitchTread object
     public pushThread(thread: StitchTread): void {
         super.push(thread.visible, thread.fromDotXPos, thread.fromDotYPos, thread.toDotXPos, thread.toDotYPos, thread.width, thread.color);
         this._fromDotsXIndexes[this.count] = thread.fromDotXIdx;

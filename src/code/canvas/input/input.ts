@@ -1,7 +1,7 @@
 import { MoveInput } from "./move.js";
 import { TouchInput } from "./touch.js";
 import { InputCanvasBase } from "./base.js";
-import { InputCanvasConfig } from "../types.js";
+import { InputCanvasConfig } from "../../config/types.js";
 import {
     Position,
     MoveEvent,
@@ -38,10 +38,10 @@ export class InputCanvas extends InputCanvasBase {
         super.bounds = bounds;
 
         const ignoreZoomUntil = this.config.ignoreZoomUntil;
-        this.touchInput = new TouchInput(htmlElement, ignoreZoomUntil);
+        this.touchInput = new TouchInput(ignoreZoomUntil, htmlElement);
 
         const ignoreMoveUntil = this.config.ignoreMoveUntil;
-        this.moveInput = new MoveInput(htmlElement, this.touchInput, ignoreMoveUntil);
+        this.moveInput = new MoveInput(ignoreMoveUntil, htmlElement, this.touchInput);
 
         this.isPointerDown = false;
 

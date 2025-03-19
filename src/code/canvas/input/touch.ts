@@ -28,11 +28,11 @@ export class TouchInput extends CanvasBase implements ITouchInput {
     private currentActiveTouches?: ActiveTouches;
     private lastTouchTime?: number;
 
-    constructor(htmlElement: HTMLElement, ignoreZoomUntil: number) {
+    constructor(ignoreZoomUntil: number, htmlElement: HTMLElement) {
         super();
 
-        this.htmlElement = htmlElement;
         this.ignoreZoomUntil = ignoreZoomUntil;
+        this.htmlElement = htmlElement;
         this.messaging = new Messaging2();
 
         this.touchStartHandler = this.handleTouchStart.bind(this);

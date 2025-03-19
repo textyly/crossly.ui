@@ -1,5 +1,5 @@
-import { Listener, VoidUnsubscribe } from "../types";
 import { Position } from "./input/types.js";
+import { Listener, VoidUnsubscribe } from "../types";
 
 export type Bounds = { left: number, top: number, width: number, height: number };
 export type BoundsIndexes = { leftTop: DotIndex, rightTop: DotIndex, leftBottom: DotIndex, rightBottom: DotIndex };
@@ -28,43 +28,6 @@ export type StitchTread = {
     side: CanvasSide;
 };
 
-export type CanvasConfig = {
-    columns: number;
-    rows: number;
-    dotsSpacing: DotsSpacingConfig;
-};
-
-export type InputCanvasConfig = {
-    ignoreMoveUntil: number;
-    ignoreZoomUntil: number; // only touch zoom related 
-};
-
-export type FabricCanvasConfig = CanvasConfig & {
-    dot: DotConfig;
-    thread: ThreadConfig;
-};
-
-export type StitchCanvasConfig = CanvasConfig & {
-    thread: ThreadConfig;
-};
-
-export type CueCanvasConfig = CanvasConfig & {
-    dot: DotConfig;
-    thread: ThreadConfig;
-};
-
-export type DotConfig = { color: string; radius: number, minRadius: number, radiusZoomStep: number; };
-export type ThreadConfig = { color: string; width: number, minWidth: number, widthZoomStep: number; };
-export type DotsSpacingConfig = { space: number, minSpace: number, spaceZoomStep: number; };
-
-
-export type CrosslyCanvasConfig = {
-    input: InputCanvasConfig;
-    fabric: FabricCanvasConfig,
-    stitch: StitchCanvasConfig,
-    cue: CueCanvasConfig
-};
-
 export interface IDisposable {
     dispose(): void;
 }
@@ -78,8 +41,11 @@ export interface ICanvas extends IDisposable {
 
 export interface ICrosslyCanvas extends ICanvas {
     draw(): void;
+}
 
+export interface ICrosslyCanvasFacade extends ICrosslyCanvas {
     setThreadColor(color: string): void;
+    setThreadWidth(width: number): void;
 }
 
 export enum CanvasSide {

@@ -1,11 +1,23 @@
+import { RasterLineDrawing } from "./line.js";
 import { RasterDrawingCanvas } from "./base.js";
-import { IRasterDrawingCanvas } from "../types.js";
+import { Density } from "../../virtual/types.js";
+import { RasterPolygonDrawing } from "./polygon.js";
+import { RasterRectangleDrawing } from "./rectangle.js";
 import { DotArray } from "../../utilities/arrays/dot/dot.js";
+import { IRasterDrawingCanvas, IShapeDrawing } from "../types.js";
 import { StitchThreadArray } from "../../utilities/arrays/thread/stitch.js";
 
 export class StitchRasterDrawingCanvas extends RasterDrawingCanvas implements IRasterDrawingCanvas {
+    private line: IShapeDrawing;
+    private polygon: IShapeDrawing;
+    private rectangle: IShapeDrawing;
+
     constructor(rasterCanvas: HTMLCanvasElement) {
         super(rasterCanvas);
+
+        this.line = new RasterLineDrawing();
+        this.polygon = new RasterPolygonDrawing();
+        this.rectangle = new RasterRectangleDrawing();
     }
 
     public drawDots(dots: DotArray): void {
@@ -14,7 +26,7 @@ export class StitchRasterDrawingCanvas extends RasterDrawingCanvas implements IR
         throw new Error("not implemented because of high performance impact");
     }
 
-    public drawLines(threads: StitchThreadArray): void {
+    public drawLines(threads: StitchThreadArray, density: Density): void {
         // CPU, GPU, memory and GC intensive code, do not extract in multiple methods!!!
         const visibilities = threads.visibilities;
         const fromDotsXPositions = threads.fromDotsXPositions;
@@ -24,7 +36,7 @@ export class StitchRasterDrawingCanvas extends RasterDrawingCanvas implements IR
         const widths = threads.zoomedWidths;
         const colors = threads.colors;
 
-        // Path2D is being used for perf optimization otherwise lineTo has a huge negative perf impact
+        // Path2D is being used for perf optimization otherwise this.context.lineTo has a huge negative perf impact
         let path = this.createPath();
         let previousColor = colors[0];
         const lastIdX = threads.length - 1;
@@ -48,12 +60,7 @@ export class StitchRasterDrawingCanvas extends RasterDrawingCanvas implements IR
                 const toX = toDotsXPositions[threadIdx] - this.bounds.left;
                 const toY = toDotsYPositions[threadIdx] - this.bounds.top;
 
-                // pythagorean equation
-                const leg = Math.floor(Math.sqrt((currentWidth * currentWidth) / 2));
-
-                // drawing logic is too big and make the code too unreadable, 
-                // that is why it is extracted in the drawLineInPath method (even though additional function invocation will impact the perf since it will be executed for each and every visible stitch)
-                this.drawLineInPath(path, fromX, fromY, toX, toY, leg);
+                this.draw(density, path, fromX, fromY, toX, toY, currentWidth);
             }
 
             if (threadIdx === lastIdX) {
@@ -76,98 +83,28 @@ export class StitchRasterDrawingCanvas extends RasterDrawingCanvas implements IR
         this.context.fill(path);
     }
 
-    private drawLineInPath(path: Path2D, fromX: number, fromY: number, toX: number, toY: number, leg: number): void {
-        // CPU, GPU, memory and GC intensive code, do not extract in multiple methods!!!
-
-        // leftTop to rightBottom stitch (diagonal)
-        if (fromX < toX && fromY < toY) {
-            path.moveTo(fromX, fromY);
-            path.lineTo(fromX, fromY + leg);
-            path.lineTo(toX - leg, toY);
-            path.lineTo(toX, toY);
-            path.lineTo(toX, toY - leg);
-            path.lineTo(fromX + leg, fromY);
-            path.lineTo(fromX, fromY);
-        }
-
-        // rightBottom to leftTop stitch (diagonal)
-        if (fromX > toX && fromY > toY) {
-            path.moveTo(toX, toY);
-            path.lineTo(toX, toY + leg);
-            path.lineTo(fromX - leg, fromY);
-            path.lineTo(fromX, fromY);
-            path.lineTo(fromX, fromY - leg);
-            path.lineTo(toX + leg, toY);
-            path.lineTo(toX, toY);
-        }
-
-        // rightTop to leftBottom stitch (diagonal)
-        if (fromX > toX && fromY < toY) {
-            path.moveTo(fromX, fromY);
-            path.lineTo(fromX - leg, fromY);
-            path.lineTo(toX, toY - leg);
-            path.lineTo(toX, toY);
-            path.lineTo(toX + leg, toY);
-            path.lineTo(fromX, fromY + leg);
-            path.lineTo(fromX, fromY);
-        }
-
-        // leftBottom to rightTop stitch (diagonal)
-        if (fromX < toX && fromY > toY) {
-            path.moveTo(toX, toY);
-            path.lineTo(toX - leg, toY);
-            path.lineTo(fromX, fromY - leg);
-            path.lineTo(fromX, fromY);
-            path.lineTo(fromX + leg, fromY);
-            path.lineTo(toX, toY + leg);
-            path.lineTo(toX, toY);
-        }
-
-        // pythagorean equation
-        const l = Math.floor(Math.sqrt((leg * leg) / 2));
-
-        // left to right stitch (horizontal)
-        if (fromX < toX && fromY == toY) {
-            path.moveTo(fromX, fromY);
-            path.lineTo(fromX + l, fromY + l);
-            path.lineTo(toX - l, toY + l);
-            path.lineTo(toX, toY);
-            path.lineTo(toX - l, toY - l);
-            path.lineTo(fromX + l, fromY - l);
-            path.lineTo(fromX, fromY);
-        }
-
-        // right to left stitch (horizontal)
-        if (fromX > toX && fromY == toY) {
-            path.moveTo(fromX, fromY);
-            path.lineTo(fromX - l, fromY - l);
-            path.lineTo(toX + l, toY - l);
-            path.lineTo(toX, toY);
-            path.lineTo(toX + l, toY + l);
-            path.lineTo(fromX - l, fromY + l);
-            path.lineTo(fromX, fromY);
-        }
-
-        // top to bottom stitch (vertical)
-        if (fromX == toX && fromY < toY) {
-            path.moveTo(fromX, fromY);
-            path.lineTo(fromX - l, fromY + l);
-            path.lineTo(toX - l, toY - l);
-            path.lineTo(toX, toY);
-            path.lineTo(toX + l, toY - l);
-            path.lineTo(fromX + l, fromY + l);
-            path.lineTo(fromX, fromY);
-        }
-
-        // bottom to top stitch (vertical)
-        if (fromX == toX && fromY > toY) {
-            path.moveTo(fromX, fromY);
-            path.lineTo(fromX + l, fromY - l);
-            path.lineTo(toX + l, toY + l);
-            path.lineTo(toX, toY);
-            path.lineTo(toX - l, toY + l);
-            path.lineTo(fromX - l, fromY - l);
-            path.lineTo(fromX, fromY);
+    private draw(density: Density, path: Path2D, fromX: number, fromY: number, toX: number, toY: number, width: number): void {
+        switch (density) {
+            case Density.Low: {
+                // worse perf but most detailed
+                this.polygon.draw(path, fromX, fromY, toX, toY, width);
+                break;
+            }
+            case Density.Medium: {
+                // medium perf
+                this.rectangle.draw(path, fromX, fromY, toX, toY, width);
+                break;
+            }
+            case Density.High: {
+                // best performance but less detailed
+                this.line.draw(path, fromX, fromY, toX, toY, width);
+                break;
+            }
+            default: {
+                // worse perf but most detailed
+                this.polygon.draw(path, fromX, fromY, toX, toY, width);
+                break;
+            }
         }
     }
 }

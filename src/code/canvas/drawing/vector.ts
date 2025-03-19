@@ -43,7 +43,7 @@ export class VectorDrawingCanvas extends CanvasBase implements IVectorDrawingCan
     public drawDashLine(thread: CueThread): SvgLine {
         const svgLine = document.createElementNS("http://www.w3.org/2000/svg", "line");
         this.moveLine(thread, svgLine);
-        svgLine.setAttribute("stroke-dasharray", "5,3"); //TODO: move it to the config!!!
+        svgLine.setAttribute("stroke-dasharray", "5,3");
         this.svgCanvas.appendChild(svgLine);
         return svgLine;
     }

@@ -1,48 +1,22 @@
+import { Unsubscribe } from "../types.js";
 import { IDisposable } from "../canvas/types.js";
-import { ErrorListener, Unsubscribe } from "../types.js";
-import {
-    Channel,
-    ChannelData,
-    ChannelListener,
-    PrivateChannels,
-    ChannelListeners,
-} from "./types.js";
+import { Channel, ChannelData, ChannelListener, ChannelListeners } from "./types.js";
 
 export abstract class Messaging implements IDisposable {
-    // #region fields
-
-    private readonly errorChannel: Channel;
-    private readonly privateChannels: Map<Channel, ChannelListeners>;
-    private readonly publicChannels: Map<Channel, ChannelListeners>;
-
-    // #endregion
+    private readonly channels: Map<Channel, ChannelListeners>;
 
     constructor() {
-        this.errorChannel = PrivateChannels.Error;
-        this.privateChannels = new Map<Channel, ChannelListeners>;
-        this.publicChannels = new Map<Channel, ChannelListeners>;
-    }
-
-    // #region interface
-
-    public onError(listener: ErrorListener): Unsubscribe<ChannelListener> {
-        const un = this.onCore(this.errorChannel, listener, this.privateChannels);
-        return un;
+        this.channels = new Map<Channel, ChannelListeners>;
     }
 
     public dispose(): void {
-        this.privateChannels.clear();
-        this.publicChannels.clear();
+        this.channels.clear();
     }
 
-    // #endregion
-
-    // #region events
-
     protected on(channel: Channel, listener: ChannelListener): Unsubscribe<ChannelListener> {
-        this.ensureChannelExists(channel, this.publicChannels);
+        this.ensureChannelExists(channel, this.channels);
 
-        const un = this.onCore(channel, listener, this.publicChannels);
+        const un = this.onCore(channel, listener, this.channels);
         return un;
     }
 
@@ -53,28 +27,24 @@ export abstract class Messaging implements IDisposable {
         return () => this.unsubscribe(channel, listener);
     }
 
-    // #endregion
-
-    // #region methods
-
     protected create(channel: Channel): void {
-        const hasChannel = this.publicChannels.has(channel);
+        const hasChannel = this.channels.has(channel);
         if (!hasChannel) {
-            this.publicChannels.set(channel, []);
+            this.channels.set(channel, []);
         }
     }
 
     protected send(channel: Channel, data: ChannelData): void {
-        this.ensureChannelExists(channel, this.publicChannels);
+        this.ensureChannelExists(channel, this.channels);
 
-        const listeners = this.publicChannels.get(channel)!;
+        const listeners = this.channels.get(channel)!;
         listeners.forEach((listener) => listener(data));
     }
 
     private unsubscribe(channel: Channel, listener: ChannelListener): ChannelListener | undefined {
-        const hasChannel = this.publicChannels.has(channel);
+        const hasChannel = this.channels.has(channel);
         if (hasChannel) {
-            const listeners = this.publicChannels.get(channel)!;
+            const listeners = this.channels.get(channel)!;
             const index = listeners.findIndex((l) => l === listener);
             if (index > -1) {
                 const l = listeners.splice(index, 1);
@@ -88,6 +58,4 @@ export abstract class Messaging implements IDisposable {
             throw new Error(`channel ${channel} does not exist or has been destroyed.`);
         }
     }
-
-    // #endregion
 }

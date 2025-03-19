@@ -5,9 +5,9 @@ import {
     ICueCanvas,
     DrawCueDotEvent,
     RemoveCueDotEvent,
+    MoveCueThreadEvent,
     DrawCueThreadEvent,
     RemoveCueThreadEvent,
-    MoveCueThreadEvent
 } from "../virtual/types.js";
 
 export class CueDrawingCanvas extends CanvasBase implements ICueDrawingCanvas {
