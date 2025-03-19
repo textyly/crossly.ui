@@ -27,7 +27,7 @@ export class ConfigFactory {
     private createDotsSpacingConfig(): DotsSpacingConfig {
         const dotsSpacing = {
             space: 26,
-            minSpace: 2,
+            minSpace: 4,
             spaceZoomStep: 2
         };
         return dotsSpacing;
