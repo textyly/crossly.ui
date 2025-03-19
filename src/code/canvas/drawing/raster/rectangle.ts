@@ -3,7 +3,8 @@ import { IShapeDrawing } from "../types.js";
 export class RasterRectangleDrawing implements IShapeDrawing {
 
     public draw(path: Path2D, fromX: number, fromY: number, toX: number, toY: number, width: number): void {
-        const leg = Math.ceil(width / 2);
+        // pythagorean equation
+        const leg = Math.ceil(Math.sqrt((width * width) / 2));
 
         // leftTop to rightBottom stitch (diagonal)
         if (fromX < toX && fromY < toY) {
@@ -41,7 +42,8 @@ export class RasterRectangleDrawing implements IShapeDrawing {
             path.lineTo(toX - leg, toY);
         }
 
-        const l = Math.ceil(leg / 2);
+        // pythagorean equation
+        const l = Math.ceil(Math.sqrt((leg * leg) / 2));
 
         // left to right stitch (horizontal)
         if (fromX < toX && fromY == toY) {
