@@ -8,6 +8,8 @@ export abstract class VirtualCanvasDimensions extends CanvasBase {
     protected readonly inputCanvas: IInputCanvas;
 
     protected dotsSpace: number;
+    protected currentDotsSpace: number;
+    protected minDotsSpace: number;
 
     protected _virtualBounds: Bounds;
     protected movingBounds?: Bounds;
@@ -18,7 +20,9 @@ export abstract class VirtualCanvasDimensions extends CanvasBase {
         this.config = config;
         this.inputCanvas = inputCanvas;
 
-        this.dotsSpace = config.dotsSpacing.space / 2;
+        this.currentDotsSpace = this.dotsSpace = config.dotsSpacing.space / 2;
+        this.minDotsSpace = config.dotsSpacing.minSpace / 2;
+
         this._virtualBounds = { left: 0, top: 0, width: 0, height: 0 };
     }
 
@@ -65,25 +69,25 @@ export abstract class VirtualCanvasDimensions extends CanvasBase {
 
     protected zoomInCanvas(position: Position): void {
         const oldDotIdx = this.calculateDotIndex(position);
-        const oldDotSpace = this.dotsSpace;
+        const oldDotSpace = this.currentDotsSpace;
 
         const spaceZoomStep = this.config.dotsSpacing.spaceZoomStep / 2;
-        this.dotsSpace += spaceZoomStep;
+        this.currentDotsSpace += spaceZoomStep;
 
-        const diffX = (oldDotSpace - this.dotsSpace) * oldDotIdx.dotX;
-        const diffY = (oldDotSpace - this.dotsSpace) * oldDotIdx.dotY;
+        const diffX = (oldDotSpace - this.currentDotsSpace) * oldDotIdx.dotX;
+        const diffY = (oldDotSpace - this.currentDotsSpace) * oldDotIdx.dotY;
         this.recalculateBounds(diffX, diffY);
     }
 
     protected zoomOutCanvas(position: Position): void {
         const oldDotIdx = this.calculateDotIndex(position);
-        const oldDotSpace = this.dotsSpace;
+        const oldDotSpace = this.currentDotsSpace;
 
         const spaceZoomStep = this.config.dotsSpacing.spaceZoomStep / 2;
-        this.dotsSpace -= spaceZoomStep;
+        this.currentDotsSpace -= spaceZoomStep;
 
-        const diffX = (oldDotSpace - this.dotsSpace) * oldDotIdx.dotX;
-        const diffY = (oldDotSpace - this.dotsSpace) * oldDotIdx.dotY;
+        const diffX = (oldDotSpace - this.currentDotsSpace) * oldDotIdx.dotX;
+        const diffY = (oldDotSpace - this.currentDotsSpace) * oldDotIdx.dotY;
         this.recalculateBounds(diffX, diffY);
     }
 
@@ -124,18 +128,18 @@ export abstract class VirtualCanvasDimensions extends CanvasBase {
     }
 
     protected calculateDotXPosition(dotX: number): number {
-        const x = this.virtualBounds.left + (dotX * this.dotsSpace);
+        const x = this.virtualBounds.left + (dotX * this.currentDotsSpace);
         return x;
     }
 
     protected calculateDotYPosition(dotY: number): number {
-        const y = this.virtualBounds.top + (dotY * this.dotsSpace);
+        const y = this.virtualBounds.top + (dotY * this.currentDotsSpace);
         return y;
     }
 
     protected calculateDotIndex(position: Position): DotIndex {
-        const closestX = (position.x - this.virtualBounds.left) / this.dotsSpace;
-        const closestY = (position.y - this.virtualBounds.top) / this.dotsSpace;
+        const closestX = (position.x - this.virtualBounds.left) / this.currentDotsSpace;
+        const closestY = (position.y - this.virtualBounds.top) / this.currentDotsSpace;
 
         const indexX = Math.round(closestX);
         const indexY = Math.round(closestY);
@@ -172,8 +176,8 @@ export abstract class VirtualCanvasDimensions extends CanvasBase {
         const left = (this.virtualBounds.left + differenceX);
         const top = (this.virtualBounds.top + differenceY);
 
-        const width = (this.allDotsX - 1) * this.dotsSpace;
-        const height = (this.allDotsY - 1) * this.dotsSpace;
+        const width = (this.allDotsX - 1) * this.currentDotsSpace;
+        const height = (this.allDotsY - 1) * this.currentDotsSpace;
 
         return { left, top, width, height };
     }

@@ -42,43 +42,38 @@ export class RasterRectangleDrawing implements IShapeDrawing {
             path.lineTo(toX - leg, toY);
         }
 
-        // pythagorean equation
         const l = Math.ceil(Math.sqrt((leg * leg) / 2));
 
         // left to right stitch (horizontal)
         if (fromX < toX && fromY == toY) {
-            path.moveTo(fromX + l, fromY + l);
-            path.lineTo(toX - l, toY + l);
-            path.lineTo(toX - l, toY - l);
-            path.lineTo(fromX + l, fromY - l);
-            path.lineTo(fromX + l, fromY + l);
+            path.moveTo(fromX, fromY + l);
+            path.lineTo(toX, toY + l);
+            path.lineTo(toX, toY - l);
+            path.lineTo(fromX, fromY - l);
         }
 
         // right to left stitch (horizontal)
         if (fromX > toX && fromY == toY) {
-            path.moveTo(fromX - l, fromY - l);
-            path.lineTo(toX + l, toY - l);
-            path.lineTo(toX + l, toY + l);
-            path.lineTo(fromX - l, fromY + l);
-            path.lineTo(fromX - l, fromY - l);
+            path.moveTo(fromX, fromY - l);
+            path.lineTo(toX, toY - l);
+            path.lineTo(toX, toY + l);
+            path.lineTo(fromX, fromY + l);
         }
 
         // top to bottom stitch (vertical)
         if (fromX == toX && fromY < toY) {
-            path.moveTo(fromX - l, fromY + l);
-            path.lineTo(toX - l, toY - l);
-            path.lineTo(toX + l, toY - l);
-            path.lineTo(fromX + l, fromY + l);
-            path.lineTo(fromX - l, fromY + l);
+            path.moveTo(fromX - l, fromY);
+            path.lineTo(toX - l, toY);
+            path.lineTo(toX + l, toY);
+            path.lineTo(fromX + l, fromY);
         }
 
         // bottom to top stitch (vertical)
         if (fromX == toX && fromY > toY) {
-            path.moveTo(fromX + l, fromY - l);
-            path.lineTo(toX + l, toY + l);
-            path.lineTo(toX - l, toY + l);
-            path.lineTo(fromX - l, fromY - l);
-            path.lineTo(fromX + l, fromY - l);
+            path.moveTo(fromX + l, fromY);
+            path.lineTo(toX + l, toY);
+            path.lineTo(toX - l, toY);
+            path.lineTo(fromX - l, fromY);
         }
     }
 }

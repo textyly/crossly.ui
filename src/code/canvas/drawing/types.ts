@@ -1,6 +1,7 @@
 import { CueThread, Dot, ICanvas } from "../types.js";
 import { DotArray } from "../utilities/arrays/dot/dot.js";
 import { ThreadArray } from "../utilities/arrays/thread/array.js";
+import { Density } from "../virtual/types.js";
 
 export type SvgDot = SVGCircleElement;
 export type SvgLine = SVGLineElement;
@@ -13,7 +14,7 @@ export interface IRasterDrawingCanvas extends ICanvas {
     createBitMap(): Promise<ImageBitmap>;
     drawBitMap(bitmap: ImageBitmap): void;
     drawDots(dots: DotArray): void;
-    drawLines(threads: ThreadArray): void;
+    drawLines(threads: ThreadArray, density: Density): void;
     clear(): void;
 }
 

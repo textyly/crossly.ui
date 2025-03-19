@@ -4,6 +4,7 @@ import { StitchCanvasConfig } from "../../../config/types.js";
 import { Dot, CanvasSide, StitchTread, DotIndex } from "../../types.js";
 import { StitchThreadArray } from "../../utilities/arrays/thread/stitch.js";
 import { IInputCanvas, PointerUpEvent, Position } from "../../input/types.js";
+import { Density } from "../types.js";
 
 export abstract class StitchCanvas extends StitchCanvasBase {
     private readonly dotsUtility: DotsUtility<Dot>;
@@ -67,6 +68,7 @@ export abstract class StitchCanvas extends StitchCanvasBase {
         const toDotsYIndexes = this.threads.toDotsYIndexes;
         const widths = this.threads.widths;
         const sides = this.threads.sides;
+        const density = this.calculateDensity();
 
         // 2. recalculate threads
         for (let index = 0; index < this.threads.length; index++) {
@@ -119,7 +121,7 @@ export abstract class StitchCanvas extends StitchCanvasBase {
         }
 
         // 8. draw threads, each thread consist of one thread and two dots
-        super.invokeDrawThreads(this.threads);
+        super.invokeDrawThreads(this.threads, density);
     }
 
     private startListening(): void {
@@ -172,7 +174,9 @@ export abstract class StitchCanvas extends StitchCanvasBase {
         // draw thread
         const threads = new StitchThreadArray();
         threads.pushThread(thread);
-        super.invokeDrawThreads(threads);
+
+        const density = this.calculateDensity();
+        super.invokeDrawThreads(threads, density);
     }
 
     private createThread(previouslyClickedDotIdx: DotIndex, previouslyClickedDotPos: Position, clickedDotIdx: DotIndex, clickedDotPos: Position, visible: boolean): StitchTread {
@@ -200,5 +204,19 @@ export abstract class StitchCanvas extends StitchCanvasBase {
         let calculated = threadWidth + (this.zooms * this.threadWidthZoomStep);
         calculated = Math.max(calculated, this.minThreadWidth);
         return calculated;
+    }
+
+    private calculateDensity(): Density {
+        const halfDotsSpace = Math.ceil(this.dotsSpace / 2);
+
+        if (this.currentDotsSpace <= this.minDotsSpace) {
+            return Density.High;
+        }
+
+        if (this.currentDotsSpace <= halfDotsSpace) {
+            return Density.Medium;
+        }
+
+        return Density.Low;
     }
 }

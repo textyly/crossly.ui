@@ -5,7 +5,7 @@ import { Messaging1 } from "../../../messaging/impl.js";
 import { CanvasConfig } from "../../../config/types.js";
 import { IMessaging1 } from "../../../messaging/types.js";
 import { StitchThreadArray } from "../../utilities/arrays/thread/stitch.js";
-import { IStitchCanvas, DrawStitchThreadsEvent, DrawStitchThreadsListener } from "../types.js";
+import { IStitchCanvas, DrawStitchThreadsEvent, DrawStitchThreadsListener, Density } from "../types.js";
 
 export abstract class StitchCanvasBase extends VirtualCanvasBase implements IStitchCanvas {
     private readonly messaging: IMessaging1<DrawStitchThreadsEvent>;
@@ -24,8 +24,8 @@ export abstract class StitchCanvasBase extends VirtualCanvasBase implements ISti
         super.dispose();
     }
 
-    protected invokeDrawThreads(threads: StitchThreadArray): void {
-        const event = { threads };
+    protected invokeDrawThreads(threads: StitchThreadArray, density: Density): void {
+        const event = { threads, density };
         this.messaging.sendToChannel1(event);
     }
 }

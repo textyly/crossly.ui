@@ -1,5 +1,6 @@
 import { RasterLineDrawing } from "./line.js";
 import { RasterDrawingCanvas } from "./base.js";
+import { Density } from "../../virtual/types.js";
 import { RasterPolygonDrawing } from "./polygon.js";
 import { RasterRectangleDrawing } from "./rectangle.js";
 import { DotArray } from "../../utilities/arrays/dot/dot.js";
@@ -25,7 +26,7 @@ export class StitchRasterDrawingCanvas extends RasterDrawingCanvas implements IR
         throw new Error("not implemented because of high performance impact");
     }
 
-    public drawLines(threads: StitchThreadArray): void {
+    public drawLines(threads: StitchThreadArray, density: Density): void {
         // CPU, GPU, memory and GC intensive code, do not extract in multiple methods!!!
         const visibilities = threads.visibilities;
         const fromDotsXPositions = threads.fromDotsXPositions;
@@ -59,19 +60,7 @@ export class StitchRasterDrawingCanvas extends RasterDrawingCanvas implements IR
                 const toX = toDotsXPositions[threadIdx] - this.bounds.left;
                 const toY = toDotsYPositions[threadIdx] - this.bounds.top;
 
-                // drawing logic is too big and makes the code too unreadable, 
-                // that is why it is extracted in the drawLineInPath/drawPolygonInPath methods (even though additional function invocation will impact the perf since it will be executed for each and every visible stitch)
-                if (currentWidth > 6) {
-                    // more drawing which means worse performance
-                    this.polygon.draw(path, fromX, fromY, toX, toY, currentWidth);
-                } else {
-                    // less drawing which means better performance
-                    if (currentWidth >= 2) {
-                        this.rectangle.draw(path, fromX, fromY, toX, toY, currentWidth);
-                    } else {
-                        this.line.draw(path, fromX, fromY, toX, toY, currentWidth);
-                    }
-                }
+                this.draw(density, path, fromX, fromY, toX, toY, currentWidth);
             }
 
             if (threadIdx === lastIdX) {
@@ -92,5 +81,30 @@ export class StitchRasterDrawingCanvas extends RasterDrawingCanvas implements IR
 
         this.context.fillStyle = color;
         this.context.fill(path);
+    }
+
+    private draw(density: Density, path: Path2D, fromX: number, fromY: number, toX: number, toY: number, width: number): void {
+        switch (density) {
+            case Density.Low: {
+                // worse perf but most detailed
+                this.polygon.draw(path, fromX, fromY, toX, toY, width);
+                break;
+            }
+            case Density.Medium: {
+                // medium perf
+                this.rectangle.draw(path, fromX, fromY, toX, toY, width);
+                break;
+            }
+            case Density.High: {
+                // best performance but less detailed
+                this.line.draw(path, fromX, fromY, toX, toY, width);
+                break;
+            }
+            default: {
+                // worse perf but most detailed
+                this.polygon.draw(path, fromX, fromY, toX, toY, width);
+                break;
+            }
+        }
     }
 }
