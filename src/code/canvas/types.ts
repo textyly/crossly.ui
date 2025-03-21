@@ -1,5 +1,5 @@
-import { Listener, VoidUnsubscribe } from "../types";
 import { Position } from "./input/types.js";
+import { Listener, VoidUnsubscribe } from "../types";
 
 export type Bounds = { left: number, top: number, width: number, height: number };
 export type BoundsIndexes = { leftTop: DotIndex, rightTop: DotIndex, leftBottom: DotIndex, rightBottom: DotIndex };
@@ -23,28 +23,9 @@ export type StitchTread = {
     toDotYIdx: number;
     toDotYPos: number;
     width: number;
+    zoomedWidth: number;
     color: string;
     side: CanvasSide;
-};
-
-export type CanvasConfig = {
-    columns: number;
-    rows: number;
-    dot: DotConfig;
-    dotSpacing: SpacingConfig;
-    thread: ThreadConfig;
-};
-
-export type ZoomItemConfig = { value: number; zoomInStep: number; zoomOutStep: number };
-export type DotConfig = { color: string; radius: ZoomItemConfig; };
-export type ThreadConfig = { color: string; width: ZoomItemConfig; };
-export type SpacingConfig = ZoomItemConfig;
-
-
-export type CrosslyCanvasConfig = {
-    fabric: CanvasConfig,
-    stitch: CanvasConfig,
-    cue: CanvasConfig
 };
 
 export interface IDisposable {
@@ -60,6 +41,11 @@ export interface ICanvas extends IDisposable {
 
 export interface ICrosslyCanvas extends ICanvas {
     draw(): void;
+}
+
+export interface ICrosslyCanvasFacade extends ICrosslyCanvas {
+    setThreadColor(color: string): void;
+    setThreadWidth(width: number): void;
 }
 
 export enum CanvasSide {

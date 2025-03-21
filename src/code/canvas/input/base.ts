@@ -1,7 +1,7 @@
 import { CanvasBase } from "../base.js";
-import { Messaging6, Messaging7 } from "../../messaging/impl.js";
-import { IMessaging6, IMessaging7 } from "../../messaging/types.js";
-import { VoidListener, VoidUnsubscribe } from "../../types.js";
+import { VoidUnsubscribe } from "../../types.js";
+import { Messaging7 } from "../../messaging/impl.js";
+import { IMessaging7 } from "../../messaging/types.js";
 import {
     Position,
     MoveEvent,
@@ -63,12 +63,14 @@ export abstract class InputCanvasBase extends CanvasBase implements IInputCanvas
         super.dispose();
     }
 
-    protected invokeZoomIn(): void {
-        this.messaging.sendToChannel1({});
+    protected invokeZoomIn(currentPosition: Position): void {
+        const event = { currentPosition };
+        this.messaging.sendToChannel1(event);
     }
 
-    protected invokeZoomOut(): void {
-        this.messaging.sendToChannel2({});
+    protected invokeZoomOut(currentPosition: Position): void {
+        const event = { currentPosition };
+        this.messaging.sendToChannel2(event);
     }
 
     protected invokePointerMove(event: PointerMoveEvent): void {

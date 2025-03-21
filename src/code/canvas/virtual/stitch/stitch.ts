@@ -1,21 +1,36 @@
 import { StitchCanvasBase } from "./base.js";
 import { DotsUtility } from "../../utilities/dots.js";
-import { DotArray } from "../../utilities/arrays/dot/dot.js";
+import { StitchCanvasConfig } from "../../../config/types.js";
+import { Dot, CanvasSide, StitchTread, DotIndex } from "../../types.js";
 import { StitchThreadArray } from "../../utilities/arrays/thread/stitch.js";
 import { IInputCanvas, PointerUpEvent, Position } from "../../input/types.js";
-import { Dot, CanvasSide, CanvasConfig, StitchTread, DotIndex } from "../../types.js";
+import { Density } from "../types.js";
 
-export class StitchCanvas extends StitchCanvasBase {
+export abstract class StitchCanvas extends StitchCanvasBase {
     private readonly dotsUtility: DotsUtility<Dot>;
     private readonly threads: StitchThreadArray;
 
+    protected threadColor: string;
+    protected threadWidth: number;
+    private minThreadWidth: number;
+    private threadWidthZoomStep: number;
+    private zooms: number;
+
     private clickedDotIdx?: DotIndex;
 
-    constructor(config: CanvasConfig, inputCanvas: IInputCanvas) {
+    constructor(config: StitchCanvasConfig, inputCanvas: IInputCanvas) {
         super(config, inputCanvas);
 
         this.dotsUtility = new DotsUtility();
         this.threads = new StitchThreadArray();
+
+        const threadConfig = config.thread;
+        this.threadColor = threadConfig.color;
+        this.threadWidth = threadConfig.width;
+        this.minThreadWidth = threadConfig.minWidth;
+        this.threadWidthZoomStep = threadConfig.widthZoomStep;
+
+        this.zooms = 0;
 
         this.startListening();
     }
@@ -25,10 +40,18 @@ export class StitchCanvas extends StitchCanvasBase {
         super.dispose();
     }
 
+    protected override zoomIn(): void {
+        this.zooms += 1;
+    }
+
+    protected override zoomOut(): void {
+        this.zooms -= 1;
+    }
+
     protected override redraw(): void {
         // CPU, GPU, memory and GC intensive code
         // Do not extract this method in multiple methods
-        // Do not create types/classes for dot and thread (objects are extremely slow and memory/GC consuming)
+        // Do not create types/classes a thread (objects are extremely slow and memory/GC consuming)
 
         // 1. make initial calculations and create new constants for nested props
 
@@ -44,11 +67,10 @@ export class StitchCanvas extends StitchCanvasBase {
         const toDotsXIndexes = this.threads.toDotsXIndexes;
         const toDotsYIndexes = this.threads.toDotsYIndexes;
         const widths = this.threads.widths;
-        const colors = this.threads.colors;
         const sides = this.threads.sides;
+        const density = this.calculateDensity();
 
-        // 2. recalculate threads and dots
-        const dots = new DotArray();
+        // 2. recalculate threads
         for (let index = 0; index < this.threads.length; index++) {
 
             // 3. set visibility to false by default, if visible then true will be set later
@@ -87,24 +109,19 @@ export class StitchCanvas extends StitchCanvasBase {
             }
 
             // 6. thread is visible and must be drawn, make calculations
-            const color = colors[index];
-            const width = widths[index];
-
             const fromDotXPos = this.calculateDotXPosition(fromDotXIdx);
             const fromDotYPos = this.calculateDotYPosition(fromDotYIdx);
-            dots.push(fromDotXPos, fromDotYPos, width / 2, color);
-
             const toDotXPos = this.calculateDotXPosition(toDotXIdx);
             const toDotYPos = this.calculateDotYPosition(toDotYIdx);
-            dots.push(toDotXPos, toDotYPos, width / 2, color);
+
+            const zoomedThreadWidth = this.calculateZoomedThreadWidth(widths[index]);
 
             // 7. set the updated pros before drawing
-            this.threads.setThread(index, true, fromDotXIdx, fromDotXPos, fromDotYIdx, fromDotYPos, toDotXIdx, toDotXPos, toDotYIdx, toDotYPos, width, color, side);
+            this.threads.setThread(index, true, fromDotXPos, fromDotYPos, toDotXPos, toDotYPos, zoomedThreadWidth);
         }
 
         // 8. draw threads, each thread consist of one thread and two dots
-        super.invokeDrawThreads(this.threads);
-        super.invokeDrawDots(dots);
+        super.invokeDrawThreads(this.threads, density);
     }
 
     private startListening(): void {
@@ -114,9 +131,9 @@ export class StitchCanvas extends StitchCanvasBase {
 
     private handlePointerUp(event: PointerUpEvent): void {
         const position = event.position;
-        const inVirtualBounds = this.inVirtualBounds(position);
+        const inBounds = this.inBounds(position);
 
-        if (inVirtualBounds) {
+        if (inBounds) {
             this.clickDot(position);
         }
     }
@@ -128,7 +145,7 @@ export class StitchCanvas extends StitchCanvasBase {
         if (previouslyClickedDotIdx) {
             this.tryDrawThread(previouslyClickedDotIdx, clickedDotIdx);
         } else {
-            this.changeSide();
+            this.changeCanvasSide();
         }
 
         this.clickedDotIdx = clickedDotIdx;
@@ -142,14 +159,14 @@ export class StitchCanvas extends StitchCanvasBase {
         if (!areClicksIdentical) {
             const visible = this.currentSide === CanvasSide.Front;
 
-            const thread = this.createThread(clickedDotIdx, clickedDotPos, previouslyClickedDotIdx, previouslyClickedDotPos, visible);
+            const thread = this.createThread(previouslyClickedDotIdx, previouslyClickedDotPos, clickedDotIdx, clickedDotPos, visible);
             this.threads.pushThread(thread);
 
             if (visible) {
                 this.drawThread(thread);
             }
 
-            this.changeSide();
+            this.changeCanvasSide();
         }
     }
 
@@ -157,13 +174,9 @@ export class StitchCanvas extends StitchCanvasBase {
         // draw thread
         const threads = new StitchThreadArray();
         threads.pushThread(thread);
-        super.invokeDrawThreads(threads);
 
-        // draw dots
-        const dots = new DotArray();
-        dots.push(thread.fromDotXPos, thread.fromDotYPos, thread.width / 2, thread.color);
-        dots.push(thread.toDotXPos, thread.toDotYPos, thread.width / 2, thread.color);
-        super.invokeDrawDots(dots);
+        const density = this.calculateDensity();
+        super.invokeDrawThreads(threads, density);
     }
 
     private createThread(previouslyClickedDotIdx: DotIndex, previouslyClickedDotPos: Position, clickedDotIdx: DotIndex, clickedDotPos: Position, visible: boolean): StitchTread {
@@ -178,10 +191,32 @@ export class StitchCanvas extends StitchCanvasBase {
             toDotYIdx: clickedDotIdx.dotY,
             toDotYPos: clickedDotPos.y,
             width: this.threadWidth,
+            zoomWidth: this.threadWidthZoomStep,
+            zoomedWidth: this.calculateZoomedThreadWidth(this.threadWidth),
             color: this.threadColor,
             side: this.currentSide
         };
 
         return thread;
+    }
+
+    private calculateZoomedThreadWidth(threadWidth: number): number {
+        let calculated = threadWidth + (this.zooms * this.threadWidthZoomStep);
+        calculated = Math.max(calculated, this.minThreadWidth);
+        return calculated;
+    }
+
+    private calculateDensity(): Density {
+        const halfDotsSpace = Math.ceil(this.dotsSpace / 2);
+
+        if (this.currentDotsSpace <= this.minDotsSpace) {
+            return Density.High;
+        }
+
+        if (this.currentDotsSpace <= halfDotsSpace) {
+            return Density.Medium;
+        }
+
+        return Density.Low;
     }
 }

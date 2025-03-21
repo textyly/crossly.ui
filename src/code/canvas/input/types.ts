@@ -1,5 +1,5 @@
 import { ICanvas } from "../types";
-import { Listener, VoidListener, VoidUnsubscribe } from "../../types";
+import { Listener, VoidUnsubscribe } from "../../types";
 
 
 export type CanvasEvent = { type: CanvasEventType, event?: any };
@@ -15,7 +15,6 @@ export interface IInputCanvas extends ICanvas {
 
     onPointerUp(listener: PointerUpListener): VoidUnsubscribe;
     onPointerMove(listener: PointerMoveListener): VoidUnsubscribe;
-    // TODO: pointer leave
 }
 
 export interface ITouchInput extends ICanvas {
@@ -69,10 +68,10 @@ export type PointerUpListener = Listener<PointerUpEvent>;
 export type PointerDownEvent = PositionEvent;
 export type PointerDownListener = Listener<PointerDownEvent>;
 
-export type ZoomInEvent = {};
+export type ZoomInEvent = { currentPosition: Position };
 export type ZoomInListener = Listener<ZoomInEvent>;
 
-export type ZoomOutEvent = {};
+export type ZoomOutEvent = { currentPosition: Position };
 export type ZoomOutListener = Listener<ZoomOutEvent>;
 
 export type MoveStartEvent = { previousPosition: Position, currentPosition: Position };
