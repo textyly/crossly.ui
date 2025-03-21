@@ -1,6 +1,6 @@
-import { CanvasBase } from "../base.js";
-import { Dot, Bounds, CueThread } from "../types.js";
-import { IVectorDrawingCanvas, SvgDot, SvgLine } from "./types.js";
+import { CanvasBase } from "../../base.js";
+import { Dot, Bounds, CueThread } from "../../types.js";
+import { IVectorDrawingCanvas, SvgDot, SvgLine } from "../types.js";
 
 export class VectorDrawingCanvas extends CanvasBase implements IVectorDrawingCanvas {
     private readonly svgCanvas: HTMLElement;

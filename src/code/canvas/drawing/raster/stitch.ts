@@ -1,4 +1,4 @@
-import { RasterDrawingCanvas } from "./base.js";
+import { RasterDrawingCanvas } from "./raster.js";
 import { Density } from "../../virtual/types.js";
 import { IRasterDrawingCanvas } from "../types.js";
 import { ShapeDrawing } from "./primitives/shape.js";
@@ -28,6 +28,7 @@ export class StitchRasterDrawingCanvas extends RasterDrawingCanvas implements IR
 
     public drawLines(threads: StitchThreadArray, density: Density): void {
         // CPU, GPU, memory and GC intensive code, do not extract in multiple methods!!!
+        
         const visibilities = threads.visibilities;
         const fromDotsXPositions = threads.fromDotsXPositions;
         const fromDotsYPositions = threads.fromDotsYPositions;
