@@ -1,4 +1,4 @@
-import { IShapeDrawing } from "../types.js";
+import { IShapeDrawing } from "../../types.js";
 
 export class RasterRectangleDrawing implements IShapeDrawing {
 

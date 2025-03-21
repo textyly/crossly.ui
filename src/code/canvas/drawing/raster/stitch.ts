@@ -1,23 +1,23 @@
-import { RasterLineDrawing } from "./line.js";
 import { RasterDrawingCanvas } from "./base.js";
 import { Density } from "../../virtual/types.js";
-import { RasterPolygonDrawing } from "./polygon.js";
-import { RasterRectangleDrawing } from "./rectangle.js";
+import { IRasterDrawingCanvas } from "../types.js";
+import { ShapeDrawing } from "./primitives/shape.js";
+import { RasterLineDrawing } from "./primitives/line.js";
 import { DotArray } from "../../utilities/arrays/dot/dot.js";
-import { IRasterDrawingCanvas, IShapeDrawing } from "../types.js";
+import { RasterPolygonDrawing } from "./primitives/polygon.js";
+import { RasterRectangleDrawing } from "./primitives/rectangle.js";
 import { StitchThreadArray } from "../../utilities/arrays/thread/stitch.js";
 
 export class StitchRasterDrawingCanvas extends RasterDrawingCanvas implements IRasterDrawingCanvas {
-    private line: IShapeDrawing;
-    private polygon: IShapeDrawing;
-    private rectangle: IShapeDrawing;
+    private shape: ShapeDrawing;
 
     constructor(rasterCanvas: HTMLCanvasElement) {
         super(rasterCanvas);
 
-        this.line = new RasterLineDrawing();
-        this.polygon = new RasterPolygonDrawing();
-        this.rectangle = new RasterRectangleDrawing();
+        const line = new RasterLineDrawing();
+        const polygon = new RasterPolygonDrawing();
+        const rectangle = new RasterRectangleDrawing();
+        this.shape = new ShapeDrawing(line, rectangle, polygon);
     }
 
     public drawDots(dots: DotArray): void {
@@ -59,8 +59,7 @@ export class StitchRasterDrawingCanvas extends RasterDrawingCanvas implements IR
                 const fromY = fromDotsYPositions[threadIdx] - this.bounds.top;
                 const toX = toDotsXPositions[threadIdx] - this.bounds.left;
                 const toY = toDotsYPositions[threadIdx] - this.bounds.top;
-
-                this.draw(density, path, fromX, fromY, toX, toY, currentWidth);
+                this.shape.draw(density, path, fromX, fromY, toX, toY, currentWidth);
             }
 
             if (threadIdx === lastIdX) {
@@ -81,30 +80,5 @@ export class StitchRasterDrawingCanvas extends RasterDrawingCanvas implements IR
 
         this.context.fillStyle = color;
         this.context.fill(path);
-    }
-
-    private draw(density: Density, path: Path2D, fromX: number, fromY: number, toX: number, toY: number, width: number): void {
-        switch (density) {
-            case Density.Low: {
-                // worse perf but most detailed
-                this.polygon.draw(path, fromX, fromY, toX, toY, width);
-                break;
-            }
-            case Density.Medium: {
-                // medium perf
-                this.rectangle.draw(path, fromX, fromY, toX, toY, width);
-                break;
-            }
-            case Density.High: {
-                // best performance but less detailed
-                this.line.draw(path, fromX, fromY, toX, toY, width);
-                break;
-            }
-            default: {
-                // worse perf but most detailed
-                this.polygon.draw(path, fromX, fromY, toX, toY, width);
-                break;
-            }
-        }
     }
 }
