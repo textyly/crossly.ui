@@ -3,9 +3,9 @@ import { IInputCanvas } from "./input/types.js";
 import { ICrosslyCanvasFacade } from "./types.js";
 import { CrosslyCanvasFacade } from "./facade.js";
 import { CrosslyCanvasConfig } from "../config/types.js";
-import { VectorDrawingCanvas } from "./drawing/vector.js";
-import { StitchRasterDrawingCanvas } from "./drawing/raster/stitch.js";
+import { VectorDrawingCanvas } from "./drawing/vector/vector.js";
 import { FabricRasterDrawingCanvas } from "./drawing/raster/fabric.js";
+import { StitchRasterDrawingCanvas } from "./drawing/raster/stitch.js";
 import { IRasterDrawingCanvas, IVectorDrawingCanvas } from "./drawing/types.js";
 
 export class CrosslyCanvasBuilder {
@@ -42,7 +42,6 @@ export class CrosslyCanvasBuilder {
     }
 
     public withStitchCanvas(stitchCanvasElement: HTMLCanvasElement): CrosslyCanvasBuilder {
-        const minThreadWidth = this.config.stitch.thread.minWidth;
         this.stitchRasterDrawing = new StitchRasterDrawingCanvas(stitchCanvasElement);
         return this;
     }

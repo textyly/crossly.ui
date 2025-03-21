@@ -26,8 +26,8 @@ export class ConfigFactory {
 
     private createDotsSpacingConfig(): DotsSpacingConfig {
         const dotsSpacing = {
-            space: 26,
-            minSpace: 4,
+            space: 24,
+            minSpace: 2,
             spaceZoomStep: 2
         };
         return dotsSpacing;
@@ -70,13 +70,13 @@ export class ConfigFactory {
             columns, rows, dotsSpacing,
             dot: {
                 color: "#615858",
-                radius: 10,
+                radius: 12,
                 minRadius: 1,
                 radiusZoomStep: 1
             },
             thread: {
                 color: "gray",
-                width: 10,
+                width: 12,
                 minWidth: 1,
                 widthZoomStep: 1
             }

@@ -1,4 +1,4 @@
-import { RasterDrawingCanvas } from "./base.js";
+import { RasterDrawingCanvas } from "./raster.js";
 import { IRasterDrawingCanvas } from "../types.js";
 import { DotArray } from "../../utilities/arrays/dot/dot.js";
 import { ThreadArray } from "../../utilities/arrays/thread/array.js";

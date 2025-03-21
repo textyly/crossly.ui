@@ -1,10 +1,10 @@
-import { IShapeDrawing } from "../types.js";
+import { IShapeDrawing } from "../../types.js";
 
 export class RasterPolygonDrawing implements IShapeDrawing {
 
     public draw(path: Path2D, fromX: number, fromY: number, toX: number, toY: number, width: number): void {
         // pythagorean equation
-        const leg = Math.ceil(Math.sqrt((width * width) / 2));
+        const leg = Math.sqrt((width * width) / 2);
 
         // leftTop to rightBottom stitch (diagonal)
         if (fromX < toX && fromY < toY) {
@@ -50,8 +50,7 @@ export class RasterPolygonDrawing implements IShapeDrawing {
             path.lineTo(toX, toY);
         }
 
-        // pythagorean equation
-        const l = Math.ceil(Math.sqrt((leg * leg) / 2));
+        const l = width / 2;
 
         // left to right stitch (horizontal)
         if (fromX < toX && fromY == toY) {
