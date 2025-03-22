@@ -67,6 +67,7 @@ export class InputCanvas extends InputCanvasBase {
         this.htmlElement.addEventListener(CanvasEventType.PointerUp, this.pointerUpHandler);
         this.htmlElement.addEventListener(CanvasEventType.PointerDown, this.pointerDownHandler);
         this.htmlElement.addEventListener(CanvasEventType.PointerMove, this.pointerMoveHandler);
+        // TODO: handle resize!!!
 
         const touchZoomInUn = this.touchInput.onZoomIn(this.handleZoomIn.bind(this));
         super.registerUn(touchZoomInUn);
