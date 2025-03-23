@@ -73,7 +73,7 @@ export abstract class VirtualCanvasBase extends VirtualCanvasDimensions implemen
     }
 
     private handleVisibleBoundsChange(event: BoundsChangeEvent): void {
-        this.bounds = event.bounds; // TODO: probably will stop working once visible div start changing bounds on resize and minimize/maximize/restore
+        this.draw();
     }
 
     private handleZoomIn(event: ZoomInEvent): void {

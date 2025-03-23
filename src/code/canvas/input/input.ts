@@ -28,6 +28,7 @@ export class InputCanvas extends InputCanvasBase {
     private readonly pointerMoveHandler: PointerEventHandler;
 
     private isPointerDown: boolean;
+    private readonly resizeObserver: ResizeObserver;
 
     constructor(config: InputCanvasConfig, htmlElement: HTMLElement) {
         super();
@@ -44,6 +45,7 @@ export class InputCanvas extends InputCanvasBase {
         this.moveInput = new MoveInput(ignoreMoveUntil, htmlElement, this.touchInput);
 
         this.isPointerDown = false;
+        this.resizeObserver = new ResizeObserver(this.handleBoundsChange.bind(this));
 
         this.wheelChangeHandler = this.handleWheelChange.bind(this);
         this.pointerUpHandler = this.handlePointerUp.bind(this);
@@ -67,6 +69,8 @@ export class InputCanvas extends InputCanvasBase {
         this.htmlElement.addEventListener(CanvasEventType.PointerUp, this.pointerUpHandler);
         this.htmlElement.addEventListener(CanvasEventType.PointerDown, this.pointerDownHandler);
         this.htmlElement.addEventListener(CanvasEventType.PointerMove, this.pointerMoveHandler);
+
+        this.resizeObserver.observe(this.htmlElement);
 
         const touchZoomInUn = this.touchInput.onZoomIn(this.handleZoomIn.bind(this));
         super.registerUn(touchZoomInUn);
@@ -152,6 +156,10 @@ export class InputCanvas extends InputCanvasBase {
         }
     }
 
+    private handleBoundsChange(e: ResizeObserverEntry[]): void {
+        this.boundsChange(e);
+    }
+
     private wheelChange(event: WheelEvent): void {
         const deltaY = event.deltaY;
 
@@ -173,6 +181,13 @@ export class InputCanvas extends InputCanvasBase {
         const position = this.getPosition(event);
         const e = { position };
         super.invokePointerMove(e);
+    }
+
+    private boundsChange(events: ResizeObserverEntry[]): void {
+        events.forEach((event) => {
+            const bounds = event.contentRect;
+            super.bounds = bounds;
+        });
     }
 
     private getPosition(event: MouseEvent): Position {

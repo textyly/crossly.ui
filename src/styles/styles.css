@@ -14,7 +14,7 @@ body {
 }
 
 #fabric {
-  background-color: #fff8dc;
+  /*background-color: #fff8dc;*/
   position: absolute;
   z-index: 1;
 }
