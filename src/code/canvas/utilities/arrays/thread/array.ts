@@ -1,3 +1,4 @@
+import { Thread } from "../../../types.js";
 import { ArrayBase } from "../base.js";
 
 export class ThreadArray extends ArrayBase {
@@ -74,8 +75,27 @@ export class ThreadArray extends ArrayBase {
         this._colors.push(color);
     }
 
-    public pop(): void {
-        super.removeItemSpace();
+    public pop(): Thread | undefined {
+        if (this.length <= 0) {
+            return undefined;
+        } else {
+            const from = this.visibilities.length - 2;
+            const to = this.visibilities.length - 1;
+
+            const visible = this._visibilities.pop()!;
+            const fromDotXPos = this.fromDotsXPositions.slice(from, to)[0];
+            const fromDotYPos = this.fromDotsYPositions.slice(from, to)[0];
+            const toDotXPos = this.toDotsXPositions.slice(from, to)[0];
+            const toDotYPos = this.toDotsYPositions.slice(from, to)[0];
+            const width = this.widths.slice(from, to)[0];
+            const color = this._colors.pop()!;
+
+            const thread: Thread = { visible, fromDotXPos, fromDotYPos, toDotXPos, toDotYPos, width, color };
+
+            super.removeItemSpace();
+
+            return thread;
+        }
     }
 
     protected override expand(): void {

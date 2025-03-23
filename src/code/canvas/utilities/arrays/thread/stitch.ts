@@ -1,5 +1,5 @@
 import { ThreadArray } from "./array.js";
-import { CanvasSide, StitchTread } from "../../../types.js";
+import { CanvasSide, StitchTread, Thread } from "../../../types.js";
 
 export class StitchThreadArray extends ThreadArray {
     private _fromDotsXIndexes: Int16Array;
@@ -58,6 +58,26 @@ export class StitchThreadArray extends ThreadArray {
         this._toDotsYIndexes[this.count] = thread.toDotYIdx;
         this._zoomedWidths[this.count] = thread.zoomedWidth;
         this._sides.push(thread.side);
+    }
+
+    public override pop(): StitchTread | undefined {
+        if (this.length <= 0) {
+            return undefined;
+        } else {
+            const from = this.visibilities.length - 1;
+            const to = this.visibilities.length;
+
+            const fromDotXIdx = this.fromDotsXIndexes.slice(from, to)[0];
+            const fromDotYIdx = this.fromDotsYIndexes.slice(from, to)[0];
+            const toDotXIdx = this.toDotsXIndexes.slice(from, to)[0];
+            const toDotYIdx = this.toDotsYIndexes.slice(from, to)[0];
+            const zoomedWidth = this.zoomedWidths.slice(from, to)[0];
+            const side = this._sides.pop()!;
+            const thread = super.pop()!;
+
+            const stitchThread: StitchTread = { ...thread, fromDotXIdx, fromDotYIdx, toDotXIdx, toDotYIdx, zoomedWidth, side };
+            return stitchThread;
+        }
     }
 
     protected override expand(): void {

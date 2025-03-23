@@ -19,10 +19,12 @@ export abstract class ArrayBase {
         this.ensureSpace();
     }
 
-    protected removeItemSpace(): void {
+    protected removeItemSpace(): boolean {
         if (this.count >= 0) {
             this.count -= 1;
+            return true;
         }
+        return false;
     }
 
     protected ensureSpace(): void {
