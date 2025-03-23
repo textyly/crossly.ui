@@ -142,8 +142,11 @@ export abstract class StitchCanvas extends StitchCanvasBase {
     }
 
     private handleUndo(): void {
-        this.threads.pop();
-        this.draw();
+        const stitchThread = this.threads.popThread();
+        if (stitchThread) {
+            // TODO: change clickedDotIdx as well as impl the logic in cue canvas
+            this.draw();
+        }
     }
 
     private clickDot(position: Position): void {

@@ -1,5 +1,5 @@
 import { ThreadArray } from "./array.js";
-import { CanvasSide, StitchTread, Thread } from "../../../types.js";
+import { CanvasSide, StitchTread } from "../../../types.js";
 
 export class StitchThreadArray extends ThreadArray {
     private _fromDotsXIndexes: Int16Array;
@@ -60,7 +60,7 @@ export class StitchThreadArray extends ThreadArray {
         this._sides.push(thread.side);
     }
 
-    public override pop(): StitchTread | undefined {
+    public popThread(): StitchTread | undefined {
         if (this.length <= 0) {
             return undefined;
         } else {
