@@ -9,16 +9,16 @@ import {
     IInputCanvas,
     ZoomOutEvent,
     MoveListener,
+    MoveStopEvent,
+    MoveStartEvent,
     PointerUpEvent,
     ZoomInListener,
     ZoomOutListener,
+    MoveStopListener,
     PointerMoveEvent,
+    MoveStartListener,
     PointerMoveListener,
     PointerDownListener,
-    MoveStopEvent,
-    MoveStartEvent,
-    MoveStartListener,
-    MoveStopListener,
 } from "./types.js";
 
 

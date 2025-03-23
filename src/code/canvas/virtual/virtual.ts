@@ -73,14 +73,7 @@ export abstract class VirtualCanvasBase extends VirtualCanvasDimensions implemen
     }
 
     private handleVisibleBoundsChange(event: BoundsChangeEvent): void {
-        // TODO: calculate diff
-        const newBounds = event.bounds;
-        const oldBounds = this.bounds;
-
-        // width and height can change too!!!
-        const diffX = 0;
-        const diffY = 0;
-        this.recalculateBounds(diffX, diffY);
+        this.draw();
     }
 
     private handleZoomIn(event: ZoomInEvent): void {
