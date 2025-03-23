@@ -79,8 +79,8 @@ export class ThreadArray extends ArrayBase {
         if (this.length <= 0) {
             return undefined;
         } else {
-            const from = this.visibilities.length - 2;
-            const to = this.visibilities.length - 1;
+            const from = this.length - 1;
+            const to = this.length;
 
             const visible = this._visibilities.pop()!;
             const fromDotXPos = this.fromDotsXPositions.slice(from, to)[0];

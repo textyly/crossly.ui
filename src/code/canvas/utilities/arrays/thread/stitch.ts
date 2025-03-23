@@ -64,8 +64,8 @@ export class StitchThreadArray extends ThreadArray {
         if (this.length <= 0) {
             return undefined;
         } else {
-            const from = this.visibilities.length - 1;
-            const to = this.visibilities.length;
+            const from = this.length - 1;
+            const to = this.length;
 
             const fromDotXIdx = this.fromDotsXIndexes.slice(from, to)[0];
             const fromDotYIdx = this.fromDotsYIndexes.slice(from, to)[0];
