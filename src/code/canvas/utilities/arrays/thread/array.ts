@@ -63,7 +63,7 @@ export class ThreadArray extends ArrayBase {
 
     // this method is being invoked extremely intensively, so it must not accept Thread (an object) because it might require a lot of GC
     public push(visible: boolean, fromDotXPos: number, fromDotYPos: number, toDotXPos: number, toDotYPos: number, width: number, color: string): void {
-        this.occupyItemSpace();
+        super.occupyItemSpace();
 
         this._visibilities.push(visible);
         this._fromDotsXPositions[this.count] = fromDotXPos;
@@ -72,6 +72,10 @@ export class ThreadArray extends ArrayBase {
         this._toDotsYPositions[this.count] = toDotYPos;
         this._widths[this.count] = width;
         this._colors.push(color);
+    }
+
+    public pop(): void {
+        super.removeItemSpace();
     }
 
     protected override expand(): void {

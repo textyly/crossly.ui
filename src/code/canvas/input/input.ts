@@ -14,6 +14,7 @@ import {
     CanvasEventType,
     WheelChangeHandler,
     PointerEventHandler,
+    KeyDownEventHandler,
 } from "./types.js";
 
 export class InputCanvas extends InputCanvasBase {
@@ -26,6 +27,7 @@ export class InputCanvas extends InputCanvasBase {
     private readonly pointerUpHandler: PointerEventHandler;
     private readonly pointerDownHandler: PointerEventHandler;
     private readonly pointerMoveHandler: PointerEventHandler;
+    private readonly keyDownHandler: KeyDownEventHandler;
 
     private isPointerDown: boolean;
     private readonly resizeObserver: ResizeObserver;
@@ -44,13 +46,14 @@ export class InputCanvas extends InputCanvasBase {
         const ignoreMoveUntil = this.config.ignoreMoveUntil;
         this.moveInput = new MoveInput(ignoreMoveUntil, htmlElement, this.touchInput);
 
-        this.isPointerDown = false;
-        this.resizeObserver = new ResizeObserver(this.handleBoundsChange.bind(this));
-
         this.wheelChangeHandler = this.handleWheelChange.bind(this);
         this.pointerUpHandler = this.handlePointerUp.bind(this);
         this.pointerDownHandler = this.handlePointerDown.bind(this);
         this.pointerMoveHandler = this.handlePointerMove.bind(this);
+        this.keyDownHandler = this.handleKeyDown.bind(this);
+
+        this.isPointerDown = false;
+        this.resizeObserver = new ResizeObserver(this.handleBoundsChange.bind(this));
 
         this.subscribe();
     }
@@ -69,6 +72,7 @@ export class InputCanvas extends InputCanvasBase {
         this.htmlElement.addEventListener(CanvasEventType.PointerUp, this.pointerUpHandler);
         this.htmlElement.addEventListener(CanvasEventType.PointerDown, this.pointerDownHandler);
         this.htmlElement.addEventListener(CanvasEventType.PointerMove, this.pointerMoveHandler);
+        this.htmlElement.addEventListener(CanvasEventType.KeyDown, this.keyDownHandler);
 
         this.resizeObserver.observe(this.htmlElement);
 
@@ -96,6 +100,9 @@ export class InputCanvas extends InputCanvasBase {
         this.htmlElement.removeEventListener(CanvasEventType.PointerUp, this.pointerUpHandler);
         this.htmlElement.removeEventListener(CanvasEventType.PointerMove, this.pointerMoveHandler);
         this.htmlElement.removeEventListener(CanvasEventType.PointerDown, this.pointerDownHandler);
+        this.htmlElement.removeEventListener(CanvasEventType.KeyDown, this.keyDownHandler);
+
+        this.resizeObserver.unobserve(this.htmlElement);
     }
 
     private handleZoomIn(event: ZoomInEvent): void {
@@ -153,6 +160,14 @@ export class InputCanvas extends InputCanvasBase {
 
         if (!this.isPointerDown) {
             this.pointerMove(event);
+        }
+    }
+
+    private handleKeyDown(event: KeyboardEvent): void {
+        const keyZ = "KeyZ";
+
+        if (event.ctrlKey && event.code == keyZ) {
+            super.invokeUndo();
         }
     }
 

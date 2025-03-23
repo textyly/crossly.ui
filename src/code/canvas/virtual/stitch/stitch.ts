@@ -1,10 +1,10 @@
+import { Density } from "../types.js";
 import { StitchCanvasBase } from "./base.js";
 import { DotsUtility } from "../../utilities/dots.js";
 import { StitchCanvasConfig } from "../../../config/types.js";
 import { Dot, CanvasSide, StitchTread, DotIndex } from "../../types.js";
 import { StitchThreadArray } from "../../utilities/arrays/thread/stitch.js";
 import { IInputCanvas, PointerUpEvent, Position } from "../../input/types.js";
-import { Density } from "../types.js";
 
 export abstract class StitchCanvas extends StitchCanvasBase {
     private readonly dotsUtility: DotsUtility<Dot>;
@@ -127,6 +127,9 @@ export abstract class StitchCanvas extends StitchCanvasBase {
     private startListening(): void {
         const pointerUpUn = this.inputCanvas.onPointerUp(this.handlePointerUp.bind(this));
         super.registerUn(pointerUpUn);
+
+        const undoUn = this.inputCanvas.onUndo(this.handleUndo.bind(this));
+        super.registerUn(undoUn);
     }
 
     private handlePointerUp(event: PointerUpEvent): void {
@@ -136,6 +139,11 @@ export abstract class StitchCanvas extends StitchCanvasBase {
         if (inBounds) {
             this.clickDot(position);
         }
+    }
+
+    private handleUndo(): void {
+        this.threads.pop();
+        this.draw();
     }
 
     private clickDot(position: Position): void {
