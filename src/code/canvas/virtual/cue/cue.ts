@@ -130,6 +130,10 @@ export abstract class CueCanvas extends CueCanvasBase {
             this.clickedDotIdx = undefined;
             this.currentSide = CanvasSide.Back;
             this.removeThread();
+            if (this.hoveredDotIdx) {
+                const dotPos = this.calculateDotPosition(this.hoveredDotIdx);
+                this.moveDot(dotPos);
+            }
         } else {
             this.removeThread();
             this.changeCanvasSide();
