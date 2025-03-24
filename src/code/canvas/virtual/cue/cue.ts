@@ -123,13 +123,14 @@ export abstract class CueCanvas extends CueCanvasBase {
     }
 
     private handleUndo(): void {
-        this.cueArray.pop();
+        const removed = this.cueArray.pop();
         const last = this.cueArray.last();
 
         if (!last) {
             this.clickedDotIdx = undefined;
             this.currentSide = CanvasSide.Back;
             this.removeThread();
+
             if (this.hoveredDotIdx) {
                 const dotPos = this.calculateDotPosition(this.hoveredDotIdx);
                 this.moveDot(dotPos);
@@ -138,12 +139,12 @@ export abstract class CueCanvas extends CueCanvasBase {
             this.removeThread();
             this.changeCanvasSide();
 
-            this.clickedDotIdx = last.clickedDotIdx;
+            this.clickedDotIdx = last?.clickedDotIdx ?? removed!.clickedDotIdx;
 
-            this.threadColor = last.threadColor;
+            this.threadColor = removed!.threadColor;
             this.invokeThreadColorChange(this.threadColor);
 
-            this.threadWidth = last.threadWidth;
+            this.threadWidth = removed!.threadWidth;
             this.invokeThreadWidthChange(this.threadWidth);
 
             if (this.hoveredDotIdx) {
