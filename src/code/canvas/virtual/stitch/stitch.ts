@@ -230,7 +230,6 @@ export abstract class StitchCanvas extends StitchCanvasBase {
             toDotYIdx: clickedDotIdx.dotY,
             toDotYPos: clickedDotPos.y,
             width: this.threadWidth,
-            zoomWidth: this.threadWidthZoomStep,
             zoomedWidth: this.calculateZoomedThreadWidth(this.threadWidth),
             color: this.threadColor,
             side: this.currentSide

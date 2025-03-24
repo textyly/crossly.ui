@@ -2,13 +2,14 @@ import { CueCanvasBase } from "./base.js";
 import { DotsUtility } from "../../utilities/dots.js";
 import { IdGenerator } from "../../utilities/generator.js";
 import { CueCanvasConfig } from "../../../config/types.js";
-import { StitchThreadArray } from "../../utilities/arrays/thread/stitch.js";
+import { CueArray } from "../../utilities/arrays/thread/cue.js";
 import { CanvasSide, Id, CueThread, CueDot, Dot, DotIndex } from "../../types.js";
 import { Position, IInputCanvas, PointerUpEvent, PointerMoveEvent } from "../../input/types.js";
 
 export abstract class CueCanvas extends CueCanvasBase {
     private readonly ids: IdGenerator;
     private readonly dotsUtility: DotsUtility<Dot>;
+    private readonly cueArray: CueArray;
 
     private dotColor: string;
     private dotRadius: number;
@@ -30,6 +31,7 @@ export abstract class CueCanvas extends CueCanvasBase {
 
         this.ids = new IdGenerator();
         this.dotsUtility = new DotsUtility();
+        this.cueArray = new CueArray();
 
         const dotConfig = config.dot;
         this.dotColor = dotConfig.color;
@@ -121,23 +123,27 @@ export abstract class CueCanvas extends CueCanvasBase {
     }
 
     private handleUndo(): void {
-        // const stitchThread = this.threads.popThread();
-        // if (stitchThread) {
-        //     this.removeThread();
-        //     this.removeHoveredDot();
-        //     this.changeCanvasSide();
+        this.cueArray.pop();
+        const last = this.cueArray.last();
 
-        //     this.clickedDotIdx = { dotX: stitchThread.fromDotXIdx, dotY: stitchThread.fromDotYIdx };
+        if (last) {
+            this.removeThread();
+            this.changeCanvasSide();
 
-        //     this.threadColor = stitchThread.color;
-        //     this.invokeThreadColorChange(this.threadColor);
+            this.clickedDotIdx = last.clickedDotIdx;
 
-        //     this.threadWidth = stitchThread.width;
-        //     this.invokeThreadWidthChange(this.threadWidth);
+            this.threadColor = last.threadColor;
+            this.invokeThreadColorChange(this.threadColor);
 
+            this.threadWidth = last.threadWidth;
+            this.invokeThreadWidthChange(this.threadWidth);
 
-        //     this.draw();
-        // }
+            if (this.hoveredDotIdx) {
+                const dotPos = this.calculateDotPosition(this.hoveredDotIdx);
+                const event = { position: dotPos };
+                this.handlePointerMove(event);
+            }
+        }
     }
 
     private moveDot(position: Position): void {
@@ -159,13 +165,14 @@ export abstract class CueCanvas extends CueCanvasBase {
 
         if (!previouslyClickedDotIdx) {
             this.changeSide(clickedDotPos, clickedDotIdx);
-
+            this.cueArray.push(clickedDotIdx, this.threadWidth, this.threadColor);
         } else {
             const previouslyClickedDotPos = this.calculateDotPosition(previouslyClickedDotIdx);
             const areIdenticalClicks = this.dotsUtility.areDotsEqual(clickedDotPos, previouslyClickedDotPos);
 
             if (!areIdenticalClicks) {
                 this.changeSide(clickedDotPos, clickedDotIdx);
+                this.cueArray.push(clickedDotIdx, this.threadWidth, this.threadColor);
             }
         }
 
