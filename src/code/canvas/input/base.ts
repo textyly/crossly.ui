@@ -1,5 +1,5 @@
 import { CanvasBase } from "../base.js";
-import { VoidUnsubscribe } from "../../types.js";
+import { VoidListener, VoidUnsubscribe } from "../../types.js";
 import { Messaging7 } from "../../messaging/impl.js";
 import { IMessaging7 } from "../../messaging/types.js";
 import {
@@ -28,6 +28,10 @@ export abstract class InputCanvasBase extends CanvasBase implements IInputCanvas
     constructor() {
         super();
         this.messaging = new Messaging7();
+    }
+
+    public onUndo(listener: VoidListener): VoidUnsubscribe {
+        return this.messaging.listenOnChannel0(listener);
     }
 
     public onZoomIn(listener: ZoomInListener): VoidUnsubscribe {
@@ -61,6 +65,10 @@ export abstract class InputCanvasBase extends CanvasBase implements IInputCanvas
     public override dispose(): void {
         this.messaging.dispose();
         super.dispose();
+    }
+
+    protected invokeUndo(): void {
+        this.messaging.sendToChannel0();
     }
 
     protected invokeZoomIn(currentPosition: Position): void {
