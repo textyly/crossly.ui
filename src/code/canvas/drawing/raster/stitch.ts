@@ -53,7 +53,7 @@ export class StitchRasterDrawingCanvas extends RasterDrawingCanvas implements IR
                     path = this.createPath();
                     previousColor = currentColor;
                 }
-Ф
+
                 const fromX = fromDotsXPositions[threadIdx] - this.bounds.left;
                 const fromY = fromDotsYPositions[threadIdx] - this.bounds.top;
                 const toX = toDotsXPositions[threadIdx] - this.bounds.left;
