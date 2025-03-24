@@ -9,8 +9,6 @@ export type Dot = Position;
 export type CueDot = Dot & { id: Id };
 export type DotIndex = { dotX: number, dotY: number };
 
-export type CueThread = { id: Id, from: Dot, to: Dot, width: number, color: string };
-
 export type Thread = {
     visible: boolean;
     fromDotXPos: number;
@@ -30,6 +28,9 @@ export type StitchTread = Thread & {
     zoomedWidth: number;
     side: CanvasSide;
 };
+
+
+export type CueThread = { id: Id } & StitchTread;
 
 export interface IDisposable {
     dispose(): void;

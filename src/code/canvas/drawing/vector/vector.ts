@@ -53,13 +53,13 @@ export class VectorDrawingCanvas extends CanvasBase implements IVectorDrawingCan
     }
 
     public moveLine(thread: CueThread, svgLine: SvgLine): SvgLine {
-        const x1 = (thread.from.x - this.bounds.left).toString();
-        const y1 = (thread.from.y - this.bounds.top).toString();
+        const x1 = (thread.fromDotXPos - this.bounds.left).toString();
+        const y1 = (thread.fromDotYPos - this.bounds.top).toString();
 
-        const x2 = (thread.to.x - this.bounds.left).toString();
-        const y2 = (thread.to.y - this.bounds.top).toString();
+        const x2 = (thread.toDotXPos - this.bounds.left).toString();
+        const y2 = (thread.toDotYPos - this.bounds.top).toString();
 
-        const width = thread.width.toString();
+        const width = thread.zoomedWidth.toString();
         const color = thread.color;
 
         svgLine.setAttribute("x1", x1);

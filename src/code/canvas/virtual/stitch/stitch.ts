@@ -144,7 +144,8 @@ export abstract class StitchCanvas extends StitchCanvasBase {
     private handleUndo(): void {
         const stitchThread = this.threads.popThread();
         if (stitchThread) {
-            // TODO: change clickedDotIdx as well as impl the logic in cue canvas
+            this.clickedDotIdx = { dotX: stitchThread.fromDotXIdx, dotY: stitchThread.fromDotYIdx };
+            this.changeCanvasSide();
             this.draw();
         }
     }
@@ -190,6 +191,26 @@ export abstract class StitchCanvas extends StitchCanvasBase {
         super.invokeDrawThreads(threads, density);
     }
 
+    private calculateZoomedThreadWidth(threadWidth: number): number {
+        let calculated = threadWidth + (this.zooms * this.threadWidthZoomStep);
+        calculated = Math.max(calculated, this.minThreadWidth);
+        return calculated;
+    }
+
+    private calculateDensity(): Density {
+        const halfDotsSpace = Math.ceil(this.dotsSpace / 2);
+
+        if (this.currentDotsSpace <= this.minDotsSpace) {
+            return Density.High;
+        }
+
+        if (this.currentDotsSpace <= halfDotsSpace) {
+            return Density.Medium;
+        }
+
+        return Density.Low;
+    }
+
     private createThread(previouslyClickedDotIdx: DotIndex, previouslyClickedDotPos: Position, clickedDotIdx: DotIndex, clickedDotPos: Position, visible: boolean): StitchTread {
         const thread = {
             visible,
@@ -209,25 +230,5 @@ export abstract class StitchCanvas extends StitchCanvasBase {
         };
 
         return thread;
-    }
-
-    private calculateZoomedThreadWidth(threadWidth: number): number {
-        let calculated = threadWidth + (this.zooms * this.threadWidthZoomStep);
-        calculated = Math.max(calculated, this.minThreadWidth);
-        return calculated;
-    }
-
-    private calculateDensity(): Density {
-        const halfDotsSpace = Math.ceil(this.dotsSpace / 2);
-
-        if (this.currentDotsSpace <= this.minDotsSpace) {
-            return Density.High;
-        }
-
-        if (this.currentDotsSpace <= halfDotsSpace) {
-            return Density.Medium;
-        }
-
-        return Density.Low;
     }
 }
