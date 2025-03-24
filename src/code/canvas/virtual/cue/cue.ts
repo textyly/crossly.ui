@@ -126,7 +126,11 @@ export abstract class CueCanvas extends CueCanvasBase {
         this.cueArray.pop();
         const last = this.cueArray.last();
 
-        if (last) {
+        if (!last) {
+            this.clickedDotIdx = undefined;
+            this.currentSide = CanvasSide.Back;
+            this.removeThread();
+        } else {
             this.removeThread();
             this.changeCanvasSide();
 

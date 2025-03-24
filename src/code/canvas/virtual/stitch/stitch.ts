@@ -142,15 +142,18 @@ export abstract class StitchCanvas extends StitchCanvasBase {
     }
 
     private handleUndo(): void {
-        const stitchThread = this.threads.popThread();
-        if (stitchThread) {
+        const lastThread = this.threads.popThread();
+        if (!lastThread) {
+            this.currentSide = CanvasSide.Back;
+            this.clickedDotIdx = undefined;
+        } else {
             this.changeCanvasSide();
-            this.clickedDotIdx = { dotX: stitchThread.fromDotXIdx, dotY: stitchThread.fromDotYIdx };
+            this.clickedDotIdx = { dotX: lastThread.fromDotXIdx, dotY: lastThread.fromDotYIdx };
 
-            this.threadColor = stitchThread.color;
+            this.threadColor = lastThread.color;
             this.invokeThreadColorChange(this.threadColor);
 
-            this.threadWidth = stitchThread.width;
+            this.threadWidth = lastThread.width;
             this.invokeThreadWidthChange(this.threadWidth);
 
             this.draw();

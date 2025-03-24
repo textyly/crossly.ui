@@ -1,3 +1,4 @@
+import { Cue } from "../types.js";
 import { ArrayBase } from "../base.js";
 import { DotIndex } from "../../../types.js";
 
@@ -40,8 +41,7 @@ export class CueArray extends ArrayBase {
         this._colors.push(threadColor);
     }
 
-    // TODO: extract result in cue type
-    public pop(): { clickedDotIdx: DotIndex, threadWidth: number, threadColor: string } | undefined {
+    public pop(): Cue | undefined {
         if (this.length <= 0) {
             return undefined;
         } else {
@@ -60,7 +60,7 @@ export class CueArray extends ArrayBase {
         }
     }
 
-    public last(): { clickedDotIdx: DotIndex, threadWidth: number, threadColor: string } | undefined {
+    public last(): Cue | undefined {
         if (this.length <= 0) {
             return undefined;
         } else {
