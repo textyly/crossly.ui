@@ -9,7 +9,6 @@ import { Position, IInputCanvas, PointerUpEvent, PointerMoveEvent } from "../../
 export abstract class CueCanvas extends CueCanvasBase {
     private readonly ids: IdGenerator;
     private readonly dotsUtility: DotsUtility<Dot>;
-    private readonly threads: StitchThreadArray;
 
     private dotColor: string;
     private dotRadius: number;
@@ -23,15 +22,14 @@ export abstract class CueCanvas extends CueCanvasBase {
     private threadWidthZoomStep: number;
 
     private currentThreadId?: Id;
-    private clickedDotIndex?: DotIndex;
-    private hoveredDotIndex?: DotIndex & { id: Id };
+    private clickedDotIdx?: DotIndex;
+    private hoveredDotIdx?: DotIndex & { id: Id };
 
     constructor(config: CueCanvasConfig, input: IInputCanvas) {
         super(config, input);
 
         this.ids = new IdGenerator();
         this.dotsUtility = new DotsUtility();
-        this.threads = new StitchThreadArray();
 
         const dotConfig = config.dot;
         this.dotColor = dotConfig.color;
@@ -69,22 +67,22 @@ export abstract class CueCanvas extends CueCanvasBase {
     private redrawWhileMoving(): void {
         this.removeThread();
 
-        const dotIndex = this.clickedDotIndex ?? this.hoveredDotIndex;
-        if (dotIndex) {
-            const dotPos = this.calculateDotPosition(dotIndex);
+        const dotIdx = this.clickedDotIdx ?? this.hoveredDotIdx;
+        if (dotIdx) {
+            const dotPos = this.calculateDotPosition(dotIdx);
             this.moveDot(dotPos);
         }
     }
 
     private redrawWhileNotMoving(): void {
         // 1. remove hovered dot and thread
-        const hoveredDotIndex = this.hoveredDotIndex;
-        this.hoveredDotIndex = undefined;
+        const hoveredDotIdx = this.hoveredDotIdx;
+        this.hoveredDotIdx = undefined;
         this.currentThreadId = undefined;
 
         // 2. recreate hovered dot and thread
-        if (hoveredDotIndex) {
-            const dotPos = this.calculateDotPosition(hoveredDotIndex);
+        if (hoveredDotIdx) {
+            const dotPos = this.calculateDotPosition(hoveredDotIdx);
             const event = { position: dotPos };
             this.handlePointerMove(event);
         }
@@ -123,12 +121,23 @@ export abstract class CueCanvas extends CueCanvasBase {
     }
 
     private handleUndo(): void {
-        const stitchThread = undefined; //this.threads.popThread();
-        if (stitchThread) {
-            // this.clickedDotIdx = { dotX: stitchThread.fromDotXIdx, dotY: stitchThread.fromDotYIdx };
-            this.changeCanvasSide();
-            this.draw();
-        }
+        // const stitchThread = this.threads.popThread();
+        // if (stitchThread) {
+        //     this.removeThread();
+        //     this.removeHoveredDot();
+        //     this.changeCanvasSide();
+
+        //     this.clickedDotIdx = { dotX: stitchThread.fromDotXIdx, dotY: stitchThread.fromDotYIdx };
+
+        //     this.threadColor = stitchThread.color;
+        //     this.invokeThreadColorChange(this.threadColor);
+
+        //     this.threadWidth = stitchThread.width;
+        //     this.invokeThreadWidthChange(this.threadWidth);
+
+
+        //     this.draw();
+        // }
     }
 
     private moveDot(position: Position): void {
@@ -146,13 +155,13 @@ export abstract class CueCanvas extends CueCanvasBase {
     private clickDot(position: Position): void {
         const clickedDotIdx = this.calculateDotIndex(position);
         const clickedDotPos = this.calculateDotPosition(clickedDotIdx);
-        const previouslyClickedDotIndex = this.clickedDotIndex;
+        const previouslyClickedDotIdx = this.clickedDotIdx;
 
-        if (!previouslyClickedDotIndex) {
+        if (!previouslyClickedDotIdx) {
             this.changeSide(clickedDotPos, clickedDotIdx);
 
         } else {
-            const previouslyClickedDotPos = this.calculateDotPosition(previouslyClickedDotIndex);
+            const previouslyClickedDotPos = this.calculateDotPosition(previouslyClickedDotIdx);
             const areIdenticalClicks = this.dotsUtility.areDotsEqual(clickedDotPos, previouslyClickedDotPos);
 
             if (!areIdenticalClicks) {
@@ -160,7 +169,7 @@ export abstract class CueCanvas extends CueCanvasBase {
             }
         }
 
-        this.clickedDotIndex = clickedDotIdx;
+        this.clickedDotIdx = clickedDotIdx;
     }
 
     private changeSide(clickedDotPos: Position, clickedDotIdx: DotIndex): void {
@@ -183,34 +192,28 @@ export abstract class CueCanvas extends CueCanvasBase {
             : super.invokeDrawDot(hoveredDot, dotRadius, dotColor);
 
 
-        this.hoveredDotIndex = { id, ...dotIndex };
+        this.hoveredDotIdx = { id, ...dotIndex };
     }
 
     private resizeThead(toPosition: Position): void {
-        const previouslyClickedDotIndex = this.clickedDotIndex;
-        if (previouslyClickedDotIndex) {
-            const previouslyClickedDotPos = this.calculateDotPosition(previouslyClickedDotIndex);
-            const clickedDotIndex = this.calculateDotIndex(toPosition);
-            const clickedDotPos = this.calculateDotPosition(clickedDotIndex);
+        const previouslyClickedDotIdx = this.clickedDotIdx;
+        if (previouslyClickedDotIdx) {
+            const previouslyClickedDotPos = this.calculateDotPosition(previouslyClickedDotIdx);
+            const clickedDotIdx = this.calculateDotIndex(toPosition);
+            const clickedDotPos = this.calculateDotPosition(clickedDotIdx);
 
             let thread: CueThread;
             if (this.currentThreadId) {
                 const threadId = this.currentThreadId;
-                thread = this.createThread(threadId, previouslyClickedDotIndex, previouslyClickedDotPos, clickedDotIndex, clickedDotPos, true);
+                thread = this.createThread(threadId, previouslyClickedDotPos, clickedDotPos);
                 super.invokeMoveThread(thread);
             } else {
                 const threadId = this.ids.next();
-                thread = this.createThread(threadId, previouslyClickedDotIndex, previouslyClickedDotPos, clickedDotIndex, clickedDotPos, true);
+                thread = this.createThread(threadId, previouslyClickedDotPos, clickedDotPos);
                 this.drawThread(thread);
             }
             this.currentThreadId = thread.id;
         }
-    }
-
-    private calculateZoomedThreadWidth(threadWidth: number): number {
-        let calculated = threadWidth + (this.zooms * this.threadWidthZoomStep);
-        calculated = Math.max(calculated, this.minThreadWidth);
-        return calculated;
     }
 
     private drawThread(thread: CueThread): void {
@@ -222,10 +225,10 @@ export abstract class CueCanvas extends CueCanvasBase {
     }
 
     private removeHoveredDot(): void {
-        if (this.hoveredDotIndex) {
-            const dotId = this.hoveredDotIndex.id;
+        if (this.hoveredDotIdx) {
+            const dotId = this.hoveredDotIdx.id;
             super.invokeRemoveDot(dotId);
-            this.hoveredDotIndex = undefined;
+            this.hoveredDotIdx = undefined;
         }
     }
 
@@ -236,25 +239,17 @@ export abstract class CueCanvas extends CueCanvasBase {
         }
     }
 
-    private createThread(id: number, previouslyClickedDotIdx: DotIndex, previouslyClickedDotPos: Position, clickedDotIdx: DotIndex, clickedDotPos: Position, visible: boolean): CueThread {
-        const thread = {
-            id,
-            visible,
-            fromDotXIdx: previouslyClickedDotIdx.dotX,
-            fromDotXPos: previouslyClickedDotPos.x,
-            fromDotYIdx: previouslyClickedDotIdx.dotY,
-            fromDotYPos: previouslyClickedDotPos.y,
-            toDotXIdx: clickedDotIdx.dotX,
-            toDotXPos: clickedDotPos.x,
-            toDotYIdx: clickedDotIdx.dotY,
-            toDotYPos: clickedDotPos.y,
-            width: this.threadWidth,
-            zoomWidth: this.threadWidthZoomStep,
-            zoomedWidth: this.calculateZoomedThreadWidth(this.threadWidth),
-            color: this.threadColor,
-            side: this.currentSide
-        };
+    private createThread(id: number, previouslyClickedDotPos: Position, clickedDotPos: Position): CueThread {
+        const color = this.threadColor;
+        const width = this.calculateZoomedThreadWidth(this.threadWidth);
 
+        const thread = { id, from: previouslyClickedDotPos, to: clickedDotPos, width, color };
         return thread;
+    }
+
+    private calculateZoomedThreadWidth(threadWidth: number): number {
+        let calculated = threadWidth + (this.zooms * this.threadWidthZoomStep);
+        calculated = Math.max(calculated, this.minThreadWidth);
+        return calculated;
     }
 }

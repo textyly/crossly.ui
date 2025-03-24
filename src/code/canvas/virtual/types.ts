@@ -7,8 +7,12 @@ import { StitchThreadArray } from "../utilities/arrays/thread/stitch.js";
 export interface IVirtualCanvas extends ICanvas {
     draw(): void;
     onRedraw(listener: VoidListener): VoidUnsubscribe;
+
     onMoveStart(listener: VoidListener): VoidUnsubscribe;
     onMoveStop(listener: VoidListener): VoidUnsubscribe;
+
+    onThreadColorChange(listener: ColorChangeListener): VoidUnsubscribe;
+    onThreadWidthChange(listener: WidthChangeListener): VoidUnsubscribe;
 }
 
 export interface IFabricCanvas extends IVirtualCanvas {
@@ -40,6 +44,12 @@ export interface ICueCanvasFacade extends ICueCanvas {
     setThreadColor(color: string): void;
     setThreadWidth(width: number): void;
 }
+
+export type ColorChangeEvent = { color: string };
+export type ColorChangeListener = Listener<ColorChangeEvent>;
+
+export type WidthChangeEvent = { width: number };
+export type WidthChangeListener = Listener<WidthChangeEvent>;
 
 export type DrawFabricDotsEvent = { dots: DotArray };
 export type DrawFabricDotsListener = Listener<DrawFabricDotsEvent>;

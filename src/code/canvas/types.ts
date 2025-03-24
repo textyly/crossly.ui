@@ -30,7 +30,7 @@ export type StitchTread = Thread & {
 };
 
 
-export type CueThread = { id: Id } & StitchTread;
+export type CueThread = { id: Id, from: Dot, to: Dot, width: number, color: string };
 
 export interface IDisposable {
     dispose(): void;
