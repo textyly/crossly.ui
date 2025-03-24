@@ -37,7 +37,7 @@ export class StitchRasterDrawingCanvas extends RasterDrawingCanvas implements IR
         const widths = threads.zoomedWidths;
         const colors = threads.colors;
 
-        // Path2D is being used for perf optimization otherwise this.context.lineTo has a huge negative perf impact
+        // Path2D is used for perf optimization otherwise this.context.lineTo has a huge negative perf impact
         let path = this.createPath();
         let previousColor = colors[0];
         const lastIdX = threads.length - 1;
@@ -49,12 +49,11 @@ export class StitchRasterDrawingCanvas extends RasterDrawingCanvas implements IR
 
             if (isVisible) {
                 if (currentColor !== previousColor) {
-                    // closePath and createPath will be executed only on color change (very rare but it depends on the pattern's complexity)
                     this.closePath(path, previousColor);
                     path = this.createPath();
                     previousColor = currentColor;
                 }
-
+Ф
                 const fromX = fromDotsXPositions[threadIdx] - this.bounds.left;
                 const fromY = fromDotsYPositions[threadIdx] - this.bounds.top;
                 const toX = toDotsXPositions[threadIdx] - this.bounds.left;
@@ -63,7 +62,6 @@ export class StitchRasterDrawingCanvas extends RasterDrawingCanvas implements IR
             }
 
             if (threadIdx === lastIdX) {
-                // closePath will be executed only once 
                 const color = isVisible ? currentColor : previousColor;
                 this.closePath(path, color);
             }
