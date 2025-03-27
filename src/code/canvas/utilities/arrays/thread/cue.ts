@@ -35,9 +35,9 @@ export class CueArray extends ArrayBase {
 
     public push(clickedDotIdx: DotIndex, threadWidth: number, threadColor: string): void {
         super.occupyItemSpace();
-        this._clickedDotsXIndexes[this.count] = clickedDotIdx.dotX;
-        this._clickedDotsYIndexes[this.count] = clickedDotIdx.dotY;
-        this._widths[this.count] = threadWidth;
+        this._clickedDotsXIndexes[this.index] = clickedDotIdx.dotX;
+        this._clickedDotsYIndexes[this.index] = clickedDotIdx.dotY;
+        this._widths[this.index] = threadWidth;
         this._colors.push(threadColor);
     }
 

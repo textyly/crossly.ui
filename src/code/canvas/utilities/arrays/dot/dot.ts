@@ -33,9 +33,9 @@ export class DotArray extends ArrayBase {
     public push(x: number, y: number, radius: number, color: string): void {
         this.occupyItemSpace();
 
-        this._dotsX[this.count] = x;
-        this._dotsY[this.count] = y;
-        this._radiuses[this.count] = radius;
+        this._dotsX[this.index] = x;
+        this._dotsY[this.index] = y;
+        this._radiuses[this.index] = radius;
         this._colors.push(color);
     }
 

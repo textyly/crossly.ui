@@ -94,16 +94,13 @@ export abstract class StitchCanvas extends StitchCanvasBase {
         // 2. recalculate threads
         for (let index = 0; index < this.threads.length; index++) {
 
-            // 3. set visibility to false by default, if visible then true will be set later
-            this.threads.setVisibilities(index, false);
-
-            // 4. filter by canvas side, back threads won't be drawn
+            // 3. filter by canvas side, back threads won't be drawn
             const side = sides[index];
             if (side === CanvasSide.Back) {
                 continue;
             }
 
-            // 5. filter by visibility, if a thread is not into the visible bounds then it won't be drawn
+            // 4. filter by visibility, if a thread is not into the visible bounds then it won't be drawn
             const fromDotXIdx = fromDotsXIndexes[index];
             const toDotXIdx = toDotsXIndexes[index];
             const fromDotYIdx = fromDotsYIndexes[index];
@@ -111,25 +108,29 @@ export abstract class StitchCanvas extends StitchCanvasBase {
 
             if ((fromDotXIdx < leftTopIdx.dotX) && (toDotXIdx < leftTopIdx.dotX)) {
                 // filter out
+                this.threads.setVisibilities(index, false);
                 continue;
             }
 
             if ((fromDotXIdx > rightTopIdx.dotX) && (toDotXIdx > rightTopIdx.dotX)) {
                 // filter out
+                this.threads.setVisibilities(index, false);
                 continue;
             }
 
             if ((fromDotYIdx < leftTopIdx.dotY) && (toDotYIdx < leftTopIdx.dotY)) {
                 // filter out
+                this.threads.setVisibilities(index, false);
                 continue;
             }
 
             if ((fromDotYIdx > leftBottomIdx.dotY) && (toDotYIdx > leftBottomIdx.dotY)) {
                 // filter out
+                this.threads.setVisibilities(index, false);
                 continue;
             }
 
-            // 6. thread is visible and must be drawn, make calculations
+            // 5. thread is visible and must be drawn, make calculations
             const fromDotXPos = this.calculateDotXPosition(fromDotXIdx);
             const fromDotYPos = this.calculateDotYPosition(fromDotYIdx);
             const toDotXPos = this.calculateDotXPosition(toDotXIdx);
@@ -137,7 +138,7 @@ export abstract class StitchCanvas extends StitchCanvasBase {
 
             const zoomedThreadWidth = this.calculateZoomedThreadWidth(widths[index]);
 
-            // 7. set the updated pros before drawing
+            // 6. set the updated pros before drawing
             this.threads.setThread(index, true, fromDotXPos, fromDotYPos, toDotXPos, toDotYPos, zoomedThreadWidth);
         }
 

@@ -58,12 +58,12 @@ export class StitchThreadArray extends ThreadArray {
     // this method is being invoked only on a thread creation, so it is safe to use a StitchTread object
     public pushThread(thread: StitchTread): void {
         super.push(thread.visible, thread.fromDotXPos, thread.fromDotYPos, thread.toDotXPos, thread.toDotYPos, thread.width, thread.color);
-        this._ids[this.count] = thread.id;
-        this._fromDotsXIndexes[this.count] = thread.fromDotXIdx;
-        this._fromDotsYIndexes[this.count] = thread.fromDotYIdx;
-        this._toDotsXIndexes[this.count] = thread.toDotXIdx;
-        this._toDotsYIndexes[this.count] = thread.toDotYIdx;
-        this._zoomedWidths[this.count] = thread.zoomedWidth;
+        this._ids[this.index] = thread.id;
+        this._fromDotsXIndexes[this.index] = thread.fromDotXIdx;
+        this._fromDotsYIndexes[this.index] = thread.fromDotYIdx;
+        this._toDotsXIndexes[this.index] = thread.toDotXIdx;
+        this._toDotsYIndexes[this.index] = thread.toDotYIdx;
+        this._zoomedWidths[this.index] = thread.zoomedWidth;
         this._sides.push(thread.side);
     }
 

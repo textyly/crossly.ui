@@ -1,3 +1,4 @@
+import assert from "../../../../asserts/assert.js";
 import { Thread } from "../../../types.js";
 import { ArrayBase } from "../base.js";
 
@@ -26,6 +27,8 @@ export class ThreadArray extends ArrayBase {
     }
 
     public setVisibilities(index: number, visibility: boolean): void {
+        assert.that(index >= 0 && index <= this.index, `index must be bigger or equal to 0 and less or equal to ${this.index} but it is: ${index}`);
+        
         this._visibilities[index] = visibility;
     }
 
@@ -55,6 +58,8 @@ export class ThreadArray extends ArrayBase {
 
     // this method is being invoked extremely intensively, so it must not accept Thread (an object) because it might require a lot of GC
     public set(index: number, visible: boolean, fromDotXPos: number, fromDotYPos: number, toDotXPos: number, toDotYPos: number): void {
+        assert.that(index >= 0 && index <= this.index, `index must be bigger or equal to 0 and less or equal to ${this.index} but it is: ${index}`);
+
         this._visibilities[index] = visible;
         this._fromDotsXPositions[index] = fromDotXPos;
         this._fromDotsYPositions[index] = fromDotYPos;
@@ -67,11 +72,11 @@ export class ThreadArray extends ArrayBase {
         super.occupyItemSpace();
 
         this._visibilities.push(visible);
-        this._fromDotsXPositions[this.count] = fromDotXPos;
-        this._fromDotsYPositions[this.count] = fromDotYPos;
-        this._toDotsXPositions[this.count] = toDotXPos;
-        this._toDotsYPositions[this.count] = toDotYPos;
-        this._widths[this.count] = width;
+        this._fromDotsXPositions[this.index] = fromDotXPos;
+        this._fromDotsYPositions[this.index] = fromDotYPos;
+        this._toDotsXPositions[this.index] = toDotXPos;
+        this._toDotsYPositions[this.index] = toDotYPos;
+        this._widths[this.index] = width;
         this._colors.push(color);
     }
 
