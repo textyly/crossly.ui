@@ -21,6 +21,7 @@ export type Thread = {
 
 // StitchTread must not contain inner objects because millions of instances can be stored in the memory
 export type StitchTread = Thread & {
+    id: number;
     fromDotXIdx: number;
     fromDotYIdx: number;
     toDotXIdx: number;

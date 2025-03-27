@@ -1,36 +1,57 @@
 import { Density } from "../types.js";
 import { StitchCanvasBase } from "./base.js";
 import { DotsUtility } from "../../utilities/dots.js";
+import { IdGenerator } from "../../utilities/generator.js";
 import { StitchCanvasConfig } from "../../../config/types.js";
 import { Dot, CanvasSide, StitchTread, DotIndex } from "../../types.js";
 import { StitchThreadArray } from "../../utilities/arrays/thread/stitch.js";
 import { IInputCanvas, PointerUpEvent, Position } from "../../input/types.js";
+import assert from "../../../asserts/assert.js";
 
 export abstract class StitchCanvas extends StitchCanvasBase {
+    protected readonly ids: IdGenerator;
     private readonly dotsUtility: DotsUtility<Dot>;
     private readonly threads: StitchThreadArray;
 
+    private readonly minThreadWidth: number;
+    private readonly threadWidthZoomStep: number;
+
     protected threadColor: string;
     protected threadWidth: number;
-    private minThreadWidth: number;
-    private threadWidthZoomStep: number;
-    private zooms: number;
+    protected currentId: number;
 
+    private zooms: number;
     private clickedDotIdx?: DotIndex;
+
 
     constructor(config: StitchCanvasConfig, inputCanvas: IInputCanvas) {
         super(config, inputCanvas);
 
+        const threadConfig = config.thread;
+        assert.isDefined(threadConfig, "threadConfig");
+
+        this.threadColor = threadConfig.color;
+        assert.isDefined(this.threadColor, "threadConfig.color");
+        assert.that(this.threadColor.length > 0, "thread color must not be empty");
+
+        this.threadWidth = threadConfig.width;
+        assert.isDefined(this.threadWidth, "threadConfig.width");
+        assert.that(this.threadWidth > 0, `thread width must be bigger than 0 but it is ${this.threadWidth}`);
+
+        this.minThreadWidth = threadConfig.minWidth;
+        assert.isDefined(this.minThreadWidth, "threadConfig.minWidth");
+        assert.that(this.minThreadWidth > 0, `min thread width must be bigger than 0 but it is ${this.minThreadWidth}`);
+
+        this.threadWidthZoomStep = threadConfig.widthZoomStep;
+        assert.isDefined(this.threadWidthZoomStep, "threadConfig.widthZoomStep");
+        assert.that(this.threadWidthZoomStep > 0, `thread width zoom stem must be bigger than 0 but it is ${this.threadWidthZoomStep}`);
+
+        this.ids = new IdGenerator();
         this.dotsUtility = new DotsUtility();
         this.threads = new StitchThreadArray();
 
-        const threadConfig = config.thread;
-        this.threadColor = threadConfig.color;
-        this.threadWidth = threadConfig.width;
-        this.minThreadWidth = threadConfig.minWidth;
-        this.threadWidthZoomStep = threadConfig.widthZoomStep;
-
         this.zooms = 0;
+        this.currentId = this.ids.next();
 
         this.startListening();
     }
@@ -182,7 +203,7 @@ export abstract class StitchCanvas extends StitchCanvasBase {
         if (!areClicksIdentical) {
             const visible = this.currentSide === CanvasSide.Front;
 
-            const thread = this.createThread(previouslyClickedDotIdx, previouslyClickedDotPos, clickedDotIdx, clickedDotPos, visible);
+            const thread = this.createThread(this.currentId, previouslyClickedDotIdx, previouslyClickedDotPos, clickedDotIdx, clickedDotPos, visible);
             this.threads.pushThread(thread);
 
             if (visible) {
@@ -222,8 +243,9 @@ export abstract class StitchCanvas extends StitchCanvasBase {
         return Density.Low;
     }
 
-    private createThread(previouslyClickedDotIdx: DotIndex, previouslyClickedDotPos: Position, clickedDotIdx: DotIndex, clickedDotPos: Position, visible: boolean): StitchTread {
+    private createThread(id: number, previouslyClickedDotIdx: DotIndex, previouslyClickedDotPos: Position, clickedDotIdx: DotIndex, clickedDotPos: Position, visible: boolean): StitchTread {
         const thread = {
+            id,
             visible,
             fromDotXIdx: previouslyClickedDotIdx.dotX,
             fromDotXPos: previouslyClickedDotPos.x,
