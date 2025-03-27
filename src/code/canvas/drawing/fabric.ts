@@ -1,3 +1,4 @@
+import assert from "../../asserts/assert.js";
 import { CanvasBase } from "../base.js";
 import { BoundsChangeEvent } from "../types.js";
 import { IFabricDrawingCanvas, IRasterDrawingCanvas } from "./types.js";
@@ -9,22 +10,31 @@ export class FabricDrawingCanvas extends CanvasBase implements IFabricDrawingCan
 
     constructor(fabricCanvas: IFabricCanvas, rasterDrawing: IRasterDrawingCanvas) {
         super();
-        this.rasterDrawing = rasterDrawing;
+
         this.fabricCanvas = fabricCanvas;
+        assert.isDefined(this.fabricCanvas, "fabricCanvas");
+
+        this.rasterDrawing = rasterDrawing;
+        assert.isDefined(this.rasterDrawing, "rasterDrawing");
 
         this.subscribe();
     }
 
     public override dispose(): void {
+        this.throwIfDisposed();
         this.clear();
         super.dispose();
     }
 
     private handleDrawDots(event: DrawFabricDotsEvent): void {
+        this.throwIfDisposed();
+
         this.rasterDrawing.drawDots(event.dots);
     }
 
     private handleDrawThreads(event: DrawFabricThreadsEvent): void {
+        this.throwIfDisposed();
+
         const density = Density.Low;
         this.rasterDrawing.drawLines(event.threads, density);
     }
@@ -34,6 +44,8 @@ export class FabricDrawingCanvas extends CanvasBase implements IFabricDrawingCan
     }
 
     private handleBoundsChange(event: BoundsChangeEvent): void {
+        this.throwIfDisposed();
+
         const bounds = event.bounds;
         super.bounds = bounds;
 
@@ -41,6 +53,8 @@ export class FabricDrawingCanvas extends CanvasBase implements IFabricDrawingCan
     }
 
     private async handleMoveStart(): Promise<void> {
+        this.throwIfDisposed();
+
         const bitmap = await this.rasterDrawing.createBitMap();
         this.clear();
 
@@ -54,6 +68,7 @@ export class FabricDrawingCanvas extends CanvasBase implements IFabricDrawingCan
     }
 
     private clear(): void {
+        this.throwIfDisposed();
         this.rasterDrawing.clear();
     }
 

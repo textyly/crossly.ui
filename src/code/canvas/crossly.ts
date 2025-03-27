@@ -24,15 +24,15 @@ export abstract class CrosslyCanvas extends CanvasBase implements ICrosslyCanvas
 
     protected fabricCanvas!: IFabricCanvas;
     private fabricDrawingCanvas!: IFabricDrawingCanvas;
+    private fabricRasterDrawing!: IRasterDrawingCanvas;
 
     protected stitchCanvasFacade!: IStitchCanvasFacade;
     private stitchDrawingCanvas!: IStitchDrawingCanvas;
+    private stitchRasterDrawing!: IRasterDrawingCanvas;
 
     protected cueCanvasFacade!: ICueCanvasFacade;
     private cueDrawingCanvas!: ICueDrawingCanvas;
-
-    private disposed: boolean;
-    private disposedErrMsg: string;
+    private cueVectorDrawing!: IVectorDrawingCanvas;
 
     constructor(
         config: CrosslyCanvasConfig,
@@ -52,13 +52,10 @@ export abstract class CrosslyCanvas extends CanvasBase implements ICrosslyCanvas
         this.initializeFabricCanvas(fabricRasterDrawing);
         this.initializeStitchCanvas(stitchRasterDrawing);
         this.initializeCueCanvas(cueVectorDrawing);
-
-        this.disposed = false;
-        this.disposedErrMsg = `${CrosslyCanvas.name} instance disposed.`;
     }
 
     public draw(): void {
-        assert.that(!this.disposed, this.disposedErrMsg);
+        this.throwIfDisposed();
 
         this.fabricCanvas.draw();
         this.stitchCanvasFacade.draw();
@@ -66,50 +63,59 @@ export abstract class CrosslyCanvas extends CanvasBase implements ICrosslyCanvas
     }
 
     public override dispose(): void {
-        assert.that(!this.disposed, this.disposedErrMsg);
+        this.throwIfDisposed();
 
         this.disposeCueCanvas();
         this.disposeStitchCanvas();
         this.disposeFabricCanvas();
         this.disposeInputCanvas();
+
         super.dispose();
-        this.disposed = true;
     }
 
     private initializeFabricCanvas(rasterDrawing: IRasterDrawingCanvas): void {
         assert.isDefined(rasterDrawing, "rasterDrawing");
+
+        this.fabricRasterDrawing = rasterDrawing;
         this.fabricCanvas = new FabricCanvas(this.config.fabric, this.inputCanvas);
-        this.fabricDrawingCanvas = new FabricDrawingCanvas(this.fabricCanvas, rasterDrawing);
+        this.fabricDrawingCanvas = new FabricDrawingCanvas(this.fabricCanvas, this.fabricRasterDrawing);
     }
 
     private initializeStitchCanvas(rasterDrawing: IRasterDrawingCanvas): void {
         assert.isDefined(rasterDrawing, "rasterDrawing");
+
+        this.stitchRasterDrawing = rasterDrawing;
         this.stitchCanvasFacade = new StitchCanvasFacade(this.config.stitch, this.inputCanvas);
-        this.stitchDrawingCanvas = new StitchDrawingCanvas(this.stitchCanvasFacade, rasterDrawing);
+        this.stitchDrawingCanvas = new StitchDrawingCanvas(this.stitchCanvasFacade, this.stitchRasterDrawing);
     }
 
     private initializeCueCanvas(vectorDrawing: IVectorDrawingCanvas): void {
         assert.isDefined(vectorDrawing, "vectorDrawing");
+
+        this.cueVectorDrawing = vectorDrawing;
         this.cueCanvasFacade = new CueCanvasFacade(this.config.cue, this.inputCanvas);
-        this.cueDrawingCanvas = new CueDrawingCanvas(this.cueCanvasFacade, vectorDrawing);
+        this.cueDrawingCanvas = new CueDrawingCanvas(this.cueCanvasFacade, this.cueVectorDrawing);
     }
 
     private disposeCueCanvas(): void {
-        this.cueCanvasFacade?.dispose();
-        this.cueDrawingCanvas?.dispose();
+        this.cueCanvasFacade.dispose();
+        this.cueDrawingCanvas.dispose();
+        this.cueVectorDrawing.dispose();
     }
 
     private disposeStitchCanvas(): void {
-        this.stitchCanvasFacade?.dispose();
-        this.stitchDrawingCanvas?.dispose();
+        this.stitchCanvasFacade.dispose();
+        this.stitchDrawingCanvas.dispose();
+        this.stitchRasterDrawing.dispose();
     }
 
     private disposeFabricCanvas(): void {
-        this.fabricCanvas?.dispose();
-        this.fabricDrawingCanvas?.dispose();
+        this.fabricCanvas.dispose();
+        this.fabricDrawingCanvas.dispose();
+        this.fabricRasterDrawing.dispose();
     }
 
     private disposeInputCanvas(): void {
-        this.inputCanvas?.dispose();
+        this.inputCanvas.dispose();
     }
 }

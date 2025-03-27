@@ -1,4 +1,5 @@
 import { CanvasBase } from "../base.js";
+import assert from "../../asserts/assert.js";
 import { Id, BoundsChangeEvent } from "../types.js";
 import { ICueDrawingCanvas, IVectorDrawingCanvas, SvgDot, SvgLine } from "./types.js";
 import {
@@ -19,8 +20,12 @@ export class CueDrawingCanvas extends CanvasBase implements ICueDrawingCanvas {
 
     constructor(cueCanvas: ICueCanvas, vectorDrawing: IVectorDrawingCanvas) {
         super();
+
         this.cueCanvas = cueCanvas;
+        assert.isDefined(this.cueCanvas, "cueCanvas");
+
         this.vectorDrawing = vectorDrawing;
+        assert.isDefined(this.vectorDrawing, "vectorDrawing");
 
         this.svgDots = new Map<Id, SvgDot>();
         this.svgLines = new Map<Id, SvgLine>();
@@ -29,11 +34,14 @@ export class CueDrawingCanvas extends CanvasBase implements ICueDrawingCanvas {
     }
 
     public override dispose(): void {
+        this.throwIfDisposed();
         this.clear();
         super.dispose();
     }
 
     private handleDrawDot(event: DrawCueDotEvent): void {
+        this.throwIfDisposed();
+
         const dot = event.dot;
         const id = dot.id;
 
@@ -42,6 +50,8 @@ export class CueDrawingCanvas extends CanvasBase implements ICueDrawingCanvas {
     }
 
     private handleDrawDashDot(event: DrawCueDotEvent): void {
+        this.throwIfDisposed();
+
         const dot = event.dot;
         const id = dot.id;
 
@@ -50,6 +60,8 @@ export class CueDrawingCanvas extends CanvasBase implements ICueDrawingCanvas {
     }
 
     private handleRemoveDot(event: RemoveCueDotEvent): void {
+        this.throwIfDisposed();
+
         const id = event.dotId;
 
         const svgDot = this.svgDots.get(id)!;
@@ -58,6 +70,8 @@ export class CueDrawingCanvas extends CanvasBase implements ICueDrawingCanvas {
     }
 
     private handleDrawThread(event: DrawCueThreadEvent): void {
+        this.throwIfDisposed();
+
         const thread = event.thread;
         const id = thread.id;
 
@@ -66,6 +80,8 @@ export class CueDrawingCanvas extends CanvasBase implements ICueDrawingCanvas {
     }
 
     private handleMoveThread(event: MoveCueThreadEvent): void {
+        this.throwIfDisposed();
+
         const thread = event.thread;
         const id = event.thread.id;
 
@@ -74,6 +90,8 @@ export class CueDrawingCanvas extends CanvasBase implements ICueDrawingCanvas {
     }
 
     private handleDrawDashThread(event: DrawCueThreadEvent): void {
+        this.throwIfDisposed();
+
         const thread = event.thread;
         const id = thread.id;
 
@@ -82,6 +100,8 @@ export class CueDrawingCanvas extends CanvasBase implements ICueDrawingCanvas {
     }
 
     private handleRemoveThread(event: RemoveCueThreadEvent): void {
+        this.throwIfDisposed();
+
         const id = event.threadId;
 
         const svgLine = this.svgLines.get(id)!;
@@ -90,6 +110,8 @@ export class CueDrawingCanvas extends CanvasBase implements ICueDrawingCanvas {
     }
 
     private handleRedraw(): void {
+        this.throwIfDisposed();
+
         this.svgDots.forEach((dot) => {
             this.vectorDrawing.removeDot(dot);
         });
@@ -102,6 +124,8 @@ export class CueDrawingCanvas extends CanvasBase implements ICueDrawingCanvas {
     }
 
     private handleBoundsChange(event: BoundsChangeEvent): void {
+        this.throwIfDisposed();
+
         const bounds = event.bounds;
         super.bounds = bounds;
 
@@ -109,6 +133,8 @@ export class CueDrawingCanvas extends CanvasBase implements ICueDrawingCanvas {
     }
 
     private clear(): void {
+        this.throwIfDisposed();
+
         this.svgDots.clear();
         this.svgLines.clear();
     }

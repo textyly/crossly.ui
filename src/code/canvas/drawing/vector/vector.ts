@@ -1,3 +1,4 @@
+import assert from "../../../asserts/assert.js";
 import { CanvasBase } from "../../base.js";
 import { Dot, Bounds, CueThread } from "../../types.js";
 import { IVectorDrawingCanvas, SvgDot, SvgLine } from "../types.js";
@@ -8,15 +9,20 @@ export class VectorDrawingCanvas extends CanvasBase implements IVectorDrawingCan
     constructor(svgCanvas: HTMLElement) {
         super();
         this.svgCanvas = svgCanvas;
+        assert.isDefined(this.svgCanvas, "svgCanvas");
     }
 
     public drawDot(dot: Dot, radius: number, color: string): SvgDot {
+        this.throwIfDisposed();
+
         const svgDot = this.createDot(dot, radius, color);
         this.svgCanvas.appendChild(svgDot);
         return svgDot;
     }
 
     public drawDashDot(dot: Dot, radius: number, color: string): SvgDot {
+        this.throwIfDisposed();
+
         const svgDot = this.createDot(dot, radius, color);
         const width = (radius / 3).toString();
 
@@ -30,10 +36,14 @@ export class VectorDrawingCanvas extends CanvasBase implements IVectorDrawingCan
     }
 
     public removeDot(dot: SvgDot): void {
+        this.throwIfDisposed();
+
         this.svgCanvas.removeChild(dot);
     }
 
     public drawLine(thread: CueThread): SvgLine {
+        this.throwIfDisposed();
+
         const svgLine = document.createElementNS("http://www.w3.org/2000/svg", "line");
         this.moveLine(thread, svgLine);
         this.svgCanvas.appendChild(svgLine);
@@ -41,6 +51,8 @@ export class VectorDrawingCanvas extends CanvasBase implements IVectorDrawingCan
     }
 
     public drawDashLine(thread: CueThread): SvgLine {
+        this.throwIfDisposed();
+
         const svgLine = document.createElementNS("http://www.w3.org/2000/svg", "line");
         this.moveLine(thread, svgLine);
         svgLine.setAttribute("stroke-dasharray", "5,3");
@@ -49,10 +61,14 @@ export class VectorDrawingCanvas extends CanvasBase implements IVectorDrawingCan
     }
 
     public removeLine(line: SvgLine): void {
+        this.throwIfDisposed();
+
         this.svgCanvas.removeChild(line);
     }
 
     public moveLine(thread: CueThread, svgLine: SvgLine): SvgLine {
+        this.throwIfDisposed();
+
         const x1 = (thread.from.x - this.bounds.left).toString();
         const y1 = (thread.from.y - this.bounds.top).toString();
 
@@ -75,6 +91,8 @@ export class VectorDrawingCanvas extends CanvasBase implements IVectorDrawingCan
     }
 
     protected override invokeBoundsChange(bounds: Bounds): void {
+        this.throwIfDisposed();
+
         super.invokeBoundsChange(bounds);
 
         const x = bounds.left.toString();
@@ -88,6 +106,8 @@ export class VectorDrawingCanvas extends CanvasBase implements IVectorDrawingCan
     }
 
     private createDot(dot: Dot, radius: number, color: string): SvgDot {
+        this.throwIfDisposed();
+
         const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
 
         const cx = (dot.x - this.bounds.left).toString();

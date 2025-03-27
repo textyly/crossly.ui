@@ -1,3 +1,4 @@
+import assert from "../../asserts/assert.js";
 import { CanvasBase } from "../base.js";
 import { BoundsChangeEvent } from "../types.js";
 import { IRasterDrawingCanvas, IStitchDrawingCanvas } from "./types.js";
@@ -9,18 +10,25 @@ export class StitchDrawingCanvas extends CanvasBase implements IStitchDrawingCan
 
     constructor(stitchCanvas: IStitchCanvas, rasterDrawing: IRasterDrawingCanvas) {
         super();
+
         this.stitchCanvas = stitchCanvas;
+        assert.isDefined(this.stitchCanvas, "stitchCanvas");
+
         this.rasterDrawing = rasterDrawing;
+        assert.isDefined(this.rasterDrawing, "rasterDrawing");
 
         this.subscribe();
     }
 
     public override dispose(): void {
+        this.throwIfDisposed();
         this.clear();
         super.dispose();
     }
 
     private handleDrawThreads(event: DrawStitchThreadsEvent): void {
+        this.throwIfDisposed();
+
         const threads = event.threads;
         if (threads.length > 0) {
             const density = event.density;
@@ -33,12 +41,16 @@ export class StitchDrawingCanvas extends CanvasBase implements IStitchDrawingCan
     }
 
     private handleBoundsChange(event: BoundsChangeEvent): void {
+        this.throwIfDisposed();
+
         const bounds = event.bounds;
         super.bounds = bounds;
         this.rasterDrawing.bounds = bounds;
     }
 
     private async handleMoveStart(): Promise<void> {
+        this.throwIfDisposed();
+
         const bitmap = await this.rasterDrawing.createBitMap();
         this.clear();
 
@@ -46,10 +58,12 @@ export class StitchDrawingCanvas extends CanvasBase implements IStitchDrawingCan
     }
 
     private handleMoveStop(): void {
+        this.throwIfDisposed();
         this.clear();
     }
 
     private clear(): void {
+        this.throwIfDisposed();
         this.rasterDrawing.clear();
     }
 
