@@ -3,12 +3,12 @@ import { CanvasConfig } from "../../config/types.js";
 import { IMessaging4 } from "../../messaging/types.js";
 import { VirtualCanvasDimensions } from "./dimensions.js";
 import { BoundsChangeEvent, CanvasSide } from "../types.js";
-import { VoidListener, VoidUnsubscribe } from "../../types.js";
+import { VoidEvent, VoidListener, VoidUnsubscribe } from "../../types.js";
 import { IInputCanvas, MoveEvent, MoveStartEvent, MoveStopEvent, ZoomInEvent, ZoomOutEvent } from "../input/types.js";
 import { ColorChangeEvent, ColorChangeListener, IVirtualCanvas, WidthChangeEvent, WidthChangeListener } from "./types.js";
 
 export abstract class VirtualCanvasBase extends VirtualCanvasDimensions implements IVirtualCanvas {
-    private readonly virtualMessaging: IMessaging4<void, void, ColorChangeEvent, WidthChangeEvent>;
+    private readonly virtualMessaging: IMessaging4<VoidEvent, VoidEvent, ColorChangeEvent, WidthChangeEvent>;
 
     protected currentSide: CanvasSide;
 
@@ -147,10 +147,12 @@ export abstract class VirtualCanvasBase extends VirtualCanvasDimensions implemen
     }
 
     private invokeMoveStart(): void {
-        this.virtualMessaging.sendToChannel1();
+        const event: VoidEvent = {};
+        this.virtualMessaging.sendToChannel1(event);
     }
 
     private invokeMoveStop(): void {
-        this.virtualMessaging.sendToChannel2();
+        const event: VoidEvent = {};
+        this.virtualMessaging.sendToChannel2(event);
     }
 }
