@@ -37,6 +37,7 @@ export class StitchDrawingCanvas extends CanvasBase implements IStitchDrawingCan
     }
 
     private handleRedraw(): void {
+        this.throwIfDisposed();
         this.clear();
     }
 
@@ -52,6 +53,9 @@ export class StitchDrawingCanvas extends CanvasBase implements IStitchDrawingCan
         this.throwIfDisposed();
 
         const bitmap = await this.rasterDrawing.createBitMap();
+        assert.isDefined(bitmap, "bitmap");
+        this.throwIfDisposed();
+
         this.clear();
 
         this.rasterDrawing.drawBitMap(bitmap);
@@ -63,7 +67,6 @@ export class StitchDrawingCanvas extends CanvasBase implements IStitchDrawingCan
     }
 
     private clear(): void {
-        this.throwIfDisposed();
         this.rasterDrawing.clear();
     }
 

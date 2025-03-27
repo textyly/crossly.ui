@@ -1,8 +1,8 @@
+import assert from "../asserts/assert.js";
 import { VoidUnsubscribe } from "../types.js";
 import { Messaging1 } from "../messaging/impl.js";
 import { IMessaging1 } from "../messaging/types.js";
 import { ICanvas, Bounds, BoundsChangeEvent, BoundsChangeListener } from "./types.js";
-import assert from "../asserts/assert.js";
 
 export abstract class CanvasBase implements ICanvas {
     private readonly uns: Array<VoidUnsubscribe>;

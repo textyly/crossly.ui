@@ -46,6 +46,7 @@ export class CueDrawingCanvas extends CanvasBase implements ICueDrawingCanvas {
         const id = dot.id;
 
         const svgDot = this.vectorDrawing.drawDot(dot, event.dotRadius, event.dotColor);
+        assert.isDefined(svgDot, "svgDot");
         this.svgDots.set(id, svgDot);
     }
 
@@ -56,6 +57,7 @@ export class CueDrawingCanvas extends CanvasBase implements ICueDrawingCanvas {
         const id = dot.id;
 
         const svgDot = this.vectorDrawing.drawDashDot(dot, event.dotRadius, event.dotColor);
+        assert.isDefined(svgDot, "svgDot");
         this.svgDots.set(id, svgDot);
     }
 
@@ -63,8 +65,9 @@ export class CueDrawingCanvas extends CanvasBase implements ICueDrawingCanvas {
         this.throwIfDisposed();
 
         const id = event.dotId;
+        const svgDot = this.svgDots.get(id);
+        assert.isDefined(svgDot, "svgDot");
 
-        const svgDot = this.svgDots.get(id)!;
         this.vectorDrawing.removeDot(svgDot);
         this.svgDots.delete(id);
     }
@@ -76,6 +79,7 @@ export class CueDrawingCanvas extends CanvasBase implements ICueDrawingCanvas {
         const id = thread.id;
 
         const svgLine = this.vectorDrawing.drawLine(thread);
+        assert.isDefined(svgLine, "svgLine");
         this.svgLines.set(id, svgLine);
     }
 
@@ -85,7 +89,8 @@ export class CueDrawingCanvas extends CanvasBase implements ICueDrawingCanvas {
         const thread = event.thread;
         const id = event.thread.id;
 
-        const svgLine = this.svgLines.get(id)!;
+        const svgLine = this.svgLines.get(id);
+        assert.isDefined(svgLine, "svgLine");
         this.vectorDrawing.moveLine(thread, svgLine);
     }
 
@@ -96,6 +101,7 @@ export class CueDrawingCanvas extends CanvasBase implements ICueDrawingCanvas {
         const id = thread.id;
 
         const svgLine = this.vectorDrawing.drawDashLine(thread);
+        assert.isDefined(svgLine, "svgLine");
         this.svgLines.set(id, svgLine);
     }
 
@@ -104,7 +110,8 @@ export class CueDrawingCanvas extends CanvasBase implements ICueDrawingCanvas {
 
         const id = event.threadId;
 
-        const svgLine = this.svgLines.get(id)!;
+        const svgLine = this.svgLines.get(id);
+        assert.isDefined(svgLine, "svgLine");
         this.vectorDrawing.removeLine(svgLine);
         this.svgLines.delete(id);
     }
@@ -133,8 +140,6 @@ export class CueDrawingCanvas extends CanvasBase implements ICueDrawingCanvas {
     }
 
     private clear(): void {
-        this.throwIfDisposed();
-
         this.svgDots.clear();
         this.svgLines.clear();
     }
