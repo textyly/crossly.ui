@@ -1,6 +1,5 @@
 import { ICanvas } from "../types";
-import { Listener, VoidUnsubscribe } from "../../types";
-
+import { Listener, VoidListener, VoidUnsubscribe } from "../../types";
 
 export type CanvasEvent = { type: CanvasEventType, event?: any };
 export type ActiveTouches = { currentDistance: number };
@@ -15,6 +14,8 @@ export interface IInputCanvas extends ICanvas {
 
     onPointerUp(listener: PointerUpListener): VoidUnsubscribe;
     onPointerMove(listener: PointerMoveListener): VoidUnsubscribe;
+
+    onUndo(listener: VoidListener): VoidUnsubscribe;
 }
 
 export interface ITouchInput extends ICanvas {
@@ -49,6 +50,8 @@ export enum CanvasEventType {
     PointerDown = "pointerdown",
     PointerUp = "pointerup",
     PointerCancel = "pointercancel",
+
+    KeyDown = "keydown",
 
     TouchStart = "touchstart",
     TouchEnd = "touchend",
@@ -86,3 +89,4 @@ export type MoveStopListener = Listener<MoveStopEvent>;
 export type PointerEventHandler = Listener<PointerEvent>;
 export type TouchEventHandler = Listener<TouchEvent>;
 export type WheelChangeHandler = Listener<WheelEvent>;
+export type KeyDownEventHandler = Listener<KeyboardEvent>;

@@ -9,24 +9,28 @@ export type Dot = Position;
 export type CueDot = Dot & { id: Id };
 export type DotIndex = { dotX: number, dotY: number };
 
-export type CueThread = { id: Id, from: Dot, to: Dot, width: number, color: string };
-
-// StitchTread must not contain inner objects because millions of instances can be stored in the memory
-export type StitchTread = {
+export type Thread = {
     visible: boolean;
-    fromDotXIdx: number;
     fromDotXPos: number;
-    fromDotYIdx: number;
     fromDotYPos: number;
-    toDotXIdx: number;
     toDotXPos: number;
-    toDotYIdx: number;
     toDotYPos: number;
     width: number;
-    zoomedWidth: number;
     color: string;
+}
+
+// StitchTread must not contain inner objects because millions of instances can be stored in the memory
+export type StitchTread = Thread & {
+    fromDotXIdx: number;
+    fromDotYIdx: number;
+    toDotXIdx: number;
+    toDotYIdx: number;
+    zoomedWidth: number;
     side: CanvasSide;
 };
+
+
+export type CueThread = { id: Id, from: Dot, to: Dot, width: number, color: string };
 
 export interface IDisposable {
     dispose(): void;

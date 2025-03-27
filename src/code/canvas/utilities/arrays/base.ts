@@ -15,8 +15,16 @@ export abstract class ArrayBase {
     }
 
     protected occupyItemSpace(): void {
-        this.count++;
+        this.count += 1;
         this.ensureSpace();
+    }
+
+    protected removeItemSpace(): boolean {
+        if (this.count >= 0) {
+            this.count -= 1;
+            return true;
+        }
+        return false;
     }
 
     protected ensureSpace(): void {
