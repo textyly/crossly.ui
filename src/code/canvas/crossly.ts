@@ -1,4 +1,5 @@
 import { CanvasBase } from "./base.js";
+import assert from "../asserts/assert.js";
 import { ICrosslyCanvas } from "./types.js";
 import { IInputCanvas } from "./input/types.js";
 import { CueDrawingCanvas } from "./drawing/cue.js";
@@ -30,6 +31,9 @@ export abstract class CrosslyCanvas extends CanvasBase implements ICrosslyCanvas
     protected cueCanvasFacade!: ICueCanvasFacade;
     private cueDrawingCanvas!: ICueDrawingCanvas;
 
+    private disposed: boolean;
+    private disposedErrMsg: string;
+
     constructor(
         config: CrosslyCanvasConfig,
         inputCanvas: IInputCanvas,
@@ -38,39 +42,54 @@ export abstract class CrosslyCanvas extends CanvasBase implements ICrosslyCanvas
         cueVectorDrawing: IVectorDrawingCanvas) {
 
         super();
+
         this.config = config;
+        assert.isDefined(this.config, "config");
+
         this.inputCanvas = inputCanvas;
+        assert.isDefined(this.inputCanvas, "inputCanvas");
 
         this.initializeFabricCanvas(fabricRasterDrawing);
         this.initializeStitchCanvas(stitchRasterDrawing);
         this.initializeCueCanvas(cueVectorDrawing);
+
+        this.disposed = false;
+        this.disposedErrMsg = `${CrosslyCanvas.name} instance disposed.`;
     }
 
     public draw(): void {
+        assert.that(!this.disposed, this.disposedErrMsg);
+
         this.fabricCanvas.draw();
         this.stitchCanvasFacade.draw();
         this.cueCanvasFacade.draw();
     }
 
     public override dispose(): void {
+        assert.that(!this.disposed, this.disposedErrMsg);
+
         this.disposeCueCanvas();
         this.disposeStitchCanvas();
         this.disposeFabricCanvas();
         this.disposeInputCanvas();
         super.dispose();
+        this.disposed = true;
     }
 
     private initializeFabricCanvas(rasterDrawing: IRasterDrawingCanvas): void {
+        assert.isDefined(rasterDrawing, "rasterDrawing");
         this.fabricCanvas = new FabricCanvas(this.config.fabric, this.inputCanvas);
         this.fabricDrawingCanvas = new FabricDrawingCanvas(this.fabricCanvas, rasterDrawing);
     }
 
     private initializeStitchCanvas(rasterDrawing: IRasterDrawingCanvas): void {
+        assert.isDefined(rasterDrawing, "rasterDrawing");
         this.stitchCanvasFacade = new StitchCanvasFacade(this.config.stitch, this.inputCanvas);
         this.stitchDrawingCanvas = new StitchDrawingCanvas(this.stitchCanvasFacade, rasterDrawing);
     }
 
     private initializeCueCanvas(vectorDrawing: IVectorDrawingCanvas): void {
+        assert.isDefined(vectorDrawing, "vectorDrawing");
         this.cueCanvasFacade = new CueCanvasFacade(this.config.cue, this.inputCanvas);
         this.cueDrawingCanvas = new CueDrawingCanvas(this.cueCanvasFacade, vectorDrawing);
     }

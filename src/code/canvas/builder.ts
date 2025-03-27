@@ -1,3 +1,4 @@
+import assert from "../asserts/assert.js";
 import { InputCanvas } from "./input/input.js";
 import { IInputCanvas } from "./input/types.js";
 import { ICrosslyCanvasFacade } from "./types.js";
@@ -16,6 +17,12 @@ export class CrosslyCanvasBuilder {
     private cueVectorDrawing!: IVectorDrawingCanvas;
 
     public build(): ICrosslyCanvasFacade {
+        assert.isDefined(this.config, "config");
+        assert.isDefined(this.inputCanvas, "this.inputCanvas");
+        assert.isDefined(this.fabricRasterDrawing, "this.fabricRasterDrawing");
+        assert.isDefined(this.stitchRasterDrawing, "this.stitchRasterDrawing");
+        assert.isDefined(this.cueVectorDrawing, "this.cueVectorDrawing");
+
         const crosslyCanvasFacade = new CrosslyCanvasFacade(
             this.config,
             this.inputCanvas,
@@ -28,25 +35,31 @@ export class CrosslyCanvasBuilder {
 
     public withConfig(config: CrosslyCanvasConfig): CrosslyCanvasBuilder {
         this.config = config;
+        assert.isDefined(this.config, "config");
         return this;
     }
 
     public withInputCanvas(inputElement: HTMLElement): CrosslyCanvasBuilder {
+        assert.isDefined(this.config, "config");
+        assert.isDefined(inputElement, "inputElement");
         this.inputCanvas = new InputCanvas(this.config.input, inputElement);
         return this;
     }
 
     public withFabricCanvas(fabricCanvasElement: HTMLCanvasElement): CrosslyCanvasBuilder {
+        assert.isDefined(fabricCanvasElement, "fabricCanvasElement");
         this.fabricRasterDrawing = new FabricRasterDrawingCanvas(fabricCanvasElement);
         return this;
     }
 
     public withStitchCanvas(stitchCanvasElement: HTMLCanvasElement): CrosslyCanvasBuilder {
+        assert.isDefined(stitchCanvasElement, "stitchCanvasElement");
         this.stitchRasterDrawing = new StitchRasterDrawingCanvas(stitchCanvasElement);
         return this;
     }
 
     public withCueCanvas(cueSvgElement: HTMLElement): CrosslyCanvasBuilder {
+        assert.isDefined(cueSvgElement, "cueSvgElement");
         this.cueVectorDrawing = new VectorDrawingCanvas(cueSvgElement);
         return this;
     }
