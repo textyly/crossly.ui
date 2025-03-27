@@ -1,10 +1,16 @@
 import { IDisposable } from "../canvas/types.js";
-import { Listener, VoidListener, VoidUnsubscribe } from "../types";
+import { Listener, Unsubscribe, VoidListener, VoidUnsubscribe } from "../types";
 
 export type Channel = string;
 export type ChannelData = any;
 
-export interface IVoidMessaging extends IDisposable {
+export interface IMessaging extends IDisposable {
+    create(channel: Channel): void;
+    on(channel: Channel, listener: ChannelListener): Unsubscribe<ChannelListener>;
+    send(channel: Channel, data: ChannelData): void;
+}
+
+export interface IVoidMessaging extends IMessaging {
     listenOnChannel0(listener: VoidListener): VoidUnsubscribe;
     sendToChannel0(): void;
 }
