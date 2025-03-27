@@ -16,11 +16,11 @@ export abstract class Messaging implements IMessaging {
     }
 
     public create(channel: Channel): void {
-        assert.that(!this.disposed, this.disposedErrMsg);
+        this.throwIfDisposed();
 
         assert.isDefined(channel, "channel");
-        assert.greaterThanZero(channel.length, "channel.length")
-            ;
+        assert.greaterThanZero(channel.length, "channel.length");
+
         const hasChannel = this.channels.has(channel);
         assert.that(!hasChannel, `channel ${channel} already exists.`);
 
@@ -28,7 +28,7 @@ export abstract class Messaging implements IMessaging {
     }
 
     public on(channel: Channel, listener: ChannelListener): Unsubscribe<ChannelListener> {
-        assert.that(!this.disposed, this.disposedErrMsg);
+        this.throwIfDisposed();
 
         assert.isDefined(channel, "channel");
         assert.isDefined(listener, "listener");
@@ -41,7 +41,7 @@ export abstract class Messaging implements IMessaging {
     }
 
     public send(channel: Channel, data: ChannelData): void {
-        assert.that(!this.disposed, this.disposedErrMsg);
+        this.throwIfDisposed();
 
         assert.isDefined(channel, "channel");
         assert.isDefined(data, "data");
@@ -53,24 +53,28 @@ export abstract class Messaging implements IMessaging {
     }
 
     public dispose(): void {
-        assert.that(!this.disposed, this.disposedErrMsg);
+        this.throwIfDisposed();
 
         this.channels.clear();
         this.disposed = true;
     }
 
     private unsubscribe(channel: Channel, listener: ChannelListener): ChannelListener {
-        assert.that(!this.disposed, this.disposedErrMsg);
-
-        assert.isDefined(channel, "channel");
-        assert.isDefined(listener, "listener");
+        this.throwIfDisposed();
 
         const listeners = this.channels.get(channel);
         assert.isDefined(listeners, `channel ${channel} does not exist.`);
 
         const index = listeners.findIndex((l) => l === listener);
-        assert.that(index > -1, `listener not found for channel: ${channel}`);
+        assert.positive(index, "index");
 
-        return listeners.splice(index, 1)[0];
+        const removed = listeners.splice(index, 1);
+        assert.greaterThanZero(removed.length, "removed.length");
+
+        return removed[0];
+    }
+
+    private throwIfDisposed(): void {
+        assert.that(!this.disposed, this.disposedErrMsg);
     }
 }
