@@ -1,4 +1,4 @@
-export class Asserts {
+export class Assert {
     private readonly globalErrorMessage: string;
 
     constructor() {
@@ -18,5 +18,5 @@ export class Asserts {
     }
 }
 
-const assert: Asserts = new Asserts();
+const assert: Assert = new Assert();
 export default assert;

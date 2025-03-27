@@ -1,4 +1,4 @@
-import assert from "../asserts.ts/assert.js";
+import assert from "../asserts/assert.js";
 import { Unsubscribe } from "../types.js";
 import { Channel, ChannelData, ChannelListener, ChannelListeners, IMessaging } from "./types.js";
 
