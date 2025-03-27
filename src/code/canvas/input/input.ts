@@ -1,6 +1,8 @@
 import { MoveInput } from "./move.js";
 import { TouchInput } from "./touch.js";
 import { InputCanvasBase } from "./base.js";
+import assert from "../../asserts/assert.js";
+import assertMsg from "../../asserts/messages.js";
 import { InputCanvasConfig } from "../../config/types.js";
 import {
     Position,
@@ -35,7 +37,10 @@ export class InputCanvas extends InputCanvasBase {
     constructor(config: InputCanvasConfig, htmlElement: HTMLElement) {
         super();
         this.config = config;
+        assert.isDefined(this.config, "config");
+
         this.htmlElement = htmlElement;
+        assert.isDefined(this.htmlElement, "htmlElement");
 
         const bounds = { left: htmlElement.clientLeft, top: htmlElement.clientTop, width: htmlElement.clientWidth, height: htmlElement.clientHeight };
         super.bounds = bounds;

@@ -31,20 +31,16 @@ export abstract class StitchCanvas extends StitchCanvasBase {
         assert.isDefined(threadConfig, "threadConfig");
 
         this.threadColor = threadConfig.color;
-        assert.isDefined(this.threadColor, "threadConfig.color");
-        assert.that(this.threadColor.length > 0, "thread color must not be empty");
+        assert.greaterThanZero(this.threadColor.length, "threadColor.length");
 
         this.threadWidth = threadConfig.width;
-        assert.isDefined(this.threadWidth, "threadConfig.width");
-        assert.that(this.threadWidth > 0, `thread width must be bigger than 0 but it is ${this.threadWidth}`);
+        assert.greaterThanZero(this.threadWidth, "threadWidth");
 
         this.minThreadWidth = threadConfig.minWidth;
-        assert.isDefined(this.minThreadWidth, "threadConfig.minWidth");
-        assert.that(this.minThreadWidth > 0, `min thread width must be bigger than 0 but it is ${this.minThreadWidth}`);
+        assert.greaterThanZero(this.minThreadWidth, "minThreadWidth");
 
         this.threadWidthZoomStep = threadConfig.widthZoomStep;
-        assert.isDefined(this.threadWidthZoomStep, "threadConfig.widthZoomStep");
-        assert.that(this.threadWidthZoomStep > 0, `thread width zoom stem must be bigger than 0 but it is ${this.threadWidthZoomStep}`);
+        assert.greaterThanZero(this.threadWidthZoomStep, "threadWidthZoomStep");
 
         this.ids = new IdGenerator();
         this.dotsUtility = new DotsUtility();

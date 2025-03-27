@@ -1,20 +1,22 @@
-export class Assert {
-    private readonly globalErrorMessage: string;
+import assertMsg from "./messages.js";
 
-    constructor() {
-        this.globalErrorMessage = "Assertion failed.";
+export class Assert {
+
+    public greaterThanZero(propValue: number, propName: string): void {
+        const message = assertMsg.graterThanZero(propValue, propName);
+        this.that(propValue > 0, message);
     }
 
     public that(condition: unknown, errorMessage: string): asserts condition {
         if (!condition) {
-            const errMsg = errorMessage || this.globalErrorMessage;
+            const errMsg = errorMessage;
             throw new Error(errMsg);
         }
     }
 
-    public isDefined<T>(val: T, valName: string): asserts val is NonNullable<T> {
-        const errMsg = `'${valName}' cannot be undefined.`;
-        this.that(val !== undefined && val !== null, errMsg);
+    public isDefined<T>(val: T, propName: string): asserts val is NonNullable<T> {
+        const defined = val !== undefined && val !== null;
+        this.that(defined, assertMsg.undefined(propName));
     }
 }
 

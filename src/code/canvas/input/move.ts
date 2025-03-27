@@ -1,6 +1,8 @@
 import { Bounds } from "../types.js";
 import { CanvasBase } from "../base.js";
+import assert from "../../asserts/assert.js";
 import { VoidUnsubscribe } from "../../types.js";
+import assertMsg from "../../asserts/messages.js";
 import { Messaging3 } from "../../messaging/impl.js";
 import { IMessaging3 } from "../../messaging/types.js";
 import {
@@ -35,8 +37,13 @@ export class MoveInput extends CanvasBase implements IMoveInput {
         super();
 
         this.ignoreMoveUntil = ignoreMoveUntil;
+        assert.greaterThanZero(ignoreMoveUntil, "ignoreMoveUntil");
+
         this.htmlElement = htmlElement;
+        assert.isDefined(this.htmlElement, "htmlElement");
+
         this.touchInput = touchInput;
+        assert.isDefined(this.touchInput, "touchInput");
 
         this.messaging = new Messaging3();
 

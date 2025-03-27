@@ -25,9 +25,8 @@ export abstract class VirtualCanvasDimensions extends CanvasBase {
         assert.isDefined(this.inputCanvas, "inputCanvas");
 
         const dotsSpacing = config.dotsSpacing;
-        assert.isDefined(dotsSpacing, "config.dotsSpacing");
-        assert.that(dotsSpacing.space > 0, `space must be bigger than 0 but it is: ${dotsSpacing.space}`);
-        assert.that(dotsSpacing.minSpace > 0, `min space must be bigger than 0 but it is: ${dotsSpacing.minSpace}`);
+        assert.greaterThanZero(dotsSpacing.space, "space");
+        assert.greaterThanZero(dotsSpacing.minSpace, "minSpace");
 
         this.currentDotsSpace = this.dotsSpace = dotsSpacing.space / 2;
         this.minDotsSpace = dotsSpacing.minSpace / 2;

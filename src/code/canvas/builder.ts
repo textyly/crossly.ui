@@ -18,10 +18,10 @@ export class CrosslyCanvasBuilder {
 
     public build(): ICrosslyCanvasFacade {
         assert.isDefined(this.config, "config");
-        assert.isDefined(this.inputCanvas, "this.inputCanvas");
-        assert.isDefined(this.fabricRasterDrawing, "this.fabricRasterDrawing");
-        assert.isDefined(this.stitchRasterDrawing, "this.stitchRasterDrawing");
-        assert.isDefined(this.cueVectorDrawing, "this.cueVectorDrawing");
+        assert.isDefined(this.inputCanvas, "inputCanvas");
+        assert.isDefined(this.fabricRasterDrawing, "fabricRasterDrawing");
+        assert.isDefined(this.stitchRasterDrawing, "stitchRasterDrawing");
+        assert.isDefined(this.cueVectorDrawing, "cueVectorDrawing");
 
         const crosslyCanvasFacade = new CrosslyCanvasFacade(
             this.config,

@@ -1,6 +1,8 @@
 import { Bounds } from "../types.js";
 import { CanvasBase } from "../base.js";
+import assert from "../../asserts/assert.js";
 import { VoidUnsubscribe } from "../../types.js";
+import assertMsg from "../../asserts/messages.js";
 import { Messaging2 } from "../../messaging/impl.js";
 import { IMessaging2 } from "../../messaging/types.js";
 import {
@@ -32,7 +34,11 @@ export class TouchInput extends CanvasBase implements ITouchInput {
         super();
 
         this.ignoreZoomUntil = ignoreZoomUntil;
+        assert.greaterThanZero(ignoreZoomUntil, "ignoreZoomUntil");
+
         this.htmlElement = htmlElement;
+        assert.isDefined(this.htmlElement, "htmlElement");
+
         this.messaging = new Messaging2();
 
         this.touchStartHandler = this.handleTouchStart.bind(this);

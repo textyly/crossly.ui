@@ -19,10 +19,10 @@ export class StitchCanvasFacade extends StitchCanvas implements IStitchCanvasFac
 
     public setThread(color: string, width: number): void {
         assert.isDefined(color, "color");
-        assert.that(color.length > 0, `color length must be bigger than 0 but it is ${color}`);
+        assert.greaterThanZero(color.length, "color.length");
 
         assert.isDefined(width, "width");
-        assert.that(width > 0, `width must be bigger than 0 but it is ${width}`);
+        assert.greaterThanZero(width, "width");
 
         this.setThreadCore(color, width);
     }

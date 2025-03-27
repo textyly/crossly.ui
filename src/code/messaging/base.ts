@@ -19,8 +19,8 @@ export abstract class Messaging implements IMessaging {
         assert.that(!this.disposed, this.disposedErrMsg);
 
         assert.isDefined(channel, "channel");
-        assert.that(channel.length > 0, "channel name cannot be empty.");
-
+        assert.greaterThanZero(channel.length, "channel.length")
+            ;
         const hasChannel = this.channels.has(channel);
         assert.that(!hasChannel, `channel ${channel} already exists.`);
 

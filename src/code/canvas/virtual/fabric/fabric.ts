@@ -20,42 +20,31 @@ export class FabricCanvas extends FabricCanvasBase {
         super(config, inputCanvas);
 
         const dotConfig = config.dot;
-        assert.isDefined(dotConfig, "config.dot");
+        const threadConfig = config.thread;
 
         this.dotColor = dotConfig.color;
-        assert.isDefined(this.dotColor, "dotConfig.color");
-        assert.that(this.dotColor.length > 0, `dot color length must be bigger than 0 but it is: ${this.dotColor.length}`);
+        assert.greaterThanZero(this.dotColor.length, "dotColor.length");
 
         this.dotRadius = dotConfig.radius;
-        assert.isDefined(this.dotRadius, "dotConfig.radius");
-        assert.that(this.dotRadius > 0, `dot radius must be bigger than 0 but it is: ${this.dotRadius}`);
+        assert.greaterThanZero(this.dotRadius, "dotRadius");
 
         this.minDotRadius = dotConfig.minRadius;
-        assert.isDefined(this.minDotRadius, "dotConfig.minRadius");
-        assert.that(this.minDotRadius > 0, `min dot radius must be bigger than 0 but it is: ${this.minDotRadius}`);
+        assert.greaterThanZero(this.minDotRadius, "minDotRadius");
 
         this.dotRadiusZoomStep = dotConfig.radiusZoomStep;
-        assert.isDefined(this.dotRadiusZoomStep, "dotConfig.radiusZoomStep");
-        assert.that(this.dotRadiusZoomStep > 0, `dot radius zoom step must be bigger than 0 but it is: ${this.dotRadiusZoomStep}`);
-
-        const threadConfig = config.thread;
-        assert.isDefined(threadConfig, "config.thread");
+        assert.greaterThanZero(this.dotRadiusZoomStep, "dotRadiusZoomStep");
 
         this.threadColor = threadConfig.color;
-        assert.isDefined(this.threadColor, "threadConfig.color");
-        assert.that(this.threadColor.length > 0, `thread color length must be bigger than 0 but it is: ${this.threadColor.length}`);
+        assert.greaterThanZero(this.threadColor.length, "threadColor.length");
 
         this.threadWidth = threadConfig.width;
-        assert.isDefined(this.threadWidth, "threadConfig.width");
-        assert.that(this.threadWidth > 0, `thread width must be bigger than 0 but it is: ${this.threadWidth}`);
+        assert.greaterThanZero(this.threadWidth, "threadWidth");
 
         this.minThreadWidth = threadConfig.minWidth;
-        assert.isDefined(this.minThreadWidth, "threadConfig.minWidth");
-        assert.that(this.minThreadWidth > 0, `min thread width must be bigger than 0 but it is: ${this.minThreadWidth}`);
+        assert.greaterThanZero(this.minThreadWidth, "minThreadWidth");
 
         this.threadWidthZoomStep = threadConfig.widthZoomStep;
-        assert.isDefined(this.threadWidthZoomStep, "threadConfig.widthZoomStep");
-        assert.that(this.threadWidthZoomStep > 0, `thread width zoom step must be bigger than 0 but it is: ${this.threadWidthZoomStep}`);
+        assert.greaterThanZero(this.threadWidthZoomStep, "threadWidthZoomStep");
     }
 
     protected override zoomIn(): void {
