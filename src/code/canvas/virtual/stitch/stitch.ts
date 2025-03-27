@@ -108,25 +108,25 @@ export abstract class StitchCanvas extends StitchCanvasBase {
 
             if ((fromDotXIdx < leftTopIdx.dotX) && (toDotXIdx < leftTopIdx.dotX)) {
                 // filter out
-                this.threads.setVisibilities(index, false);
+                this.threads.setVisibility(index, false);
                 continue;
             }
 
             if ((fromDotXIdx > rightTopIdx.dotX) && (toDotXIdx > rightTopIdx.dotX)) {
                 // filter out
-                this.threads.setVisibilities(index, false);
+                this.threads.setVisibility(index, false);
                 continue;
             }
 
             if ((fromDotYIdx < leftTopIdx.dotY) && (toDotYIdx < leftTopIdx.dotY)) {
                 // filter out
-                this.threads.setVisibilities(index, false);
+                this.threads.setVisibility(index, false);
                 continue;
             }
 
             if ((fromDotYIdx > leftBottomIdx.dotY) && (toDotYIdx > leftBottomIdx.dotY)) {
                 // filter out
-                this.threads.setVisibilities(index, false);
+                this.threads.setVisibility(index, false);
                 continue;
             }
 

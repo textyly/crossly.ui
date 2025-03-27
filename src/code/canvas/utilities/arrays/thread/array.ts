@@ -26,12 +26,6 @@ export class ThreadArray extends ArrayBase {
         return this._visibilities;
     }
 
-    public setVisibilities(index: number, visibility: boolean): void {
-        assert.that(index >= 0 && index <= this.index, `index must be bigger or equal to 0 and less or equal to ${this.index} but it is: ${index}`);
-        
-        this._visibilities[index] = visibility;
-    }
-
     public get fromDotsXPositions(): Readonly<Int32Array> {
         return this._fromDotsXPositions.slice(0, this.length);
     }
@@ -65,6 +59,12 @@ export class ThreadArray extends ArrayBase {
         this._fromDotsYPositions[index] = fromDotYPos;
         this._toDotsXPositions[index] = toDotXPos;
         this._toDotsYPositions[index] = toDotYPos;
+    }
+
+    public setVisibility(index: number, visibility: boolean): void {
+        assert.that(index >= 0 && index <= this.index, `index must be bigger or equal to 0 and less or equal to ${this.index} but it is: ${index}`);
+
+        this._visibilities[index] = visibility;
     }
 
     // this method is being invoked extremely intensively, so it must not accept Thread (an object) because it might require a lot of GC
