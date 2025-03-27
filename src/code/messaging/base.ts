@@ -1,61 +1,76 @@
+import assert from "../asserts.ts/assert.js";
 import { Unsubscribe } from "../types.js";
-import { IDisposable } from "../canvas/types.js";
-import { Channel, ChannelData, ChannelListener, ChannelListeners } from "./types.js";
+import { Channel, ChannelData, ChannelListener, ChannelListeners, IMessaging } from "./types.js";
 
-export abstract class Messaging implements IDisposable {
+export abstract class Messaging implements IMessaging {
     private readonly channels: Map<Channel, ChannelListeners>;
 
+    private disposed: boolean;
+    private disposedErrMsg: string;
+
     constructor() {
-        this.channels = new Map<Channel, ChannelListeners>;
+        this.channels = new Map<Channel, ChannelListeners>();
+
+        this.disposed = false;
+        this.disposedErrMsg = `current ${Messaging.name} instance has been disposed.`;
     }
 
-    public dispose(): void {
-        this.channels.clear();
+    public create(channel: Channel): void {
+        assert.that(!this.disposed, this.disposedErrMsg);
+
+        assert.isDefined(channel, "channel");
+        assert.that(channel.length > 0, "channel name cannot be empty.");
+
+        const hasChannel = this.channels.has(channel);
+        assert.that(!hasChannel, `channel ${channel} already exists.`);
+
+        this.channels.set(channel, []);
     }
 
-    protected on(channel: Channel, listener: ChannelListener): Unsubscribe<ChannelListener> {
-        this.ensureChannelExists(channel, this.channels);
+    public on(channel: Channel, listener: ChannelListener): Unsubscribe<ChannelListener> {
+        assert.that(!this.disposed, this.disposedErrMsg);
 
-        const un = this.onCore(channel, listener, this.channels);
-        return un;
-    }
+        assert.isDefined(channel, "channel");
+        assert.isDefined(listener, "listener");
 
-    private onCore(channel: Channel, listener: ChannelListener, channels: Map<Channel, Array<ChannelListener>>): Unsubscribe<ChannelListener> {
-        const listeners = channels.get(channel)!;
+        const listeners = this.channels.get(channel);
+        assert.isDefined(listeners, `channel ${channel} does not exist.`);
+
         listeners.push(listener);
-
         return () => this.unsubscribe(channel, listener);
     }
 
-    protected create(channel: Channel): void {
-        const hasChannel = this.channels.has(channel);
-        if (!hasChannel) {
-            this.channels.set(channel, []);
-        }
-    }
+    public send(channel: Channel, data: ChannelData): void {
+        assert.that(!this.disposed, this.disposedErrMsg);
 
-    protected send(channel: Channel, data: ChannelData): void {
-        this.ensureChannelExists(channel, this.channels);
+        assert.isDefined(channel, "channel");
+        assert.isDefined(data, "data");
 
-        const listeners = this.channels.get(channel)!;
+        const listeners = this.channels.get(channel);
+        assert.isDefined(listeners, `channel ${channel} does not exist.`);
+
         listeners.forEach((listener) => listener(data));
     }
 
-    private unsubscribe(channel: Channel, listener: ChannelListener): ChannelListener | undefined {
-        const hasChannel = this.channels.has(channel);
-        if (hasChannel) {
-            const listeners = this.channels.get(channel)!;
-            const index = listeners.findIndex((l) => l === listener);
-            if (index > -1) {
-                const l = listeners.splice(index, 1);
-                return l[0];
-            }
-        }
+    public dispose(): void {
+        assert.that(!this.disposed, this.disposedErrMsg);
+
+        this.channels.clear();
+        this.disposed = true;
     }
 
-    private ensureChannelExists(channel: Channel, channels: Map<Channel, Array<ChannelListener>>): void {
-        if (!channels.has(channel)) {
-            throw new Error(`channel ${channel} does not exist or has been destroyed.`);
-        }
+    private unsubscribe(channel: Channel, listener: ChannelListener): ChannelListener {
+        assert.that(!this.disposed, this.disposedErrMsg);
+
+        assert.isDefined(channel, "channel");
+        assert.isDefined(listener, "listener");
+
+        const listeners = this.channels.get(channel);
+        assert.isDefined(listeners, `channel ${channel} does not exist.`);
+
+        const index = listeners.findIndex((l) => l === listener);
+        assert.that(index > -1, `listener not found for channel: ${channel}`);
+
+        return listeners.splice(index, 1)[0];
     }
 }

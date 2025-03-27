@@ -1,7 +1,7 @@
 import { CanvasBase } from "../base.js";
-import { VoidListener, VoidUnsubscribe } from "../../types.js";
 import { Messaging7 } from "../../messaging/impl.js";
 import { IMessaging7 } from "../../messaging/types.js";
+import { VoidListener, VoidUnsubscribe } from "../../types.js";
 import {
     Position,
     MoveEvent,

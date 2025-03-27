@@ -1,5 +1,5 @@
 import { Messaging } from "./base.js";
-import { Listener, VoidListener, VoidUnsubscribe } from "../types.js";
+import { Listener, VoidData, VoidListener, VoidUnsubscribe } from "../types.js";
 import {
     Channels,
     IMessaging1,
@@ -26,7 +26,8 @@ export class VoidMessaging extends Messaging implements IVoidMessaging {
     }
 
     public sendToChannel0(): void {
-        super.send(this.channel0, {});
+        const voidData: VoidData = {};
+        super.send(this.channel0, voidData);
     }
 }
 
