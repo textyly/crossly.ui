@@ -10,11 +10,13 @@ export class CueCanvasFacade extends CueCanvas implements ICueCanvasFacade {
 
     public setThreadColor(color: string): void {
         this.threadColor = color;
+        this.invokeThreadColorChange(this.threadColor);
         this.draw();
     }
 
     public setThreadWidth(width: number): void {
         this.threadWidth = width;
+        this.invokeThreadWidthChange(this.threadWidth);
         this.draw();
     }
 }

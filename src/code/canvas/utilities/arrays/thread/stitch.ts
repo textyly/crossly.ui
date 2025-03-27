@@ -60,6 +60,26 @@ export class StitchThreadArray extends ThreadArray {
         this._sides.push(thread.side);
     }
 
+    public popThread(): StitchTread | undefined {
+        if (this.length <= 0) {
+            return undefined;
+        } else {
+            const from = this.length - 1;
+            const to = this.length;
+
+            const fromDotXIdx = this.fromDotsXIndexes.slice(from, to)[0];
+            const fromDotYIdx = this.fromDotsYIndexes.slice(from, to)[0];
+            const toDotXIdx = this.toDotsXIndexes.slice(from, to)[0];
+            const toDotYIdx = this.toDotsYIndexes.slice(from, to)[0];
+            const zoomedWidth = this.zoomedWidths.slice(from, to)[0];
+            const side = this._sides.pop()!;
+            const thread = super.pop()!;
+
+            const stitchThread: StitchTread = { ...thread, fromDotXIdx, fromDotYIdx, toDotXIdx, toDotYIdx, zoomedWidth, side };
+            return stitchThread;
+        }
+    }
+
     protected override expand(): void {
         super.expand();
         this.expandFromDotsXIndexes();

@@ -1,3 +1,4 @@
+import { Thread } from "../../../types.js";
 import { ArrayBase } from "../base.js";
 
 export class ThreadArray extends ArrayBase {
@@ -63,7 +64,7 @@ export class ThreadArray extends ArrayBase {
 
     // this method is being invoked extremely intensively, so it must not accept Thread (an object) because it might require a lot of GC
     public push(visible: boolean, fromDotXPos: number, fromDotYPos: number, toDotXPos: number, toDotYPos: number, width: number, color: string): void {
-        this.occupyItemSpace();
+        super.occupyItemSpace();
 
         this._visibilities.push(visible);
         this._fromDotsXPositions[this.count] = fromDotXPos;
@@ -72,6 +73,47 @@ export class ThreadArray extends ArrayBase {
         this._toDotsYPositions[this.count] = toDotYPos;
         this._widths[this.count] = width;
         this._colors.push(color);
+    }
+
+    public pop(): Thread | undefined {
+        if (this.length <= 0) {
+            return undefined;
+        } else {
+            const from = this.length - 1;
+            const to = this.length;
+
+            const visible = this._visibilities.pop()!;
+            const fromDotXPos = this.fromDotsXPositions.slice(from, to)[0];
+            const fromDotYPos = this.fromDotsYPositions.slice(from, to)[0];
+            const toDotXPos = this.toDotsXPositions.slice(from, to)[0];
+            const toDotYPos = this.toDotsYPositions.slice(from, to)[0];
+            const width = this.widths.slice(from, to)[0];
+            const color = this._colors.pop()!;
+
+            const thread: Thread = { visible, fromDotXPos, fromDotYPos, toDotXPos, toDotYPos, width, color };
+            super.removeItemSpace();
+            return thread;
+        }
+    }
+
+    public last(): Thread | undefined {
+        if (this.length <= 0) {
+            return undefined;
+        } else {
+            const from = this.length - 1;
+            const to = this.length;
+
+            const visible = this._visibilities.slice(from, to)[0]!;
+            const fromDotXPos = this.fromDotsXPositions.slice(from, to)[0];
+            const fromDotYPos = this.fromDotsYPositions.slice(from, to)[0];
+            const toDotXPos = this.toDotsXPositions.slice(from, to)[0];
+            const toDotYPos = this.toDotsYPositions.slice(from, to)[0];
+            const width = this.widths.slice(from, to)[0];
+            const color = this._colors.slice(from, to)[0]!;
+
+            const thread: Thread = { visible, fromDotXPos, fromDotYPos, toDotXPos, toDotYPos, width, color };
+            return thread;
+        }
     }
 
     protected override expand(): void {

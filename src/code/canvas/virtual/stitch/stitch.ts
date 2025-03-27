@@ -1,10 +1,10 @@
+import { Density } from "../types.js";
 import { StitchCanvasBase } from "./base.js";
 import { DotsUtility } from "../../utilities/dots.js";
 import { StitchCanvasConfig } from "../../../config/types.js";
 import { Dot, CanvasSide, StitchTread, DotIndex } from "../../types.js";
 import { StitchThreadArray } from "../../utilities/arrays/thread/stitch.js";
 import { IInputCanvas, PointerUpEvent, Position } from "../../input/types.js";
-import { Density } from "../types.js";
 
 export abstract class StitchCanvas extends StitchCanvasBase {
     private readonly dotsUtility: DotsUtility<Dot>;
@@ -127,6 +127,9 @@ export abstract class StitchCanvas extends StitchCanvasBase {
     private startListening(): void {
         const pointerUpUn = this.inputCanvas.onPointerUp(this.handlePointerUp.bind(this));
         super.registerUn(pointerUpUn);
+
+        const undoUn = this.inputCanvas.onUndo(this.handleUndo.bind(this));
+        super.registerUn(undoUn);
     }
 
     private handlePointerUp(event: PointerUpEvent): void {
@@ -136,6 +139,26 @@ export abstract class StitchCanvas extends StitchCanvasBase {
         if (inBounds) {
             this.clickDot(position);
         }
+    }
+
+    private handleUndo(): void {
+        const removed = this.threads.popThread();
+
+        if (!removed) {
+            this.currentSide = CanvasSide.Back;
+            this.clickedDotIdx = undefined;
+        } else {
+            this.changeCanvasSide();
+
+            this.clickedDotIdx = { dotX: removed.fromDotXIdx, dotY: removed.fromDotYIdx };
+            this.threadColor = removed.color;
+            this.threadWidth = removed.width;
+
+            this.invokeThreadWidthChange(this.threadWidth);
+            this.invokeThreadColorChange(this.threadColor);
+        }
+
+        this.draw();
     }
 
     private clickDot(position: Position): void {
@@ -179,27 +202,6 @@ export abstract class StitchCanvas extends StitchCanvasBase {
         super.invokeDrawThreads(threads, density);
     }
 
-    private createThread(previouslyClickedDotIdx: DotIndex, previouslyClickedDotPos: Position, clickedDotIdx: DotIndex, clickedDotPos: Position, visible: boolean): StitchTread {
-        const thread = {
-            visible,
-            fromDotXIdx: previouslyClickedDotIdx.dotX,
-            fromDotXPos: previouslyClickedDotPos.x,
-            fromDotYIdx: previouslyClickedDotIdx.dotY,
-            fromDotYPos: previouslyClickedDotPos.y,
-            toDotXIdx: clickedDotIdx.dotX,
-            toDotXPos: clickedDotPos.x,
-            toDotYIdx: clickedDotIdx.dotY,
-            toDotYPos: clickedDotPos.y,
-            width: this.threadWidth,
-            zoomWidth: this.threadWidthZoomStep,
-            zoomedWidth: this.calculateZoomedThreadWidth(this.threadWidth),
-            color: this.threadColor,
-            side: this.currentSide
-        };
-
-        return thread;
-    }
-
     private calculateZoomedThreadWidth(threadWidth: number): number {
         let calculated = threadWidth + (this.zooms * this.threadWidthZoomStep);
         calculated = Math.max(calculated, this.minThreadWidth);
@@ -218,5 +220,25 @@ export abstract class StitchCanvas extends StitchCanvasBase {
         }
 
         return Density.Low;
+    }
+
+    private createThread(previouslyClickedDotIdx: DotIndex, previouslyClickedDotPos: Position, clickedDotIdx: DotIndex, clickedDotPos: Position, visible: boolean): StitchTread {
+        const thread = {
+            visible,
+            fromDotXIdx: previouslyClickedDotIdx.dotX,
+            fromDotXPos: previouslyClickedDotPos.x,
+            fromDotYIdx: previouslyClickedDotIdx.dotY,
+            fromDotYPos: previouslyClickedDotPos.y,
+            toDotXIdx: clickedDotIdx.dotX,
+            toDotXPos: clickedDotPos.x,
+            toDotYIdx: clickedDotIdx.dotY,
+            toDotYPos: clickedDotPos.y,
+            width: this.threadWidth,
+            zoomedWidth: this.calculateZoomedThreadWidth(this.threadWidth),
+            color: this.threadColor,
+            side: this.currentSide
+        };
+
+        return thread;
     }
 }
