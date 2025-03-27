@@ -49,6 +49,7 @@ export interface ICrosslyCanvas extends ICanvas {
 }
 
 export interface ICrosslyCanvasFacade extends ICrosslyCanvas {
+    setThread(color: string, width: number): void;
     setThreadColor(color: string): void;
     setThreadWidth(width: number): void;
 }

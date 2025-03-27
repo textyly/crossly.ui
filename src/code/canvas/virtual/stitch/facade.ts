@@ -9,6 +9,14 @@ export class StitchCanvasFacade extends StitchCanvas implements IStitchCanvasFac
         super(config, input);
     }
 
+    public setThreadColor(color: string): void {
+        this.setThread(color, this.threadWidth);
+    }
+
+    public setThreadWidth(width: number): void {
+        this.setThread(this.threadColor, width);
+    }
+
     public setThread(color: string, width: number): void {
         assert.isDefined(color, "color");
         assert.that(color.length > 0, `color length must be bigger than 0 but it is ${color}`);
@@ -17,14 +25,6 @@ export class StitchCanvasFacade extends StitchCanvas implements IStitchCanvasFac
         assert.that(width > 0, `width must be bigger than 0 but it is ${width}`);
 
         this.setThreadCore(color, width);
-    }
-
-    public setThreadColor(color: string): void {
-        this.setThread(color, this.threadWidth);
-    }
-
-    public setThreadWidth(width: number): void {
-        this.setThread(this.threadColor, width);
     }
 
     private setThreadCore(color: string, width: number): void {

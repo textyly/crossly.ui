@@ -2,6 +2,7 @@ import { CanvasBase } from "../base.js";
 import { CanvasConfig } from "../../config/types.js";
 import { IInputCanvas, Position } from "../input/types.js";
 import { Bounds, BoundsIndexes, DotIndex } from "../types.js";
+import assert from "../../asserts/assert.js";
 
 export abstract class VirtualCanvasDimensions extends CanvasBase {
     protected readonly config: Readonly<CanvasConfig>;
@@ -18,10 +19,18 @@ export abstract class VirtualCanvasDimensions extends CanvasBase {
         super();
 
         this.config = config;
-        this.inputCanvas = inputCanvas;
+        assert.isDefined(this.config, "config");
 
-        this.currentDotsSpace = this.dotsSpace = config.dotsSpacing.space / 2;
-        this.minDotsSpace = config.dotsSpacing.minSpace / 2;
+        this.inputCanvas = inputCanvas;
+        assert.isDefined(this.inputCanvas, "inputCanvas");
+
+        const dotsSpacing = config.dotsSpacing;
+        assert.isDefined(dotsSpacing, "config.dotsSpacing");
+        assert.that(dotsSpacing.space > 0, `space must be bigger than 0 but it is: ${dotsSpacing.space}`);
+        assert.that(dotsSpacing.minSpace > 0, `min space must be bigger than 0 but it is: ${dotsSpacing.minSpace}`);
+
+        this.currentDotsSpace = this.dotsSpace = dotsSpacing.space / 2;
+        this.minDotsSpace = dotsSpacing.minSpace / 2;
 
         this._virtualBounds = { left: 0, top: 0, width: 0, height: 0 };
     }

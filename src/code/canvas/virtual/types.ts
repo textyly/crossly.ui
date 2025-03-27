@@ -42,6 +42,7 @@ export interface IStitchCanvasFacade extends IStitchCanvas {
 }
 
 export interface ICueCanvasFacade extends ICueCanvas {
+    setThread(color: string, width: number): void
     setThreadColor(color: string): void;
     setThreadWidth(width: number): void;
 }

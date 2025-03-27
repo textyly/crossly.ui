@@ -1,4 +1,5 @@
 import { CueCanvasBase } from "./base.js";
+import assert from "../../../asserts/assert.js";
 import { DotsUtility } from "../../utilities/dots.js";
 import { IdGenerator } from "../../utilities/generator.js";
 import { CueCanvasConfig } from "../../../config/types.js";
@@ -13,15 +14,15 @@ export abstract class CueCanvas extends CueCanvasBase {
 
     private dotColor: string;
     private dotRadius: number;
-    private minDotRadius: number;
-    private dotRadiusZoomStep: number;
-    private zooms: number;
+    private readonly minDotRadius: number;
+    private readonly dotRadiusZoomStep: number;
 
     protected threadColor: string;
     protected threadWidth: number;
-    private minThreadWidth: number;
-    private threadWidthZoomStep: number;
+    private readonly minThreadWidth: number;
+    private readonly threadWidthZoomStep: number;
 
+    private zooms: number;
     private currentThreadId?: Id;
     private clickedDotIdx?: DotIndex;
     private hoveredDotIdx?: DotIndex & { id: Id };
@@ -29,21 +30,47 @@ export abstract class CueCanvas extends CueCanvasBase {
     constructor(config: CueCanvasConfig, input: IInputCanvas) {
         super(config, input);
 
+        const dotConfig = config.dot;
+        assert.isDefined(dotConfig, "config.dot");
+
+        this.dotColor = dotConfig.color;
+        assert.isDefined(this.dotColor, "dotConfig.color");
+        assert.that(this.dotColor.length > 0, `dot color length must be bigger than 0 but it is: ${this.dotColor.length}`);
+
+        this.dotRadius = dotConfig.radius;
+        assert.isDefined(this.dotRadius, "dotConfig.radius");
+        assert.that(this.dotRadius > 0, `dot radius must be bigger than 0 but it is: ${this.dotRadius}`);
+
+        this.minDotRadius = dotConfig.minRadius;
+        assert.isDefined(this.minDotRadius, "dotConfig.minRadius");
+        assert.that(this.minDotRadius > 0, `min dot radius must be bigger than 0 but it is: ${this.minDotRadius}`);
+
+        this.dotRadiusZoomStep = dotConfig.radiusZoomStep;
+        assert.isDefined(this.dotRadiusZoomStep, "dotConfig.radiusZoomStep");
+        assert.that(this.dotRadiusZoomStep > 0, `dot radius zoom step must be bigger than 0 but it is: ${this.dotRadiusZoomStep}`);
+
+        const threadConfig = config.thread;
+        assert.isDefined(threadConfig, "config.thread");
+
+        this.threadColor = threadConfig.color;
+        assert.isDefined(this.threadColor, "threadConfig.color");
+        assert.that(this.threadColor.length > 0, `thread color length must be bigger than 0 but it is: ${this.threadColor.length}`);
+
+        this.threadWidth = threadConfig.width;
+        assert.isDefined(this.threadWidth, "threadConfig.width");
+        assert.that(this.threadWidth > 0, `thread width must be bigger than 0 but it is: ${this.threadWidth}`);
+
+        this.minThreadWidth = threadConfig.minWidth;
+        assert.isDefined(this.minThreadWidth, "threadConfig.minWidth");
+        assert.that(this.minThreadWidth > 0, `min thread width must be bigger than 0 but it is: ${this.minThreadWidth}`);
+
+        this.threadWidthZoomStep = threadConfig.widthZoomStep;
+        assert.isDefined(this.threadWidthZoomStep, "threadConfig.widthZoomStep");
+        assert.that(this.threadWidthZoomStep > 0, `thread width zoom step must be bigger than 0 but it is: ${this.threadWidthZoomStep}`);
+
         this.ids = new IdGenerator();
         this.dotsUtility = new DotsUtility();
         this.cueArray = new CueArray();
-
-        const dotConfig = config.dot;
-        this.dotColor = dotConfig.color;
-        this.dotRadius = dotConfig.radius;
-        this.minDotRadius = dotConfig.minRadius;
-        this.dotRadiusZoomStep = dotConfig.radiusZoomStep;
-
-        const threadConfig = config.thread;
-        this.threadColor = threadConfig.color;
-        this.threadWidth = threadConfig.width;
-        this.minThreadWidth = threadConfig.minWidth;
-        this.threadWidthZoomStep = threadConfig.widthZoomStep;
 
         this.zooms = 0;
 
