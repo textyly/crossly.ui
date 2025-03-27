@@ -91,8 +91,6 @@ export class VectorDrawingCanvas extends CanvasBase implements IVectorDrawingCan
     }
 
     protected override invokeBoundsChange(bounds: Bounds): void {
-        this.throwIfDisposed();
-
         super.invokeBoundsChange(bounds);
 
         const x = bounds.left.toString();

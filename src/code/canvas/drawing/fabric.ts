@@ -58,9 +58,7 @@ export class FabricDrawingCanvas extends CanvasBase implements IFabricDrawingCan
         const bitmap = await this.rasterDrawing.createBitMap();
         this.clear();
 
-        requestAnimationFrame(() => {
-            this.rasterDrawing.drawBitMap(bitmap);
-        });
+        this.rasterDrawing.drawBitMap(bitmap);
     }
 
     private handleMoveStop(): void {
