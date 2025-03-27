@@ -1,6 +1,5 @@
-import assert from "../../../../asserts/assert.js";
-import { Thread } from "../../../types.js";
 import { ArrayBase } from "../base.js";
+import { Thread } from "../../../types.js";
 
 export class ThreadArray extends ArrayBase {
     private _visibilities: Array<boolean>;
@@ -52,8 +51,6 @@ export class ThreadArray extends ArrayBase {
 
     // this method is being invoked extremely intensively, so it must not accept Thread (an object) because it might require a lot of GC
     public set(index: number, visible: boolean, fromDotXPos: number, fromDotYPos: number, toDotXPos: number, toDotYPos: number): void {
-        assert.that(index >= 0 && index <= this.index, `index must be bigger or equal to 0 and less or equal to ${this.index} but it is: ${index}`);
-
         this._visibilities[index] = visible;
         this._fromDotsXPositions[index] = fromDotXPos;
         this._fromDotsYPositions[index] = fromDotYPos;
@@ -62,8 +59,6 @@ export class ThreadArray extends ArrayBase {
     }
 
     public setVisibility(index: number, visibility: boolean): void {
-        assert.that(index >= 0 && index <= this.index, `index must be bigger or equal to 0 and less or equal to ${this.index} but it is: ${index}`);
-
         this._visibilities[index] = visibility;
     }
 
