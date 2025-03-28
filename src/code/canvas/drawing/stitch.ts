@@ -12,22 +12,22 @@ export class StitchDrawingCanvas extends CanvasBase implements IStitchDrawingCan
         super();
 
         this.stitchCanvas = stitchCanvas;
-        assert.isDefined(this.stitchCanvas, "stitchCanvas");
+        assert.defined(this.stitchCanvas, "stitchCanvas");
 
         this.rasterDrawing = rasterDrawing;
-        assert.isDefined(this.rasterDrawing, "rasterDrawing");
+        assert.defined(this.rasterDrawing, "rasterDrawing");
 
         this.subscribe();
     }
 
     public override dispose(): void {
-        this.throwIfDisposed();
+        this.ensureAlive();
         this.clear();
         super.dispose();
     }
 
     private handleDrawThreads(event: DrawStitchThreadsEvent): void {
-        this.throwIfDisposed();
+        this.ensureAlive();
 
         const threads = event.threads;
         if (threads.length > 0) {
@@ -37,12 +37,12 @@ export class StitchDrawingCanvas extends CanvasBase implements IStitchDrawingCan
     }
 
     private handleRedraw(): void {
-        this.throwIfDisposed();
+        this.ensureAlive();
         this.clear();
     }
 
     private handleBoundsChange(event: BoundsChangeEvent): void {
-        this.throwIfDisposed();
+        this.ensureAlive();
 
         const bounds = event.bounds;
         super.bounds = bounds;
@@ -50,11 +50,11 @@ export class StitchDrawingCanvas extends CanvasBase implements IStitchDrawingCan
     }
 
     private async handleMoveStart(): Promise<void> {
-        this.throwIfDisposed();
+        this.ensureAlive();
 
         const bitmap = await this.rasterDrawing.createBitMap();
-        assert.isDefined(bitmap, "bitmap");
-        this.throwIfDisposed();
+        assert.defined(bitmap, "bitmap");
+        this.ensureAlive();
 
         this.clear();
 
@@ -62,7 +62,7 @@ export class StitchDrawingCanvas extends CanvasBase implements IStitchDrawingCan
     }
 
     private handleMoveStop(): void {
-        this.throwIfDisposed();
+        this.ensureAlive();
         this.clear();
     }
 

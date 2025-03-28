@@ -37,7 +37,7 @@ export class TouchInput extends CanvasBase implements ITouchInput {
         assert.greaterThanZero(ignoreZoomUntil, "ignoreZoomUntil");
 
         this.htmlElement = htmlElement;
-        assert.isDefined(this.htmlElement, "htmlElement");
+        assert.defined(this.htmlElement, "htmlElement");
 
         this.messaging = new Messaging2();
 

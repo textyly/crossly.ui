@@ -9,11 +9,11 @@ export class VectorDrawingCanvas extends CanvasBase implements IVectorDrawingCan
     constructor(svgCanvas: HTMLElement) {
         super();
         this.svgCanvas = svgCanvas;
-        assert.isDefined(this.svgCanvas, "svgCanvas");
+        assert.defined(this.svgCanvas, "svgCanvas");
     }
 
     public drawDot(dot: Dot, radius: number, color: string): SvgDot {
-        this.throwIfDisposed();
+        this.ensureAlive();
 
         assert.greaterThanZero(radius, "radius");
         assert.greaterThanZero(color.length, "color.length");
@@ -23,7 +23,7 @@ export class VectorDrawingCanvas extends CanvasBase implements IVectorDrawingCan
     }
 
     public drawDashDot(dot: Dot, radius: number, color: string): SvgDot {
-        this.throwIfDisposed();
+        this.ensureAlive();
 
         assert.greaterThanZero(radius, "radius");
         assert.greaterThanZero(color.length, "color.length");
@@ -33,37 +33,37 @@ export class VectorDrawingCanvas extends CanvasBase implements IVectorDrawingCan
     }
 
     public removeDot(dot: SvgDot): void {
-        this.throwIfDisposed();
+        this.ensureAlive();
 
-        assert.isDefined(dot, "dot");
+        assert.defined(dot, "dot");
 
         this.svgCanvas.removeChild(dot);
     }
 
     public drawLine(thread: CueThread): SvgLine {
-        this.throwIfDisposed();
+        this.ensureAlive();
 
         const svgLine = this.drawLineCore(thread);
         return svgLine;
     }
 
     public drawDashLine(thread: CueThread): SvgLine {
-        this.throwIfDisposed();
+        this.ensureAlive();
 
         const svgLine = this.drawDashLineCore(thread);
         return svgLine;
     }
 
     public removeLine(line: SvgLine): void {
-        this.throwIfDisposed();
+        this.ensureAlive();
 
-        assert.isDefined(line, "line");
+        assert.defined(line, "line");
 
         this.svgCanvas.removeChild(line);
     }
 
     public moveLine(thread: CueThread, svgLine: SvgLine): SvgLine {
-        this.throwIfDisposed();
+        this.ensureAlive();
 
         assert.greaterThanZero(thread.width, "thread.width");
         assert.greaterThanZero(thread.color.length, "thread.color.length");

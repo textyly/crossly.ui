@@ -44,10 +44,10 @@ export abstract class CrosslyCanvas extends CanvasBase implements ICrosslyCanvas
         super();
 
         this.config = config;
-        assert.isDefined(this.config, "config");
+        assert.defined(this.config, "config");
 
         this.inputCanvas = inputCanvas;
-        assert.isDefined(this.inputCanvas, "inputCanvas");
+        assert.defined(this.inputCanvas, "inputCanvas");
 
         this.initializeFabricCanvas(fabricRasterDrawing);
         this.initializeStitchCanvas(stitchRasterDrawing);
@@ -55,7 +55,7 @@ export abstract class CrosslyCanvas extends CanvasBase implements ICrosslyCanvas
     }
 
     public draw(): void {
-        this.throwIfDisposed();
+        this.ensureAlive();
 
         this.fabricCanvas.draw();
         this.stitchCanvasFacade.draw();
@@ -63,7 +63,7 @@ export abstract class CrosslyCanvas extends CanvasBase implements ICrosslyCanvas
     }
 
     public override dispose(): void {
-        this.throwIfDisposed();
+        this.ensureAlive();
 
         this.disposeCueCanvas();
         this.disposeStitchCanvas();
@@ -74,7 +74,7 @@ export abstract class CrosslyCanvas extends CanvasBase implements ICrosslyCanvas
     }
 
     private initializeFabricCanvas(rasterDrawing: IRasterDrawingCanvas): void {
-        assert.isDefined(rasterDrawing, "rasterDrawing");
+        assert.defined(rasterDrawing, "rasterDrawing");
 
         this.fabricRasterDrawing = rasterDrawing;
         this.fabricCanvas = new FabricCanvas(this.config.fabric, this.inputCanvas);
@@ -82,7 +82,7 @@ export abstract class CrosslyCanvas extends CanvasBase implements ICrosslyCanvas
     }
 
     private initializeStitchCanvas(rasterDrawing: IRasterDrawingCanvas): void {
-        assert.isDefined(rasterDrawing, "rasterDrawing");
+        assert.defined(rasterDrawing, "rasterDrawing");
 
         this.stitchRasterDrawing = rasterDrawing;
         this.stitchCanvasFacade = new StitchCanvasFacade(this.config.stitch, this.inputCanvas);
@@ -90,7 +90,7 @@ export abstract class CrosslyCanvas extends CanvasBase implements ICrosslyCanvas
     }
 
     private initializeCueCanvas(vectorDrawing: IVectorDrawingCanvas): void {
-        assert.isDefined(vectorDrawing, "vectorDrawing");
+        assert.defined(vectorDrawing, "vectorDrawing");
 
         this.cueVectorDrawing = vectorDrawing;
         this.cueCanvasFacade = new CueCanvasFacade(this.config.cue, this.inputCanvas);

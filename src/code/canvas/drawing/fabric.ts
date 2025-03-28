@@ -12,40 +12,40 @@ export class FabricDrawingCanvas extends CanvasBase implements IFabricDrawingCan
         super();
 
         this.fabricCanvas = fabricCanvas;
-        assert.isDefined(this.fabricCanvas, "fabricCanvas");
+        assert.defined(this.fabricCanvas, "fabricCanvas");
 
         this.rasterDrawing = rasterDrawing;
-        assert.isDefined(this.rasterDrawing, "rasterDrawing");
+        assert.defined(this.rasterDrawing, "rasterDrawing");
 
         this.subscribe();
     }
 
     public override dispose(): void {
-        this.throwIfDisposed();
+        this.ensureAlive();
         this.clear();
         super.dispose();
     }
 
     private handleDrawDots(event: DrawFabricDotsEvent): void {
-        this.throwIfDisposed();
+        this.ensureAlive();
 
         this.rasterDrawing.drawDots(event.dots);
     }
 
     private handleDrawThreads(event: DrawFabricThreadsEvent): void {
-        this.throwIfDisposed();
+        this.ensureAlive();
 
         const density = Density.Low;
         this.rasterDrawing.drawLines(event.threads, density);
     }
 
     private handleRedraw(): void {
-        this.throwIfDisposed();
+        this.ensureAlive();
         this.clear();
     }
 
     private handleBoundsChange(event: BoundsChangeEvent): void {
-        this.throwIfDisposed();
+        this.ensureAlive();
 
         const bounds = event.bounds;
         super.bounds = bounds;
@@ -54,12 +54,12 @@ export class FabricDrawingCanvas extends CanvasBase implements IFabricDrawingCan
     }
 
     private async handleMoveStart(): Promise<void> {
-        this.throwIfDisposed();
+        this.ensureAlive();
 
         const bitmap = await this.rasterDrawing.createBitMap();
 
-        this.throwIfDisposed();
-        assert.isDefined(bitmap, "bitmap");
+        this.ensureAlive();
+        assert.defined(bitmap, "bitmap");
 
         this.clear();
 
@@ -67,7 +67,7 @@ export class FabricDrawingCanvas extends CanvasBase implements IFabricDrawingCan
     }
 
     private handleMoveStop(): void {
-        this.throwIfDisposed();
+        this.ensureAlive();
         this.clear();
     }
 

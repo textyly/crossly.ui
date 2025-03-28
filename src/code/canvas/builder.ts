@@ -17,11 +17,11 @@ export class CrosslyCanvasBuilder {
     private cueVectorDrawing!: IVectorDrawingCanvas;
 
     public build(): ICrosslyCanvasFacade {
-        assert.isDefined(this.config, "config");
-        assert.isDefined(this.inputCanvas, "inputCanvas");
-        assert.isDefined(this.fabricRasterDrawing, "fabricRasterDrawing");
-        assert.isDefined(this.stitchRasterDrawing, "stitchRasterDrawing");
-        assert.isDefined(this.cueVectorDrawing, "cueVectorDrawing");
+        assert.defined(this.config, "config");
+        assert.defined(this.inputCanvas, "inputCanvas");
+        assert.defined(this.fabricRasterDrawing, "fabricRasterDrawing");
+        assert.defined(this.stitchRasterDrawing, "stitchRasterDrawing");
+        assert.defined(this.cueVectorDrawing, "cueVectorDrawing");
 
         const crosslyCanvasFacade = new CrosslyCanvasFacade(
             this.config,
@@ -35,31 +35,31 @@ export class CrosslyCanvasBuilder {
 
     public withConfig(config: CrosslyCanvasConfig): CrosslyCanvasBuilder {
         this.config = config;
-        assert.isDefined(this.config, "config");
+        assert.defined(this.config, "config");
         return this;
     }
 
     public withInputCanvas(inputElement: HTMLElement): CrosslyCanvasBuilder {
-        assert.isDefined(this.config, "config");
-        assert.isDefined(inputElement, "inputElement");
+        assert.defined(this.config, "config");
+        assert.defined(inputElement, "inputElement");
         this.inputCanvas = new InputCanvas(this.config.input, inputElement);
         return this;
     }
 
     public withFabricCanvas(fabricCanvasElement: HTMLCanvasElement): CrosslyCanvasBuilder {
-        assert.isDefined(fabricCanvasElement, "fabricCanvasElement");
+        assert.defined(fabricCanvasElement, "fabricCanvasElement");
         this.fabricRasterDrawing = new FabricRasterDrawingCanvas(fabricCanvasElement);
         return this;
     }
 
     public withStitchCanvas(stitchCanvasElement: HTMLCanvasElement): CrosslyCanvasBuilder {
-        assert.isDefined(stitchCanvasElement, "stitchCanvasElement");
+        assert.defined(stitchCanvasElement, "stitchCanvasElement");
         this.stitchRasterDrawing = new StitchRasterDrawingCanvas(stitchCanvasElement);
         return this;
     }
 
     public withCueCanvas(cueSvgElement: HTMLElement): CrosslyCanvasBuilder {
-        assert.isDefined(cueSvgElement, "cueSvgElement");
+        assert.defined(cueSvgElement, "cueSvgElement");
         this.cueVectorDrawing = new VectorDrawingCanvas(cueSvgElement);
         return this;
     }

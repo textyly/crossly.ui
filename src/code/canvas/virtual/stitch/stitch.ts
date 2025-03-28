@@ -28,7 +28,7 @@ export abstract class StitchCanvas extends StitchCanvasBase {
         super(config, inputCanvas);
 
         const threadConfig = config.thread;
-        assert.isDefined(threadConfig, "threadConfig");
+        assert.defined(threadConfig, "threadConfig");
 
         this.threadColor = threadConfig.color;
         assert.greaterThanZero(this.threadColor.length, "threadColor.length");

@@ -18,10 +18,10 @@ export class CueCanvasFacade extends CueCanvas implements ICueCanvasFacade {
     }
 
     public setThread(color: string, width: number): void {
-        assert.isDefined(color, "color");
+        assert.defined(color, "color");
         assert.greaterThanZero(color.length, "color.length");
 
-        assert.isDefined(width, "width");
+        assert.defined(width, "width");
         assert.greaterThanZero(width, "width");
 
         this.setThreadCore(color, width);

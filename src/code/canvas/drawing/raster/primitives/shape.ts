@@ -9,13 +9,13 @@ export class ShapeDrawing {
 
     constructor(line: IShapeDrawing, rectangle: IShapeDrawing, polygon: IShapeDrawing) {
         this.line = line;
-        assert.isDefined(this.line, "line");
+        assert.defined(this.line, "line");
 
         this.polygon = polygon;
-        assert.isDefined(this.polygon, "polygon");
+        assert.defined(this.polygon, "polygon");
 
         this.rectangle = rectangle;
-        assert.isDefined(this.rectangle, "rectangle");
+        assert.defined(this.rectangle, "rectangle");
     }
 
     public draw(density: Density, path: Path2D, fromX: number, fromY: number, toX: number, toY: number, width: number): void {

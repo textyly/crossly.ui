@@ -37,10 +37,10 @@ export class InputCanvas extends InputCanvasBase {
     constructor(config: InputCanvasConfig, htmlElement: HTMLElement) {
         super();
         this.config = config;
-        assert.isDefined(this.config, "config");
+        assert.defined(this.config, "config");
 
         this.htmlElement = htmlElement;
-        assert.isDefined(this.htmlElement, "htmlElement");
+        assert.defined(this.htmlElement, "htmlElement");
 
         const bounds = { left: htmlElement.clientLeft, top: htmlElement.clientTop, width: htmlElement.clientWidth, height: htmlElement.clientHeight };
         super.bounds = bounds;

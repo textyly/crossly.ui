@@ -40,10 +40,10 @@ export class MoveInput extends CanvasBase implements IMoveInput {
         assert.greaterThanZero(ignoreMoveUntil, "ignoreMoveUntil");
 
         this.htmlElement = htmlElement;
-        assert.isDefined(this.htmlElement, "htmlElement");
+        assert.defined(this.htmlElement, "htmlElement");
 
         this.touchInput = touchInput;
-        assert.isDefined(this.touchInput, "touchInput");
+        assert.defined(this.touchInput, "touchInput");
 
         this.messaging = new Messaging3();
 

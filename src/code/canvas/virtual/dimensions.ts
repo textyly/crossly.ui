@@ -19,10 +19,10 @@ export abstract class VirtualCanvasDimensions extends CanvasBase {
         super();
 
         this.config = config;
-        assert.isDefined(this.config, "config");
+        assert.defined(this.config, "config");
 
         this.inputCanvas = inputCanvas;
-        assert.isDefined(this.inputCanvas, "inputCanvas");
+        assert.defined(this.inputCanvas, "inputCanvas");
 
         const dotsSpacing = config.dotsSpacing;
         assert.greaterThanZero(dotsSpacing.space, "space");

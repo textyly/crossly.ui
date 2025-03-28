@@ -22,10 +22,10 @@ export class CueDrawingCanvas extends CanvasBase implements ICueDrawingCanvas {
         super();
 
         this.cueCanvas = cueCanvas;
-        assert.isDefined(this.cueCanvas, "cueCanvas");
+        assert.defined(this.cueCanvas, "cueCanvas");
 
         this.vectorDrawing = vectorDrawing;
-        assert.isDefined(this.vectorDrawing, "vectorDrawing");
+        assert.defined(this.vectorDrawing, "vectorDrawing");
 
         this.svgDots = new Map<Id, SvgDot>();
         this.svgLines = new Map<Id, SvgLine>();
@@ -34,90 +34,90 @@ export class CueDrawingCanvas extends CanvasBase implements ICueDrawingCanvas {
     }
 
     public override dispose(): void {
-        this.throwIfDisposed();
+        this.ensureAlive();
         this.clear();
         super.dispose();
     }
 
     private handleDrawDot(event: DrawCueDotEvent): void {
-        this.throwIfDisposed();
+        this.ensureAlive();
 
         const dot = event.dot;
         const id = dot.id;
 
         const svgDot = this.vectorDrawing.drawDot(dot, event.dotRadius, event.dotColor);
-        assert.isDefined(svgDot, "svgDot");
+        assert.defined(svgDot, "svgDot");
         this.svgDots.set(id, svgDot);
     }
 
     private handleDrawDashDot(event: DrawCueDotEvent): void {
-        this.throwIfDisposed();
+        this.ensureAlive();
 
         const dot = event.dot;
         const id = dot.id;
 
         const svgDot = this.vectorDrawing.drawDashDot(dot, event.dotRadius, event.dotColor);
-        assert.isDefined(svgDot, "svgDot");
+        assert.defined(svgDot, "svgDot");
         this.svgDots.set(id, svgDot);
     }
 
     private handleRemoveDot(event: RemoveCueDotEvent): void {
-        this.throwIfDisposed();
+        this.ensureAlive();
 
         const id = event.dotId;
         const svgDot = this.svgDots.get(id);
-        assert.isDefined(svgDot, "svgDot");
+        assert.defined(svgDot, "svgDot");
 
         this.vectorDrawing.removeDot(svgDot);
         this.svgDots.delete(id);
     }
 
     private handleDrawThread(event: DrawCueThreadEvent): void {
-        this.throwIfDisposed();
+        this.ensureAlive();
 
         const thread = event.thread;
         const id = thread.id;
 
         const svgLine = this.vectorDrawing.drawLine(thread);
-        assert.isDefined(svgLine, "svgLine");
+        assert.defined(svgLine, "svgLine");
         this.svgLines.set(id, svgLine);
     }
 
     private handleMoveThread(event: MoveCueThreadEvent): void {
-        this.throwIfDisposed();
+        this.ensureAlive();
 
         const thread = event.thread;
         const id = event.thread.id;
 
         const svgLine = this.svgLines.get(id);
-        assert.isDefined(svgLine, "svgLine");
+        assert.defined(svgLine, "svgLine");
         this.vectorDrawing.moveLine(thread, svgLine);
     }
 
     private handleDrawDashThread(event: DrawCueThreadEvent): void {
-        this.throwIfDisposed();
+        this.ensureAlive();
 
         const thread = event.thread;
         const id = thread.id;
 
         const svgLine = this.vectorDrawing.drawDashLine(thread);
-        assert.isDefined(svgLine, "svgLine");
+        assert.defined(svgLine, "svgLine");
         this.svgLines.set(id, svgLine);
     }
 
     private handleRemoveThread(event: RemoveCueThreadEvent): void {
-        this.throwIfDisposed();
+        this.ensureAlive();
 
         const id = event.threadId;
 
         const svgLine = this.svgLines.get(id);
-        assert.isDefined(svgLine, "svgLine");
+        assert.defined(svgLine, "svgLine");
         this.vectorDrawing.removeLine(svgLine);
         this.svgLines.delete(id);
     }
 
     private handleRedraw(): void {
-        this.throwIfDisposed();
+        this.ensureAlive();
 
         this.svgDots.forEach((dot) => {
             this.vectorDrawing.removeDot(dot);
@@ -131,7 +131,7 @@ export class CueDrawingCanvas extends CanvasBase implements ICueDrawingCanvas {
     }
 
     private handleBoundsChange(event: BoundsChangeEvent): void {
-        this.throwIfDisposed();
+        this.ensureAlive();
 
         const bounds = event.bounds;
         super.bounds = bounds;
