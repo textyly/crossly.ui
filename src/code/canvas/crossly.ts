@@ -44,7 +44,7 @@ export abstract class CrosslyCanvas extends CanvasBase implements ICrosslyCanvas
         super();
 
         this.config = config;
-        assert.defined(this.config, "config");
+        assert.defined(this.config, "CrosslyCanvasConfig");
 
         this.inputCanvas = inputCanvas;
         assert.defined(this.inputCanvas, "inputCanvas");
@@ -73,26 +73,26 @@ export abstract class CrosslyCanvas extends CanvasBase implements ICrosslyCanvas
         super.dispose();
     }
 
-    private initializeFabricCanvas(rasterDrawing: IRasterDrawingCanvas): void {
-        assert.defined(rasterDrawing, "rasterDrawing");
+    private initializeFabricCanvas(fabricRasterDrawing: IRasterDrawingCanvas): void {
+        assert.defined(fabricRasterDrawing, "fabricRasterDrawing");
 
-        this.fabricRasterDrawing = rasterDrawing;
+        this.fabricRasterDrawing = fabricRasterDrawing;
         this.fabricCanvas = new FabricCanvas(this.config.fabric, this.inputCanvas);
         this.fabricDrawingCanvas = new FabricDrawingCanvas(this.fabricCanvas, this.fabricRasterDrawing);
     }
 
-    private initializeStitchCanvas(rasterDrawing: IRasterDrawingCanvas): void {
-        assert.defined(rasterDrawing, "rasterDrawing");
+    private initializeStitchCanvas(stitchRasterDrawing: IRasterDrawingCanvas): void {
+        assert.defined(stitchRasterDrawing, "stitchRasterDrawing");
 
-        this.stitchRasterDrawing = rasterDrawing;
+        this.stitchRasterDrawing = stitchRasterDrawing;
         this.stitchCanvasFacade = new StitchCanvasFacade(this.config.stitch, this.inputCanvas);
         this.stitchDrawingCanvas = new StitchDrawingCanvas(this.stitchCanvasFacade, this.stitchRasterDrawing);
     }
 
-    private initializeCueCanvas(vectorDrawing: IVectorDrawingCanvas): void {
-        assert.defined(vectorDrawing, "vectorDrawing");
+    private initializeCueCanvas(curVectorDrawing: IVectorDrawingCanvas): void {
+        assert.defined(curVectorDrawing, "curVectorDrawing");
 
-        this.cueVectorDrawing = vectorDrawing;
+        this.cueVectorDrawing = curVectorDrawing;
         this.cueCanvasFacade = new CueCanvasFacade(this.config.cue, this.inputCanvas);
         this.cueDrawingCanvas = new CueDrawingCanvas(this.cueCanvasFacade, this.cueVectorDrawing);
     }

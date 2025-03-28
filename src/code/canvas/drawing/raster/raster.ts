@@ -9,10 +9,10 @@ export abstract class RasterDrawingCanvas extends CanvasBase {
     constructor(rasterCanvas: HTMLCanvasElement) {
         super();
         this.rasterCanvas = rasterCanvas;
-        assert.defined(this.rasterCanvas, "rasterCanvas");
+        assert.defined(this.rasterCanvas, "HTMLCanvasElement");
 
         this.context = this.rasterCanvas.getContext("2d")!;
-        assert.defined(this.context, "this.context");
+        assert.defined(this.context, "context");
     }
 
     public async createBitMap(): Promise<ImageBitmap> {

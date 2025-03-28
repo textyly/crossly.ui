@@ -17,12 +17,52 @@ export class CrosslyCanvasBuilder {
     private cueVectorDrawing!: IVectorDrawingCanvas;
 
     public build(): ICrosslyCanvasFacade {
-        assert.defined(this.config, "config");
+        assert.defined(this.config, "CrosslyCanvasConfig");
         assert.defined(this.inputCanvas, "inputCanvas");
         assert.defined(this.fabricRasterDrawing, "fabricRasterDrawing");
         assert.defined(this.stitchRasterDrawing, "stitchRasterDrawing");
         assert.defined(this.cueVectorDrawing, "cueVectorDrawing");
 
+        return this.buildCore();
+    }
+
+    public withConfig(config: CrosslyCanvasConfig): CrosslyCanvasBuilder {
+        assert.defined(config, "CrosslyCanvasConfig");
+
+        this.config = config;
+        return this;
+    }
+
+    public withInputCanvas(inputHtmlElement: HTMLElement): CrosslyCanvasBuilder {
+        assert.defined(this.config, "CrosslyCanvasConfig");
+        assert.defined(inputHtmlElement, "inputHtmlElement");
+
+        this.inputCanvas = new InputCanvas(this.config.input, inputHtmlElement);
+        return this;
+    }
+
+    public withFabricCanvas(fabricHtmlElement: HTMLCanvasElement): CrosslyCanvasBuilder {
+        assert.defined(fabricHtmlElement, "fabricHtmlElement");
+
+        this.fabricRasterDrawing = new FabricRasterDrawingCanvas(fabricHtmlElement);
+        return this;
+    }
+
+    public withStitchCanvas(stitchHtmlElement: HTMLCanvasElement): CrosslyCanvasBuilder {
+        assert.defined(stitchHtmlElement, "stitchHtmlElement");
+
+        this.stitchRasterDrawing = new StitchRasterDrawingCanvas(stitchHtmlElement);
+        return this;
+    }
+
+    public withCueCanvas(cueHtmlElement: HTMLElement): CrosslyCanvasBuilder {
+        assert.defined(cueHtmlElement, "cueHtmlElement");
+
+        this.cueVectorDrawing = new VectorDrawingCanvas(cueHtmlElement);
+        return this;
+    }
+
+    private buildCore(): ICrosslyCanvasFacade {
         const crosslyCanvasFacade = new CrosslyCanvasFacade(
             this.config,
             this.inputCanvas,
@@ -31,36 +71,5 @@ export class CrosslyCanvasBuilder {
             this.cueVectorDrawing);
 
         return crosslyCanvasFacade;
-    }
-
-    public withConfig(config: CrosslyCanvasConfig): CrosslyCanvasBuilder {
-        this.config = config;
-        assert.defined(this.config, "config");
-        return this;
-    }
-
-    public withInputCanvas(inputElement: HTMLElement): CrosslyCanvasBuilder {
-        assert.defined(this.config, "config");
-        assert.defined(inputElement, "inputElement");
-        this.inputCanvas = new InputCanvas(this.config.input, inputElement);
-        return this;
-    }
-
-    public withFabricCanvas(fabricCanvasElement: HTMLCanvasElement): CrosslyCanvasBuilder {
-        assert.defined(fabricCanvasElement, "fabricCanvasElement");
-        this.fabricRasterDrawing = new FabricRasterDrawingCanvas(fabricCanvasElement);
-        return this;
-    }
-
-    public withStitchCanvas(stitchCanvasElement: HTMLCanvasElement): CrosslyCanvasBuilder {
-        assert.defined(stitchCanvasElement, "stitchCanvasElement");
-        this.stitchRasterDrawing = new StitchRasterDrawingCanvas(stitchCanvasElement);
-        return this;
-    }
-
-    public withCueCanvas(cueSvgElement: HTMLElement): CrosslyCanvasBuilder {
-        assert.defined(cueSvgElement, "cueSvgElement");
-        this.cueVectorDrawing = new VectorDrawingCanvas(cueSvgElement);
-        return this;
     }
 }

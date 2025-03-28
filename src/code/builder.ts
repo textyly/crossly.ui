@@ -13,51 +13,54 @@ export class CanvasBuilder {
 
     public build(): ICrosslyCanvasFacade {
         assert.defined(this.config, "config");
-        this.crosslyCanvasBuilder.withConfig(this.config);
+        return this.buildCore(this.config);
+    }
 
-        const inputHTMLElement = this.buildInputHTMLElement();
-        this.crosslyCanvasBuilder.withInputCanvas(inputHTMLElement);
+    public withConfig(config: CrosslyCanvasConfig): CanvasBuilder {
+        this.config = config;
+        return this;
+    }
 
-        const fabricHTMLElement = this.buildFabricHTMLElement();
-        this.crosslyCanvasBuilder.withFabricCanvas(fabricHTMLElement);
+    private buildCore(config: CrosslyCanvasConfig): ICrosslyCanvasFacade {
+        this.crosslyCanvasBuilder.withConfig(config);
 
-        const stitchHTMLElement = this.buildStitchHTMLElement();
-        this.crosslyCanvasBuilder.withStitchCanvas(stitchHTMLElement);
+        const inputHtmlElement = this.buildInputHtmlElement();
+        this.crosslyCanvasBuilder.withInputCanvas(inputHtmlElement);
 
-        const cueHTMLElement = this.buildCueHTMLElement();
-        this.crosslyCanvasBuilder.withCueCanvas(cueHTMLElement);
+        const fabricHtmlElement = this.buildFabricHtmlElement();
+        this.crosslyCanvasBuilder.withFabricCanvas(fabricHtmlElement);
+
+        const stitchHtmlElement = this.buildStitchHtmlElement();
+        this.crosslyCanvasBuilder.withStitchCanvas(stitchHtmlElement);
+
+        const cueHtmlElement = this.buildCueHtmlElement();
+        this.crosslyCanvasBuilder.withCueCanvas(cueHtmlElement);
 
         const crosslyCanvas = this.crosslyCanvasBuilder.build();
         return crosslyCanvas;
     }
 
-    public withConfig(config: CrosslyCanvasConfig): CanvasBuilder {
-        this.config = config;
-        assert.defined(this.config, "config");
-        return this;
+    private buildInputHtmlElement(): HTMLElement {
+        const inputHtmlElement = document.getElementById("input") as HTMLElement;
+        assert.defined(inputHtmlElement, "inputHtmlElement");
+        return inputHtmlElement;
     }
 
-    private buildInputHTMLElement(): HTMLElement {
-        const htmlSvgElement = document.getElementById("crossly") as HTMLElement;
-        assert.defined(htmlSvgElement, "htmlSvgElement");
-        return htmlSvgElement;
+    private buildFabricHtmlElement(): HTMLCanvasElement {
+        const fabricHtmlElement = document.getElementById("fabric") as HTMLCanvasElement;
+        assert.defined(fabricHtmlElement, "fabricHtmlElement");
+        return fabricHtmlElement;
     }
 
-    private buildFabricHTMLElement(): HTMLCanvasElement {
-        const htmlCanvasElement = document.getElementById("fabric") as HTMLCanvasElement;
-        assert.defined(htmlCanvasElement, "htmlCanvasElement");
-        return htmlCanvasElement;
+    private buildStitchHtmlElement(): HTMLCanvasElement {
+        const stitchHtmlElement = document.getElementById("stitch") as HTMLCanvasElement;
+        assert.defined(stitchHtmlElement, "stitchHtmlElement");
+        return stitchHtmlElement;
     }
 
-    private buildStitchHTMLElement(): HTMLCanvasElement {
-        const htmlCanvasElement = document.getElementById("stitch") as HTMLCanvasElement;
-        assert.defined(htmlCanvasElement, "htmlCanvasElement");
-        return htmlCanvasElement;
-    }
-
-    private buildCueHTMLElement(): HTMLElement {
-        const htmSvgCanvas = document.getElementById("cue") as HTMLElement;
-        assert.defined(htmSvgCanvas, "htmSvgCanvas");
-        return htmSvgCanvas;
+    private buildCueHtmlElement(): HTMLElement {
+        const cueHtmlElement = document.getElementById("cue") as HTMLElement;
+        assert.defined(cueHtmlElement, "cueHtmlElement");
+        return cueHtmlElement;
     }
 }
