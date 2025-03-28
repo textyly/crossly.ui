@@ -131,7 +131,7 @@ export abstract class StitchCanvas extends StitchCanvasBase {
             this.threads.setThread(index, true, fromDotXPos, fromDotYPos, toDotXPos, toDotYPos, zoomedThreadWidth);
         }
 
-        // 8. draw threads, each thread consist of one thread and two dots
+        // 7. draw threads, each thread consist of one thread and two dots
         super.invokeDrawThreads(this.threads, density);
     }
 
