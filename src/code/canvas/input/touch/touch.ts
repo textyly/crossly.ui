@@ -109,7 +109,6 @@ export class TouchInput extends TouchInputBase implements ITouchInput {
 
     private zoom(touch1: Touch, touch2: Touch): void {
         if (this.currentActiveTouches) {
-
             const currentDistance = this.calculateDistance(touch1, touch2);
             let distanceDelta = currentDistance - this.currentActiveTouches.currentDistance;
             const isZoomIn = distanceDelta > 0;
@@ -123,7 +122,6 @@ export class TouchInput extends TouchInputBase implements ITouchInput {
                 this.currentActiveTouches.currentDistance = currentDistance;
             }
         } else {
-
             const newActiveTouches = {
                 currentDistance: this.calculateDistance(touch1, touch2)
             }

@@ -10,6 +10,7 @@ export class MoveInput extends MoveInputBase implements IMoveInput {
     private readonly pointerUpHandler: PointerEventHandler;
     private readonly pointerMoveHandler: PointerEventHandler;
     private readonly pointerDownHandler: PointerEventHandler;
+    private readonly pointerCancelHandler: PointerEventHandler;
 
     private lastDifference?: Position;
     private lastPointerPos?: Position;
@@ -29,6 +30,7 @@ export class MoveInput extends MoveInputBase implements IMoveInput {
         this.pointerUpHandler = this.handlePointerUp.bind(this);
         this.pointerMoveHandler = this.handlePointerMove.bind(this);
         this.pointerDownHandler = this.handlePointerDown.bind(this);
+        this.pointerCancelHandler = this.handlePointerCancel.bind(this);
     }
 
     public get inMoveMode(): boolean {
@@ -68,6 +70,10 @@ export class MoveInput extends MoveInputBase implements IMoveInput {
             const position = this.getPosition(event);
             this.stopMove(position);
         }
+    }
+
+    private handlePointerCancel(event: PointerEvent): void {
+        this.handlePointerUp(event);
     }
 
     private startMove(position: Position): void {
@@ -122,11 +128,13 @@ export class MoveInput extends MoveInputBase implements IMoveInput {
         this.htmlElement.addEventListener(CanvasEventType.PointerUp, this.pointerUpHandler);
         this.htmlElement.addEventListener(CanvasEventType.PointerMove, this.pointerMoveHandler);
         this.htmlElement.addEventListener(CanvasEventType.PointerDown, this.pointerDownHandler);
+        this.htmlElement.addEventListener(CanvasEventType.PointerCancel, this.pointerCancelHandler);
     }
 
     private unsubscribe(): void {
         this.htmlElement.removeEventListener(CanvasEventType.PointerUp, this.pointerUpHandler);
         this.htmlElement.removeEventListener(CanvasEventType.PointerMove, this.pointerMoveHandler);
         this.htmlElement.removeEventListener(CanvasEventType.PointerDown, this.pointerDownHandler);
+        this.htmlElement.removeEventListener(CanvasEventType.PointerCancel, this.pointerCancelHandler);
     }
 }
