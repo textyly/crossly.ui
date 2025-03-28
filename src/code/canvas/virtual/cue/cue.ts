@@ -94,21 +94,14 @@ export abstract class CueCanvas extends CueCanvasBase {
         }
     }
 
-    private startListening(): void {
-        const pointerMoveUn = this.inputCanvas.onPointerMove(this.handlePointerMove.bind(this));
-        super.registerUn(pointerMoveUn);
-
-        const pointerUpUn = this.inputCanvas.onPointerUp(this.handlePointerUp.bind(this));
-        super.registerUn(pointerUpUn);
-
-        const undoUn = this.inputCanvas.onUndo(this.handleUndo.bind(this));
-        super.registerUn(undoUn);
-    }
-
     private handlePointerMove(event: PointerMoveEvent): void {
-        const position = event.position;
-        const inBounds = this.inBounds(position);
+        super.ensureAlive();
 
+        const position = event.position;
+        assert.positive(position.x, "position.x");
+        assert.positive(position.y, "position.y");
+
+        const inBounds = this.inBounds(position);
         if (inBounds) {
             this.moveDot(position);
             this.resizeThead(position);
@@ -116,17 +109,22 @@ export abstract class CueCanvas extends CueCanvasBase {
     }
 
     private handlePointerUp(event: PointerUpEvent): void {
-        const position = event.position;
-        const inBounds = this.inBounds(position);
+        super.ensureAlive();
 
+        const position = event.position;
+        assert.positive(position.x, "position.x");
+        assert.positive(position.y, "position.y");
+
+        const inBounds = this.inBounds(position);
         if (inBounds) {
-            const position = event.position;
             this.clickDot(position);
             this.removeThread();
         }
     }
 
     private handleUndo(): void {
+        super.ensureAlive();
+
         const removed = this.cueArray.pop();
         const last = this.cueArray.last();
 
@@ -271,6 +269,17 @@ export abstract class CueCanvas extends CueCanvasBase {
         let calculated = threadWidth + (this.zooms * this.threadWidthZoomStep);
         calculated = Math.max(calculated, this.minThreadWidth);
         return calculated;
+    }
+
+    private startListening(): void {
+        const pointerMoveUn = this.inputCanvas.onPointerMove(this.handlePointerMove.bind(this));
+        super.registerUn(pointerMoveUn);
+
+        const pointerUpUn = this.inputCanvas.onPointerUp(this.handlePointerUp.bind(this));
+        super.registerUn(pointerUpUn);
+
+        const undoUn = this.inputCanvas.onUndo(this.handleUndo.bind(this));
+        super.registerUn(undoUn);
     }
 
     private validateConfig(config: CueCanvasConfig): void {

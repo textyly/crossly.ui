@@ -62,39 +62,57 @@ export abstract class VirtualCanvasBase extends VirtualCanvasDimensions implemen
     }
 
     private handleVisibleBoundsChange(event: BoundsChangeEvent): void {
+        super.ensureAlive();
         assert.defined(event, "BoundsChangeEvent");
+
         this.draw();
     }
 
     private handleZoomIn(event: ZoomInEvent): void {
+        super.ensureAlive();
         assert.defined(event, "ZoomInEvent");
 
-        const inBounds = this.inBounds(event.currentPosition);
+        const currentPosition = event.currentPosition;
+        assert.positive(currentPosition.x, "currentPosition");
+        assert.positive(currentPosition.y, "currentPosition");
+
+        const inBounds = this.inBounds(currentPosition);
         if (inBounds) {
-            this.zoomInCanvas(event.currentPosition);
+            this.zoomInCanvas(currentPosition);
             this.zoomIn();
             this.draw();
         }
     }
 
     private handleZoomOut(event: ZoomOutEvent): void {
+        super.ensureAlive();
         assert.defined(event, "ZoomOutEvent");
 
-        const inBounds = this.inBounds(event.currentPosition);
+        const currentPosition = event.currentPosition;
+        assert.positive(currentPosition.x, "currentPosition.x");
+        assert.positive(currentPosition.y, "currentPosition.y");
+
+        const inBounds = this.inBounds(currentPosition);
         const minSpace = this.config.dotsSpacing.minSpace / 2;
 
         if (inBounds && (this.currentDotsSpace > minSpace)) {
-            this.zoomOutCanvas(event.currentPosition);
+            this.zoomOutCanvas(currentPosition);
             this.zoomOut();
             this.draw();
         }
     }
 
     private handleMoveStart(event: MoveStartEvent): void {
+        super.ensureAlive();
         assert.defined(event, "MoveStartEvent");
 
         const currentPosition = event.currentPosition;
+        assert.positive(currentPosition.x, "currentPosition.x");
+        assert.positive(currentPosition.y, "currentPosition.y");
+
         const previousPosition = event.previousPosition;
+        assert.positive(previousPosition.x, "previousPosition.x");
+        assert.positive(previousPosition.y, "previousPosition.y");
 
         const inBounds = this.inBounds(currentPosition);
         if (inBounds) {
@@ -105,16 +123,25 @@ export abstract class VirtualCanvasBase extends VirtualCanvasDimensions implemen
     }
 
     private handleMove(event: MoveEvent): void {
+        super.ensureAlive();
         assert.defined(event, "MoveEvent");
 
         if (this.inMovingMode) {
+
             const currentPosition = event.currentPosition;
+            assert.positive(currentPosition.x, "currentPosition.x");
+            assert.positive(currentPosition.y, "currentPosition.y");
+
             const previousPosition = event.previousPosition;
+            assert.positive(previousPosition.x, "previousPosition.x");
+            assert.positive(previousPosition.y, "previousPosition.y");
+
             this.move(currentPosition, previousPosition);
         }
     }
 
     private handleMoveStop(event: MoveStopEvent): void {
+        super.ensureAlive();
         assert.defined(event, "MoveStopEvent");
 
         if (this.inMovingMode) {

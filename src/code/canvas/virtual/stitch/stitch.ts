@@ -135,26 +135,23 @@ export abstract class StitchCanvas extends StitchCanvasBase {
         super.invokeDrawThreads(this.threads, density);
     }
 
-    private startListening(): void {
-        const pointerUpUn = this.inputCanvas.onPointerUp(this.handlePointerUp.bind(this));
-        super.registerUn(pointerUpUn);
-
-        const undoUn = this.inputCanvas.onUndo(this.handleUndo.bind(this));
-        super.registerUn(undoUn);
-    }
-
     private handlePointerUp(event: PointerUpEvent): void {
-        const position = event.position;
-        const inBounds = this.inBounds(position);
+        super.ensureAlive();
 
+        const position = event.position;
+        assert.positive(position.x, "position.x");
+        assert.positive(position.y, "position.y");
+
+        const inBounds = this.inBounds(position);
         if (inBounds) {
             this.clickDot(position);
         }
     }
 
     private handleUndo(): void {
-        const removed = this.threads.popThread();
+        super.ensureAlive();
 
+        const removed = this.threads.popThread();
         if (!removed) {
             this.currentSide = CanvasSide.Back;
             this.clickedDotIdx = undefined;
@@ -252,6 +249,14 @@ export abstract class StitchCanvas extends StitchCanvasBase {
         };
 
         return thread;
+    }
+
+    private startListening(): void {
+        const pointerUpUn = this.inputCanvas.onPointerUp(this.handlePointerUp.bind(this));
+        super.registerUn(pointerUpUn);
+
+        const undoUn = this.inputCanvas.onUndo(this.handleUndo.bind(this));
+        super.registerUn(undoUn);
     }
 
     private validateConfig(config: StitchCanvasConfig): void {
