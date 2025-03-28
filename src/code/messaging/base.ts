@@ -2,13 +2,13 @@ import assert from "../asserts/assert.js";
 import { Unsubscribe } from "../types.js";
 import { Channel, ChannelData, ChannelListener, ChannelListeners, IMessaging } from "./types.js";
 
-export abstract class Messaging implements IMessaging {
+export abstract class MessagingBase implements IMessaging {
     private readonly className: string;
     private readonly channels: Map<Channel, ChannelListeners>;
     private disposed: boolean;
 
     constructor() {
-        this.className = Messaging.name;
+        this.className = MessagingBase.name;
         this.channels = new Map<Channel, ChannelListeners>();
         this.disposed = false;
     }

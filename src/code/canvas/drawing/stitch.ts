@@ -28,6 +28,7 @@ export class StitchDrawingCanvas extends CanvasBase implements IStitchDrawingCan
 
     private handleDrawThreads(event: DrawStitchThreadsEvent): void {
         this.ensureAlive();
+        assert.defined(event, "DrawStitchThreadsEvent");
 
         const threads = event.threads;
         if (threads.length > 0) {
@@ -54,7 +55,6 @@ export class StitchDrawingCanvas extends CanvasBase implements IStitchDrawingCan
 
         const bitmap = await this.rasterDrawing.createBitMap();
         assert.defined(bitmap, "bitmap");
-        this.ensureAlive();
 
         this.clear();
 

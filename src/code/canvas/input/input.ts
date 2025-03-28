@@ -1,5 +1,5 @@
-import { MoveInput } from "./move.js";
-import { TouchInput } from "./touch.js";
+import { MoveInput } from "./move/move.js";
+import { TouchInput } from "./touch/touch.js";
 import { InputCanvasBase } from "./base.js";
 import assert from "../../asserts/assert.js";
 import { InputCanvasConfig } from "../../config/types.js";

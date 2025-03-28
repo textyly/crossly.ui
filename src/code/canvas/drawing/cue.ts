@@ -41,6 +41,7 @@ export class CueDrawingCanvas extends CanvasBase implements ICueDrawingCanvas {
 
     private handleDrawDot(event: DrawCueDotEvent): void {
         this.ensureAlive();
+        assert.defined(event, "DrawCueDotEvent");
 
         const dot = event.dot;
         const id = dot.id;
@@ -52,6 +53,7 @@ export class CueDrawingCanvas extends CanvasBase implements ICueDrawingCanvas {
 
     private handleDrawDashDot(event: DrawCueDotEvent): void {
         this.ensureAlive();
+        assert.defined(event, "DrawCueDotEvent");
 
         const dot = event.dot;
         const id = dot.id;
@@ -63,6 +65,7 @@ export class CueDrawingCanvas extends CanvasBase implements ICueDrawingCanvas {
 
     private handleRemoveDot(event: RemoveCueDotEvent): void {
         this.ensureAlive();
+        assert.defined(event, "RemoveCueDotEvent");
 
         const id = event.dotId;
         const svgDot = this.svgDots.get(id);
@@ -74,6 +77,7 @@ export class CueDrawingCanvas extends CanvasBase implements ICueDrawingCanvas {
 
     private handleDrawThread(event: DrawCueThreadEvent): void {
         this.ensureAlive();
+        assert.defined(event, "DrawCueThreadEvent");
 
         const thread = event.thread;
         const id = thread.id;
@@ -85,6 +89,7 @@ export class CueDrawingCanvas extends CanvasBase implements ICueDrawingCanvas {
 
     private handleMoveThread(event: MoveCueThreadEvent): void {
         this.ensureAlive();
+        assert.defined(event, "MoveCueThreadEvent");
 
         const thread = event.thread;
         const id = event.thread.id;
@@ -96,6 +101,7 @@ export class CueDrawingCanvas extends CanvasBase implements ICueDrawingCanvas {
 
     private handleDrawDashThread(event: DrawCueThreadEvent): void {
         this.ensureAlive();
+        assert.defined(event, "DrawCueThreadEvent");
 
         const thread = event.thread;
         const id = thread.id;
@@ -107,6 +113,7 @@ export class CueDrawingCanvas extends CanvasBase implements ICueDrawingCanvas {
 
     private handleRemoveThread(event: RemoveCueThreadEvent): void {
         this.ensureAlive();
+        assert.defined(event, "RemoveCueThreadEvent");
 
         const id = event.threadId;
 

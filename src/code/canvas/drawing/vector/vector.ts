@@ -15,6 +15,7 @@ export class VectorDrawingCanvas extends CanvasBase implements IVectorDrawingCan
     public drawDot(dot: Dot, radius: number, color: string): SvgDot {
         this.ensureAlive();
 
+        assert.defined(dot, "dot");
         assert.greaterThanZero(radius, "radius");
         assert.greaterThanZero(color.length, "color.length");
 
@@ -25,6 +26,7 @@ export class VectorDrawingCanvas extends CanvasBase implements IVectorDrawingCan
     public drawDashDot(dot: Dot, radius: number, color: string): SvgDot {
         this.ensureAlive();
 
+        assert.defined(dot, "dot");
         assert.greaterThanZero(radius, "radius");
         assert.greaterThanZero(color.length, "color.length");
 
@@ -43,12 +45,16 @@ export class VectorDrawingCanvas extends CanvasBase implements IVectorDrawingCan
     public drawLine(thread: CueThread): SvgLine {
         this.ensureAlive();
 
+        assert.defined(thread, "thread");
+
         const svgLine = this.drawLineCore(thread);
         return svgLine;
     }
 
     public drawDashLine(thread: CueThread): SvgLine {
         this.ensureAlive();
+
+        assert.defined(thread, "thread");
 
         const svgLine = this.drawDashLineCore(thread);
         return svgLine;
@@ -65,6 +71,8 @@ export class VectorDrawingCanvas extends CanvasBase implements IVectorDrawingCan
     public moveLine(thread: CueThread, svgLine: SvgLine): SvgLine {
         this.ensureAlive();
 
+        assert.defined(thread, "thread");
+        assert.defined(svgLine, "svgLine");
         assert.greaterThanZero(thread.width, "thread.width");
         assert.greaterThanZero(thread.color.length, "thread.color.length");
 

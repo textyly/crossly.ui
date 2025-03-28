@@ -28,12 +28,14 @@ export class FabricDrawingCanvas extends CanvasBase implements IFabricDrawingCan
 
     private handleDrawDots(event: DrawFabricDotsEvent): void {
         this.ensureAlive();
+        assert.defined(event, "DrawFabricDotsEvent");
 
         this.rasterDrawing.drawDots(event.dots);
     }
 
     private handleDrawThreads(event: DrawFabricThreadsEvent): void {
         this.ensureAlive();
+        assert.defined(event, "DrawFabricThreadsEvent");
 
         const density = Density.Low;
         this.rasterDrawing.drawLines(event.threads, density);
@@ -57,8 +59,6 @@ export class FabricDrawingCanvas extends CanvasBase implements IFabricDrawingCan
         this.ensureAlive();
 
         const bitmap = await this.rasterDrawing.createBitMap();
-
-        this.ensureAlive();
         assert.defined(bitmap, "bitmap");
 
         this.clear();

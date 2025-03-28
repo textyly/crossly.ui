@@ -27,20 +27,13 @@ export abstract class StitchCanvas extends StitchCanvasBase {
     constructor(config: StitchCanvasConfig, inputCanvas: IInputCanvas) {
         super(config, inputCanvas);
 
+        this.validateConfig(config);
+
         const threadConfig = config.thread;
-        assert.defined(threadConfig, "threadConfig");
-
         this.threadColor = threadConfig.color;
-        assert.greaterThanZero(this.threadColor.length, "threadColor.length");
-
         this.threadWidth = threadConfig.width;
-        assert.greaterThanZero(this.threadWidth, "threadWidth");
-
         this.minThreadWidth = threadConfig.minWidth;
-        assert.greaterThanZero(this.minThreadWidth, "minThreadWidth");
-
         this.threadWidthZoomStep = threadConfig.widthZoomStep;
-        assert.greaterThanZero(this.threadWidthZoomStep, "threadWidthZoomStep");
 
         this.ids = new IdGenerator();
         this.dotsUtility = new DotsUtility();
@@ -259,5 +252,15 @@ export abstract class StitchCanvas extends StitchCanvasBase {
         };
 
         return thread;
+    }
+
+    private validateConfig(config: StitchCanvasConfig): void {
+        const threadConfig = config.thread;
+        assert.defined(threadConfig, "ThreadConfig");
+
+        assert.greaterThanZero(threadConfig.color.length, "color.length");
+        assert.greaterThanZero(threadConfig.width, "width");
+        assert.greaterThanZero(threadConfig.minWidth, "minWidth");
+        assert.greaterThanZero(threadConfig.widthZoomStep, "widthZoomStep");
     }
 }

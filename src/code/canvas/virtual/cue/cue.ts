@@ -30,32 +30,20 @@ export abstract class CueCanvas extends CueCanvasBase {
     constructor(config: CueCanvasConfig, input: IInputCanvas) {
         super(config, input);
 
+        this.validateConfig(config);
+
         const dotConfig = config.dot;
         const threadConfig = config.thread;
 
         this.dotColor = dotConfig.color;
-        assert.greaterThanZero(this.dotColor.length, "dotColor.length");
-
         this.dotRadius = dotConfig.radius;
-        assert.greaterThanZero(this.dotRadius, "dotRadius");
-
         this.minDotRadius = dotConfig.minRadius;
-        assert.greaterThanZero(this.minDotRadius, "minDotRadius");
-
         this.dotRadiusZoomStep = dotConfig.radiusZoomStep;
-        assert.greaterThanZero(this.dotRadiusZoomStep, "dotRadiusZoomStep");
 
         this.threadColor = threadConfig.color;
-        assert.greaterThanZero(this.threadColor.length, "threadColor.length");
-
         this.threadWidth = threadConfig.width;
-        assert.greaterThanZero(this.threadWidth, "threadWidth");
-
         this.minThreadWidth = threadConfig.minWidth;
-        assert.greaterThanZero(this.minThreadWidth, "minThreadWidth");
-
         this.threadWidthZoomStep = threadConfig.widthZoomStep;
-        assert.greaterThanZero(this.threadWidthZoomStep, "threadWidthZoomStep");
 
         this.ids = new IdGenerator();
         this.dotsUtility = new DotsUtility();
@@ -283,5 +271,23 @@ export abstract class CueCanvas extends CueCanvasBase {
         let calculated = threadWidth + (this.zooms * this.threadWidthZoomStep);
         calculated = Math.max(calculated, this.minThreadWidth);
         return calculated;
+    }
+
+    private validateConfig(config: CueCanvasConfig): void {
+        const dotConfig = config.dot;
+        assert.defined(dotConfig, "DotConfig");
+
+        const threadConfig = config.thread;
+        assert.defined(threadConfig, "ThreadConfig");
+
+        assert.greaterThanZero(dotConfig.radius, "dotRadius");
+        assert.greaterThanZero(dotConfig.minRadius, "minDotRadius");
+        assert.greaterThanZero(dotConfig.radiusZoomStep, "dotRadiusZoomStep");
+        assert.greaterThanZero(dotConfig.color.length, "dotColor.length");
+
+        assert.greaterThanZero(threadConfig.width, "threadWidth");
+        assert.greaterThanZero(threadConfig.minWidth, "minThreadWidth");
+        assert.greaterThanZero(threadConfig.widthZoomStep, "threadWidthZoomStep");
+        assert.greaterThanZero(threadConfig.color.length, "threadColor.length");
     }
 }
