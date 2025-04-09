@@ -1,5 +1,5 @@
-import { Thread } from "../../../types.js";
 import { ArrayBase } from "../base.js";
+import { Thread } from "../../../types.js";
 
 export class ThreadArray extends ArrayBase {
     private _visibilities: Array<boolean>;
@@ -23,10 +23,6 @@ export class ThreadArray extends ArrayBase {
 
     public get visibilities(): Readonly<Array<boolean>> {
         return this._visibilities;
-    }
-
-    public setVisibilities(index: number, visibility: boolean): void {
-        this._visibilities[index] = visibility;
     }
 
     public get fromDotsXPositions(): Readonly<Int32Array> {
@@ -62,16 +58,20 @@ export class ThreadArray extends ArrayBase {
         this._toDotsYPositions[index] = toDotYPos;
     }
 
+    public setVisibility(index: number, visibility: boolean): void {
+        this._visibilities[index] = visibility;
+    }
+
     // this method is being invoked extremely intensively, so it must not accept Thread (an object) because it might require a lot of GC
     public push(visible: boolean, fromDotXPos: number, fromDotYPos: number, toDotXPos: number, toDotYPos: number, width: number, color: string): void {
         super.occupyItemSpace();
 
         this._visibilities.push(visible);
-        this._fromDotsXPositions[this.count] = fromDotXPos;
-        this._fromDotsYPositions[this.count] = fromDotYPos;
-        this._toDotsXPositions[this.count] = toDotXPos;
-        this._toDotsYPositions[this.count] = toDotYPos;
-        this._widths[this.count] = width;
+        this._fromDotsXPositions[this.index] = fromDotXPos;
+        this._fromDotsYPositions[this.index] = fromDotYPos;
+        this._toDotsXPositions[this.index] = toDotXPos;
+        this._toDotsYPositions[this.index] = toDotYPos;
+        this._widths[this.index] = width;
         this._colors.push(color);
     }
 

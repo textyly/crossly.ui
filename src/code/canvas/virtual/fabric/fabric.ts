@@ -1,4 +1,5 @@
 import { FabricCanvasBase } from "./base.js";
+import assert from "../../../asserts/assert.js";
 import { IInputCanvas } from "../../input/types.js";
 import { FabricCanvasConfig } from "../../../config/types.js";
 import { DotArray } from "../../utilities/arrays/dot/dot.js";
@@ -18,13 +19,16 @@ export class FabricCanvas extends FabricCanvasBase {
     constructor(config: FabricCanvasConfig, inputCanvas: IInputCanvas) {
         super(config, inputCanvas);
 
+        this.validateConfig(config);
+
         const dotConfig = config.dot;
+        const threadConfig = config.thread;
+
         this.dotColor = dotConfig.color;
         this.dotRadius = dotConfig.radius;
         this.minDotRadius = dotConfig.minRadius;
         this.dotRadiusZoomStep = dotConfig.radiusZoomStep;
 
-        const threadConfig = config.thread;
         this.threadColor = threadConfig.color;
         this.threadWidth = threadConfig.width;
         this.minThreadWidth = threadConfig.minWidth;
@@ -102,5 +106,23 @@ export class FabricCanvas extends FabricCanvasBase {
         }
 
         super.invokeDrawDots(dots);
+    }
+
+    private validateConfig(config: FabricCanvasConfig): void {
+        const dotConfig = config.dot;
+        assert.defined(dotConfig, "DotConfig");
+
+        const threadConfig = config.thread;
+        assert.defined(threadConfig, "ThreadConfig");
+
+        assert.greaterThanZero(dotConfig.radius, "dotRadius");
+        assert.greaterThanZero(dotConfig.minRadius, "minDotRadius");
+        assert.greaterThanZero(dotConfig.radiusZoomStep, "dotRadiusZoomStep");
+        assert.greaterThanZero(dotConfig.color.length, "dotColor.length");
+
+        assert.greaterThanZero(threadConfig.width, "threadWidth");
+        assert.greaterThanZero(threadConfig.minWidth, "minThreadWidth");
+        assert.greaterThanZero(threadConfig.widthZoomStep, "threadWidthZoomStep");
+        assert.greaterThanZero(threadConfig.color.length, "threadColor.length");
     }
 }

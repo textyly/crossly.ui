@@ -1,3 +1,4 @@
+import assert from "../../asserts/assert.js";
 import { CanvasBase } from "../base.js";
 import { BoundsChangeEvent } from "../types.js";
 import { IFabricDrawingCanvas, IRasterDrawingCanvas } from "./types.js";
@@ -9,31 +10,45 @@ export class FabricDrawingCanvas extends CanvasBase implements IFabricDrawingCan
 
     constructor(fabricCanvas: IFabricCanvas, rasterDrawing: IRasterDrawingCanvas) {
         super();
-        this.rasterDrawing = rasterDrawing;
+
         this.fabricCanvas = fabricCanvas;
+        assert.defined(this.fabricCanvas, "fabricCanvas");
+
+        this.rasterDrawing = rasterDrawing;
+        assert.defined(this.rasterDrawing, "rasterDrawing");
 
         this.subscribe();
     }
 
     public override dispose(): void {
+        this.ensureAlive();
         this.clear();
         super.dispose();
     }
 
     private handleDrawDots(event: DrawFabricDotsEvent): void {
+        this.ensureAlive();
+        assert.defined(event, "DrawFabricDotsEvent");
+
         this.rasterDrawing.drawDots(event.dots);
     }
 
     private handleDrawThreads(event: DrawFabricThreadsEvent): void {
+        this.ensureAlive();
+        assert.defined(event, "DrawFabricThreadsEvent");
+
         const density = Density.Low;
         this.rasterDrawing.drawLines(event.threads, density);
     }
 
     private handleRedraw(): void {
+        this.ensureAlive();
         this.clear();
     }
 
     private handleBoundsChange(event: BoundsChangeEvent): void {
+        this.ensureAlive();
+
         const bounds = event.bounds;
         super.bounds = bounds;
 
@@ -41,15 +56,18 @@ export class FabricDrawingCanvas extends CanvasBase implements IFabricDrawingCan
     }
 
     private async handleMoveStart(): Promise<void> {
+        this.ensureAlive();
+
         const bitmap = await this.rasterDrawing.createBitMap();
+        assert.defined(bitmap, "bitmap");
+
         this.clear();
 
-        requestAnimationFrame(() => {
-            this.rasterDrawing.drawBitMap(bitmap);
-        });
+        this.rasterDrawing.drawBitMap(bitmap);
     }
 
     private handleMoveStop(): void {
+        this.ensureAlive();
         this.clear();
     }
 

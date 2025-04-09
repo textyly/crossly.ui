@@ -2,6 +2,7 @@ import { ThreadArray } from "./array.js";
 import { CanvasSide, StitchTread } from "../../../types.js";
 
 export class StitchThreadArray extends ThreadArray {
+    private _ids: Int16Array;
     private _fromDotsXIndexes: Int16Array;
     private _fromDotsYIndexes: Int16Array;
     private _toDotsXIndexes: Int16Array;
@@ -12,12 +13,17 @@ export class StitchThreadArray extends ThreadArray {
     constructor() {
         super();
 
+        this._ids = new Int16Array(this.space);
         this._fromDotsXIndexes = new Int16Array(this.space);
         this._fromDotsYIndexes = new Int16Array(this.space);
         this._toDotsXIndexes = new Int16Array(this.space);
         this._toDotsYIndexes = new Int16Array(this.space);
         this._zoomedWidths = new Int16Array(this.space);
         this._sides = new Array<CanvasSide>();
+    }
+
+    public get ids(): Readonly<Int16Array> {
+        return this._ids.slice(0, this.length);
     }
 
     public get fromDotsXIndexes(): Readonly<Int16Array> {
@@ -52,11 +58,12 @@ export class StitchThreadArray extends ThreadArray {
     // this method is being invoked only on a thread creation, so it is safe to use a StitchTread object
     public pushThread(thread: StitchTread): void {
         super.push(thread.visible, thread.fromDotXPos, thread.fromDotYPos, thread.toDotXPos, thread.toDotYPos, thread.width, thread.color);
-        this._fromDotsXIndexes[this.count] = thread.fromDotXIdx;
-        this._fromDotsYIndexes[this.count] = thread.fromDotYIdx;
-        this._toDotsXIndexes[this.count] = thread.toDotXIdx;
-        this._toDotsYIndexes[this.count] = thread.toDotYIdx;
-        this._zoomedWidths[this.count] = thread.zoomedWidth;
+        this._ids[this.index] = thread.id;
+        this._fromDotsXIndexes[this.index] = thread.fromDotXIdx;
+        this._fromDotsYIndexes[this.index] = thread.fromDotYIdx;
+        this._toDotsXIndexes[this.index] = thread.toDotXIdx;
+        this._toDotsYIndexes[this.index] = thread.toDotYIdx;
+        this._zoomedWidths[this.index] = thread.zoomedWidth;
         this._sides.push(thread.side);
     }
 
@@ -67,6 +74,7 @@ export class StitchThreadArray extends ThreadArray {
             const from = this.length - 1;
             const to = this.length;
 
+            const id = this.ids.slice(from, to)[0];
             const fromDotXIdx = this.fromDotsXIndexes.slice(from, to)[0];
             const fromDotYIdx = this.fromDotsYIndexes.slice(from, to)[0];
             const toDotXIdx = this.toDotsXIndexes.slice(from, to)[0];
@@ -75,18 +83,28 @@ export class StitchThreadArray extends ThreadArray {
             const side = this._sides.pop()!;
             const thread = super.pop()!;
 
-            const stitchThread: StitchTread = { ...thread, fromDotXIdx, fromDotYIdx, toDotXIdx, toDotYIdx, zoomedWidth, side };
+            const stitchThread: StitchTread = { ...thread, id, fromDotXIdx, fromDotYIdx, toDotXIdx, toDotYIdx, zoomedWidth, side };
             return stitchThread;
         }
     }
 
     protected override expand(): void {
         super.expand();
+        this.expandIds();
         this.expandFromDotsXIndexes();
         this.expandFromDotsYIndexes();
         this.expandToDotsXIndexes();
         this.expandToDotsYIndexes();
         this.expandZoomedWidths();
+    }
+
+    private expandIds(): void {
+        const ids = this._ids;
+        this._ids = new Int16Array(this.space);
+
+        for (let index = 0; index < ids.length; index++) {
+            this._ids[index] = ids[index];
+        }
     }
 
     private expandFromDotsXIndexes(): void {
