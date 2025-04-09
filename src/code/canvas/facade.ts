@@ -15,6 +15,11 @@ export class CrosslyCanvasFacade extends CrosslyCanvas implements ICrosslyCanvas
         super(config, inputCanvas, fabricRasterDrawing, stitchRasterDrawing, cueVectorDrawing);
     }
 
+    public setThread(color: string, width: number): void {
+        this.stitchCanvasFacade.setThread(color, width);
+        this.cueCanvasFacade.setThread(color, width);
+    }
+
     public setThreadColor(color: string): void {
         this.stitchCanvasFacade.setThreadColor(color);
         this.cueCanvasFacade.setThreadColor(color);

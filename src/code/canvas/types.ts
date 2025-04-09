@@ -21,6 +21,7 @@ export type Thread = {
 
 // StitchTread must not contain inner objects because millions of instances can be stored in the memory
 export type StitchTread = Thread & {
+    id: number;
     fromDotXIdx: number;
     fromDotYIdx: number;
     toDotXIdx: number;
@@ -48,6 +49,7 @@ export interface ICrosslyCanvas extends ICanvas {
 }
 
 export interface ICrosslyCanvasFacade extends ICrosslyCanvas {
+    setThread(color: string, width: number): void;
     setThreadColor(color: string): void;
     setThreadWidth(width: number): void;
 }

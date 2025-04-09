@@ -1,4 +1,5 @@
 import { CueCanvasBase } from "./base.js";
+import assert from "../../../asserts/assert.js";
 import { DotsUtility } from "../../utilities/dots.js";
 import { IdGenerator } from "../../utilities/generator.js";
 import { CueCanvasConfig } from "../../../config/types.js";
@@ -13,15 +14,15 @@ export abstract class CueCanvas extends CueCanvasBase {
 
     private dotColor: string;
     private dotRadius: number;
-    private minDotRadius: number;
-    private dotRadiusZoomStep: number;
-    private zooms: number;
+    private readonly minDotRadius: number;
+    private readonly dotRadiusZoomStep: number;
 
     protected threadColor: string;
     protected threadWidth: number;
-    private minThreadWidth: number;
-    private threadWidthZoomStep: number;
+    private readonly minThreadWidth: number;
+    private readonly threadWidthZoomStep: number;
 
+    private zooms: number;
     private currentThreadId?: Id;
     private clickedDotIdx?: DotIndex;
     private hoveredDotIdx?: DotIndex & { id: Id };
@@ -29,21 +30,24 @@ export abstract class CueCanvas extends CueCanvasBase {
     constructor(config: CueCanvasConfig, input: IInputCanvas) {
         super(config, input);
 
-        this.ids = new IdGenerator();
-        this.dotsUtility = new DotsUtility();
-        this.cueArray = new CueArray();
+        this.validateConfig(config);
 
         const dotConfig = config.dot;
+        const threadConfig = config.thread;
+
         this.dotColor = dotConfig.color;
         this.dotRadius = dotConfig.radius;
         this.minDotRadius = dotConfig.minRadius;
         this.dotRadiusZoomStep = dotConfig.radiusZoomStep;
 
-        const threadConfig = config.thread;
         this.threadColor = threadConfig.color;
         this.threadWidth = threadConfig.width;
         this.minThreadWidth = threadConfig.minWidth;
         this.threadWidthZoomStep = threadConfig.widthZoomStep;
+
+        this.ids = new IdGenerator();
+        this.dotsUtility = new DotsUtility();
+        this.cueArray = new CueArray();
 
         this.zooms = 0;
 
@@ -90,21 +94,14 @@ export abstract class CueCanvas extends CueCanvasBase {
         }
     }
 
-    private startListening(): void {
-        const pointerMoveUn = this.inputCanvas.onPointerMove(this.handlePointerMove.bind(this));
-        super.registerUn(pointerMoveUn);
-
-        const pointerUpUn = this.inputCanvas.onPointerUp(this.handlePointerUp.bind(this));
-        super.registerUn(pointerUpUn);
-
-        const undoUn = this.inputCanvas.onUndo(this.handleUndo.bind(this));
-        super.registerUn(undoUn);
-    }
-
     private handlePointerMove(event: PointerMoveEvent): void {
-        const position = event.position;
-        const inBounds = this.inBounds(position);
+        super.ensureAlive();
 
+        const position = event.position;
+        assert.positive(position.x, "position.x");
+        assert.positive(position.y, "position.y");
+
+        const inBounds = this.inBounds(position);
         if (inBounds) {
             this.moveDot(position);
             this.resizeThead(position);
@@ -112,17 +109,22 @@ export abstract class CueCanvas extends CueCanvasBase {
     }
 
     private handlePointerUp(event: PointerUpEvent): void {
-        const position = event.position;
-        const inBounds = this.inBounds(position);
+        super.ensureAlive();
 
+        const position = event.position;
+        assert.positive(position.x, "position.x");
+        assert.positive(position.y, "position.y");
+
+        const inBounds = this.inBounds(position);
         if (inBounds) {
-            const position = event.position;
             this.clickDot(position);
             this.removeThread();
         }
     }
 
     private handleUndo(): void {
+        super.ensureAlive();
+
         const removed = this.cueArray.pop();
         const last = this.cueArray.last();
 
@@ -267,5 +269,34 @@ export abstract class CueCanvas extends CueCanvasBase {
         let calculated = threadWidth + (this.zooms * this.threadWidthZoomStep);
         calculated = Math.max(calculated, this.minThreadWidth);
         return calculated;
+    }
+
+    private startListening(): void {
+        const pointerMoveUn = this.inputCanvas.onPointerMove(this.handlePointerMove.bind(this));
+        super.registerUn(pointerMoveUn);
+
+        const pointerUpUn = this.inputCanvas.onPointerUp(this.handlePointerUp.bind(this));
+        super.registerUn(pointerUpUn);
+
+        const undoUn = this.inputCanvas.onUndo(this.handleUndo.bind(this));
+        super.registerUn(undoUn);
+    }
+
+    private validateConfig(config: CueCanvasConfig): void {
+        const dotConfig = config.dot;
+        assert.defined(dotConfig, "DotConfig");
+
+        const threadConfig = config.thread;
+        assert.defined(threadConfig, "ThreadConfig");
+
+        assert.greaterThanZero(dotConfig.radius, "dotRadius");
+        assert.greaterThanZero(dotConfig.minRadius, "minDotRadius");
+        assert.greaterThanZero(dotConfig.radiusZoomStep, "dotRadiusZoomStep");
+        assert.greaterThanZero(dotConfig.color.length, "dotColor.length");
+
+        assert.greaterThanZero(threadConfig.width, "threadWidth");
+        assert.greaterThanZero(threadConfig.minWidth, "minThreadWidth");
+        assert.greaterThanZero(threadConfig.widthZoomStep, "threadWidthZoomStep");
+        assert.greaterThanZero(threadConfig.color.length, "threadColor.length");
     }
 }

@@ -1,5 +1,6 @@
 import { Bounds } from "../../types.js";
 import { CanvasBase } from "../../base.js";
+import assert from "../../../asserts/assert.js";
 
 export abstract class RasterDrawingCanvas extends CanvasBase {
     protected readonly rasterCanvas: HTMLCanvasElement
@@ -8,20 +9,32 @@ export abstract class RasterDrawingCanvas extends CanvasBase {
     constructor(rasterCanvas: HTMLCanvasElement) {
         super();
         this.rasterCanvas = rasterCanvas;
+        assert.defined(this.rasterCanvas, "HTMLCanvasElement");
+
         this.context = this.rasterCanvas.getContext("2d")!;
+        assert.defined(this.context, "context");
     }
 
     public async createBitMap(): Promise<ImageBitmap> {
+        super.ensureAlive();
+
         const bitmap = await createImageBitmap(this.rasterCanvas);
+        assert.defined(bitmap, "bitmap");
+
         return bitmap;
     }
 
     public drawBitMap(bitmap: ImageBitmap): void {
+        super.ensureAlive();
+        assert.defined(bitmap, "bitmap");
+
         const bounds = this.bounds;
         this.context.drawImage(bitmap, 0, 0, bounds.width, bounds.height);
     }
 
     public clear(): void {
+        super.ensureAlive();
+
         this.context.clearRect(0, 0, this.bounds.width, this.bounds.height);
     }
 

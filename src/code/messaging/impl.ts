@@ -1,4 +1,4 @@
-import { Messaging } from "./base.js";
+import { MessagingBase } from "./base.js";
 import { Listener, VoidData, VoidListener, VoidUnsubscribe } from "../types.js";
 import {
     Channels,
@@ -13,7 +13,7 @@ import {
     IVoidMessaging,
 } from "./types.js";
 
-export class VoidMessaging extends Messaging implements IVoidMessaging {
+export class VoidMessaging extends MessagingBase implements IVoidMessaging {
     private readonly channel0 = Channels.Channel0;
 
     constructor() {

@@ -1,4 +1,4 @@
-import { VirtualCanvasBase } from "../virtual.js";
+import { VirtualCanvasBase } from "../base.js";
 import { VoidUnsubscribe } from "../../../types.js";
 import { IInputCanvas } from "../../input/types.js";
 import { CanvasConfig } from "../../../config/types.js";

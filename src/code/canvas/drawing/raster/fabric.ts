@@ -1,3 +1,4 @@
+import assert from "../../../asserts/assert.js";
 import { RasterDrawingCanvas } from "./raster.js";
 import { IRasterDrawingCanvas } from "../types.js";
 import { DotArray } from "../../utilities/arrays/dot/dot.js";
@@ -8,10 +9,25 @@ export class FabricRasterDrawingCanvas extends RasterDrawingCanvas implements IR
 
     constructor(rasterCanvas: HTMLCanvasElement) {
         super(rasterCanvas);
+
         this.endAngle = Math.PI * 2;
     }
 
     public drawDots(dots: DotArray): void {
+        super.ensureAlive();
+        assert.defined(dots, "DotArray");
+
+        this.drawDotsCore(dots);
+    }
+
+    public drawLines(threads: ThreadArray): void {
+        super.ensureAlive();
+        assert.defined(threads, "ThreadArray");
+
+        this.drawLinesCore(threads);
+    }
+
+    private drawDotsCore(dots: DotArray): void {
         // CPU, GPU, memory and GC intensive code, do not extract logic in multiple methods!!!
         const dotsX = dots.dotsX;
         const dotsY = dots.dotsY;
@@ -33,7 +49,7 @@ export class FabricRasterDrawingCanvas extends RasterDrawingCanvas implements IR
         this.context.closePath();
     }
 
-    public drawLines(threads: ThreadArray): void {
+    private drawLinesCore(threads: ThreadArray): void {
         // CPU, GPU, memory and GC intensive code, do not extract logic in multiple methods!!!
         const visibility = threads.visibilities;
         const fromDotsXPositions = threads.fromDotsXPositions;

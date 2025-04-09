@@ -3,7 +3,6 @@ import { Messaging7 } from "../../messaging/impl.js";
 import { IMessaging7 } from "../../messaging/types.js";
 import { VoidListener, VoidUnsubscribe } from "../../types.js";
 import {
-    Position,
     MoveEvent,
     ZoomInEvent,
     IInputCanvas,
@@ -71,13 +70,11 @@ export abstract class InputCanvasBase extends CanvasBase implements IInputCanvas
         this.messaging.sendToChannel0();
     }
 
-    protected invokeZoomIn(currentPosition: Position): void {
-        const event = { currentPosition };
+    protected invokeZoomIn(event: ZoomInEvent): void {
         this.messaging.sendToChannel1(event);
     }
 
-    protected invokeZoomOut(currentPosition: Position): void {
-        const event = { currentPosition };
+    protected invokeZoomOut(event: ZoomOutEvent): void {
         this.messaging.sendToChannel2(event);
     }
 

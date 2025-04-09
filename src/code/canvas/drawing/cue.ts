@@ -1,4 +1,5 @@
 import { CanvasBase } from "../base.js";
+import assert from "../../asserts/assert.js";
 import { Id, BoundsChangeEvent } from "../types.js";
 import { ICueDrawingCanvas, IVectorDrawingCanvas, SvgDot, SvgLine } from "./types.js";
 import {
@@ -19,8 +20,12 @@ export class CueDrawingCanvas extends CanvasBase implements ICueDrawingCanvas {
 
     constructor(cueCanvas: ICueCanvas, vectorDrawing: IVectorDrawingCanvas) {
         super();
+
         this.cueCanvas = cueCanvas;
+        assert.defined(this.cueCanvas, "cueCanvas");
+
         this.vectorDrawing = vectorDrawing;
+        assert.defined(this.vectorDrawing, "vectorDrawing");
 
         this.svgDots = new Map<Id, SvgDot>();
         this.svgLines = new Map<Id, SvgLine>();
@@ -29,67 +34,98 @@ export class CueDrawingCanvas extends CanvasBase implements ICueDrawingCanvas {
     }
 
     public override dispose(): void {
+        this.ensureAlive();
         this.clear();
         super.dispose();
     }
 
     private handleDrawDot(event: DrawCueDotEvent): void {
+        this.ensureAlive();
+        assert.defined(event, "DrawCueDotEvent");
+
         const dot = event.dot;
         const id = dot.id;
 
         const svgDot = this.vectorDrawing.drawDot(dot, event.dotRadius, event.dotColor);
+        assert.defined(svgDot, "svgDot");
         this.svgDots.set(id, svgDot);
     }
 
     private handleDrawDashDot(event: DrawCueDotEvent): void {
+        this.ensureAlive();
+        assert.defined(event, "DrawCueDotEvent");
+
         const dot = event.dot;
         const id = dot.id;
 
         const svgDot = this.vectorDrawing.drawDashDot(dot, event.dotRadius, event.dotColor);
+        assert.defined(svgDot, "svgDot");
         this.svgDots.set(id, svgDot);
     }
 
     private handleRemoveDot(event: RemoveCueDotEvent): void {
-        const id = event.dotId;
+        this.ensureAlive();
+        assert.defined(event, "RemoveCueDotEvent");
 
-        const svgDot = this.svgDots.get(id)!;
+        const id = event.dotId;
+        const svgDot = this.svgDots.get(id);
+        assert.defined(svgDot, "svgDot");
+
         this.vectorDrawing.removeDot(svgDot);
         this.svgDots.delete(id);
     }
 
     private handleDrawThread(event: DrawCueThreadEvent): void {
+        this.ensureAlive();
+        assert.defined(event, "DrawCueThreadEvent");
+
         const thread = event.thread;
         const id = thread.id;
 
         const svgLine = this.vectorDrawing.drawLine(thread);
+        assert.defined(svgLine, "svgLine");
         this.svgLines.set(id, svgLine);
     }
 
     private handleMoveThread(event: MoveCueThreadEvent): void {
+        this.ensureAlive();
+        assert.defined(event, "MoveCueThreadEvent");
+
         const thread = event.thread;
         const id = event.thread.id;
 
-        const svgLine = this.svgLines.get(id)!;
+        const svgLine = this.svgLines.get(id);
+        assert.defined(svgLine, "svgLine");
         this.vectorDrawing.moveLine(thread, svgLine);
     }
 
     private handleDrawDashThread(event: DrawCueThreadEvent): void {
+        this.ensureAlive();
+        assert.defined(event, "DrawCueThreadEvent");
+
         const thread = event.thread;
         const id = thread.id;
 
         const svgLine = this.vectorDrawing.drawDashLine(thread);
+        assert.defined(svgLine, "svgLine");
         this.svgLines.set(id, svgLine);
     }
 
     private handleRemoveThread(event: RemoveCueThreadEvent): void {
+        this.ensureAlive();
+        assert.defined(event, "RemoveCueThreadEvent");
+
         const id = event.threadId;
 
-        const svgLine = this.svgLines.get(id)!;
+        const svgLine = this.svgLines.get(id);
+        assert.defined(svgLine, "svgLine");
         this.vectorDrawing.removeLine(svgLine);
         this.svgLines.delete(id);
     }
 
     private handleRedraw(): void {
+        this.ensureAlive();
+
         this.svgDots.forEach((dot) => {
             this.vectorDrawing.removeDot(dot);
         });
@@ -102,6 +138,8 @@ export class CueDrawingCanvas extends CanvasBase implements ICueDrawingCanvas {
     }
 
     private handleBoundsChange(event: BoundsChangeEvent): void {
+        this.ensureAlive();
+
         const bounds = event.bounds;
         super.bounds = bounds;
 
