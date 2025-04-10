@@ -70,9 +70,12 @@ export abstract class StitchCanvas extends StitchCanvasBase {
             const thread = this.pattern[threadIdx];
             thread.zoomedWidth = this.calculateZoomedThreadWidth(thread.width);
 
+            const indexesX = thread.indexesX;
+            const indexesY = thread.indexesY;
+
             for (let dotIdx = 0; dotIdx < thread.length; dotIdx++) {
-                const indexX = thread.indexesX[dotIdx];
-                const indexY = thread.indexesY[dotIdx];
+                const indexX = indexesX[dotIdx];
+                const indexY = indexesY[dotIdx];
 
                 const posX = this.calculateDotXPosition(indexX);
                 const posY = this.calculateDotYPosition(indexY);

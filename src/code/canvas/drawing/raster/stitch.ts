@@ -54,6 +54,9 @@ export class StitchRasterDrawingCanvas extends RasterDrawingCanvas implements IS
         for (let threadIdx = 0; threadIdx < pattern.length; threadIdx++) {
 
             const currentThread = pattern[threadIdx];
+            const visibilities = currentThread.visibilities;
+            const positionsX = currentThread.positionsX;
+            const positionsY = currentThread.positionsY;
 
             if (currentThread.color !== previousThreadColor) {
                 this.drawPath(path, previousThreadColor);
@@ -63,14 +66,14 @@ export class StitchRasterDrawingCanvas extends RasterDrawingCanvas implements IS
             for (let dotIdx = 1; dotIdx < currentThread.length; dotIdx++) {
 
                 // filter out back stitches as well as stitches positioned out of the visible area 
-                if ((dotIdx % 2 !== 0) && (currentThread.visibilities[dotIdx])) {
+                if ((dotIdx % 2 !== 0) && (visibilities[dotIdx])) {
                     this.shape.draw(
                         density,
                         path,
-                        currentThread.positionsX[dotIdx - 1] - left,
-                        currentThread.positionsY[dotIdx - 1] - top,
-                        currentThread.positionsX[dotIdx] - left,
-                        currentThread.positionsY[dotIdx] - top,
+                        positionsX[dotIdx - 1] - left,
+                        positionsY[dotIdx - 1] - top,
+                        positionsX[dotIdx] - left,
+                        positionsY[dotIdx] - top,
                         currentThread.zoomedWidth);
                 }
             }
