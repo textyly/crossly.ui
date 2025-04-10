@@ -24,7 +24,7 @@ export class Assert {
     public that(condition: unknown, errorMessage: string): asserts condition {
         if (!condition) {
             const errMsg = errorMessage;
-            throw new Error(errMsg);
+                throw new Error(errMsg);
         }
     }
 }

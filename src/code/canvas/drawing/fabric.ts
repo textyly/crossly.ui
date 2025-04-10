@@ -1,14 +1,14 @@
-import assert from "../../asserts/assert.js";
 import { CanvasBase } from "../base.js";
+import assert from "../../asserts/assert.js";
 import { BoundsChangeEvent } from "../types.js";
-import { IFabricDrawingCanvas, IRasterDrawingCanvas } from "./types.js";
-import { Density, DrawFabricDotsEvent, DrawFabricThreadsEvent, IFabricCanvas } from "../virtual/types.js";
+import { IFabricDrawingCanvas, IFabricRasterDrawingCanvas } from "./types.js";
+import { DrawFabricDotsEvent, DrawFabricThreadsEvent, IFabricCanvas } from "../virtual/types.js";
 
 export class FabricDrawingCanvas extends CanvasBase implements IFabricDrawingCanvas {
     private readonly fabricCanvas: IFabricCanvas;
-    private readonly rasterDrawing: IRasterDrawingCanvas;
+    private readonly rasterDrawing: IFabricRasterDrawingCanvas;
 
-    constructor(fabricCanvas: IFabricCanvas, rasterDrawing: IRasterDrawingCanvas) {
+    constructor(fabricCanvas: IFabricCanvas, rasterDrawing: IFabricRasterDrawingCanvas) {
         super();
 
         this.fabricCanvas = fabricCanvas;
@@ -37,8 +37,7 @@ export class FabricDrawingCanvas extends CanvasBase implements IFabricDrawingCan
         this.ensureAlive();
         assert.defined(event, "DrawFabricThreadsEvent");
 
-        const density = Density.Low;
-        this.rasterDrawing.drawLines(event.threads, density);
+        this.rasterDrawing.drawLines(event.threads);
     }
 
     private handleRedraw(): void {

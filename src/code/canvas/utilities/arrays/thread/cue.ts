@@ -2,27 +2,27 @@ import { Cue } from "../types.js";
 import { ArrayBase } from "../base.js";
 import { DotIndex } from "../../../types.js";
 
-export class CueArray extends ArrayBase {
-    private _clickedDotsXIndexes: Int16Array;
-    private _clickedDotsYIndexes: Int16Array;
+export class CueThread extends ArrayBase {
+    private _indexesX: Int16Array;
+    private _indexesY: Int16Array;
     private _widths: Int16Array;
     private _colors: Array<string>;
 
     constructor() {
         super();
 
-        this._clickedDotsXIndexes = new Int16Array(this.space);
-        this._clickedDotsYIndexes = new Int16Array(this.space);
+        this._indexesX = new Int16Array(this.space);
+        this._indexesY = new Int16Array(this.space);
         this._widths = new Int16Array(this.space);
         this._colors = new Array<string>();
     }
 
-    public get clickedDotsXIndexes(): Readonly<Int16Array> {
-        return this._clickedDotsXIndexes.slice(0, this.length);
+    public get indexesX(): Readonly<Int16Array> {
+        return this._indexesX.slice(0, this.length);
     }
 
-    public get clickedDotsYIndexes(): Readonly<Int16Array> {
-        return this._clickedDotsYIndexes.slice(0, this.length);
+    public get indexesY(): Readonly<Int16Array> {
+        return this._indexesY.slice(0, this.length);
     }
 
     public get widths(): Readonly<Int16Array> {
@@ -33,42 +33,30 @@ export class CueArray extends ArrayBase {
         return this._colors;
     }
 
-    public push(clickedDotIdx: DotIndex, threadWidth: number, threadColor: string): void {
+    public push(clicked: DotIndex, width: number, color: string): void {
         super.occupyItemSpace();
-        this._clickedDotsXIndexes[this.index] = clickedDotIdx.dotX;
-        this._clickedDotsYIndexes[this.index] = clickedDotIdx.dotY;
-        this._widths[this.index] = threadWidth;
-        this._colors.push(threadColor);
+
+        this._indexesX[this.index] = clicked.dotX;
+        this._indexesY[this.index] = clicked.dotY;
+        this._widths[this.index] = width;
+        this._colors.push(color);
     }
 
     public pop(): Cue | undefined {
-        if (this.length <= 0) {
-            return undefined;
-        } else {
-            const from = this.length - 1;
-            const to = this.length;
-
-            const clickedDotXIdx = this.clickedDotsXIndexes.slice(from, to)[0];
-            const clickedDotYIdx = this.clickedDotsYIndexes.slice(from, to)[0];
-            const threadWidth = this.widths.slice(from, to)[0];
-            const threadColor = this._colors.pop()!;
-
+        if (this.length > 0) {
+            const last = this.last()!;
             super.removeItemSpace();
-
-            const cue = { clickedDotIdx: { dotX: clickedDotXIdx, dotY: clickedDotYIdx }, threadWidth, threadColor };
-            return cue;
+            return last;
         }
     }
 
     public last(): Cue | undefined {
-        if (this.length <= 0) {
-            return undefined;
-        } else {
+        if (this.length > 0) {
             const from = this.length - 1;
             const to = this.length;
 
-            const clickedDotXIdx = this.clickedDotsXIndexes.slice(from, to)[0];
-            const clickedDotYIdx = this.clickedDotsYIndexes.slice(from, to)[0];
+            const clickedDotXIdx = this.indexesX.slice(from, to)[0];
+            const clickedDotYIdx = this.indexesY.slice(from, to)[0];
             const threadWidth = this.widths.slice(from, to)[0];
             const threadColor = this._colors.slice(from, to)[0]!;
 
@@ -78,26 +66,26 @@ export class CueArray extends ArrayBase {
     }
 
     protected override expand(): void {
-        this.expandFromDotsXIndexes();
-        this.expandFromDotsYIndexes();
+        this.expandIndexesX();
+        this.expandIndexesY();
         this.expandWidths();
     }
 
-    private expandFromDotsXIndexes(): void {
-        const fromDotsXIndexes = this._clickedDotsXIndexes;
-        this._clickedDotsXIndexes = new Int16Array(this.space);
+    private expandIndexesX(): void {
+        const indexesX = this._indexesX;
+        this._indexesX = new Int16Array(this.space);
 
-        for (let index = 0; index < fromDotsXIndexes.length; index++) {
-            this._clickedDotsXIndexes[index] = fromDotsXIndexes[index];
+        for (let index = 0; index < indexesX.length; index++) {
+            this._indexesX[index] = indexesX[index];
         }
     }
 
-    private expandFromDotsYIndexes(): void {
-        const fromDotsYIndexes = this._clickedDotsYIndexes;
-        this._clickedDotsYIndexes = new Int16Array(this.space);
+    private expandIndexesY(): void {
+        const indexesY = this._indexesY;
+        this._indexesY = new Int16Array(this.space);
 
-        for (let index = 0; index < fromDotsYIndexes.length; index++) {
-            this._clickedDotsYIndexes[index] = fromDotsYIndexes[index];
+        for (let index = 0; index < indexesY.length; index++) {
+            this._indexesY[index] = indexesY[index];
         }
     }
 

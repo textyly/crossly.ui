@@ -13,9 +13,10 @@ import { ICueCanvasFacade, IFabricCanvas, IStitchCanvasFacade } from "./virtual/
 import {
     ICueDrawingCanvas,
     IFabricDrawingCanvas,
-    IRasterDrawingCanvas,
     IStitchDrawingCanvas,
-    IVectorDrawingCanvas
+    IVectorDrawingCanvas,
+    IFabricRasterDrawingCanvas,
+    IStitchRasterDrawingCanvas,
 } from "./drawing/types.js";
 
 export abstract class CrosslyCanvas extends CanvasBase implements ICrosslyCanvas {
@@ -24,11 +25,11 @@ export abstract class CrosslyCanvas extends CanvasBase implements ICrosslyCanvas
 
     protected fabricCanvas!: IFabricCanvas;
     private fabricDrawingCanvas!: IFabricDrawingCanvas;
-    private fabricRasterDrawing!: IRasterDrawingCanvas;
+    private fabricRasterDrawing!: IFabricRasterDrawingCanvas;
 
     protected stitchCanvasFacade!: IStitchCanvasFacade;
     private stitchDrawingCanvas!: IStitchDrawingCanvas;
-    private stitchRasterDrawing!: IRasterDrawingCanvas;
+    private stitchRasterDrawing!: IStitchRasterDrawingCanvas;
 
     protected cueCanvasFacade!: ICueCanvasFacade;
     private cueDrawingCanvas!: ICueDrawingCanvas;
@@ -37,8 +38,8 @@ export abstract class CrosslyCanvas extends CanvasBase implements ICrosslyCanvas
     constructor(
         config: CrosslyCanvasConfig,
         inputCanvas: IInputCanvas,
-        fabricRasterDrawing: IRasterDrawingCanvas,
-        stitchRasterDrawing: IRasterDrawingCanvas,
+        fabricRasterDrawing: IFabricRasterDrawingCanvas,
+        stitchRasterDrawing: IStitchRasterDrawingCanvas,
         cueVectorDrawing: IVectorDrawingCanvas) {
 
         super();
@@ -73,7 +74,7 @@ export abstract class CrosslyCanvas extends CanvasBase implements ICrosslyCanvas
         super.dispose();
     }
 
-    private initializeFabricCanvas(fabricRasterDrawing: IRasterDrawingCanvas): void {
+    private initializeFabricCanvas(fabricRasterDrawing: IFabricRasterDrawingCanvas): void {
         assert.defined(fabricRasterDrawing, "fabricRasterDrawing");
 
         this.fabricRasterDrawing = fabricRasterDrawing;
@@ -81,7 +82,7 @@ export abstract class CrosslyCanvas extends CanvasBase implements ICrosslyCanvas
         this.fabricDrawingCanvas = new FabricDrawingCanvas(this.fabricCanvas, this.fabricRasterDrawing);
     }
 
-    private initializeStitchCanvas(stitchRasterDrawing: IRasterDrawingCanvas): void {
+    private initializeStitchCanvas(stitchRasterDrawing: IStitchRasterDrawingCanvas): void {
         assert.defined(stitchRasterDrawing, "stitchRasterDrawing");
 
         this.stitchRasterDrawing = stitchRasterDrawing;

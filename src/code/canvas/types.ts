@@ -1,37 +1,18 @@
 import { Position } from "./input/types.js";
 import { Listener, VoidUnsubscribe } from "../types";
+import { StitchThread } from "./utilities/arrays/thread/stitch.js";
 
 export type Bounds = { left: number, top: number, width: number, height: number };
+
+export type DotIndex = { dotX: number, dotY: number };
 export type BoundsIndexes = { leftTop: DotIndex, rightTop: DotIndex, leftBottom: DotIndex, rightBottom: DotIndex };
 
 export type Id = number;
 export type Dot = Position;
 export type CueDot = Dot & { id: Id };
-export type DotIndex = { dotX: number, dotY: number };
-
-export type Thread = {
-    visible: boolean;
-    fromDotXPos: number;
-    fromDotYPos: number;
-    toDotXPos: number;
-    toDotYPos: number;
-    width: number;
-    color: string;
-}
-
-// StitchTread must not contain inner objects because millions of instances can be stored in the memory
-export type StitchTread = Thread & {
-    id: number;
-    fromDotXIdx: number;
-    fromDotYIdx: number;
-    toDotXIdx: number;
-    toDotYIdx: number;
-    zoomedWidth: number;
-    side: CanvasSide;
-};
-
-
 export type CueThread = { id: Id, from: Dot, to: Dot, width: number, color: string };
+export type StitchSegment = { from: Dot, to: Dot, width: number, color: string };
+export type StitchPattern = Array<StitchThread>;
 
 export interface IDisposable {
     dispose(): void;

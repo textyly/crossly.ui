@@ -7,13 +7,13 @@ import { CrosslyCanvasConfig } from "../config/types.js";
 import { VectorDrawingCanvas } from "./drawing/vector/vector.js";
 import { FabricRasterDrawingCanvas } from "./drawing/raster/fabric.js";
 import { StitchRasterDrawingCanvas } from "./drawing/raster/stitch.js";
-import { IRasterDrawingCanvas, IVectorDrawingCanvas } from "./drawing/types.js";
+import { IFabricRasterDrawingCanvas, IStitchRasterDrawingCanvas, IVectorDrawingCanvas } from "./drawing/types.js";
 
 export class CrosslyCanvasBuilder {
     private config!: CrosslyCanvasConfig;
     private inputCanvas!: IInputCanvas;
-    private fabricRasterDrawing!: IRasterDrawingCanvas;
-    private stitchRasterDrawing!: IRasterDrawingCanvas;
+    private fabricRasterDrawing!: IFabricRasterDrawingCanvas;
+    private stitchRasterDrawing!: IStitchRasterDrawingCanvas;
     private cueVectorDrawing!: IVectorDrawingCanvas;
 
     public build(): ICrosslyCanvasFacade {

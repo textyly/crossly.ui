@@ -155,7 +155,7 @@ export abstract class VirtualCanvasDimensions extends CanvasBase {
         return { dotX: indexX, dotY: indexY };
     }
 
-    protected calculateBoundsIndexes(): BoundsIndexes {
+    protected calculateVisibleBoundsIndexes(): BoundsIndexes {
         const leftTopPos = this.calculateLeftTopPosition();
         const leftTopIdx = this.calculateDotIndex(leftTopPos);
 

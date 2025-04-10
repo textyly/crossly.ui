@@ -1,8 +1,7 @@
 import { DotArray } from "../utilities/arrays/dot/dot.js";
-import { Id, CueDot, ICanvas, CueThread } from "../types.js";
-import { ThreadArray } from "../utilities/arrays/thread/array.js";
+import { FabricThread } from "../utilities/arrays/thread/fabric.js";
 import { Listener, VoidListener, VoidUnsubscribe } from "../../types.js";
-import { StitchThreadArray } from "../utilities/arrays/thread/stitch.js";
+import { Id, CueDot, ICanvas, CueThread, StitchPattern, StitchSegment } from "../types.js";
 
 export interface IVirtualCanvas extends ICanvas {
     draw(): void;
@@ -21,7 +20,8 @@ export interface IFabricCanvas extends IVirtualCanvas {
 }
 
 export interface IStitchCanvas extends IVirtualCanvas {
-    onDrawThreads(listener: DrawStitchThreadsListener): VoidUnsubscribe;
+    onDrawSegment(listener: DrawStitchSegmentListener): VoidUnsubscribe;
+    onDrawPattern(listener: DrawStitchPatternListener): VoidUnsubscribe;
 }
 
 export interface ICueCanvas extends IVirtualCanvas {
@@ -56,11 +56,14 @@ export type WidthChangeListener = Listener<WidthChangeEvent>;
 export type DrawFabricDotsEvent = { dots: DotArray };
 export type DrawFabricDotsListener = Listener<DrawFabricDotsEvent>;
 
-export type DrawFabricThreadsEvent = { threads: ThreadArray };
+export type DrawFabricThreadsEvent = { threads: FabricThread };
 export type DrawFabricThreadsListener = Listener<DrawFabricThreadsEvent>;
 
-export type DrawStitchThreadsEvent = { threads: StitchThreadArray, density: Density };
-export type DrawStitchThreadsListener = Listener<DrawStitchThreadsEvent>;
+export type DrawStitchSegmentEvent = { segment: StitchSegment, density: Density  };
+export type DrawStitchSegmentListener = Listener<DrawStitchSegmentEvent>;
+
+export type DrawStitchPatternEvent = { pattern: StitchPattern, density: Density };
+export type DrawStitchPatternListener = Listener<DrawStitchPatternEvent>;
 
 export type DrawCueDotEvent = { dot: CueDot, dotRadius: number, dotColor: string };
 export type DrawCueDotListener = Listener<DrawCueDotEvent>;

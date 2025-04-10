@@ -1,7 +1,7 @@
-import { CueThread, Dot, ICanvas } from "../types.js";
-import { DotArray } from "../utilities/arrays/dot/dot.js";
-import { ThreadArray } from "../utilities/arrays/thread/array.js";
 import { Density } from "../virtual/types.js";
+import { DotArray } from "../utilities/arrays/dot/dot.js";
+import { FabricThread } from "../utilities/arrays/thread/fabric.js";
+import { CueThread, Dot, ICanvas, StitchPattern, StitchSegment } from "../types.js";
 
 export type SvgDot = SVGCircleElement;
 export type SvgLine = SVGLineElement;
@@ -13,9 +13,17 @@ export interface IShapeDrawing {
 export interface IRasterDrawingCanvas extends ICanvas {
     createBitMap(): Promise<ImageBitmap>;
     drawBitMap(bitmap: ImageBitmap): void;
-    drawDots(dots: DotArray): void;
-    drawLines(threads: ThreadArray, density: Density): void;
     clear(): void;
+}
+
+export interface IFabricRasterDrawingCanvas extends IRasterDrawingCanvas {
+    drawDots(dots: DotArray): void;
+    drawLines(threads: FabricThread): void;
+}
+
+export interface IStitchRasterDrawingCanvas extends IRasterDrawingCanvas {
+    drawLine(segment: StitchSegment, density: Density): void;
+    drawLines(pattern: StitchPattern, density: Density): void;
 }
 
 export interface IVectorDrawingCanvas extends ICanvas {

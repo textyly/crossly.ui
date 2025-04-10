@@ -3,14 +3,14 @@ import assert from "../../../asserts/assert.js";
 import { DotsUtility } from "../../utilities/dots.js";
 import { IdGenerator } from "../../utilities/generator.js";
 import { CueCanvasConfig } from "../../../config/types.js";
-import { CueArray } from "../../utilities/arrays/thread/cue.js";
+import { CueThread as CueThreadArray } from "../../utilities/arrays/thread/cue.js";
 import { CanvasSide, Id, CueThread, CueDot, Dot, DotIndex } from "../../types.js";
 import { Position, IInputCanvas, PointerUpEvent, PointerMoveEvent } from "../../input/types.js";
 
 export abstract class CueCanvas extends CueCanvasBase {
     private readonly ids: IdGenerator;
     private readonly dotsUtility: DotsUtility<Dot>;
-    private readonly cueArray: CueArray;
+    private readonly cueArray: CueThreadArray;
 
     private dotColor: string;
     private dotRadius: number;
@@ -47,7 +47,7 @@ export abstract class CueCanvas extends CueCanvasBase {
 
         this.ids = new IdGenerator();
         this.dotsUtility = new DotsUtility();
-        this.cueArray = new CueArray();
+        this.cueArray = new CueThreadArray();
 
         this.zooms = 0;
 
