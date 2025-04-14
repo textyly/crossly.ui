@@ -18,6 +18,8 @@ export class CueCanvasFacade extends CueCanvas implements ICueCanvasFacade {
     }
 
     public setThread(color: string, width: number): void {
+        super.ensureAlive();
+
         assert.defined(color, "color");
         assert.greaterThanZero(color.length, "color.length");
 
@@ -28,6 +30,8 @@ export class CueCanvasFacade extends CueCanvas implements ICueCanvasFacade {
     }
 
     public cutThread(): void {
+        super.ensureAlive();
+
         super.cutThread();
         super.draw();
     }

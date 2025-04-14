@@ -48,7 +48,7 @@ export class Thread extends ArrayBase {
 
     public pop(): Dot | undefined {
         if (this.length > 0) {
-            const last = this.last()!;
+            const last = this.last();
             super.removeItemSpace();
             return last;
         }

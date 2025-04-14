@@ -129,16 +129,28 @@ export abstract class StitchCanvas extends StitchCanvasBase {
     private handleUndo(): void {
         super.ensureAlive();
 
-        const thread = this.getCurrentThread();
-        const removedDot = thread.popDot();
-        if (!removedDot) {
+        const currentThread = this.getCurrentThread();
+        const removedDot = currentThread.popDot();
+        const lastDot = currentThread.last();
+
+        if (!removedDot || !lastDot) {
             this.cutThread();
+            this.pattern.pop();
+
+            const thread = this.getCurrentThread();
+            if (thread) {
+                this.threadColor = thread.color;
+                this.threadWidth = thread.width;
+            } else {
+                const config = this.config as StitchCanvasConfig;
+                this.createThread(config.thread.color, config.thread.width);
+            }
         } else {
             this.changeCanvasSide();
 
-            this.clickedDotIdx = { dotX: removedDot.dotX, dotY: removedDot.dotY };
-            this.threadColor = thread.color;
-            this.threadWidth = thread.width;
+            this.clickedDotIdx = { dotX: lastDot.dotX, dotY: lastDot.dotY };
+            this.threadColor = currentThread.color;
+            this.threadWidth = currentThread.width;
 
             this.invokeThreadWidthChange(this.threadWidth);
             this.invokeThreadColorChange(this.threadColor);

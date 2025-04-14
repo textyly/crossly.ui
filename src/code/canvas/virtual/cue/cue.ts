@@ -10,7 +10,7 @@ import { Position, IInputCanvas, PointerUpEvent, PointerMoveEvent } from "../../
 export abstract class CueCanvas extends CueCanvasBase {
     private readonly ids: IdGenerator;
     private readonly dotsUtility: DotsUtility<Dot>;
-    private readonly cueArray: CueThreadArray;
+    private readonly cueDots: CueThreadArray;
 
     private dotColor: string;
     private dotRadius: number;
@@ -47,7 +47,7 @@ export abstract class CueCanvas extends CueCanvasBase {
 
         this.ids = new IdGenerator();
         this.dotsUtility = new DotsUtility();
-        this.cueArray = new CueThreadArray();
+        this.cueDots = new CueThreadArray();
 
         this.zooms = 0;
 
@@ -134,12 +134,19 @@ export abstract class CueCanvas extends CueCanvasBase {
     private handleUndo(): void {
         super.ensureAlive();
 
-        const removed = this.cueArray.pop();
-        const last = this.cueArray.last();
+        const removed = this.cueDots.pop();
+        const last = this.cueDots.last();
 
-        if (!last) {
+        if (!removed || !last) {
             this.cutThread();
             this.removeThread();
+
+            const config = this.config as CueCanvasConfig;
+            this.threadColor = config.thread.color;
+            this.invokeThreadColorChange(this.threadColor);
+
+            this.threadWidth = config.thread.width;
+            this.invokeThreadWidthChange(this.threadWidth);
 
             if (this.hoveredDotIdx) {
                 const dotPos = this.calculateDotPosition(this.hoveredDotIdx);
@@ -149,13 +156,13 @@ export abstract class CueCanvas extends CueCanvasBase {
             this.removeThread();
             this.changeCanvasSide();
 
-            this.clickedDotIdx = last?.clickedDotIdx ?? removed!.clickedDotIdx;
-
-            this.threadColor = removed!.threadColor;
+            this.threadColor = last.threadColor;
             this.invokeThreadColorChange(this.threadColor);
 
-            this.threadWidth = removed!.threadWidth;
+            this.threadWidth = last.threadWidth;
             this.invokeThreadWidthChange(this.threadWidth);
+
+            this.clickedDotIdx = last.clickedDotIdx;
 
             if (this.hoveredDotIdx) {
                 const dotPos = this.calculateDotPosition(this.hoveredDotIdx);
@@ -184,14 +191,14 @@ export abstract class CueCanvas extends CueCanvasBase {
 
         if (!previouslyClickedDotIdx) {
             this.changeSide(clickedDotPos, clickedDotIdx);
-            this.cueArray.push(clickedDotIdx.dotX, clickedDotIdx.dotY, this.threadWidth, this.threadColor);
+            this.cueDots.push(clickedDotIdx.dotX, clickedDotIdx.dotY, this.threadWidth, this.threadColor);
         } else {
             const previouslyClickedDotPos = this.calculateDotPosition(previouslyClickedDotIdx);
             const areIdenticalClicks = this.dotsUtility.areDotsEqual(clickedDotPos, previouslyClickedDotPos);
 
             if (!areIdenticalClicks) {
                 this.changeSide(clickedDotPos, clickedDotIdx);
-                this.cueArray.push(clickedDotIdx.dotX, clickedDotIdx.dotY, this.threadWidth, this.threadColor);
+                this.cueDots.push(clickedDotIdx.dotX, clickedDotIdx.dotY, this.threadWidth, this.threadColor);
             }
         }
 

@@ -1,6 +1,5 @@
 import { Cue } from "../types.js";
 import { ArrayBase } from "../base.js";
-import { DotIndex } from "../../../types.js";
 
 export class CueThread extends ArrayBase {
     private _indexesX: Int16Array;
@@ -45,7 +44,10 @@ export class CueThread extends ArrayBase {
     public pop(): Cue | undefined {
         if (this.length > 0) {
             const last = this.last()!;
+
             super.removeItemSpace();
+            this._colors.pop();
+
             return last;
         }
     }
@@ -58,7 +60,7 @@ export class CueThread extends ArrayBase {
             const clickedDotXIdx = this.indexesX.slice(from, to)[0];
             const clickedDotYIdx = this.indexesY.slice(from, to)[0];
             const threadWidth = this.widths.slice(from, to)[0];
-            const threadColor = this._colors.slice(from, to)[0]!;
+            const threadColor = this.colors.slice(from, to)[0]!;
 
             const cue = { clickedDotIdx: { dotX: clickedDotXIdx, dotY: clickedDotYIdx }, threadWidth, threadColor };
             return cue;

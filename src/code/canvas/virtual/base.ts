@@ -43,6 +43,8 @@ export abstract class VirtualCanvasBase extends VirtualCanvasDimensions implemen
     }
 
     public draw(): void {
+        super.ensureAlive();
+        
         this.invokeRedraw();
         this.recalculateBounds();
         this.redraw();
