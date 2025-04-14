@@ -17,6 +17,7 @@ export class StitchRasterDrawingCanvas extends RasterDrawingCanvas implements IS
         const line = new RasterLineDrawing();
         const polygon = new RasterPolygonDrawing();
         const rectangle = new RasterRectangleDrawing();
+
         this.shape = new ShapeDrawing(line, rectangle, polygon);
     }
 
@@ -69,7 +70,7 @@ export class StitchRasterDrawingCanvas extends RasterDrawingCanvas implements IS
                 // filter out back stitches as well as stitches positioned out of the visible area
                 if ((dotIdx % 2 !== 0)) {
 
-                    // if `from` or `to` visible then draw the segment (line)
+                    // if `from` or `to` visible then draw the line (segment)
                     const isSegmentVisible = visibilities[dotIdx - 1] || visibilities[dotIdx];
 
                     if (isSegmentVisible) {

@@ -89,8 +89,12 @@ export abstract class CueCanvas extends CueCanvasBase {
         // 2. recreate hovered dot and thread
         if (hoveredDotIdx) {
             const dotPos = this.calculateDotPosition(hoveredDotIdx);
-            const event = { position: dotPos };
-            this.handlePointerMove(event);
+
+            const inBounds = super.inBounds(dotPos);
+            if (inBounds) {
+                const event = { position: dotPos };
+                this.handlePointerMove(event);
+            }
         }
     }
 
