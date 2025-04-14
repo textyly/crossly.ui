@@ -3,8 +3,8 @@ import assert from "../../../asserts/assert.js";
 import { DotsUtility } from "../../utilities/dots.js";
 import { IdGenerator } from "../../utilities/generator.js";
 import { CueCanvasConfig } from "../../../config/types.js";
-import { CueThread as CueThreadArray } from "../../utilities/arrays/thread/cue.js";
 import { CanvasSide, Id, CueThread, CueDot, Dot, DotIndex } from "../../types.js";
+import { CueThread as CueThreadArray } from "../../utilities/arrays/thread/cue.js";
 import { Position, IInputCanvas, PointerUpEvent, PointerMoveEvent } from "../../input/types.js";
 
 export abstract class CueCanvas extends CueCanvasBase {
@@ -176,14 +176,14 @@ export abstract class CueCanvas extends CueCanvasBase {
 
         if (!previouslyClickedDotIdx) {
             this.changeSide(clickedDotPos, clickedDotIdx);
-            this.cueArray.push(clickedDotIdx, this.threadWidth, this.threadColor);
+            this.cueArray.push(clickedDotIdx.dotX, clickedDotIdx.dotY, this.threadWidth, this.threadColor);
         } else {
             const previouslyClickedDotPos = this.calculateDotPosition(previouslyClickedDotIdx);
             const areIdenticalClicks = this.dotsUtility.areDotsEqual(clickedDotPos, previouslyClickedDotPos);
 
             if (!areIdenticalClicks) {
                 this.changeSide(clickedDotPos, clickedDotIdx);
-                this.cueArray.push(clickedDotIdx, this.threadWidth, this.threadColor);
+                this.cueArray.push(clickedDotIdx.dotX, clickedDotIdx.dotY, this.threadWidth, this.threadColor);
             }
         }
 

@@ -33,11 +33,11 @@ export class CueThread extends ArrayBase {
         return this._colors;
     }
 
-    public push(clicked: DotIndex, width: number, color: string): void {
+    public push(indexX: number, indexY: number, width: number, color: string): void {
         super.occupyItemSpace();
 
-        this._indexesX[this.index] = clicked.dotX;
-        this._indexesY[this.index] = clicked.dotY;
+        this._indexesX[this.index] = indexX;
+        this._indexesY[this.index] = indexY;
         this._widths[this.index] = width;
         this._colors.push(color);
     }

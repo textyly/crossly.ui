@@ -39,6 +39,7 @@ export abstract class StitchCanvas extends StitchCanvasBase {
 
         this.zooms = 0;
 
+
         this.startListening();
     }
 
@@ -68,7 +69,7 @@ export abstract class StitchCanvas extends StitchCanvasBase {
 
         for (let threadIdx = 0; threadIdx < this.pattern.length; threadIdx++) {
             const thread = this.pattern[threadIdx];
-            thread.zoomedWidth = this.calculateZoomedThreadWidth(thread.width);
+            thread.zoomedWidth = this.calculateThreadZoomedWidth(thread.width);
 
             const indexesX = thread.indexesX;
             const indexesY = thread.indexesY;
@@ -172,7 +173,7 @@ export abstract class StitchCanvas extends StitchCanvasBase {
             thread.pushDot(clickedDotIdx.dotX, clickedDotIdx.dotY, clickedDotPos.x, clickedDotPos.y, visible);
 
             if (visible) {
-                const zoomedWidth = this.calculateZoomedThreadWidth(this.threadWidth);
+                const zoomedWidth = this.calculateThreadZoomedWidth(this.threadWidth);
                 const segment = { from: previouslyClickedDotPos, to: clickedDotPos, color: this.threadColor, width: zoomedWidth };
 
                 const density = this.calculateDensity();
@@ -183,7 +184,7 @@ export abstract class StitchCanvas extends StitchCanvasBase {
         }
     }
 
-    private calculateZoomedThreadWidth(threadWidth: number): number {
+    private calculateThreadZoomedWidth(threadWidth: number): number {
         let calculated = threadWidth + (this.zooms * this.threadWidthZoomStep);
         calculated = Math.max(calculated, this.minThreadWidth);
         return calculated;

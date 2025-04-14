@@ -22,6 +22,7 @@ export class StitchRasterDrawingCanvas extends RasterDrawingCanvas implements IS
 
     public drawLine(segment: StitchSegment, density: Density): void {
         const path = this.createPath();
+
         const width = segment.width;
         const color = segment.color;
         const fromX = segment.from.x - this.bounds.left;
@@ -65,16 +66,22 @@ export class StitchRasterDrawingCanvas extends RasterDrawingCanvas implements IS
 
             for (let dotIdx = 1; dotIdx < currentThread.length; dotIdx++) {
 
-                // filter out back stitches as well as stitches positioned out of the visible area 
-                if ((dotIdx % 2 !== 0) && (visibilities[dotIdx])) {
-                    this.shape.draw(
-                        density,
-                        path,
-                        positionsX[dotIdx - 1] - left,
-                        positionsY[dotIdx - 1] - top,
-                        positionsX[dotIdx] - left,
-                        positionsY[dotIdx] - top,
-                        currentThread.zoomedWidth);
+                // filter out back stitches as well as stitches positioned out of the visible area
+                if ((dotIdx % 2 !== 0)) {
+
+                    // if `from` or `to` visible then draw the segment (line)
+                    const isSegmentVisible = visibilities[dotIdx - 1] || visibilities[dotIdx];
+
+                    if (isSegmentVisible) {
+                        this.shape.draw(
+                            density,
+                            path,
+                            positionsX[dotIdx - 1] - left,
+                            positionsY[dotIdx - 1] - top,
+                            positionsX[dotIdx] - left,
+                            positionsY[dotIdx] - top,
+                            currentThread.zoomedWidth);
+                    }
                 }
             }
 
