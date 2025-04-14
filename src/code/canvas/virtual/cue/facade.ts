@@ -29,7 +29,7 @@ export class CueCanvasFacade extends CueCanvas implements ICueCanvasFacade {
 
     public cutThread(): void {
         super.cutThread();
-        this.draw();
+        super.draw();
     }
 
     private setThreadCore(color: string, width: number): void {
