@@ -70,6 +70,11 @@ export abstract class CueCanvas extends CueCanvasBase {
         }
     }
 
+    protected cutThread(): void {
+        this.clickedDotIdx = undefined;
+        this.currentSide = CanvasSide.Back;
+    }
+
     private redrawWhileMoving(): void {
         this.removeThread();
 
@@ -133,8 +138,7 @@ export abstract class CueCanvas extends CueCanvasBase {
         const last = this.cueArray.last();
 
         if (!last) {
-            this.clickedDotIdx = undefined;
-            this.currentSide = CanvasSide.Back;
+            this.cutThread();
             this.removeThread();
 
             if (this.hoveredDotIdx) {

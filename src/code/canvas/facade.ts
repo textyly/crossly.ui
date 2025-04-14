@@ -30,5 +30,10 @@ export class CrosslyCanvasFacade extends CrosslyCanvas implements ICrosslyCanvas
         this.cueCanvasFacade.setThreadWidth(width);
     }
 
+    public cutThread(): void {
+        this.stitchCanvasFacade.cutThread();
+        this.cueCanvasFacade.cutThread();
+    }
+
     // TODO: load patterns (stitches) must add stitch threads and cue threads as well!!! Otherwise `undo` logic will not work correctly.
 }

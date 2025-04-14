@@ -27,6 +27,10 @@ export class StitchCanvasFacade extends StitchCanvas implements IStitchCanvasFac
         this.setThreadCore(color, width);
     }
 
+    public cutThread(): void {
+        super.cutThread();
+    }
+
     private setThreadCore(color: string, width: number): void {
         this.threadColor = color;
         this.invokeThreadColorChange(this.threadColor);
@@ -34,6 +38,7 @@ export class StitchCanvasFacade extends StitchCanvas implements IStitchCanvasFac
         this.threadWidth = width;
         this.invokeThreadWidthChange(this.threadWidth);
 
+        this.cutThread();
         this.createThread(this.threadColor, this.threadWidth);
     }
 }

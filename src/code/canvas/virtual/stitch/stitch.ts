@@ -103,6 +103,11 @@ export abstract class StitchCanvas extends StitchCanvasBase {
         this.pattern.push(stitchThread);
     }
 
+    protected cutThread(): void {
+        this.clickedDotIdx = undefined;
+        this.currentSide = CanvasSide.Back;
+    }
+
     private getCurrentThread(): StitchThread {
         const last = this.pattern.slice(this.pattern.length - 1, this.pattern.length)[0];
         return last;
@@ -127,8 +132,7 @@ export abstract class StitchCanvas extends StitchCanvasBase {
         const thread = this.getCurrentThread();
         const removedDot = thread.popDot();
         if (!removedDot) {
-            this.currentSide = CanvasSide.Back;
-            this.clickedDotIdx = undefined;
+            this.cutThread();
         } else {
             this.changeCanvasSide();
 
