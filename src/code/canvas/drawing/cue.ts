@@ -1,13 +1,14 @@
 import { CanvasBase } from "../base.js";
+import assert from "../../asserts/assert.js";
 import { Id, BoundsChangeEvent } from "../types.js";
 import { ICueDrawingCanvas, IVectorDrawingCanvas, SvgDot, SvgLine } from "./types.js";
 import {
     ICueCanvas,
     DrawCueDotEvent,
     RemoveCueDotEvent,
-    MoveCueThreadEvent,
-    DrawCueThreadEvent,
-    RemoveCueThreadEvent,
+    MoveCueSegmentEvent,
+    DrawCueSegmentEvent,
+    RemoveCueSegmentEvent,
 } from "../virtual/types.js";
 
 export class CueDrawingCanvas extends CanvasBase implements ICueDrawingCanvas {
@@ -19,8 +20,12 @@ export class CueDrawingCanvas extends CanvasBase implements ICueDrawingCanvas {
 
     constructor(cueCanvas: ICueCanvas, vectorDrawing: IVectorDrawingCanvas) {
         super();
+
         this.cueCanvas = cueCanvas;
+        assert.defined(this.cueCanvas, "cueCanvas");
+
         this.vectorDrawing = vectorDrawing;
+        assert.defined(this.vectorDrawing, "vectorDrawing");
 
         this.svgDots = new Map<Id, SvgDot>();
         this.svgLines = new Map<Id, SvgLine>();
@@ -29,67 +34,98 @@ export class CueDrawingCanvas extends CanvasBase implements ICueDrawingCanvas {
     }
 
     public override dispose(): void {
+        this.ensureAlive();
         this.clear();
         super.dispose();
     }
 
     private handleDrawDot(event: DrawCueDotEvent): void {
+        this.ensureAlive();
+        assert.defined(event, "DrawCueDotEvent");
+
         const dot = event.dot;
         const id = dot.id;
 
         const svgDot = this.vectorDrawing.drawDot(dot, event.dotRadius, event.dotColor);
+        assert.defined(svgDot, "svgDot");
         this.svgDots.set(id, svgDot);
     }
 
     private handleDrawDashDot(event: DrawCueDotEvent): void {
+        this.ensureAlive();
+        assert.defined(event, "DrawCueDotEvent");
+
         const dot = event.dot;
         const id = dot.id;
 
         const svgDot = this.vectorDrawing.drawDashDot(dot, event.dotRadius, event.dotColor);
+        assert.defined(svgDot, "svgDot");
         this.svgDots.set(id, svgDot);
     }
 
     private handleRemoveDot(event: RemoveCueDotEvent): void {
-        const id = event.dotId;
+        this.ensureAlive();
+        assert.defined(event, "RemoveCueDotEvent");
 
-        const svgDot = this.svgDots.get(id)!;
+        const id = event.dotId;
+        const svgDot = this.svgDots.get(id);
+        assert.defined(svgDot, "svgDot");
+
         this.vectorDrawing.removeDot(svgDot);
         this.svgDots.delete(id);
     }
 
-    private handleDrawThread(event: DrawCueThreadEvent): void {
-        const thread = event.thread;
+    private handleDrawSegment(event: DrawCueSegmentEvent): void {
+        this.ensureAlive();
+        assert.defined(event, "DrawCueSegmentEvent");
+
+        const thread = event.segment;
         const id = thread.id;
 
         const svgLine = this.vectorDrawing.drawLine(thread);
+        assert.defined(svgLine, "svgLine");
         this.svgLines.set(id, svgLine);
     }
 
-    private handleMoveThread(event: MoveCueThreadEvent): void {
-        const thread = event.thread;
-        const id = event.thread.id;
+    private handleMoveSegment(event: MoveCueSegmentEvent): void {
+        this.ensureAlive();
+        assert.defined(event, "MoveCueSegmentEvent");
 
-        const svgLine = this.svgLines.get(id)!;
+        const thread = event.segment;
+        const id = event.segment.id;
+
+        const svgLine = this.svgLines.get(id);
+        assert.defined(svgLine, "svgLine");
         this.vectorDrawing.moveLine(thread, svgLine);
     }
 
-    private handleDrawDashThread(event: DrawCueThreadEvent): void {
-        const thread = event.thread;
+    private handleDrawDashSegment(event: DrawCueSegmentEvent): void {
+        this.ensureAlive();
+        assert.defined(event, "DrawCueSegmentEvent");
+
+        const thread = event.segment;
         const id = thread.id;
 
         const svgLine = this.vectorDrawing.drawDashLine(thread);
+        assert.defined(svgLine, "svgLine");
         this.svgLines.set(id, svgLine);
     }
 
-    private handleRemoveThread(event: RemoveCueThreadEvent): void {
-        const id = event.threadId;
+    private handleRemoveSegment(event: RemoveCueSegmentEvent): void {
+        this.ensureAlive();
+        assert.defined(event, "RemoveCueSegmentEvent");
 
-        const svgLine = this.svgLines.get(id)!;
+        const id = event.segmentId;
+
+        const svgLine = this.svgLines.get(id);
+        assert.defined(svgLine, "svgLine");
         this.vectorDrawing.removeLine(svgLine);
         this.svgLines.delete(id);
     }
 
     private handleRedraw(): void {
+        this.ensureAlive();
+
         this.svgDots.forEach((dot) => {
             this.vectorDrawing.removeDot(dot);
         });
@@ -102,6 +138,8 @@ export class CueDrawingCanvas extends CanvasBase implements ICueDrawingCanvas {
     }
 
     private handleBoundsChange(event: BoundsChangeEvent): void {
+        this.ensureAlive();
+
         const bounds = event.bounds;
         super.bounds = bounds;
 
@@ -123,17 +161,17 @@ export class CueDrawingCanvas extends CanvasBase implements ICueDrawingCanvas {
         const removeDotUn = this.cueCanvas.onRemoveDot(this.handleRemoveDot.bind(this));
         super.registerUn(removeDotUn);
 
-        const drawThreadUn = this.cueCanvas.onDrawThread(this.handleDrawThread.bind(this));
-        super.registerUn(drawThreadUn);
+        const drawSegmentUn = this.cueCanvas.onDrawSegment(this.handleDrawSegment.bind(this));
+        super.registerUn(drawSegmentUn);
 
-        const drawDashThreadUn = this.cueCanvas.onDrawDashThread(this.handleDrawDashThread.bind(this));
-        super.registerUn(drawDashThreadUn);
+        const drawDashSegmentUn = this.cueCanvas.onDrawDashSegment(this.handleDrawDashSegment.bind(this));
+        super.registerUn(drawDashSegmentUn);
 
-        const moveThreadUn = this.cueCanvas.onMoveThread(this.handleMoveThread.bind(this));
-        super.registerUn(moveThreadUn);
+        const moveSegmentUn = this.cueCanvas.onMoveSegment(this.handleMoveSegment.bind(this));
+        super.registerUn(moveSegmentUn);
 
-        const removeThreadUn = this.cueCanvas.onRemoveThread(this.handleRemoveThread.bind(this));
-        super.registerUn(removeThreadUn);
+        const removeSegmentUn = this.cueCanvas.onRemoveSegment(this.handleRemoveSegment.bind(this));
+        super.registerUn(removeSegmentUn);
 
         const redrawUn = this.cueCanvas.onRedraw(this.handleRedraw.bind(this));
         super.registerUn(redrawUn);

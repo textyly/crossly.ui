@@ -1,6 +1,7 @@
-import { MoveInput } from "./move.js";
-import { TouchInput } from "./touch.js";
+import { MoveInput } from "./move/move.js";
+import { TouchInput } from "./touch/touch.js";
 import { InputCanvasBase } from "./base.js";
+import assert from "../../asserts/assert.js";
 import { InputCanvasConfig } from "../../config/types.js";
 import {
     Position,
@@ -19,7 +20,7 @@ import {
 
 export class InputCanvas extends InputCanvasBase {
     private readonly config: InputCanvasConfig;
-    private readonly htmlElement: HTMLElement;
+    private readonly inputHtmlElement: HTMLElement;
     private readonly touchInput: ITouchInput;
     private readonly moveInput: IMoveInput;
 
@@ -32,19 +33,22 @@ export class InputCanvas extends InputCanvasBase {
     private isPointerDown: boolean;
     private readonly resizeObserver: ResizeObserver;
 
-    constructor(config: InputCanvasConfig, htmlElement: HTMLElement) {
+    constructor(config: InputCanvasConfig, inputHtmlElement: HTMLElement) {
         super();
         this.config = config;
-        this.htmlElement = htmlElement;
+        assert.defined(this.config, "InputCanvasConfig");
 
-        const bounds = { left: htmlElement.clientLeft, top: htmlElement.clientTop, width: htmlElement.clientWidth, height: htmlElement.clientHeight };
+        this.inputHtmlElement = inputHtmlElement;
+        assert.defined(this.inputHtmlElement, "inputHtmlElement");
+
+        const bounds = { left: inputHtmlElement.clientLeft, top: inputHtmlElement.clientTop, width: inputHtmlElement.clientWidth, height: inputHtmlElement.clientHeight };
         super.bounds = bounds;
 
         const ignoreZoomUntil = this.config.ignoreZoomUntil;
-        this.touchInput = new TouchInput(ignoreZoomUntil, htmlElement);
+        this.touchInput = new TouchInput(ignoreZoomUntil, inputHtmlElement);
 
         const ignoreMoveUntil = this.config.ignoreMoveUntil;
-        this.moveInput = new MoveInput(ignoreMoveUntil, htmlElement, this.touchInput);
+        this.moveInput = new MoveInput(ignoreMoveUntil, inputHtmlElement, this.touchInput);
 
         this.wheelChangeHandler = this.handleWheelChange.bind(this);
         this.pointerUpHandler = this.handlePointerUp.bind(this);
@@ -59,79 +63,62 @@ export class InputCanvas extends InputCanvasBase {
     }
 
     public override dispose(): void {
-        this.unsubscribe();
+        super.ensureAlive();
 
+        this.unsubscribe();
         this.moveInput.dispose();
         this.touchInput.dispose();
 
         super.dispose();
     }
 
-    private subscribe(): void {
-        this.htmlElement.addEventListener(CanvasEventType.WheelChange, this.wheelChangeHandler);
-        this.htmlElement.addEventListener(CanvasEventType.PointerUp, this.pointerUpHandler);
-        this.htmlElement.addEventListener(CanvasEventType.PointerDown, this.pointerDownHandler);
-        this.htmlElement.addEventListener(CanvasEventType.PointerMove, this.pointerMoveHandler);
-        this.htmlElement.addEventListener(CanvasEventType.KeyDown, this.keyDownHandler);
-
-        this.resizeObserver.observe(this.htmlElement);
-
-        const touchZoomInUn = this.touchInput.onZoomIn(this.handleZoomIn.bind(this));
-        super.registerUn(touchZoomInUn);
-
-        const touchZoomOutUn = this.touchInput.onZoomOut(this.handleZoomOut.bind(this));
-        super.registerUn(touchZoomOutUn);
-
-        const moveStartUn = this.moveInput.onMoveStart(this.handleMoveStart.bind(this));
-        super.registerUn(moveStartUn);
-
-        const moveUn = this.moveInput.onMove(this.handleMove.bind(this));
-        super.registerUn(moveUn);
-
-        const moveStopUn = this.moveInput.onMoveStop(this.handleMoveStop.bind(this));
-        super.registerUn(moveStopUn);
-
-        this.touchInput.subscribe();
-        this.moveInput.subscribe();
-    }
-
-    private unsubscribe(): void {
-        this.htmlElement.removeEventListener(CanvasEventType.WheelChange, this.wheelChangeHandler);
-        this.htmlElement.removeEventListener(CanvasEventType.PointerUp, this.pointerUpHandler);
-        this.htmlElement.removeEventListener(CanvasEventType.PointerMove, this.pointerMoveHandler);
-        this.htmlElement.removeEventListener(CanvasEventType.PointerDown, this.pointerDownHandler);
-        this.htmlElement.removeEventListener(CanvasEventType.KeyDown, this.keyDownHandler);
-
-        this.resizeObserver.unobserve(this.htmlElement);
-    }
-
     private handleZoomIn(event: ZoomInEvent): void {
-        super.invokeZoomIn(event.currentPosition);
+        super.ensureAlive();
+        assert.defined(event, "ZoomInEvent");
+
+        super.invokeZoomIn(event);
     }
 
     private handleZoomOut(event: ZoomOutEvent): void {
-        super.invokeZoomOut(event.currentPosition);
+        super.ensureAlive();
+        assert.defined(event, "ZoomOutEvent");
+
+        super.invokeZoomOut(event);
     }
 
     private handleMoveStart(event: MoveStartEvent): void {
+        super.ensureAlive();
+        assert.defined(event, "MoveStartEvent");
+
         super.invokeMoveStart(event);
     }
 
     private handleMove(event: MoveEvent): void {
+        super.ensureAlive();
+        assert.defined(event, "MoveEvent");
+
         super.invokeMove(event);
     }
 
     private handleMoveStop(event: MoveStopEvent): void {
+        super.ensureAlive();
+        assert.defined(event, "MoveStopEvent");
+
         super.invokeMoveStop(event);
     }
 
     private handleWheelChange(event: WheelEvent): void {
-        this.wheelChange(event);
+        super.ensureAlive();
+        assert.defined(event, "WheelEvent");
 
+        this.wheelChange(event);
         event.preventDefault();
     }
 
     private handlePointerUp(event: PointerEvent): void {
+        super.ensureAlive();
+        assert.defined(event, "PointerUpEvent");
+
         this.isPointerDown = false;
 
         if (this.touchInput.inZoomMode) {
@@ -146,10 +133,16 @@ export class InputCanvas extends InputCanvasBase {
     }
 
     private handlePointerDown(event: PointerEvent): void {
+        super.ensureAlive();
+        assert.defined(event, "PointerDownEvent");
+
         this.isPointerDown = true;
     }
 
     private handlePointerMove(event: PointerEvent): void {
+        super.ensureAlive();
+        assert.defined(event, "PointerMoveEvent");
+
         if (this.touchInput.inZoomMode) {
             return;
         }
@@ -164,6 +157,9 @@ export class InputCanvas extends InputCanvasBase {
     }
 
     private handleKeyDown(event: KeyboardEvent): void {
+        super.ensureAlive();
+        assert.defined(event, "KeyboardEvent");
+
         const keyZ = "KeyZ";
 
         if (event.ctrlKey && event.code == keyZ) {
@@ -171,8 +167,11 @@ export class InputCanvas extends InputCanvasBase {
         }
     }
 
-    private handleBoundsChange(e: ResizeObserverEntry[]): void {
-        this.boundsChange(e);
+    private handleBoundsChange(event: ResizeObserverEntry[]): void {
+        super.ensureAlive();
+        assert.defined(event, "ResizeObserverEntries");
+
+        this.boundsChange(event);
     }
 
     private wheelChange(event: WheelEvent): void {
@@ -209,5 +208,43 @@ export class InputCanvas extends InputCanvasBase {
         const x = event.layerX;
         const y = event.layerY;
         return { x, y };
+    }
+
+    private subscribe(): void {
+        this.inputHtmlElement.addEventListener(CanvasEventType.WheelChange, this.wheelChangeHandler);
+        this.inputHtmlElement.addEventListener(CanvasEventType.PointerUp, this.pointerUpHandler);
+        this.inputHtmlElement.addEventListener(CanvasEventType.PointerDown, this.pointerDownHandler);
+        this.inputHtmlElement.addEventListener(CanvasEventType.PointerMove, this.pointerMoveHandler);
+        this.inputHtmlElement.addEventListener(CanvasEventType.KeyDown, this.keyDownHandler);
+
+        this.resizeObserver.observe(this.inputHtmlElement);
+
+        const touchZoomInUn = this.touchInput.onZoomIn(this.handleZoomIn.bind(this));
+        super.registerUn(touchZoomInUn);
+
+        const touchZoomOutUn = this.touchInput.onZoomOut(this.handleZoomOut.bind(this));
+        super.registerUn(touchZoomOutUn);
+
+        const moveStartUn = this.moveInput.onMoveStart(this.handleMoveStart.bind(this));
+        super.registerUn(moveStartUn);
+
+        const moveUn = this.moveInput.onMove(this.handleMove.bind(this));
+        super.registerUn(moveUn);
+
+        const moveStopUn = this.moveInput.onMoveStop(this.handleMoveStop.bind(this));
+        super.registerUn(moveStopUn);
+
+        this.touchInput.subscribe();
+        this.moveInput.subscribe();
+    }
+
+    private unsubscribe(): void {
+        this.inputHtmlElement.removeEventListener(CanvasEventType.WheelChange, this.wheelChangeHandler);
+        this.inputHtmlElement.removeEventListener(CanvasEventType.PointerUp, this.pointerUpHandler);
+        this.inputHtmlElement.removeEventListener(CanvasEventType.PointerMove, this.pointerMoveHandler);
+        this.inputHtmlElement.removeEventListener(CanvasEventType.PointerDown, this.pointerDownHandler);
+        this.inputHtmlElement.removeEventListener(CanvasEventType.KeyDown, this.keyDownHandler);
+
+        this.resizeObserver.unobserve(this.inputHtmlElement);
     }
 }

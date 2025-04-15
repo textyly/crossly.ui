@@ -1,5 +1,6 @@
 import { CueCanvas } from "./cue.js";
 import { ICueCanvasFacade } from "../types.js";
+import assert from "../../../asserts/assert.js";
 import { IInputCanvas } from "../../input/types.js";
 import { CueCanvasConfig } from "../../../config/types.js";
 
@@ -8,15 +9,15 @@ export class CueCanvasFacade extends CueCanvas implements ICueCanvasFacade {
         super(config, input);
     }
 
-    public setThreadColor(color: string): void {
-        this.threadColor = color;
-        this.invokeThreadColorChange(this.threadColor);
-        this.draw();
-    }
+    public useNewThread(color: string, width: number): void {
+        super.ensureAlive();
 
-    public setThreadWidth(width: number): void {
-        this.threadWidth = width;
-        this.invokeThreadWidthChange(this.threadWidth);
-        this.draw();
+        assert.defined(color, "color");
+        assert.greaterThanZero(color.length, "color.length");
+
+        assert.defined(width, "width");
+        assert.greaterThanZero(width, "width");
+
+        super.useNewThread(color, width);
     }
 }

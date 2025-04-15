@@ -2,6 +2,7 @@ import { CanvasBase } from "../base.js";
 import { CanvasConfig } from "../../config/types.js";
 import { IInputCanvas, Position } from "../input/types.js";
 import { Bounds, BoundsIndexes, DotIndex } from "../types.js";
+import assert from "../../asserts/assert.js";
 
 export abstract class VirtualCanvasDimensions extends CanvasBase {
     protected readonly config: Readonly<CanvasConfig>;
@@ -18,10 +19,17 @@ export abstract class VirtualCanvasDimensions extends CanvasBase {
         super();
 
         this.config = config;
-        this.inputCanvas = inputCanvas;
+        assert.defined(this.config, "config");
 
-        this.currentDotsSpace = this.dotsSpace = config.dotsSpacing.space / 2;
-        this.minDotsSpace = config.dotsSpacing.minSpace / 2;
+        this.inputCanvas = inputCanvas;
+        assert.defined(this.inputCanvas, "inputCanvas");
+
+        const dotsSpacing = config.dotsSpacing;
+        assert.greaterThanZero(dotsSpacing.space, "space");
+        assert.greaterThanZero(dotsSpacing.minSpace, "minSpace");
+
+        this.currentDotsSpace = this.dotsSpace = dotsSpacing.space / 2;
+        this.minDotsSpace = dotsSpacing.minSpace / 2;
 
         this._virtualBounds = { left: 0, top: 0, width: 0, height: 0 };
     }
@@ -63,8 +71,8 @@ export abstract class VirtualCanvasDimensions extends CanvasBase {
     }
 
     protected inBounds(position: Position): boolean {
-        const inVirtualBounds = this.inVirtualBounds(position);
-        return inVirtualBounds;
+        const inDrawingBounds = this.inDrawingBounds(position);
+        return inDrawingBounds;
     }
 
     protected zoomInCanvas(position: Position): void {
@@ -147,7 +155,7 @@ export abstract class VirtualCanvasDimensions extends CanvasBase {
         return { dotX: indexX, dotY: indexY };
     }
 
-    protected calculateBoundsIndexes(): BoundsIndexes {
+    protected calculateVisibleBoundsIndexes(): BoundsIndexes {
         const leftTopPos = this.calculateLeftTopPosition();
         const leftTopIdx = this.calculateDotIndex(leftTopPos);
 
@@ -280,14 +288,15 @@ export abstract class VirtualCanvasDimensions extends CanvasBase {
         return Math.min(this.virtualBounds.height, drawingBounds.height);
     }
 
-    private inVirtualBounds(position: Position): boolean {
+    private inDrawingBounds(position: Position): boolean {
         const dotIdx = this.calculateDotIndex(position);
         const dotPos = this.calculateDotPosition(dotIdx);
+        const drawingBounds = this.calculateDrawingBounds();
 
-        const inVirtualX = (dotPos.x >= this.virtualBounds.left) && (dotPos.x <= (this.virtualBounds.left + this.virtualBounds.width));
-        const inVirtualY = (dotPos.y >= this.virtualBounds.top) && (dotPos.y <= (this.virtualBounds.top + this.virtualBounds.height));
+        const inDrawingX = (dotPos.x >= drawingBounds.left) && (dotPos.x <= (drawingBounds.left + drawingBounds.width));
+        const inDrawingY = (dotPos.y >= drawingBounds.top) && (dotPos.y <= (drawingBounds.top + drawingBounds.height));
 
-        const inVirtualBounds = (inVirtualX && inVirtualY);
-        return inVirtualBounds;
+        const inDrawingBounds = (inDrawingX && inDrawingY);
+        return inDrawingBounds;
     }
 }

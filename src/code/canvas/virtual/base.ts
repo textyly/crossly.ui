@@ -1,3 +1,4 @@
+import assert from "../../asserts/assert.js";
 import { Messaging4 } from "../../messaging/impl.js";
 import { CanvasConfig } from "../../config/types.js";
 import { IMessaging4 } from "../../messaging/types.js";
@@ -42,6 +43,8 @@ export abstract class VirtualCanvasBase extends VirtualCanvasDimensions implemen
     }
 
     public draw(): void {
+        super.ensureAlive();
+        
         this.invokeRedraw();
         this.recalculateBounds();
         this.redraw();
@@ -58,6 +61,110 @@ export abstract class VirtualCanvasBase extends VirtualCanvasDimensions implemen
 
     protected changeCanvasSide(): void {
         this.currentSide = this.currentSide === CanvasSide.Front ? CanvasSide.Back : CanvasSide.Front;
+    }
+
+    private handleVisibleBoundsChange(event: BoundsChangeEvent): void {
+        super.ensureAlive();
+        assert.defined(event, "BoundsChangeEvent");
+
+        this.draw();
+    }
+
+    private handleZoomIn(event: ZoomInEvent): void {
+        super.ensureAlive();
+        assert.defined(event, "ZoomInEvent");
+
+        const currentPosition = event.currentPosition;
+        assert.positive(currentPosition.x, "currentPosition");
+        assert.positive(currentPosition.y, "currentPosition");
+
+        const inBounds = this.inBounds(currentPosition);
+        if (inBounds) {
+            this.zoomInCanvas(currentPosition);
+            this.zoomIn();
+            this.draw();
+        }
+    }
+
+    private handleZoomOut(event: ZoomOutEvent): void {
+        super.ensureAlive();
+        assert.defined(event, "ZoomOutEvent");
+
+        const currentPosition = event.currentPosition;
+        assert.positive(currentPosition.x, "currentPosition.x");
+        assert.positive(currentPosition.y, "currentPosition.y");
+
+        const inBounds = this.inBounds(currentPosition);
+        const minSpace = this.config.dotsSpacing.minSpace / 2;
+
+        if (inBounds && (this.currentDotsSpace > minSpace)) {
+            this.zoomOutCanvas(currentPosition);
+            this.zoomOut();
+            this.draw();
+        }
+    }
+
+    private handleMoveStart(event: MoveStartEvent): void {
+        super.ensureAlive();
+        assert.defined(event, "MoveStartEvent");
+
+        const currentPosition = event.currentPosition;
+        assert.positive(currentPosition.x, "currentPosition.x");
+        assert.positive(currentPosition.y, "currentPosition.y");
+
+        const previousPosition = event.previousPosition;
+        assert.positive(previousPosition.x, "previousPosition.x");
+        assert.positive(previousPosition.y, "previousPosition.y");
+
+        const inBounds = this.inBounds(currentPosition);
+        if (inBounds) {
+            this.startMove(currentPosition, previousPosition);
+            this.redraw(); // TODO: should be draw but it does not work
+            this.invokeMoveStart();
+        }
+    }
+
+    private handleMove(event: MoveEvent): void {
+        super.ensureAlive();
+        assert.defined(event, "MoveEvent");
+
+        if (this.inMovingMode) {
+
+            const currentPosition = event.currentPosition;
+            assert.positive(currentPosition.x, "currentPosition.x");
+            assert.positive(currentPosition.y, "currentPosition.y");
+
+            const previousPosition = event.previousPosition;
+            assert.positive(previousPosition.x, "previousPosition.x");
+            assert.positive(previousPosition.y, "previousPosition.y");
+
+            this.move(currentPosition, previousPosition);
+        }
+    }
+
+    private handleMoveStop(event: MoveStopEvent): void {
+        super.ensureAlive();
+        assert.defined(event, "MoveStopEvent");
+
+        if (this.inMovingMode) {
+            this.stopMove();
+            this.invokeMoveStop();
+            this.draw();
+        }
+    }
+
+    private invokeRedraw(): void {
+        this.virtualMessaging.sendToChannel0();
+    }
+
+    private invokeMoveStart(): void {
+        const event: VoidEvent = {};
+        this.virtualMessaging.sendToChannel1(event);
+    }
+
+    private invokeMoveStop(): void {
+        const event: VoidEvent = {};
+        this.virtualMessaging.sendToChannel2(event);
     }
 
     protected invokeThreadColorChange(color: string): void {
@@ -88,71 +195,5 @@ export abstract class VirtualCanvasBase extends VirtualCanvasDimensions implemen
 
         const moveStopUn = this.inputCanvas.onMoveStop(this.handleMoveStop.bind(this));
         super.registerUn(moveStopUn);
-    }
-
-    private handleVisibleBoundsChange(event: BoundsChangeEvent): void {
-        this.draw();
-    }
-
-    private handleZoomIn(event: ZoomInEvent): void {
-        const inBounds = this.inBounds(event.currentPosition);
-        if (inBounds) {
-            this.zoomInCanvas(event.currentPosition);
-            this.zoomIn();
-            this.draw();
-        }
-    }
-
-    private handleZoomOut(event: ZoomOutEvent): void {
-        const inBounds = this.inBounds(event.currentPosition);
-        const minSpace = this.config.dotsSpacing.minSpace / 2;
-
-        if (inBounds && (this.currentDotsSpace > minSpace)) {
-            this.zoomOutCanvas(event.currentPosition);
-            this.zoomOut();
-            this.draw();
-        }
-    }
-
-    private handleMoveStart(event: MoveStartEvent): void {
-        const currentPosition = event.currentPosition;
-        const previousPosition = event.previousPosition;
-
-        const inBounds = this.inBounds(currentPosition);
-        if (inBounds) {
-            this.startMove(currentPosition, previousPosition);
-            this.redraw(); // TODO: should be draw but it does not work
-            this.invokeMoveStart();
-        }
-    }
-
-    private handleMove(event: MoveEvent): void {
-        if (this.inMovingMode) {
-            const currentPosition = event.currentPosition;
-            const previousPosition = event.previousPosition;
-            this.move(currentPosition, previousPosition);
-        }
-    }
-
-    private handleMoveStop(event: MoveStopEvent): void {
-        if (this.inMovingMode) {
-            this.stopMove();
-            this.invokeMoveStop();
-            this.draw();
-        }
-    }
-
-    private invokeRedraw(): void {
-        this.virtualMessaging.sendToChannel0();
-    }
-
-    private invokeMoveStart(): void {
-        const event: VoidEvent = {};
-        this.virtualMessaging.sendToChannel1(event);
-    }
-
-    private invokeMoveStop(): void {
-        const event: VoidEvent = {};
-        this.virtualMessaging.sendToChannel2(event);
     }
 }

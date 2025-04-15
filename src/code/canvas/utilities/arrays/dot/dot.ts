@@ -1,17 +1,28 @@
 import { ArrayBase } from "../base.js";
 
 export class DotArray extends ArrayBase {
+    private readonly _color: string;
+    private readonly _radius: number;
+
     private _dotsX: Int16Array;
     private _dotsY: Int16Array;
-    private _radiuses: Int16Array;
-    private _colors: Array<string>;
 
-    constructor() {
+    constructor(color: string, radius: number) {
         super();
+
+        this._color = color;
+        this._radius = radius;
+
         this._dotsX = new Int16Array(this.space);
         this._dotsY = new Int16Array(this.space);
-        this._radiuses = new Int16Array(this.space);
-        this._colors = new Array<string>();
+    }
+
+    public get color(): string {
+        return this._color;
+    }
+
+    public get radius(): number {
+        return this._radius;
     }
 
     public get dotsX(): Readonly<Int16Array> {
@@ -22,27 +33,16 @@ export class DotArray extends ArrayBase {
         return this._dotsY.slice(0, this.length);
     }
 
-    public get radiuses(): Readonly<Int16Array> {
-        return this._radiuses.slice(0, this.length);
-    }
-
-    public get colors(): Readonly<Array<string>> {
-        return this._colors;
-    }
-
-    public push(x: number, y: number, radius: number, color: string): void {
+    public push(x: number, y: number): void {
         this.occupyItemSpace();
 
-        this._dotsX[this.count] = x;
-        this._dotsY[this.count] = y;
-        this._radiuses[this.count] = radius;
-        this._colors.push(color);
+        this._dotsX[this.index] = x;
+        this._dotsY[this.index] = y;
     }
 
     protected override expand(): void {
         this.expandDotsX();
         this.expandDotsY();
-        this.expandRadiuses();
     }
 
     private expandDotsX(): void {
@@ -60,15 +60,6 @@ export class DotArray extends ArrayBase {
 
         for (let index = 0; index < dotsY.length; index++) {
             this._dotsY[index] = dotsY[index];
-        }
-    }
-
-    private expandRadiuses(): void {
-        const radiuses = this._radiuses;
-        this._radiuses = new Int16Array(this.space);
-
-        for (let index = 0; index < radiuses.length; index++) {
-            this._radiuses[index] = radiuses[index];
         }
     }
 }

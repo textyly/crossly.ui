@@ -1,4 +1,5 @@
 import { StitchCanvas } from "./stitch.js";
+import assert from "../../../asserts/assert.js";
 import { IStitchCanvasFacade } from "../types.js";
 import { IInputCanvas } from "../../input/types.js";
 import { StitchCanvasConfig } from "../../../config/types.js";
@@ -8,13 +9,15 @@ export class StitchCanvasFacade extends StitchCanvas implements IStitchCanvasFac
         super(config, input);
     }
 
-    public setThreadColor(color: string): void {
-        this.threadColor = color;
-        this.invokeThreadColorChange(this.threadColor);
-    }
+    public useNewThread(color: string, width: number): void {
+        super.ensureAlive();
 
-    public setThreadWidth(width: number): void {
-        this.threadWidth = width;
-        this.invokeThreadWidthChange(this.threadWidth);
+        assert.defined(color, "color");
+        assert.greaterThanZero(color.length, "color.length");
+
+        assert.defined(width, "width");
+        assert.greaterThanZero(width, "width");
+
+        super.useNewThread(color, width);
     }
 }

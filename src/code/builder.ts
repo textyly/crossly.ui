@@ -1,10 +1,10 @@
+import assert from "./asserts/assert.js";
 import { CrosslyCanvasConfig } from "./config/types.js";
 import { ICrosslyCanvasFacade } from "./canvas/types.js";
 import { CrosslyCanvasBuilder } from "./canvas/builder.js";
 
 export class CanvasBuilder {
     private readonly crosslyCanvasBuilder: CrosslyCanvasBuilder;
-
     private config!: CrosslyCanvasConfig;
 
     constructor() {
@@ -12,22 +12,8 @@ export class CanvasBuilder {
     }
 
     public build(): ICrosslyCanvasFacade {
-        this.crosslyCanvasBuilder.withConfig(this.config);
-
-        const inputHTMLElement = this.buildInputHTMLElement();
-        this.crosslyCanvasBuilder.withInputCanvas(inputHTMLElement);
-
-        const fabricHTMLElement = this.buildFabricHTMLElement();
-        this.crosslyCanvasBuilder.withFabricCanvas(fabricHTMLElement);
-
-        const stitchHTMLElement = this.buildStitchHTMLElement();
-        this.crosslyCanvasBuilder.withStitchCanvas(stitchHTMLElement);
-
-        const cueHTMLElement = this.buildCueHTMLElement();
-        this.crosslyCanvasBuilder.withCueCanvas(cueHTMLElement);
-
-        const crosslyCanvas = this.crosslyCanvasBuilder.build();
-        return crosslyCanvas;
+        assert.defined(this.config, "config");
+        return this.buildCore(this.config);
     }
 
     public withConfig(config: CrosslyCanvasConfig): CanvasBuilder {
@@ -35,23 +21,46 @@ export class CanvasBuilder {
         return this;
     }
 
-    private buildInputHTMLElement(): HTMLElement {
-        const htmlSvgElement = document.getElementById("crossly") as HTMLElement;
-        return htmlSvgElement;
+    private buildCore(config: CrosslyCanvasConfig): ICrosslyCanvasFacade {
+        this.crosslyCanvasBuilder.withConfig(config);
+
+        const inputHtmlElement = this.buildInputHtmlElement();
+        this.crosslyCanvasBuilder.withInputCanvas(inputHtmlElement);
+
+        const fabricHtmlElement = this.buildFabricHtmlElement();
+        this.crosslyCanvasBuilder.withFabricCanvas(fabricHtmlElement);
+
+        const stitchHtmlElement = this.buildStitchHtmlElement();
+        this.crosslyCanvasBuilder.withStitchCanvas(stitchHtmlElement);
+
+        const cueHtmlElement = this.buildCueHtmlElement();
+        this.crosslyCanvasBuilder.withCueCanvas(cueHtmlElement);
+
+        const crosslyCanvas = this.crosslyCanvasBuilder.build();
+        return crosslyCanvas;
     }
 
-    private buildFabricHTMLElement(): HTMLCanvasElement {
-        const htmlCanvasElement = document.getElementById("fabric") as HTMLCanvasElement;
-        return htmlCanvasElement;
+    private buildInputHtmlElement(): HTMLElement {
+        const inputHtmlElement = document.getElementById("input") as HTMLElement;
+        assert.defined(inputHtmlElement, "inputHtmlElement");
+        return inputHtmlElement;
     }
 
-    private buildStitchHTMLElement(): HTMLCanvasElement {
-        const htmlCanvasElement = document.getElementById("stitch") as HTMLCanvasElement;
-        return htmlCanvasElement;
+    private buildFabricHtmlElement(): HTMLCanvasElement {
+        const fabricHtmlElement = document.getElementById("fabric") as HTMLCanvasElement;
+        assert.defined(fabricHtmlElement, "fabricHtmlElement");
+        return fabricHtmlElement;
     }
 
-    private buildCueHTMLElement(): HTMLElement {
-        const htmSvgCanvas = document.getElementById("cue") as HTMLElement;
-        return htmSvgCanvas;
+    private buildStitchHtmlElement(): HTMLCanvasElement {
+        const stitchHtmlElement = document.getElementById("stitch") as HTMLCanvasElement;
+        assert.defined(stitchHtmlElement, "stitchHtmlElement");
+        return stitchHtmlElement;
+    }
+
+    private buildCueHtmlElement(): HTMLElement {
+        const cueHtmlElement = document.getElementById("cue") as HTMLElement;
+        assert.defined(cueHtmlElement, "cueHtmlElement");
+        return cueHtmlElement;
     }
 }
