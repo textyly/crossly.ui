@@ -9,15 +9,7 @@ export class CueCanvasFacade extends CueCanvas implements ICueCanvasFacade {
         super(config, input);
     }
 
-    public setThreadColor(color: string): void {
-        this.setThread(color, this.threadWidth);
-    }
-
-    public setThreadWidth(width: number): void {
-        this.setThread(this.threadColor, width);
-    }
-
-    public setThread(color: string, width: number): void {
+    public useNewThread(color: string, width: number): void {
         super.ensureAlive();
 
         assert.defined(color, "color");
@@ -26,25 +18,6 @@ export class CueCanvasFacade extends CueCanvas implements ICueCanvasFacade {
         assert.defined(width, "width");
         assert.greaterThanZero(width, "width");
 
-        this.setThreadCore(color, width);
-    }
-
-    public cutThread(): void {
-        super.ensureAlive();
-
-        super.cutThread();
-        super.draw();
-    }
-
-    private setThreadCore(color: string, width: number): void {
-        this.cutThread();
-
-        this.threadColor = color;
-        this.invokeThreadColorChange(this.threadColor);
-
-        this.threadWidth = width;
-        this.invokeThreadWidthChange(this.threadWidth);
-
-        this.createThread(this.threadColor, this.threadWidth);
+        super.useNewThread(color, width);
     }
 }

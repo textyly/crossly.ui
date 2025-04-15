@@ -14,9 +14,6 @@ export abstract class StitchCanvas extends StitchCanvasBase {
     private readonly minThreadWidth: number;
     private readonly threadWidthZoomStep: number;
 
-    protected threadColor: string;
-    protected threadWidth: number;
-
     private zooms: number;
     private clickedDotIdx?: DotIndex;
 
@@ -27,18 +24,15 @@ export abstract class StitchCanvas extends StitchCanvasBase {
         this.validateConfig(config);
 
         const threadConfig = config.thread;
-        this.threadColor = threadConfig.color;
-        this.threadWidth = threadConfig.width;
         this.minThreadWidth = threadConfig.minWidth;
         this.threadWidthZoomStep = threadConfig.widthZoomStep;
 
+        this.pattern = new Array<StitchThread>();
+        this.createThread(threadConfig.color, threadConfig.width);
+
         this.dotsUtility = new DotsUtility();
 
-        this.pattern = new Array<StitchThread>();
-        this.createThread(this.threadColor, this.threadWidth);
-
         this.zooms = 0;
-
 
         this.startListening();
     }
@@ -98,12 +92,20 @@ export abstract class StitchCanvas extends StitchCanvasBase {
         super.invokeDrawPattern(this.pattern, density);
     }
 
+    protected useNewThread(color: string, width: number): void {
+        this.removeThread();
+        this.createThread(color, width);
+    }
+
     protected createThread(color: string, width: number): void {
         const stitchThread = new StitchThread(color, width);
         this.pattern.push(stitchThread);
+
+        this.invokeThreadColorChange(color);
+        this.invokeThreadWidthChange(width);
     }
 
-    protected cutThread(): void {
+    protected removeThread(): void {
         this.clickedDotIdx = undefined;
         this.currentSide = CanvasSide.Back;
     }
@@ -131,34 +133,48 @@ export abstract class StitchCanvas extends StitchCanvasBase {
     private handleUndo(): void {
         super.ensureAlive();
 
-        // let thread = this.getCurrentThread();
-        // assert.defined(thread, "thread");
+        super.ensureAlive();
 
-        // if (thread.length > 0) {
-        //     thread.popDot();
-        //     const lastDot = thread.last();
+        const threadsCount = this.pattern.length;
+        assert.greaterThanZero(threadsCount, "threadsCount");
 
-        //     if (!lastDot) {
-        //         this.cutThread();
-        //     } else {
-        //         this.changeCanvasSide();
-        //         this.clickedDotIdx = { dotX: lastDot.dotX, dotY: lastDot.dotY };
-        //     }
-        // } else {
-        //     this.pattern.pop();
-        //     thread = this.getCurrentThread();
+        const currentThread = this.getCurrentThread();
+        assert.defined(currentThread, "currentThread");
 
-        //     if (thread) {
-        //         this.threadColor = thread.color;
-        //         this.threadWidth = thread.width;
-        //     } else {
-        //         const config = this.config as StitchCanvasConfig;
-        //         this.createThread(config.thread.color, config.thread.width);
-        //     }
+        const dotsCount = currentThread.length;
+        if (dotsCount === 0) {
+            // thread is just created without crossing any hole (state immediately following `use new thread` operation)
+            if (threadsCount === 1) {
+                // there is only 1 thread which has not crossed any hole
+                // cannot undo any more
+            } else {
+                // remove current thread
+                this.pattern.pop();
 
-        //     this.invokeThreadColorChange(this.threadColor);
-        //     this.invokeThreadWidthChange(this.threadWidth);
-        // }
+                const previousThread = this.getCurrentThread();
+                assert.defined(previousThread, "previousThread");
+
+                const previousThreadDotsCount = previousThread.length;
+                if (previousThreadDotsCount === 0) {
+                    // previous thread have not crossed any dots as well, just remove it
+                } else {
+                    this.currentSide = previousThreadDotsCount % 2 === 0 ? CanvasSide.Back : CanvasSide.Front;
+                    this.clickedDotIdx = previousThread.last()!;
+                }
+            }
+        } else {
+            // thread has crossed at leas one hole
+            if (dotsCount === 1) {
+                // remove last dot
+                currentThread.pop();
+                this.removeThread();
+            } else {
+                // remove last dot
+                currentThread.pop();
+                this.changeCanvasSide();
+                this.clickedDotIdx = currentThread.last()!;
+            }
+        }
 
         this.draw();
     }
@@ -197,8 +213,11 @@ export abstract class StitchCanvas extends StitchCanvasBase {
             thread.pushDot(clickedDotIdx.dotX, clickedDotIdx.dotY, clickedDotPos.x, clickedDotPos.y, visible);
 
             if (visible) {
-                const zoomedWidth = this.calculateThreadZoomedWidth(this.threadWidth);
-                const segment = { from: previouslyClickedDotPos, to: clickedDotPos, color: this.threadColor, width: zoomedWidth };
+                const thread = this.getCurrentThread();
+                assert.defined(thread, "thread");
+
+                const zoomedWidth = this.calculateThreadZoomedWidth(thread.width);
+                const segment = { from: previouslyClickedDotPos, to: clickedDotPos, color: thread.color, width: zoomedWidth };
 
                 const density = this.calculateDensity();
                 super.invokeDrawSegment(segment, density);

@@ -36,19 +36,11 @@ export interface ICueCanvas extends IVirtualCanvas {
 }
 
 export interface IStitchCanvasFacade extends IStitchCanvas {
-    setThread(color: string, width: number): void;
-    setThreadColor(color: string): void;
-    setThreadWidth(width: number): void;
-
-    cutThread(): void;
+    useNewThread(color: string, width: number): void;
 }
 
 export interface ICueCanvasFacade extends ICueCanvas {
-    setThread(color: string, width: number): void
-    setThreadColor(color: string): void;
-    setThreadWidth(width: number): void;
-
-    cutThread(): void;
+    useNewThread(color: string, width: number): void;
 }
 
 export type ColorChangeEvent = { color: string };
@@ -63,7 +55,7 @@ export type DrawFabricDotsListener = Listener<DrawFabricDotsEvent>;
 export type DrawFabricThreadsEvent = { threads: FabricThread };
 export type DrawFabricThreadsListener = Listener<DrawFabricThreadsEvent>;
 
-export type DrawStitchSegmentEvent = { segment: StitchSegment, density: Density  };
+export type DrawStitchSegmentEvent = { segment: StitchSegment, density: Density };
 export type DrawStitchSegmentListener = Listener<DrawStitchSegmentEvent>;
 
 export type DrawStitchPatternEvent = { pattern: StitchPattern, density: Density };

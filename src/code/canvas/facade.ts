@@ -15,24 +15,9 @@ export class CrosslyCanvasFacade extends CrosslyCanvas implements ICrosslyCanvas
         super(config, inputCanvas, fabricRasterDrawing, stitchRasterDrawing, cueVectorDrawing);
     }
 
-    public setThread(color: string, width: number): void {
-        this.stitchCanvasFacade.setThread(color, width);
-        this.cueCanvasFacade.setThread(color, width);
-    }
-
-    public setThreadColor(color: string): void {
-        this.stitchCanvasFacade.setThreadColor(color);
-        this.cueCanvasFacade.setThreadColor(color);
-    }
-
-    public setThreadWidth(width: number): void {
-        this.stitchCanvasFacade.setThreadWidth(width);
-        this.cueCanvasFacade.setThreadWidth(width);
-    }
-
-    public cutThread(): void {
-        this.stitchCanvasFacade.cutThread();
-        this.cueCanvasFacade.cutThread();
+    public useNewThread(color: string, width: number): void {
+        this.stitchCanvasFacade.useNewThread(color, width);
+        this.cueCanvasFacade.useNewThread(color, width);
     }
 
     // TODO: load patterns (stitches) must add stitch threads and cue threads as well!!! Otherwise `undo` logic will not work correctly.

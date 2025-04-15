@@ -17,8 +17,6 @@ export abstract class CueCanvas extends CueCanvasBase {
     private readonly minDotRadius: number;
     private readonly dotRadiusZoomStep: number;
 
-    protected threadColor: string;
-    protected threadWidth: number;
     private readonly minThreadWidth: number;
     private readonly threadWidthZoomStep: number;
 
@@ -40,18 +38,15 @@ export abstract class CueCanvas extends CueCanvasBase {
         this.minDotRadius = dotConfig.minRadius;
         this.dotRadiusZoomStep = dotConfig.radiusZoomStep;
 
-        this.threadColor = threadConfig.color;
-        this.threadWidth = threadConfig.width;
+        this.pattern = new Array<CueThread>();
+        this.createThread(threadConfig.color, threadConfig.width);
         this.minThreadWidth = threadConfig.minWidth;
         this.threadWidthZoomStep = threadConfig.widthZoomStep;
 
         this.ids = new IdGenerator();
         this.dotsUtility = new DotsUtility();
-        this.pattern = new Array<CueThread>();
 
         this.zooms = 0;
-
-        this.createThread(this.threadColor, this.threadWidth);
 
         this.startListening();
     }
@@ -75,16 +70,25 @@ export abstract class CueCanvas extends CueCanvasBase {
     protected createThread(color: string, width: number): void {
         const thread = new CueThread(color, width);
         this.pattern.push(thread);
+
+        this.invokeThreadColorChange(color);
+        this.invokeThreadWidthChange(width);
+    }
+
+    protected useNewThread(color: string, width: number): void {
+        this.removeThread();
+        this.createThread(color, width);
+        this.draw();
     }
 
     private getCurrentThread(): CueThread | undefined {
         const length = this.pattern.length;
         const array = this.pattern.slice(length - 1, length);
-        
+
         return array.length === 0 ? undefined : array[0];
     }
 
-    protected cutThread(): void {
+    protected removeThread(): void {
         this.clickedDotIdx = undefined;
         this.currentSide = CanvasSide.Back;
     }
@@ -148,47 +152,64 @@ export abstract class CueCanvas extends CueCanvasBase {
     private handleUndo(): void {
         super.ensureAlive();
 
-        // let last = this.cueDots.last();
-        // if (last?.threadColor !== this.threadColor && last?.threadWidth !== this.threadWidth) {
-        //     this.changeCanvasSide();
-        // } else {
-        //     this.cueDots.pop();
-        //     last = this.cueDots.last();
-        // }
+        const threadsCount = this.pattern.length;
+        assert.greaterThanZero(threadsCount, "threadsCount");
 
-        // if (!last) {
-        //     this.cutThread();
-        //     this.removeThread();
+        const currentThread = this.getCurrentThread();
+        assert.defined(currentThread, "currentThread");
 
-        //     const config = this.config as CueCanvasConfig;
-        //     this.threadColor = config.thread.color;
-        //     this.invokeThreadColorChange(this.threadColor);
+        const dotsCount = currentThread.length;
+        if (dotsCount === 0) {
+            // thread is just created without crossing any hole (state immediately following `use new thread` operation)
+            if (threadsCount === 1) {
+                // there is only 1 thread which has not crossed any hole
+                // cannot undo any more
+            } else {
+                // remove current thread
+                this.pattern.pop();
 
-        //     this.threadWidth = config.thread.width;
-        //     this.invokeThreadWidthChange(this.threadWidth);
+                const previousThread = this.getCurrentThread();
+                assert.defined(previousThread, "previousThread");
 
-        //     if (this.hoveredDotIdx) {
-        //         const dotPos = this.calculateDotPosition(this.hoveredDotIdx);
-        //         this.moveDot(dotPos);
-        //     }
-        // } else {
-        //     this.removeThread();
-        //     this.changeCanvasSide();
+                const previousThreadDotsCount = previousThread.length;
+                if (previousThreadDotsCount === 0) {
+                    // previous thread have not crossed any dots as well, just remove it
+                } else {
+                    this.currentSide = previousThreadDotsCount % 2 === 0 ? CanvasSide.Back : CanvasSide.Front;
 
-        //     this.threadColor = last.threadColor;
-        //     this.invokeThreadColorChange(this.threadColor);
+                    const lastDotIdx = previousThread.lastDotIndex()!;
+                    this.clickedDotIdx = lastDotIdx;
 
-        //     this.threadWidth = last.threadWidth;
-        //     this.invokeThreadWidthChange(this.threadWidth);
+                    if (this.hoveredDotIdx) {
+                        const dotPos = this.calculateDotPosition(this.hoveredDotIdx);
+                        const event = { position: dotPos };
+                        this.handlePointerMove(event);
+                    }
+                }
+            }
+        } else {
+            // thread has crossed at leas one hole
+            if (dotsCount === 1) {
+                // remove last dot
+                currentThread.pop();
+                this.removeThread();
+            } else {
+                // remove last dot
+                currentThread.pop();
+                this.changeCanvasSide();
 
-        //     this.clickedDotIdx = last.clickedDotIdx;
+                const lastDotIdx = currentThread.lastDotIndex()!;
+                this.clickedDotIdx = lastDotIdx;
 
-        //     if (this.hoveredDotIdx) {
-        //         const dotPos = this.calculateDotPosition(this.hoveredDotIdx);
-        //         const event = { position: dotPos };
-        //         this.handlePointerMove(event);
-        //     }
-        // }
+                if (this.hoveredDotIdx) {
+                    const dotPos = this.calculateDotPosition(this.hoveredDotIdx);
+                    const event = { position: dotPos };
+                    this.handlePointerMove(event);
+                }
+            }
+        }
+
+        this.draw();
     }
 
     private moveDot(position: Position): void {
@@ -302,8 +323,11 @@ export abstract class CueCanvas extends CueCanvasBase {
     }
 
     private createSegment(id: number, previouslyClickedDotPos: Position, clickedDotPos: Position): CueSegment {
-        const color = this.threadColor;
-        const width = this.calculateZoomedThreadWidth(this.threadWidth);
+        const currentThread = this.getCurrentThread();
+        assert.defined(currentThread, "currentThread");
+
+        const color = currentThread.color;
+        const width = this.calculateZoomedThreadWidth(currentThread.width);
 
         const segment = { id, from: previouslyClickedDotPos, to: clickedDotPos, width, color };
         return segment;
