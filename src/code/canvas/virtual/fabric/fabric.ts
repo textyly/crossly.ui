@@ -1,9 +1,9 @@
 import { FabricCanvasBase } from "./base.js";
 import assert from "../../../asserts/assert.js";
 import { IInputCanvas } from "../../input/types.js";
-import { FabricCanvasConfig } from "../../../config/types.js";
 import { DotArray } from "../../utilities/arrays/dot/dot.js";
-import { ThreadArray } from "../../utilities/arrays/thread/array.js";
+import { FabricCanvasConfig } from "../../../config/types.js";
+import { FabricThread } from "../../utilities/arrays/thread/fabric.js";
 
 export class FabricCanvas extends FabricCanvasBase {
     private dotColor: string;
@@ -46,7 +46,7 @@ export class FabricCanvas extends FabricCanvasBase {
     }
 
     protected override redraw(): void {
-        const boundsIndexes = this.calculateBoundsIndexes();
+        const boundsIndexes = this.calculateVisibleBoundsIndexes();
 
         const leftTopIndexX = boundsIndexes.leftTop.dotX;
         const startIndexX = leftTopIndexX % 2 === 0 ? leftTopIndexX : leftTopIndexX + 1;
@@ -73,18 +73,18 @@ export class FabricCanvas extends FabricCanvasBase {
         // Do not create types/classes for thread (objects are extremely slow and memory/GC consuming)
 
         const bounds = this.bounds;
-        const threads = new ThreadArray();
+        const threads = new FabricThread(this.threadColor, this.threadWidth);
 
         for (let dotYIdx = startDotIndexY; dotYIdx <= endDotIndexY; dotYIdx += 2) {
 
             const dotYPos = this.calculateDotYPosition(dotYIdx);
-            threads.push(true, bounds.left, dotYPos, bounds.left + bounds.width, dotYPos, this.threadWidth, this.threadColor);
+            threads.push(bounds.left, dotYPos, bounds.left + bounds.width, dotYPos);
         }
 
         for (let dotXIdX = startDotIndexX; dotXIdX <= endDotIndexX; dotXIdX += 2) {
 
             const dotXPos = this.calculateDotXPosition(dotXIdX);
-            threads.push(true, dotXPos, bounds.top, dotXPos, bounds.top + bounds.height, this.threadWidth, this.threadColor);
+            threads.push(dotXPos, bounds.top, dotXPos, bounds.top + bounds.height);
         }
 
         super.invokeDrawThreads(threads);
@@ -94,14 +94,14 @@ export class FabricCanvas extends FabricCanvasBase {
         // CPU, GPU, memory and GC intensive code
         // Do not create types/classes for dot (objects are extremely slow and memory/GC consuming)
 
-        const dots = new DotArray();
+        const dots = new DotArray(this.dotColor, this.dotRadius);
 
         for (let dotYIdx = startIndexY; dotYIdx <= endIndexY; dotYIdx += 2) {
             for (let dotXIdX = startIndexX; dotXIdX <= endIndexX; dotXIdX += 2) {
 
                 const dotIdx = { dotX: dotXIdX, dotY: dotYIdx };
                 const dotPos = this.calculateDotPosition(dotIdx);
-                dots.push(dotPos.x, dotPos.y, this.dotRadius, this.dotColor);
+                dots.push(dotPos.x, dotPos.y);
             }
         }
 

@@ -1,15 +1,14 @@
 import assert from "../../../asserts/assert.js";
-import { RasterDrawingCanvas } from "./raster.js";
 import { Density } from "../../virtual/types.js";
-import { IRasterDrawingCanvas } from "../types.js";
+import { RasterDrawingCanvas } from "./raster.js";
 import { ShapeDrawing } from "./primitives/shape.js";
+import { IStitchRasterDrawingCanvas } from "../types.js";
 import { RasterLineDrawing } from "./primitives/line.js";
-import { DotArray } from "../../utilities/arrays/dot/dot.js";
+import { StitchPattern, StitchSegment } from "../../types.js";
 import { RasterPolygonDrawing } from "./primitives/polygon.js";
 import { RasterRectangleDrawing } from "./primitives/rectangle.js";
-import { StitchThreadArray } from "../../utilities/arrays/thread/stitch.js";
 
-export class StitchRasterDrawingCanvas extends RasterDrawingCanvas implements IRasterDrawingCanvas {
+export class StitchRasterDrawingCanvas extends RasterDrawingCanvas implements IStitchRasterDrawingCanvas {
     private shape: ShapeDrawing;
 
     constructor(rasterCanvas: HTMLCanvasElement) {
@@ -18,64 +17,79 @@ export class StitchRasterDrawingCanvas extends RasterDrawingCanvas implements IR
         const line = new RasterLineDrawing();
         const polygon = new RasterPolygonDrawing();
         const rectangle = new RasterRectangleDrawing();
+
         this.shape = new ShapeDrawing(line, rectangle, polygon);
     }
 
-    public drawDots(dots: DotArray): void {
-        // stitch canvas does not draw dots because they have a huge perf impact when more than 300x300 stitches in grid are being used
-        // better throw an error if someone decides to start drawing dots, hopefully will see this comment
-        throw new Error("not implemented because of high performance impact");
+    public drawLine(segment: StitchSegment, density: Density): void {
+        const path = this.createPath();
+
+        const width = segment.width;
+        const color = segment.color;
+        const fromX = segment.from.x - this.bounds.left;
+        const fromY = segment.from.y - this.bounds.top;
+        const toX = segment.to.x - this.bounds.left;
+        const toY = segment.to.y - this.bounds.top;
+
+        this.shape.draw(density, path, fromX, fromY, toX, toY, width);
+
+        this.drawPath(path, color);
     }
 
-    public drawLines(threads: StitchThreadArray, density: Density): void {
+    public drawLines(pattern: StitchPattern, density: Density): void {
         super.ensureAlive();
 
-        assert.defined(threads, "StitchThreadArray");
+        assert.defined(pattern, "StitchPattern");
         assert.defined(density, "density");
+        assert.greaterThanZero(pattern.length, "pattern");
 
-        this.drawLinesCore(threads, density);
+        this.drawLinesCore(pattern, density);
     }
 
-    private drawLinesCore(threads: StitchThreadArray, density: Density): void {
+    private drawLinesCore(pattern: StitchPattern, density: Density): void {
         // CPU, GPU, memory and GC intensive code, do not extract in multiple methods!!!
-
-        const visibilities = threads.visibilities;
-        const fromDotsXPositions = threads.fromDotsXPositions;
-        const fromDotsYPositions = threads.fromDotsYPositions;
-        const toDotsXPositions = threads.toDotsXPositions;
-        const toDotsYPositions = threads.toDotsYPositions;
-        const widths = threads.zoomedWidths;
-        const colors = threads.colors;
-
-        // Path2D is used for perf optimization otherwise this.context.lineTo has a huge negative perf impact
+        let previousThreadColor = pattern[0].color;
         let path = this.createPath();
-        let previousColor = colors[0];
-        const lastIdX = threads.length - 1;
+        const left = this.bounds.left;
+        const top = this.bounds.top;
 
-        for (let threadIdx = 0; threadIdx < threads.length; threadIdx++) {
-            const currentWidth = widths[threadIdx];
-            const currentColor = colors[threadIdx];
-            const isVisible = visibilities[threadIdx];
+        for (let threadIdx = 0; threadIdx < pattern.length; threadIdx++) {
 
-            if (isVisible) {
-                if (currentColor !== previousColor) {
-                    this.closePath(path, previousColor);
-                    path = this.createPath();
-                    previousColor = currentColor;
+            const currentThread = pattern[threadIdx];
+            const visibilities = currentThread.visibilities;
+            const positionsX = currentThread.positionsX;
+            const positionsY = currentThread.positionsY;
+
+            if (currentThread.color !== previousThreadColor) {
+                this.drawPath(path, previousThreadColor);
+                path = this.createPath();
+            }
+
+            for (let dotIdx = 1; dotIdx < currentThread.length; dotIdx++) {
+
+                // filter out back stitches as well as stitches positioned out of the visible area
+                if ((dotIdx % 2 !== 0)) {
+
+                    // if `from` or `to` visible then draw the line (segment)
+                    const isSegmentVisible = visibilities[dotIdx - 1] || visibilities[dotIdx];
+
+                    if (isSegmentVisible) {
+                        this.shape.draw(
+                            density,
+                            path,
+                            positionsX[dotIdx - 1] - left,
+                            positionsY[dotIdx - 1] - top,
+                            positionsX[dotIdx] - left,
+                            positionsY[dotIdx] - top,
+                            currentThread.zoomedWidth);
+                    }
                 }
-
-                const fromX = fromDotsXPositions[threadIdx] - this.bounds.left;
-                const fromY = fromDotsYPositions[threadIdx] - this.bounds.top;
-                const toX = toDotsXPositions[threadIdx] - this.bounds.left;
-                const toY = toDotsYPositions[threadIdx] - this.bounds.top;
-                this.shape.draw(density, path, fromX, fromY, toX, toY, currentWidth);
             }
 
-            if (threadIdx === lastIdX) {
-                const color = isVisible ? currentColor : previousColor;
-                this.closePath(path, color);
-            }
+            previousThreadColor = currentThread.color;
         }
+
+        this.drawPath(path, previousThreadColor);
     }
 
     private createPath(): Path2D {
@@ -83,7 +97,7 @@ export class StitchRasterDrawingCanvas extends RasterDrawingCanvas implements IR
         return path;
     }
 
-    private closePath(path: Path2D, color: string): void {
+    private drawPath(path: Path2D, color: string): void {
         this.context.strokeStyle = color;
         this.context.stroke(path);
 

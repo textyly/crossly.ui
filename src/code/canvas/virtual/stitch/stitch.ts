@@ -1,24 +1,18 @@
 import { Density } from "../types.js";
 import { StitchCanvasBase } from "./base.js";
-import { DotsUtility } from "../../utilities/dots.js";
-import { IdGenerator } from "../../utilities/generator.js";
-import { StitchCanvasConfig } from "../../../config/types.js";
-import { Dot, CanvasSide, StitchTread, DotIndex } from "../../types.js";
-import { StitchThreadArray } from "../../utilities/arrays/thread/stitch.js";
-import { IInputCanvas, PointerUpEvent, Position } from "../../input/types.js";
 import assert from "../../../asserts/assert.js";
+import { DotsUtility } from "../../utilities/dots.js";
+import { StitchCanvasConfig } from "../../../config/types.js";
+import { StitchThread } from "../../utilities/arrays/thread/stitch.js";
+import { Dot, CanvasSide, DotIndex, StitchPattern } from "../../types.js";
+import { IInputCanvas, PointerUpEvent, Position } from "../../input/types.js";
 
 export abstract class StitchCanvas extends StitchCanvasBase {
-    protected readonly ids: IdGenerator;
     private readonly dotsUtility: DotsUtility<Dot>;
-    private readonly threads: StitchThreadArray;
+    private readonly pattern: StitchPattern;
 
     private readonly minThreadWidth: number;
     private readonly threadWidthZoomStep: number;
-
-    protected threadColor: string;
-    protected threadWidth: number;
-    protected currentId: number;
 
     private zooms: number;
     private clickedDotIdx?: DotIndex;
@@ -30,17 +24,15 @@ export abstract class StitchCanvas extends StitchCanvasBase {
         this.validateConfig(config);
 
         const threadConfig = config.thread;
-        this.threadColor = threadConfig.color;
-        this.threadWidth = threadConfig.width;
         this.minThreadWidth = threadConfig.minWidth;
         this.threadWidthZoomStep = threadConfig.widthZoomStep;
 
-        this.ids = new IdGenerator();
+        this.pattern = new Array<StitchThread>();
+        this.createThread(threadConfig.color, threadConfig.width);
+
         this.dotsUtility = new DotsUtility();
-        this.threads = new StitchThreadArray();
 
         this.zooms = 0;
-        this.currentId = this.ids.next();
 
         this.startListening();
     }
@@ -62,77 +54,67 @@ export abstract class StitchCanvas extends StitchCanvasBase {
         // CPU, GPU, memory and GC intensive code
         // Do not extract this method in multiple methods
         // Do not create types/classes a thread (objects are extremely slow and memory/GC consuming)
+        const boundsIndexes = this.calculateVisibleBoundsIndexes();
 
-        // 1. make initial calculations and create new constants for nested props
+        const leftTopIdxX = boundsIndexes.leftTop.dotX;
+        const leftTopIdxY = boundsIndexes.leftTop.dotY;
+        const rightTopIdxX = boundsIndexes.rightTop.dotX;
+        const leftBottomIdxY = boundsIndexes.leftBottom.dotY;
 
-        // get bounds indexes
-        const boundsIndexes = this.calculateBoundsIndexes();
-        const leftTopIdx = boundsIndexes.leftTop;
-        const rightTopIdx = boundsIndexes.rightTop;
-        const leftBottomIdx = boundsIndexes.leftBottom;
+        for (let threadIdx = 0; threadIdx < this.pattern.length; threadIdx++) {
+            const thread = this.pattern[threadIdx];
+            thread.zoomedWidth = this.calculateThreadZoomedWidth(thread.width);
 
-        // get threads props
-        const fromDotsXIndexes = this.threads.fromDotsXIndexes;
-        const fromDotsYIndexes = this.threads.fromDotsYIndexes;
-        const toDotsXIndexes = this.threads.toDotsXIndexes;
-        const toDotsYIndexes = this.threads.toDotsYIndexes;
-        const widths = this.threads.widths;
-        const sides = this.threads.sides;
-        const density = this.calculateDensity();
+            const indexesX = thread.indexesX;
+            const indexesY = thread.indexesY;
 
-        // 2. recalculate threads
-        for (let index = 0; index < this.threads.length; index++) {
+            for (let dotIdx = 0; dotIdx < thread.length; dotIdx++) {
+                const indexX = indexesX[dotIdx];
+                const indexY = indexesY[dotIdx];
 
-            // 3. filter by canvas side, back threads won't be drawn
-            const side = sides[index];
-            if (side === CanvasSide.Back) {
-                continue;
+                const posX = this.calculateDotXPosition(indexX);
+                const posY = this.calculateDotYPosition(indexY);
+                thread.setDot(dotIdx, posX, posY, true);
+
+                if (indexX < leftTopIdxX || indexX > rightTopIdxX) {
+                    thread.setDotVisibility(dotIdx, false);
+                    continue;
+                }
+
+                if (indexY < leftTopIdxY || indexY > leftBottomIdxY) {
+                    thread.setDotVisibility(dotIdx, false);
+                    continue;
+                }
             }
-
-            // 4. filter by visibility, if a thread is not into the visible bounds then it won't be drawn
-            const fromDotXIdx = fromDotsXIndexes[index];
-            const toDotXIdx = toDotsXIndexes[index];
-            const fromDotYIdx = fromDotsYIndexes[index];
-            const toDotYIdx = toDotsYIndexes[index];
-
-            if ((fromDotXIdx < leftTopIdx.dotX) && (toDotXIdx < leftTopIdx.dotX)) {
-                // filter out
-                this.threads.setVisibility(index, false);
-                continue;
-            }
-
-            if ((fromDotXIdx > rightTopIdx.dotX) && (toDotXIdx > rightTopIdx.dotX)) {
-                // filter out
-                this.threads.setVisibility(index, false);
-                continue;
-            }
-
-            if ((fromDotYIdx < leftTopIdx.dotY) && (toDotYIdx < leftTopIdx.dotY)) {
-                // filter out
-                this.threads.setVisibility(index, false);
-                continue;
-            }
-
-            if ((fromDotYIdx > leftBottomIdx.dotY) && (toDotYIdx > leftBottomIdx.dotY)) {
-                // filter out
-                this.threads.setVisibility(index, false);
-                continue;
-            }
-
-            // 5. thread is visible and must be drawn, make calculations
-            const fromDotXPos = this.calculateDotXPosition(fromDotXIdx);
-            const fromDotYPos = this.calculateDotYPosition(fromDotYIdx);
-            const toDotXPos = this.calculateDotXPosition(toDotXIdx);
-            const toDotYPos = this.calculateDotYPosition(toDotYIdx);
-
-            const zoomedThreadWidth = this.calculateZoomedThreadWidth(widths[index]);
-
-            // 6. set the updated pros before drawing
-            this.threads.setThread(index, true, fromDotXPos, fromDotYPos, toDotXPos, toDotYPos, zoomedThreadWidth);
         }
 
-        // 7. draw threads, each thread consist of one thread and two dots
-        super.invokeDrawThreads(this.threads, density);
+        const density = this.calculateDensity();
+        super.invokeDrawPattern(this.pattern, density);
+    }
+
+    protected useNewThread(color: string, width: number): void {
+        this.removeThread();
+        this.createThread(color, width);
+    }
+
+    protected createThread(color: string, width: number): void {
+        const stitchThread = new StitchThread(color, width);
+        this.pattern.push(stitchThread);
+
+        this.invokeThreadColorChange(color);
+        this.invokeThreadWidthChange(width);
+    }
+
+    protected removeThread(): void {
+        this.clickedDotIdx = undefined;
+        this.currentSide = CanvasSide.Back;
+    }
+
+    private getCurrentThread(): StitchThread | undefined {
+        const length = this.pattern.length;
+        const array = this.pattern.slice(length - 1, length);
+
+        return array.length === 0 ? undefined : array[0];
     }
 
     private handlePointerUp(event: PointerUpEvent): void {
@@ -151,19 +133,47 @@ export abstract class StitchCanvas extends StitchCanvasBase {
     private handleUndo(): void {
         super.ensureAlive();
 
-        const removed = this.threads.popThread();
-        if (!removed) {
-            this.currentSide = CanvasSide.Back;
-            this.clickedDotIdx = undefined;
+        super.ensureAlive();
+
+        const threadsCount = this.pattern.length;
+        assert.greaterThanZero(threadsCount, "threadsCount");
+
+        const currentThread = this.getCurrentThread();
+        assert.defined(currentThread, "currentThread");
+
+        const dotsCount = currentThread.length;
+        if (dotsCount === 0) {
+            // thread is just created without crossing any hole (state immediately following `use new thread` operation)
+            if (threadsCount === 1) {
+                // there is only 1 thread which has not crossed any hole
+                // cannot undo any more
+            } else {
+                // remove current thread
+                this.pattern.pop();
+
+                const previousThread = this.getCurrentThread();
+                assert.defined(previousThread, "previousThread");
+
+                const previousThreadDotsCount = previousThread.length;
+                if (previousThreadDotsCount === 0) {
+                    // previous thread have not crossed any dots as well, just remove it
+                } else {
+                    this.currentSide = previousThreadDotsCount % 2 === 0 ? CanvasSide.Back : CanvasSide.Front;
+                    this.clickedDotIdx = previousThread.last()!;
+                }
+            }
         } else {
-            this.changeCanvasSide();
-
-            this.clickedDotIdx = { dotX: removed.fromDotXIdx, dotY: removed.fromDotYIdx };
-            this.threadColor = removed.color;
-            this.threadWidth = removed.width;
-
-            this.invokeThreadWidthChange(this.threadWidth);
-            this.invokeThreadColorChange(this.threadColor);
+            // thread has crossed at leas one hole
+            if (dotsCount === 1) {
+                // remove last dot
+                currentThread.pop();
+                this.removeThread();
+            } else {
+                // remove last dot
+                currentThread.pop();
+                this.changeCanvasSide();
+                this.clickedDotIdx = currentThread.last()!;
+            }
         }
 
         this.draw();
@@ -174,15 +184,22 @@ export abstract class StitchCanvas extends StitchCanvasBase {
         const clickedDotIdx = this.calculateDotIndex(position);
 
         if (previouslyClickedDotIdx) {
-            this.tryDrawThread(previouslyClickedDotIdx, clickedDotIdx);
+            this.tryDrawStitchSegment(previouslyClickedDotIdx, clickedDotIdx);
         } else {
+            const clickedDotPos = this.calculateDotPosition(clickedDotIdx);
+
+            const thread = this.getCurrentThread();
+            assert.defined(thread, "thread");
+
+            thread.pushDot(clickedDotIdx.dotX, clickedDotIdx.dotY, clickedDotPos.x, clickedDotPos.y, true);
+
             this.changeCanvasSide();
         }
 
         this.clickedDotIdx = clickedDotIdx;
     }
 
-    private tryDrawThread(previouslyClickedDotIdx: DotIndex, clickedDotIdx: DotIndex): void {
+    private tryDrawStitchSegment(previouslyClickedDotIdx: DotIndex, clickedDotIdx: DotIndex): void {
         const clickedDotPos = this.calculateDotPosition(clickedDotIdx);
         const previouslyClickedDotPos = this.calculateDotPosition(previouslyClickedDotIdx);
 
@@ -190,65 +207,44 @@ export abstract class StitchCanvas extends StitchCanvasBase {
         if (!areClicksIdentical) {
             const visible = this.currentSide === CanvasSide.Front;
 
-            const thread = this.createThread(this.currentId, previouslyClickedDotIdx, previouslyClickedDotPos, clickedDotIdx, clickedDotPos, visible);
-            this.threads.pushThread(thread);
+            const thread = this.getCurrentThread();
+            assert.defined(thread, "thread");
+
+            thread.pushDot(clickedDotIdx.dotX, clickedDotIdx.dotY, clickedDotPos.x, clickedDotPos.y, visible);
 
             if (visible) {
-                this.drawThread(thread);
+                const thread = this.getCurrentThread();
+                assert.defined(thread, "thread");
+
+                const zoomedWidth = this.calculateThreadZoomedWidth(thread.width);
+                const segment = { from: previouslyClickedDotPos, to: clickedDotPos, color: thread.color, width: zoomedWidth };
+
+                const density = this.calculateDensity();
+                super.invokeDrawSegment(segment, density);
             }
 
             this.changeCanvasSide();
         }
     }
 
-    private drawThread(thread: StitchTread): void {
-        // draw thread
-        const threads = new StitchThreadArray();
-        threads.pushThread(thread);
-
-        const density = this.calculateDensity();
-        super.invokeDrawThreads(threads, density);
-    }
-
-    private calculateZoomedThreadWidth(threadWidth: number): number {
+    private calculateThreadZoomedWidth(threadWidth: number): number {
         let calculated = threadWidth + (this.zooms * this.threadWidthZoomStep);
         calculated = Math.max(calculated, this.minThreadWidth);
         return calculated;
     }
 
     private calculateDensity(): Density {
-        const halfDotsSpace = Math.ceil(this.dotsSpace / 2);
-
         if (this.currentDotsSpace <= this.minDotsSpace) {
             return Density.High;
         }
+
+        const halfDotsSpace = Math.ceil(this.dotsSpace / 2);
 
         if (this.currentDotsSpace <= halfDotsSpace) {
             return Density.Medium;
         }
 
         return Density.Low;
-    }
-
-    private createThread(id: number, previouslyClickedDotIdx: DotIndex, previouslyClickedDotPos: Position, clickedDotIdx: DotIndex, clickedDotPos: Position, visible: boolean): StitchTread {
-        const thread = {
-            id,
-            visible,
-            fromDotXIdx: previouslyClickedDotIdx.dotX,
-            fromDotXPos: previouslyClickedDotPos.x,
-            fromDotYIdx: previouslyClickedDotIdx.dotY,
-            fromDotYPos: previouslyClickedDotPos.y,
-            toDotXIdx: clickedDotIdx.dotX,
-            toDotXPos: clickedDotPos.x,
-            toDotYIdx: clickedDotIdx.dotY,
-            toDotYPos: clickedDotPos.y,
-            width: this.threadWidth,
-            zoomedWidth: this.calculateZoomedThreadWidth(this.threadWidth),
-            color: this.threadColor,
-            side: this.currentSide
-        };
-
-        return thread;
     }
 
     private startListening(): void {

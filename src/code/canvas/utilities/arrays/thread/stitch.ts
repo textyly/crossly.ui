@@ -1,154 +1,103 @@
-import { ThreadArray } from "./array.js";
-import { CanvasSide, StitchTread } from "../../../types.js";
+import { Thread } from "./thread.js";
+import { Dot, DotIndex } from "../../../types.js";
 
-export class StitchThreadArray extends ThreadArray {
-    private _ids: Int16Array;
-    private _fromDotsXIndexes: Int16Array;
-    private _fromDotsYIndexes: Int16Array;
-    private _toDotsXIndexes: Int16Array;
-    private _toDotsYIndexes: Int16Array;
-    private _zoomedWidths: Int16Array;
-    private _sides: Array<CanvasSide>;
+export class StitchThread extends Thread {
+    private _zoomedWidth: number;
 
-    constructor() {
-        super();
+    private _indexesX: Int16Array;
+    private _indexesY: Int16Array;
+    private _visibilities: Array<boolean>;
 
-        this._ids = new Int16Array(this.space);
-        this._fromDotsXIndexes = new Int16Array(this.space);
-        this._fromDotsYIndexes = new Int16Array(this.space);
-        this._toDotsXIndexes = new Int16Array(this.space);
-        this._toDotsYIndexes = new Int16Array(this.space);
-        this._zoomedWidths = new Int16Array(this.space);
-        this._sides = new Array<CanvasSide>();
+    constructor(color: string, width: number) {
+        super(color, width);
+
+        this._zoomedWidth = super.width;
+
+        this._indexesX = new Int16Array(this.space);
+        this._indexesY = new Int16Array(this.space);
+        this._visibilities = new Array<boolean>();
     }
 
-    public get ids(): Readonly<Int16Array> {
-        return this._ids.slice(0, this.length);
+    public get zoomedWidth(): number {
+        return this._zoomedWidth;
     }
 
-    public get fromDotsXIndexes(): Readonly<Int16Array> {
-        return this._fromDotsXIndexes.slice(0, this.length);
+    public set zoomedWidth(value: number) {
+        this._zoomedWidth = value;
     }
 
-    public get fromDotsYIndexes(): Readonly<Int16Array> {
-        return this._fromDotsYIndexes.slice(0, this.length);
+    public get indexesX(): Readonly<Int16Array> {
+        return this._indexesX.slice(0, this.length);
     }
 
-    public get toDotsXIndexes(): Readonly<Int16Array> {
-        return this._toDotsXIndexes.slice(0, this.length);
+    public get indexesY(): Readonly<Int16Array> {
+        return this._indexesY.slice(0, this.length);
     }
 
-    public get toDotsYIndexes(): Readonly<Int16Array> {
-        return this._toDotsYIndexes.slice(0, this.length);
+    public get visibilities(): Readonly<Array<boolean>> {
+        return this._visibilities.slice(0, this.length);
     }
 
-    public get zoomedWidths(): Readonly<Int16Array> {
-        return this._zoomedWidths.slice(0, this.length);
+    public pushDot(indexX: number, indexY: number, positionX: number, positionY: number, visible: boolean): void {
+        super.push(positionX, positionY);
+
+        this._indexesX[this.index] = indexX;
+        this._indexesY[this.index] = indexY;
+        this._visibilities[this.index] = visible;
     }
 
-    public get sides(): Array<CanvasSide> {
-        return this._sides;
+    public setDot(index: number, posX: number, posY: number, visible: boolean): void {
+        super.set(index, posX, posY);
+        this.setDotVisibility(index, visible);
     }
 
-    public setThread(index: number, visible: boolean, fromDotXPos: number, fromDotYPos: number, toDotXPos: number, toDotYPos: number, zoomedWidth: number) {
-        super.set(index, visible, fromDotXPos, fromDotYPos, toDotXPos, toDotYPos);
-        this._zoomedWidths[index] = zoomedWidth;
+    public setDotVisibility(index: number, visible: boolean): void {
+        this._visibilities[index] = visible;
     }
 
-    // this method is being invoked only on a thread creation, so it is safe to use a StitchTread object
-    public pushThread(thread: StitchTread): void {
-        super.push(thread.visible, thread.fromDotXPos, thread.fromDotYPos, thread.toDotXPos, thread.toDotYPos, thread.width, thread.color);
-        this._ids[this.index] = thread.id;
-        this._fromDotsXIndexes[this.index] = thread.fromDotXIdx;
-        this._fromDotsYIndexes[this.index] = thread.fromDotYIdx;
-        this._toDotsXIndexes[this.index] = thread.toDotXIdx;
-        this._toDotsYIndexes[this.index] = thread.toDotYIdx;
-        this._zoomedWidths[this.index] = thread.zoomedWidth;
-        this._sides.push(thread.side);
+    public popDot(): (Dot & DotIndex) | undefined {
+        const last = this.last();
+        super.pop();
+        return last;
     }
 
-    public popThread(): StitchTread | undefined {
-        if (this.length <= 0) {
-            return undefined;
-        } else {
+    public last(): (Dot & DotIndex) | undefined {
+        if (this.length > 0) {
             const from = this.length - 1;
             const to = this.length;
 
-            const id = this.ids.slice(from, to)[0];
-            const fromDotXIdx = this.fromDotsXIndexes.slice(from, to)[0];
-            const fromDotYIdx = this.fromDotsYIndexes.slice(from, to)[0];
-            const toDotXIdx = this.toDotsXIndexes.slice(from, to)[0];
-            const toDotYIdx = this.toDotsYIndexes.slice(from, to)[0];
-            const zoomedWidth = this.zoomedWidths.slice(from, to)[0];
-            const side = this._sides.pop()!;
-            const thread = super.pop()!;
+            const indexX = this.indexesX.slice(from, to)[0];
+            const indexY = this.indexesY.slice(from, to)[0];
 
-            const stitchThread: StitchTread = { ...thread, id, fromDotXIdx, fromDotYIdx, toDotXIdx, toDotYIdx, zoomedWidth, side };
-            return stitchThread;
+            const pos = super.last()!;
+
+            const dot = { dotX: indexX, dotY: indexY, ...pos };
+            return dot;
         }
     }
 
     protected override expand(): void {
         super.expand();
-        this.expandIds();
-        this.expandFromDotsXIndexes();
-        this.expandFromDotsYIndexes();
-        this.expandToDotsXIndexes();
-        this.expandToDotsYIndexes();
-        this.expandZoomedWidths();
+
+        this.expandIndexesX();
+        this.expandIndexesY();
     }
 
-    private expandIds(): void {
-        const ids = this._ids;
-        this._ids = new Int16Array(this.space);
+    private expandIndexesX(): void {
+        const indexesX = this._indexesX;
+        this._indexesX = new Int16Array(this.space);
 
-        for (let index = 0; index < ids.length; index++) {
-            this._ids[index] = ids[index];
+        for (let index = 0; index < indexesX.length; index++) {
+            this._indexesX[index] = indexesX[index];
         }
     }
 
-    private expandFromDotsXIndexes(): void {
-        const fromDotsXIndexes = this._fromDotsXIndexes;
-        this._fromDotsXIndexes = new Int16Array(this.space);
+    private expandIndexesY(): void {
+        const indexesY = this._indexesY;
+        this._indexesY = new Int16Array(this.space);
 
-        for (let index = 0; index < fromDotsXIndexes.length; index++) {
-            this._fromDotsXIndexes[index] = fromDotsXIndexes[index];
-        }
-    }
-
-    private expandFromDotsYIndexes(): void {
-        const fromDotsYIndexes = this._fromDotsYIndexes;
-        this._fromDotsYIndexes = new Int16Array(this.space);
-
-        for (let index = 0; index < fromDotsYIndexes.length; index++) {
-            this._fromDotsYIndexes[index] = fromDotsYIndexes[index];
-        }
-    }
-
-    private expandToDotsXIndexes(): void {
-        const toDotsXIndexes = this._toDotsXIndexes;
-        this._toDotsXIndexes = new Int16Array(this.space);
-
-        for (let index = 0; index < toDotsXIndexes.length; index++) {
-            this._toDotsXIndexes[index] = toDotsXIndexes[index];
-        }
-    }
-
-    private expandToDotsYIndexes(): void {
-        const toDotsYIndexes = this._toDotsYIndexes;
-        this._toDotsYIndexes = new Int16Array(this.space);
-
-        for (let index = 0; index < toDotsYIndexes.length; index++) {
-            this._toDotsYIndexes[index] = toDotsYIndexes[index];
-        }
-    }
-
-    private expandZoomedWidths(): void {
-        const zoomedWidths = this._zoomedWidths;
-        this._zoomedWidths = new Int16Array(this.space);
-
-        for (let index = 0; index < zoomedWidths.length; index++) {
-            this._zoomedWidths[index] = zoomedWidths[index];
+        for (let index = 0; index < indexesY.length; index++) {
+            this._indexesY[index] = indexesY[index];
         }
     }
 }

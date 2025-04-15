@@ -71,8 +71,8 @@ export abstract class VirtualCanvasDimensions extends CanvasBase {
     }
 
     protected inBounds(position: Position): boolean {
-        const inVirtualBounds = this.inVirtualBounds(position);
-        return inVirtualBounds;
+        const inDrawingBounds = this.inDrawingBounds(position);
+        return inDrawingBounds;
     }
 
     protected zoomInCanvas(position: Position): void {
@@ -155,7 +155,7 @@ export abstract class VirtualCanvasDimensions extends CanvasBase {
         return { dotX: indexX, dotY: indexY };
     }
 
-    protected calculateBoundsIndexes(): BoundsIndexes {
+    protected calculateVisibleBoundsIndexes(): BoundsIndexes {
         const leftTopPos = this.calculateLeftTopPosition();
         const leftTopIdx = this.calculateDotIndex(leftTopPos);
 
@@ -288,14 +288,15 @@ export abstract class VirtualCanvasDimensions extends CanvasBase {
         return Math.min(this.virtualBounds.height, drawingBounds.height);
     }
 
-    private inVirtualBounds(position: Position): boolean {
+    private inDrawingBounds(position: Position): boolean {
         const dotIdx = this.calculateDotIndex(position);
         const dotPos = this.calculateDotPosition(dotIdx);
+        const drawingBounds = this.calculateDrawingBounds();
 
-        const inVirtualX = (dotPos.x >= this.virtualBounds.left) && (dotPos.x <= (this.virtualBounds.left + this.virtualBounds.width));
-        const inVirtualY = (dotPos.y >= this.virtualBounds.top) && (dotPos.y <= (this.virtualBounds.top + this.virtualBounds.height));
+        const inDrawingX = (dotPos.x >= drawingBounds.left) && (dotPos.x <= (drawingBounds.left + drawingBounds.width));
+        const inDrawingY = (dotPos.y >= drawingBounds.top) && (dotPos.y <= (drawingBounds.top + drawingBounds.height));
 
-        const inVirtualBounds = (inVirtualX && inVirtualY);
-        return inVirtualBounds;
+        const inDrawingBounds = (inDrawingX && inDrawingY);
+        return inDrawingBounds;
     }
 }

@@ -1,14 +1,14 @@
-import assert from "../../asserts/assert.js";
 import { CanvasBase } from "../base.js";
+import assert from "../../asserts/assert.js";
 import { BoundsChangeEvent } from "../types.js";
-import { IRasterDrawingCanvas, IStitchDrawingCanvas } from "./types.js";
-import { DrawStitchThreadsEvent, IStitchCanvas } from "../virtual/types.js";
+import { IStitchDrawingCanvas, IStitchRasterDrawingCanvas } from "./types.js";
+import { DrawStitchPatternEvent, DrawStitchSegmentEvent, IStitchCanvas } from "../virtual/types.js";
 
 export class StitchDrawingCanvas extends CanvasBase implements IStitchDrawingCanvas {
     private readonly stitchCanvas: IStitchCanvas;
-    private readonly rasterDrawing: IRasterDrawingCanvas;
+    private readonly rasterDrawing: IStitchRasterDrawingCanvas;
 
-    constructor(stitchCanvas: IStitchCanvas, rasterDrawing: IRasterDrawingCanvas) {
+    constructor(stitchCanvas: IStitchCanvas, rasterDrawing: IStitchRasterDrawingCanvas) {
         super();
 
         this.stitchCanvas = stitchCanvas;
@@ -26,15 +26,22 @@ export class StitchDrawingCanvas extends CanvasBase implements IStitchDrawingCan
         super.dispose();
     }
 
-    private handleDrawThreads(event: DrawStitchThreadsEvent): void {
+    private handleDrawPattern(event: DrawStitchPatternEvent): void {
         this.ensureAlive();
-        assert.defined(event, "DrawStitchThreadsEvent");
+        assert.defined(event, "DrawStitchPatternEvent");
 
-        const threads = event.threads;
-        if (threads.length > 0) {
+        const pattern = event.pattern;
+        if (pattern.length > 0) {
             const density = event.density;
-            this.rasterDrawing.drawLines(threads, density);
+            this.rasterDrawing.drawLines(pattern, density);
         }
+    }
+
+    private handleDrawSegment(event: DrawStitchSegmentEvent): void {
+        const segment = event.segment;
+        const density = event.density;
+
+        this.rasterDrawing.drawLine(segment, density);
     }
 
     private handleRedraw(): void {
@@ -83,7 +90,10 @@ export class StitchDrawingCanvas extends CanvasBase implements IStitchDrawingCan
         const moveStopUn = this.stitchCanvas.onMoveStop(this.handleMoveStop.bind(this));
         super.registerUn(moveStopUn);
 
-        const drawThreadsUn = this.stitchCanvas.onDrawThreads(this.handleDrawThreads.bind(this));
-        super.registerUn(drawThreadsUn);
+        const drawPatternUn = this.stitchCanvas.onDrawPattern(this.handleDrawPattern.bind(this));
+        super.registerUn(drawPatternUn);
+
+        const drawSegmentUn = this.stitchCanvas.onDrawSegment(this.handleDrawSegment.bind(this));
+        super.registerUn(drawPatternUn);
     }
 }

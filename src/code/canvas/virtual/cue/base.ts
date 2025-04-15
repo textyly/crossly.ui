@@ -1,7 +1,7 @@
 import { VirtualCanvasBase } from "../base.js";
 import { IInputCanvas } from "../../input/types.js";
 import { VoidUnsubscribe } from "../../../types.js";
-import { CueThread, CueDot, Id } from "../../types.js";
+import { CueSegment, CueDot, Id } from "../../types.js";
 import { CanvasConfig } from "../../../config/types.js";
 import { Messaging7 } from "../../../messaging/impl.js";
 import { IMessaging7 } from "../../../messaging/types.js";
@@ -10,17 +10,17 @@ import {
     DrawCueDotEvent,
     RemoveCueDotEvent,
     DrawCueDotListener,
-    MoveCueThreadEvent,
-    DrawCueThreadEvent,
+    MoveCueSegmentEvent,
+    DrawCueSegmentEvent,
     RemoveCueDotListener,
-    RemoveCueThreadEvent,
-    DrawCueThreadListener,
-    MoveCueThreadListener,
-    RemoveCueThreadListener,
+    RemoveCueSegmentEvent,
+    DrawCueSegmentListener,
+    MoveCueSegmentListener,
+    RemoveCueSegmentListener,
 } from "../types.js";
 
 export abstract class CueCanvasBase extends VirtualCanvasBase implements ICueCanvas {
-    private readonly messaging: IMessaging7<DrawCueDotEvent, DrawCueDotEvent, DrawCueThreadEvent, RemoveCueDotEvent, MoveCueThreadEvent, DrawCueThreadEvent, RemoveCueThreadEvent>;
+    private readonly messaging: IMessaging7<DrawCueDotEvent, DrawCueDotEvent, DrawCueSegmentEvent, RemoveCueDotEvent, MoveCueSegmentEvent, DrawCueSegmentEvent, RemoveCueSegmentEvent>;
 
     constructor(config: CanvasConfig, input: IInputCanvas) {
         super(config, input);
@@ -35,7 +35,7 @@ export abstract class CueCanvasBase extends VirtualCanvasBase implements ICueCan
         return this.messaging.listenOnChannel2(listener);
     }
 
-    public onDrawThread(listener: DrawCueThreadListener): VoidUnsubscribe {
+    public onDrawSegment(listener: DrawCueSegmentListener): VoidUnsubscribe {
         return this.messaging.listenOnChannel3(listener);
     }
 
@@ -43,15 +43,15 @@ export abstract class CueCanvasBase extends VirtualCanvasBase implements ICueCan
         return this.messaging.listenOnChannel4(listener);
     }
 
-    public onMoveThread(listener: MoveCueThreadListener): VoidUnsubscribe {
+    public onMoveSegment(listener: MoveCueSegmentListener): VoidUnsubscribe {
         return this.messaging.listenOnChannel5(listener);
     }
 
-    public onDrawDashThread(listener: DrawCueThreadListener): VoidUnsubscribe {
+    public onDrawDashSegment(listener: DrawCueSegmentListener): VoidUnsubscribe {
         return this.messaging.listenOnChannel6(listener);
     }
 
-    public onRemoveThread(listener: RemoveCueThreadListener): VoidUnsubscribe {
+    public onRemoveSegment(listener: RemoveCueSegmentListener): VoidUnsubscribe {
         return this.messaging.listenOnChannel7(listener);
     }
 
@@ -61,37 +61,37 @@ export abstract class CueCanvasBase extends VirtualCanvasBase implements ICueCan
     }
 
     protected invokeDrawDot(dot: CueDot, dotRadius: number, dotColor: string): void {
-        const drawDotEvent = { dot, dotRadius, dotColor };
-        this.messaging.sendToChannel1(drawDotEvent);
+        const event = { dot, dotRadius, dotColor };
+        this.messaging.sendToChannel1(event);
     }
 
     protected invokeDrawDashDot(dot: CueDot, dotRadius: number, dotColor: string): void {
-        const drawDotEvent = { dot, dotRadius, dotColor };
-        this.messaging.sendToChannel2(drawDotEvent);
+        const event = { dot, dotRadius, dotColor };
+        this.messaging.sendToChannel2(event);
     }
 
-    protected invokeDrawThread(thread: CueThread): void {
-        const drawThreadEvent = { thread };
-        this.messaging.sendToChannel3(drawThreadEvent);
+    protected invokeDrawSegment(segment: CueSegment): void {
+        const event = { segment };
+        this.messaging.sendToChannel3(event);
     }
 
     protected invokeRemoveDot(dotId: Id): void {
-        const drawDotEvent = { dotId };
-        this.messaging.sendToChannel4(drawDotEvent);
+        const event = { dotId };
+        this.messaging.sendToChannel4(event);
     }
 
-    protected invokeMoveThread(thread: CueThread): void {
-        const drawThreadEvent = { thread };
-        this.messaging.sendToChannel5(drawThreadEvent);
+    protected invokeMoveSegment(segment: CueSegment): void {
+        const event = { segment };
+        this.messaging.sendToChannel5(event);
     }
 
-    protected invokeDrawDashThread(thread: CueThread): void {
-        const drawThreadEvent = { thread };
-        this.messaging.sendToChannel6(drawThreadEvent);
+    protected invokeDrawDashSegment(segment: CueSegment): void {
+        const event = { segment };
+        this.messaging.sendToChannel6(event);
     }
 
-    protected invokeRemoveThread(threadId: Id): void {
-        const drawThreadEvent = { threadId };
-        this.messaging.sendToChannel7(drawThreadEvent);
+    protected invokeRemoveSegment(segmentId: Id): void {
+        const event = { segmentId };
+        this.messaging.sendToChannel7(event);
     }
 }

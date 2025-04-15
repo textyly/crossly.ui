@@ -1,6 +1,6 @@
 import assert from "../../../asserts/assert.js";
 import { CanvasBase } from "../../base.js";
-import { Dot, Bounds, CueThread } from "../../types.js";
+import { Dot, Bounds, CueSegment } from "../../types.js";
 import { IVectorDrawingCanvas, SvgDot, SvgLine } from "../types.js";
 
 export class VectorDrawingCanvas extends CanvasBase implements IVectorDrawingCanvas {
@@ -42,21 +42,21 @@ export class VectorDrawingCanvas extends CanvasBase implements IVectorDrawingCan
         this.svgCanvas.removeChild(dot);
     }
 
-    public drawLine(thread: CueThread): SvgLine {
+    public drawLine(segment: CueSegment): SvgLine {
         this.ensureAlive();
 
-        assert.defined(thread, "thread");
+        assert.defined(segment, "segment");
 
-        const svgLine = this.drawLineCore(thread);
+        const svgLine = this.drawLineCore(segment);
         return svgLine;
     }
 
-    public drawDashLine(thread: CueThread): SvgLine {
+    public drawDashLine(segment: CueSegment): SvgLine {
         this.ensureAlive();
 
-        assert.defined(thread, "thread");
+        assert.defined(segment, "segment");
 
-        const svgLine = this.drawDashLineCore(thread);
+        const svgLine = this.drawDashLineCore(segment);
         return svgLine;
     }
 
@@ -68,15 +68,15 @@ export class VectorDrawingCanvas extends CanvasBase implements IVectorDrawingCan
         this.svgCanvas.removeChild(line);
     }
 
-    public moveLine(thread: CueThread, svgLine: SvgLine): SvgLine {
+    public moveLine(segment: CueSegment, svgLine: SvgLine): SvgLine {
         this.ensureAlive();
 
-        assert.defined(thread, "thread");
+        assert.defined(segment, "segment");
         assert.defined(svgLine, "svgLine");
-        assert.greaterThanZero(thread.width, "thread.width");
-        assert.greaterThanZero(thread.color.length, "thread.color.length");
+        assert.greaterThanZero(segment.width, "segment.width");
+        assert.greaterThanZero(segment.color.length, "segment.color.length");
 
-        this.moveLineCore(thread, svgLine);
+        this.moveLineCore(segment, svgLine);
 
         return svgLine;
     }
@@ -113,30 +113,30 @@ export class VectorDrawingCanvas extends CanvasBase implements IVectorDrawingCan
         return svgDot;
     }
 
-    private drawLineCore(thread: CueThread): SvgLine {
+    private drawLineCore(segment: CueSegment): SvgLine {
         const svgLine = document.createElementNS("http://www.w3.org/2000/svg", "line");
-        this.moveLine(thread, svgLine);
+        this.moveLine(segment, svgLine);
         this.svgCanvas.appendChild(svgLine);
         return svgLine;
     }
 
-    private drawDashLineCore(thread: CueThread): SvgLine {
+    private drawDashLineCore(segment: CueSegment): SvgLine {
         const svgLine = document.createElementNS("http://www.w3.org/2000/svg", "line");
-        this.moveLine(thread, svgLine);
+        this.moveLine(segment, svgLine);
         svgLine.setAttribute("stroke-dasharray", "5,3");
         this.svgCanvas.appendChild(svgLine);
         return svgLine;
     }
 
-    private moveLineCore(thread: CueThread, svgLine: SvgLine): SvgLine {
-        const x1 = (thread.from.x - this.bounds.left).toString();
-        const y1 = (thread.from.y - this.bounds.top).toString();
+    private moveLineCore(segment: CueSegment, svgLine: SvgLine): SvgLine {
+        const x1 = (segment.from.x - this.bounds.left).toString();
+        const y1 = (segment.from.y - this.bounds.top).toString();
 
-        const x2 = (thread.to.x - this.bounds.left).toString();
-        const y2 = (thread.to.y - this.bounds.top).toString();
+        const x2 = (segment.to.x - this.bounds.left).toString();
+        const y2 = (segment.to.y - this.bounds.top).toString();
 
-        const width = thread.width.toString();
-        const color = thread.color;
+        const width = segment.width.toString();
+        const color = segment.color;
 
         svgLine.setAttribute("x1", x1);
         svgLine.setAttribute('y1', y1);
