@@ -108,9 +108,11 @@ export abstract class StitchCanvas extends StitchCanvasBase {
         this.currentSide = CanvasSide.Back;
     }
 
-    private getCurrentThread(): StitchThread {
-        const last = this.pattern.slice(this.pattern.length - 1, this.pattern.length)[0];
-        return last;
+    private getCurrentThread(): StitchThread | undefined {
+        const length = this.pattern.length;
+        const array = this.pattern.slice(length - 1, length);
+
+        return array.length === 0 ? undefined : array[0];
     }
 
     private handlePointerUp(event: PointerUpEvent): void {
@@ -129,32 +131,34 @@ export abstract class StitchCanvas extends StitchCanvasBase {
     private handleUndo(): void {
         super.ensureAlive();
 
-        const currentThread = this.getCurrentThread();
-        const removedDot = currentThread.popDot();
-        const lastDot = currentThread.last();
+        // let thread = this.getCurrentThread();
+        // assert.defined(thread, "thread");
 
-        if (!removedDot || !lastDot) {
-            this.cutThread();
-            this.pattern.pop();
+        // if (thread.length > 0) {
+        //     thread.popDot();
+        //     const lastDot = thread.last();
 
-            const thread = this.getCurrentThread();
-            if (thread) {
-                this.threadColor = thread.color;
-                this.threadWidth = thread.width;
-            } else {
-                const config = this.config as StitchCanvasConfig;
-                this.createThread(config.thread.color, config.thread.width);
-            }
-        } else {
-            this.changeCanvasSide();
+        //     if (!lastDot) {
+        //         this.cutThread();
+        //     } else {
+        //         this.changeCanvasSide();
+        //         this.clickedDotIdx = { dotX: lastDot.dotX, dotY: lastDot.dotY };
+        //     }
+        // } else {
+        //     this.pattern.pop();
+        //     thread = this.getCurrentThread();
 
-            this.clickedDotIdx = { dotX: lastDot.dotX, dotY: lastDot.dotY };
-            this.threadColor = currentThread.color;
-            this.threadWidth = currentThread.width;
+        //     if (thread) {
+        //         this.threadColor = thread.color;
+        //         this.threadWidth = thread.width;
+        //     } else {
+        //         const config = this.config as StitchCanvasConfig;
+        //         this.createThread(config.thread.color, config.thread.width);
+        //     }
 
-            this.invokeThreadWidthChange(this.threadWidth);
-            this.invokeThreadColorChange(this.threadColor);
-        }
+        //     this.invokeThreadColorChange(this.threadColor);
+        //     this.invokeThreadWidthChange(this.threadWidth);
+        // }
 
         this.draw();
     }
@@ -169,6 +173,8 @@ export abstract class StitchCanvas extends StitchCanvasBase {
             const clickedDotPos = this.calculateDotPosition(clickedDotIdx);
 
             const thread = this.getCurrentThread();
+            assert.defined(thread, "thread");
+
             thread.pushDot(clickedDotIdx.dotX, clickedDotIdx.dotY, clickedDotPos.x, clickedDotPos.y, true);
 
             this.changeCanvasSide();
@@ -186,6 +192,8 @@ export abstract class StitchCanvas extends StitchCanvasBase {
             const visible = this.currentSide === CanvasSide.Front;
 
             const thread = this.getCurrentThread();
+            assert.defined(thread, "thread");
+
             thread.pushDot(clickedDotIdx.dotX, clickedDotIdx.dotY, clickedDotPos.x, clickedDotPos.y, visible);
 
             if (visible) {
@@ -207,11 +215,11 @@ export abstract class StitchCanvas extends StitchCanvasBase {
     }
 
     private calculateDensity(): Density {
-        const halfDotsSpace = Math.ceil(this.dotsSpace / 2);
-
         if (this.currentDotsSpace <= this.minDotsSpace) {
             return Density.High;
         }
+
+        const halfDotsSpace = Math.ceil(this.dotsSpace / 2);
 
         if (this.currentDotsSpace <= halfDotsSpace) {
             return Density.Medium;

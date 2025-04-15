@@ -1,5 +1,5 @@
-import { Dot, DotIndex } from "../../../types.js";
 import { Thread } from "./thread.js";
+import { Dot, DotIndex } from "../../../types.js";
 
 export class StitchThread extends Thread {
     private _zoomedWidth: number;
@@ -38,11 +38,11 @@ export class StitchThread extends Thread {
         return this._visibilities.slice(0, this.length);
     }
 
-    public pushDot(idxX: number, idxY: number, posX: number, posY: number, visible: boolean): void {
-        super.push(posX, posY);
+    public pushDot(indexX: number, indexY: number, positionX: number, positionY: number, visible: boolean): void {
+        super.push(positionX, positionY);
 
-        this._indexesX[this.index] = idxX;
-        this._indexesY[this.index] = idxY;
+        this._indexesX[this.index] = indexX;
+        this._indexesY[this.index] = indexY;
         this._visibilities[this.index] = visible;
     }
 

@@ -1,5 +1,6 @@
 import { Position } from "./input/types.js";
 import { Listener, VoidUnsubscribe } from "../types";
+import { CueThread } from "./utilities/arrays/thread/cue.js";
 import { StitchThread } from "./utilities/arrays/thread/stitch.js";
 
 export type Bounds = { left: number, top: number, width: number, height: number };
@@ -10,7 +11,8 @@ export type BoundsIndexes = { leftTop: DotIndex, rightTop: DotIndex, leftBottom:
 export type Id = number;
 export type Dot = Position;
 export type CueDot = Dot & { id: Id };
-export type CueThread = { id: Id, from: Dot, to: Dot, width: number, color: string };
+export type CueSegment = { id: Id, from: Dot, to: Dot, width: number, color: string };
+export type CuePattern = Array<CueThread>;
 export type StitchSegment = { from: Dot, to: Dot, width: number, color: string };
 export type StitchPattern = Array<StitchThread>;
 

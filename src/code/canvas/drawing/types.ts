@@ -1,7 +1,7 @@
 import { Density } from "../virtual/types.js";
 import { DotArray } from "../utilities/arrays/dot/dot.js";
 import { FabricThread } from "../utilities/arrays/thread/fabric.js";
-import { CueThread, Dot, ICanvas, StitchPattern, StitchSegment } from "../types.js";
+import { CueSegment, Dot, ICanvas, StitchPattern, StitchSegment } from "../types.js";
 
 export type SvgDot = SVGCircleElement;
 export type SvgLine = SVGLineElement;
@@ -31,9 +31,9 @@ export interface IVectorDrawingCanvas extends ICanvas {
     drawDashDot(dot: Dot, radius: number, color: string): SvgDot;
     removeDot(dot: SvgDot): void;
 
-    drawLine(thread: CueThread): SvgLine;
-    drawDashLine(thread: CueThread): SvgLine;
-    moveLine(thread: CueThread, svgLine: SvgLine): void;
+    drawLine(thread: CueSegment): SvgLine;
+    drawDashLine(thread: CueSegment): SvgLine;
+    moveLine(thread: CueSegment, svgLine: SvgLine): void;
     removeLine(thread: SvgLine): void;
 }
 

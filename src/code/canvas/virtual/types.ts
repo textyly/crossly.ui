@@ -1,7 +1,7 @@
 import { DotArray } from "../utilities/arrays/dot/dot.js";
 import { FabricThread } from "../utilities/arrays/thread/fabric.js";
 import { Listener, VoidListener, VoidUnsubscribe } from "../../types.js";
-import { Id, CueDot, ICanvas, CueThread, StitchPattern, StitchSegment } from "../types.js";
+import { Id, CueDot, ICanvas, CueSegment, StitchPattern, StitchSegment } from "../types.js";
 
 export interface IVirtualCanvas extends ICanvas {
     draw(): void;
@@ -29,10 +29,10 @@ export interface ICueCanvas extends IVirtualCanvas {
     onDrawDashDot(listener: DrawCueDotListener): VoidUnsubscribe;
     onRemoveDot(listener: RemoveCueDotListener): VoidUnsubscribe;
 
-    onDrawThread(listener: DrawCueThreadListener): VoidUnsubscribe;
-    onDrawDashThread(listener: DrawCueThreadListener): VoidUnsubscribe;
-    onMoveThread(listener: MoveCueThreadListener): VoidUnsubscribe;
-    onRemoveThread(listener: RemoveCueThreadListener): VoidUnsubscribe;
+    onDrawSegment(listener: DrawCueSegmentListener): VoidUnsubscribe;
+    onDrawDashSegment(listener: DrawCueSegmentListener): VoidUnsubscribe;
+    onMoveSegment(listener: MoveCueSegmentListener): VoidUnsubscribe;
+    onRemoveSegment(listener: RemoveCueSegmentListener): VoidUnsubscribe;
 }
 
 export interface IStitchCanvasFacade extends IStitchCanvas {
@@ -72,17 +72,17 @@ export type DrawStitchPatternListener = Listener<DrawStitchPatternEvent>;
 export type DrawCueDotEvent = { dot: CueDot, dotRadius: number, dotColor: string };
 export type DrawCueDotListener = Listener<DrawCueDotEvent>;
 
-export type DrawCueThreadEvent = { thread: CueThread };
-export type DrawCueThreadListener = Listener<DrawCueThreadEvent>;
+export type DrawCueSegmentEvent = { segment: CueSegment };
+export type DrawCueSegmentListener = Listener<DrawCueSegmentEvent>;
 
 export type RemoveCueDotEvent = { dotId: Id };
 export type RemoveCueDotListener = Listener<RemoveCueDotEvent>;
 
-export type MoveCueThreadEvent = { thread: CueThread };
-export type MoveCueThreadListener = Listener<MoveCueThreadEvent>;
+export type MoveCueSegmentEvent = { segment: CueSegment };
+export type MoveCueSegmentListener = Listener<MoveCueSegmentEvent>;
 
-export type RemoveCueThreadEvent = { threadId: Id };
-export type RemoveCueThreadListener = Listener<RemoveCueThreadEvent>;
+export type RemoveCueSegmentEvent = { segmentId: Id };
+export type RemoveCueSegmentListener = Listener<RemoveCueSegmentEvent>;
 
 export enum Density {
     Low,
