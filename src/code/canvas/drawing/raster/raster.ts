@@ -5,6 +5,7 @@ import assert from "../../../asserts/assert.js";
 export abstract class RasterDrawingCanvas extends CanvasBase {
     protected readonly rasterCanvas: HTMLCanvasElement
     protected readonly context: CanvasRenderingContext2D;
+    protected readonly offset: number;
 
     constructor(rasterCanvas: HTMLCanvasElement) {
         super();
@@ -13,6 +14,21 @@ export abstract class RasterDrawingCanvas extends CanvasBase {
 
         this.context = this.rasterCanvas.getContext("2d")!;
         assert.defined(this.context, "context");
+
+        this.offset = 5;
+    }
+
+    public override get bounds(): Bounds {
+        return super.bounds;
+    }
+
+    public override set bounds(bounds: Bounds) {
+        const copy = { ...bounds };
+        copy.left -= this.offset;
+        copy.top -= this.offset;
+        copy.width += (this.offset * 2);
+        copy.height += (this.offset * 2);
+        super.bounds = copy;
     }
 
     public async createBitMap(): Promise<ImageBitmap> {
@@ -35,7 +51,8 @@ export abstract class RasterDrawingCanvas extends CanvasBase {
     public clear(): void {
         super.ensureAlive();
 
-        this.context.clearRect(0, 0, this.bounds.width, this.bounds.height);
+        const bounds = this.bounds;
+        this.context.clearRect(0, 0, bounds.width, bounds.height);
     }
 
     protected override invokeBoundsChange(bounds: Bounds): void {

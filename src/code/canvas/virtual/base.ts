@@ -44,7 +44,7 @@ export abstract class VirtualCanvasBase extends VirtualCanvasDimensions implemen
 
     public draw(): void {
         super.ensureAlive();
-        
+
         this.invokeRedraw();
         this.recalculateBounds();
         this.redraw();
@@ -131,6 +131,7 @@ export abstract class VirtualCanvasBase extends VirtualCanvasDimensions implemen
         if (this.inMovingMode) {
 
             const currentPosition = event.currentPosition;
+
             assert.positive(currentPosition.x, "currentPosition.x");
             assert.positive(currentPosition.y, "currentPosition.y");
 

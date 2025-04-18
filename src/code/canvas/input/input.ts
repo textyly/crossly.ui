@@ -175,26 +175,38 @@ export class InputCanvas extends InputCanvasBase {
     }
 
     private wheelChange(event: WheelEvent): void {
-        const deltaY = event.deltaY;
-
         const currentPosition = this.getPosition(event);
-        const e = { currentPosition };
-        deltaY < 0 ? this.handleZoomIn(e) : this.handleZoomOut(e);
+        const isVisible = this.isVisible(currentPosition);
+
+        if (isVisible) {
+            const e = { currentPosition };
+            const deltaY = event.deltaY;
+
+            deltaY < 0 ? this.handleZoomIn(e) : this.handleZoomOut(e);
+        }
     }
 
     private pointerUp(event: PointerEvent): void {
         const position = this.getPosition(event);
-        const leftButton = 0;
-        if (event.button === leftButton) {
-            const e = { position };
-            super.invokePointerUp(e);
+        const isVisible = this.isVisible(position);
+
+        if (isVisible) {
+            const leftButton = 0;
+            if (event.button === leftButton) {
+                const e = { position };
+                super.invokePointerUp(e);
+            }
         }
     }
 
     private pointerMove(event: PointerEvent): void {
         const position = this.getPosition(event);
-        const e = { position };
-        super.invokePointerMove(e);
+        const isVisible = this.isVisible(position);
+
+        if (isVisible) {
+            const e = { position };
+            super.invokePointerMove(e);
+        }
     }
 
     private boundsChange(events: ResizeObserverEntry[]): void {
@@ -202,6 +214,10 @@ export class InputCanvas extends InputCanvasBase {
             const bounds = event.contentRect;
             super.bounds = bounds;
         });
+    }
+
+    private isVisible(position: Position): boolean {
+        return position.x > 0 && position.y > 0;
     }
 
     private getPosition(event: MouseEvent): Position {
