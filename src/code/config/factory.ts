@@ -2,8 +2,9 @@ import { CrosslyCanvasConfig, CueCanvasConfig, FabricCanvasConfig, InputCanvasCo
 
 export class ConfigFactory {
     public create(): CrosslyCanvasConfig {
-        const columns = 30;
-        const rows = 30;
+        const name = Date.now().toString(); // TODO: get the name after creating or loading of an project
+        const columns = 40;
+        const rows = 40;
 
         const input = this.createInputConfig();
         const dotsSpacing = this.createDotsSpacingConfig();
@@ -12,7 +13,7 @@ export class ConfigFactory {
         const stitch = this.createStitchCanvasConfig(columns, rows, dotsSpacing);
         const cue = this.createCueCanvasConfig(columns, rows, dotsSpacing);
 
-        const canvasConfig = { input, fabric, stitch, cue };
+        const canvasConfig = { name, input, fabric, stitch, cue };
         return canvasConfig;
     }
 
@@ -36,6 +37,7 @@ export class ConfigFactory {
     private createFabricCanvasConfig(columns: number, rows: number, dotsSpacing: DotsSpacingConfig): FabricCanvasConfig {
         const fabricConfig = {
             columns, rows, dotsSpacing,
+            color: "white", // TODO: implement
             dot: {
                 color: "#9fa19f",
                 radius: 1.4,

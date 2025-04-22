@@ -3,7 +3,7 @@ import assert from "../../../asserts/assert.js";
 import { DotsUtility } from "../../utilities/dots.js";
 import { IdGenerator } from "../../utilities/generator.js";
 import { CueCanvasConfig } from "../../../config/types.js";
-import { CueThread } from "../../utilities/arrays/thread/cue.js";
+import { CueThreadArray } from "../../utilities/arrays/thread/cue.js";
 import { CanvasSide, Id, CueSegment, CueDot, Dot, DotIndex, CuePattern } from "../../types.js";
 import { Position, IInputCanvas, PointerUpEvent, PointerMoveEvent } from "../../input/types.js";
 
@@ -38,7 +38,7 @@ export abstract class CueCanvas extends CueCanvasBase {
         this.minDotRadius = dotConfig.minRadius;
         this.dotRadiusZoomStep = dotConfig.radiusZoomStep;
 
-        this.pattern = new Array<CueThread>();
+        this.pattern = new Array<CueThreadArray>();
         this.createThread(threadConfig.color, threadConfig.width);
         this.minThreadWidth = threadConfig.minWidth;
         this.threadWidthZoomStep = threadConfig.widthZoomStep;
@@ -68,11 +68,8 @@ export abstract class CueCanvas extends CueCanvasBase {
     }
 
     protected createThread(color: string, width: number): void {
-        const thread = new CueThread(color, width);
+        const thread = new CueThreadArray(color, width);
         this.pattern.push(thread);
-
-        this.invokeThreadColorChange(color);
-        this.invokeThreadWidthChange(width);
     }
 
     protected useNewThread(color: string, width: number): void {
@@ -81,7 +78,7 @@ export abstract class CueCanvas extends CueCanvasBase {
         this.draw();
     }
 
-    private getCurrentThread(): CueThread | undefined {
+    private getCurrentThread(): CueThreadArray | undefined {
         const length = this.pattern.length;
         const array = this.pattern.slice(length - 1, length);
 
@@ -191,11 +188,11 @@ export abstract class CueCanvas extends CueCanvasBase {
             // thread has crossed at leas one hole
             if (dotsCount === 1) {
                 // remove last dot
-                currentThread.pop();
+                currentThread.popDotIndex();
                 this.removeThread();
             } else {
                 // remove last dot
-                currentThread.pop();
+                currentThread.popDotIndex();
                 this.changeCanvasSide();
 
                 const lastDotIdx = currentThread.lastDotIndex()!;

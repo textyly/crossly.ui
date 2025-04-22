@@ -30,6 +30,7 @@ export type InputCanvasConfig = {
 };
 
 export type FabricCanvasConfig = CanvasConfig & {
+    color: string;
     dot: DotConfig;
     thread: ThreadConfig;
 };
@@ -44,8 +45,9 @@ export type CueCanvasConfig = CanvasConfig & {
 };
 
 export type CrosslyCanvasConfig = {
+    name: string;
     input: InputCanvasConfig;
-    fabric: FabricCanvasConfig,
-    stitch: StitchCanvasConfig,
-    cue: CueCanvasConfig
+    fabric: FabricCanvasConfig;
+    stitch: StitchCanvasConfig;
+    cue: CueCanvasConfig;
 };

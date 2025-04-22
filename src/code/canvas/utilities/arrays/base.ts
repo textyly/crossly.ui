@@ -28,13 +28,13 @@ export abstract class ArrayBase {
         }
     }
 
-    protected ensureSpace(): void {
+    protected abstract expand(): void;
+
+    private ensureSpace(): void {
         const free = (this.space - this.index);
         if (free === 0) {
             this.space = this.space * this.step;
             this.expand();
         }
     }
-
-    protected abstract expand(): void;
 }

@@ -1,22 +1,22 @@
+import { IVirtualCanvas } from "./types.js";
 import assert from "../../asserts/assert.js";
-import { Messaging4 } from "../../messaging/impl.js";
 import { CanvasConfig } from "../../config/types.js";
-import { IMessaging4 } from "../../messaging/types.js";
+import { Messaging2 } from "../../messaging/impl.js";
+import { IMessaging2 } from "../../messaging/types.js";
 import { VirtualCanvasDimensions } from "./dimensions.js";
 import { BoundsChangeEvent, CanvasSide } from "../types.js";
 import { VoidEvent, VoidListener, VoidUnsubscribe } from "../../types.js";
 import { IInputCanvas, MoveEvent, MoveStartEvent, MoveStopEvent, ZoomInEvent, ZoomOutEvent } from "../input/types.js";
-import { ColorChangeEvent, ColorChangeListener, IVirtualCanvas, WidthChangeEvent, WidthChangeListener } from "./types.js";
 
 export abstract class VirtualCanvasBase extends VirtualCanvasDimensions implements IVirtualCanvas {
-    private readonly virtualMessaging: IMessaging4<VoidEvent, VoidEvent, ColorChangeEvent, WidthChangeEvent>;
+    private readonly virtualMessaging: IMessaging2<VoidEvent, VoidEvent>;
 
     protected currentSide: CanvasSide;
 
     constructor(config: CanvasConfig, inputCanvas: IInputCanvas) {
         super(config, inputCanvas);
 
-        this.virtualMessaging = new Messaging4();
+        this.virtualMessaging = new Messaging2();
         this.currentSide = CanvasSide.Back;
 
         this.subscribe();
@@ -32,14 +32,6 @@ export abstract class VirtualCanvasBase extends VirtualCanvasDimensions implemen
 
     public onMoveStop(listener: VoidListener): VoidUnsubscribe {
         return this.virtualMessaging.listenOnChannel2(listener);
-    }
-
-    public onThreadColorChange(listener: ColorChangeListener): VoidUnsubscribe {
-        return this.virtualMessaging.listenOnChannel3(listener);
-    }
-
-    public onThreadWidthChange(listener: WidthChangeListener): VoidUnsubscribe {
-        return this.virtualMessaging.listenOnChannel4(listener);
     }
 
     public draw(): void {
@@ -166,16 +158,6 @@ export abstract class VirtualCanvasBase extends VirtualCanvasDimensions implemen
     private invokeMoveStop(): void {
         const event: VoidEvent = {};
         this.virtualMessaging.sendToChannel2(event);
-    }
-
-    protected invokeThreadColorChange(color: string): void {
-        const event = { color };
-        this.virtualMessaging.sendToChannel3(event);
-    }
-
-    protected invokeThreadWidthChange(width: number): void {
-        const event = { width };
-        this.virtualMessaging.sendToChannel4(event);
     }
 
     private subscribe(): void {

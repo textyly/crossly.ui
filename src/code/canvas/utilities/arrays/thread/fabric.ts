@@ -1,6 +1,7 @@
 import { ArrayBase } from "../base.js";
+import { IFabricThreadArray } from "../types.js";
 
-export class FabricThread extends ArrayBase {
+export class FabricThreadArray extends ArrayBase implements IFabricThreadArray {
     private readonly _color: string;
     private readonly _width: number;
 

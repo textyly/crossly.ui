@@ -3,7 +3,7 @@ import assert from "../../../asserts/assert.js";
 import { IInputCanvas } from "../../input/types.js";
 import { DotArray } from "../../utilities/arrays/dot/dot.js";
 import { FabricCanvasConfig } from "../../../config/types.js";
-import { FabricThread } from "../../utilities/arrays/thread/fabric.js";
+import { FabricThreadArray } from "../../utilities/arrays/thread/fabric.js";
 
 export class FabricCanvas extends FabricCanvasBase {
     private dotColor: string;
@@ -73,7 +73,7 @@ export class FabricCanvas extends FabricCanvasBase {
         // Do not create types/classes for thread (objects are extremely slow and memory/GC consuming)
 
         const bounds = this.bounds;
-        const threads = new FabricThread(this.threadColor, this.threadWidth);
+        const threads = new FabricThreadArray(this.threadColor, this.threadWidth);
 
         for (let dotYIdx = startDotIndexY; dotYIdx <= endDotIndexY; dotYIdx += 2) {
 

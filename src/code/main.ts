@@ -1,5 +1,6 @@
 import { CanvasBuilder } from "./builder.js";
 import { ConfigFactory } from "./config/factory.js";
+import { CrosslyCanvasObserver } from "./observer/canvas.js";
 
 const canvasBuilder = new CanvasBuilder();
 
@@ -10,3 +11,5 @@ canvasBuilder.withConfig(config);
 const canvasFacade = canvasBuilder.build();
 (window as any).crossly = canvasFacade; // TODO: remove!!!
 canvasFacade.draw();
+
+const observer = new CrosslyCanvasObserver(canvasFacade);

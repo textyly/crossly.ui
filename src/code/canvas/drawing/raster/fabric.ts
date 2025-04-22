@@ -1,8 +1,8 @@
 import assert from "../../../asserts/assert.js";
 import { RasterDrawingCanvas } from "./raster.js";
 import { IFabricRasterDrawingCanvas } from "../types.js";
-import { DotArray } from "../../utilities/arrays/dot/dot.js";
-import { FabricThread } from "../../utilities/arrays/thread/fabric.js";
+import { IDotArray } from "../../utilities/arrays/types.js";
+import { FabricThreadArray } from "../../utilities/arrays/thread/fabric.js";
 
 export class FabricRasterDrawingCanvas extends RasterDrawingCanvas implements IFabricRasterDrawingCanvas {
     private readonly endAngle: number;
@@ -13,24 +13,24 @@ export class FabricRasterDrawingCanvas extends RasterDrawingCanvas implements IF
         this.endAngle = Math.PI * 2;
     }
 
-    public drawDots(dots: DotArray): void {
+    public drawDots(dots: IDotArray): void {
         super.ensureAlive();
         assert.defined(dots, "DotArray");
 
         this.drawDotsCore(dots);
     }
 
-    public drawLines(threads: FabricThread): void {
+    public drawLines(threads: FabricThreadArray): void {
         super.ensureAlive();
         assert.defined(threads, "ThreadArray");
 
         this.drawLinesCore(threads);
     }
 
-    private drawDotsCore(dots: DotArray): void {
+    private drawDotsCore(dots: IDotArray): void {
         // CPU, GPU, memory and GC intensive code, do not extract logic in multiple methods!!!
-        const dotsX = dots.dotsX;
-        const dotsY = dots.dotsY;
+        const dotsX = dots.positionsX;
+        const dotsY = dots.positionsY;
         const color = dots.color;
         const radius = dots.radius;
 
@@ -50,7 +50,7 @@ export class FabricRasterDrawingCanvas extends RasterDrawingCanvas implements IF
         this.context.closePath();
     }
 
-    private drawLinesCore(threads: FabricThread): void {
+    private drawLinesCore(threads: FabricThreadArray): void {
         // CPU, GPU, memory and GC intensive code, do not extract logic in multiple methods!!!
         const positionsX1 = threads.positionsX1;
         const positionsY1 = threads.positionsY1;
