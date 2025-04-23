@@ -1,8 +1,8 @@
 import { Position } from "./input/types.js";
-import { Listener, VoidUnsubscribe } from "../types";
 import { CrosslyCanvasConfig } from "../config/types.js";
 import { IThreadPath } from "./utilities/arrays/types.js";
 import { CueThreadArray } from "./utilities/arrays/thread/cue.js";
+import { IDisposable, Listener, VoidUnsubscribe } from "../types";
 import { ChangeFabricListener, ChangeStitchPatternListener } from "./virtual/types.js";
 
 export type Bounds = { left: number, top: number, width: number, height: number };
@@ -17,10 +17,6 @@ export type CueSegment = { id: Id, from: Dot, to: Dot, width: number, color: str
 export type CuePattern = Array<CueThreadArray>;
 export type StitchSegment = { from: Dot, to: Dot, width: number, color: string };
 export type StitchPattern = Array<IThreadPath>;
-
-export interface IDisposable {
-    dispose(): void;
-}
 
 export interface ICanvas extends IDisposable {
     get bounds(): Bounds;

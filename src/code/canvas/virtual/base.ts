@@ -13,8 +13,8 @@ export abstract class VirtualCanvasBase extends VirtualCanvasDimensions implemen
 
     protected currentSide: CanvasSide;
 
-    constructor(config: CanvasConfig, inputCanvas: IInputCanvas) {
-        super(config, inputCanvas);
+    constructor(className: string, config: CanvasConfig, inputCanvas: IInputCanvas) {
+        super(className, config, inputCanvas);
 
         this.virtualMessaging = new Messaging2();
         this.currentSide = CanvasSide.Back;

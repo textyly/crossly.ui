@@ -19,7 +19,7 @@ export class CueDrawingCanvas extends CanvasBase implements ICueDrawingCanvas {
     private readonly svgLines: Map<Id, SvgLine>;
 
     constructor(cueCanvas: ICueCanvas, vectorDrawing: IVectorDrawingCanvas) {
-        super();
+        super(CueDrawingCanvas.name);
 
         this.cueCanvas = cueCanvas;
         assert.defined(this.cueCanvas, "cueCanvas");

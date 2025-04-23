@@ -8,7 +8,7 @@ export class FabricRasterDrawingCanvas extends RasterDrawingCanvas implements IF
     private readonly endAngle: number;
 
     constructor(rasterCanvas: HTMLCanvasElement) {
-        super(rasterCanvas);
+        super(FabricRasterDrawingCanvas.name, rasterCanvas);
 
         this.endAngle = Math.PI * 2;
     }

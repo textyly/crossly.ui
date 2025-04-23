@@ -16,7 +16,7 @@ export class MoveInput extends MoveInputBase implements IMoveInput {
     private lastPointerPos?: Position;
 
     constructor(ignoreMoveUntil: number, htmlElement: HTMLElement, touchInput: ITouchInput) {
-        super();
+        super(MoveInput.name);
 
         this.ignoreMoveUntil = ignoreMoveUntil;
         assert.greaterThanZero(this.ignoreMoveUntil, "ignoreMoveUntil");

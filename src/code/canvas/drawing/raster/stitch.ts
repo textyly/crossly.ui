@@ -12,7 +12,7 @@ export class StitchRasterDrawingCanvas extends RasterDrawingCanvas implements IS
     private shape: ShapeDrawing;
 
     constructor(rasterCanvas: HTMLCanvasElement) {
-        super(rasterCanvas);
+        super(StitchRasterDrawingCanvas.name, rasterCanvas);
 
         const line = new RasterLineDrawing();
         const polygon = new RasterPolygonDrawing();

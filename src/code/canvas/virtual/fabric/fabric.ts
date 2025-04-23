@@ -17,7 +17,7 @@ export class FabricCanvas extends FabricCanvasBase {
     private threadWidthZoomStep: number;
 
     constructor(config: FabricCanvasConfig, inputCanvas: IInputCanvas) {
-        super(config, inputCanvas);
+        super(FabricCanvas.name, config, inputCanvas);
 
         this.validateConfig(config);
 

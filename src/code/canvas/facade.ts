@@ -12,7 +12,7 @@ export class CrosslyCanvasFacade extends CrosslyCanvas implements ICrosslyCanvas
         stitchRasterDrawing: IStitchRasterDrawingCanvas,
         cueVectorDrawing: IVectorDrawingCanvas) {
 
-        super(config, inputCanvas, fabricRasterDrawing, stitchRasterDrawing, cueVectorDrawing);
+        super(CrosslyCanvasFacade.name, config, inputCanvas, fabricRasterDrawing, stitchRasterDrawing, cueVectorDrawing);
     }
 
     public useNewThread(color: string, width: number): void {

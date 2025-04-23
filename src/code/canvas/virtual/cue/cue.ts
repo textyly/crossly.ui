@@ -25,8 +25,8 @@ export abstract class CueCanvas extends CueCanvasBase {
     private clickedDotIdx?: DotIndex;
     private hoveredDotIdx?: DotIndex & { id: Id };
 
-    constructor(config: CueCanvasConfig, input: IInputCanvas) {
-        super(config, input);
+    constructor(className: string, config: CueCanvasConfig, input: IInputCanvas) {
+        super(className, config, input);
 
         this.validateConfig(config);
 

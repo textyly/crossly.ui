@@ -19,8 +19,8 @@ import {
 export abstract class StitchCanvasBase extends VirtualCanvasBase implements IStitchCanvas {
     private readonly messaging: IMessaging3<ChangeStitchPatternEvent, DrawStitchSegmentEvent, DrawStitchPatternEvent>;
 
-    constructor(config: CanvasConfig, input: IInputCanvas) {
-        super(config, input);
+    constructor(className: string, config: CanvasConfig, input: IInputCanvas) {
+        super(className, config, input);
         this.messaging = new Messaging3();
     }
 

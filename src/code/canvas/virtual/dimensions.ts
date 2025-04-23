@@ -15,8 +15,8 @@ export abstract class VirtualCanvasDimensions extends CanvasBase {
     protected _virtualBounds: Bounds;
     protected movingBounds?: Bounds;
 
-    constructor(config: CanvasConfig, inputCanvas: IInputCanvas) {
-        super();
+    constructor(className: string, config: CanvasConfig, inputCanvas: IInputCanvas) {
+        super(className);
 
         this.config = config;
         assert.defined(this.config, "config");

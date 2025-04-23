@@ -24,8 +24,8 @@ import {
 export abstract class InputCanvasBase extends CanvasBase implements IInputCanvas {
     private readonly messaging: IMessaging7<ZoomInEvent, ZoomOutEvent, PointerMoveEvent, PointerUpEvent, MoveStartEvent, MoveEvent, MoveStopEvent>;
 
-    constructor() {
-        super();
+    constructor(className: string) {
+        super(className);
         this.messaging = new Messaging7();
     }
 

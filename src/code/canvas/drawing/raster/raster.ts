@@ -7,8 +7,8 @@ export abstract class RasterDrawingCanvas extends CanvasBase {
     protected readonly context: CanvasRenderingContext2D;
     protected readonly offset: number;
 
-    constructor(rasterCanvas: HTMLCanvasElement) {
-        super();
+    constructor(className: string, rasterCanvas: HTMLCanvasElement) {
+        super(className);
         this.rasterCanvas = rasterCanvas;
         assert.defined(this.rasterCanvas, "HTMLCanvasElement");
 

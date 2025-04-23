@@ -17,8 +17,8 @@ export abstract class CrosslyCanvasBase extends CanvasBase implements ICrosslyCa
 
     private readonly configuration: CrosslyCanvasConfig;
 
-    constructor(config: CrosslyCanvasConfig) {
-        super();
+    constructor(className: string, config: CrosslyCanvasConfig) {
+        super(className);
         this.configuration = config;
         this.messaging = new Messaging2();
     }

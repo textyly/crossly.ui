@@ -20,8 +20,8 @@ import {
 export abstract class FabricCanvasBase extends VirtualCanvasBase implements IFabricCanvas {
     private readonly messaging: IMessaging3<ChangeFabricEvent, DrawFabricDotsEvent, DrawFabricThreadsEvent>;
 
-    constructor(config: CanvasConfig, input: IInputCanvas) {
-        super(config, input);
+    constructor(className: string, config: CanvasConfig, input: IInputCanvas) {
+        super(className, config, input);
         this.messaging = new Messaging3();
     }
 

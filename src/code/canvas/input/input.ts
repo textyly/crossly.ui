@@ -34,7 +34,7 @@ export class InputCanvas extends InputCanvasBase {
     private readonly resizeObserver: ResizeObserver;
 
     constructor(config: InputCanvasConfig, inputHtmlElement: HTMLElement) {
-        super();
+        super(InputCanvas.name);
         this.config = config;
         assert.defined(this.config, "InputCanvasConfig");
 

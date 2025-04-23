@@ -15,7 +15,7 @@ export class TouchInput extends TouchInputBase implements ITouchInput {
     private lastTouchTime?: number;
 
     constructor(ignoreZoomUntil: number, htmlElement: HTMLElement) {
-        super();
+        super(TouchInput.name);
 
         this.ignoreZoomUntil = ignoreZoomUntil;
         assert.greaterThanZero(ignoreZoomUntil, "ignoreZoomUntil");

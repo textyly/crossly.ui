@@ -19,7 +19,7 @@ export abstract class StitchCanvas extends StitchCanvasBase {
 
 
     constructor(config: StitchCanvasConfig, inputCanvas: IInputCanvas) {
-        super(config, inputCanvas);
+        super(StitchCanvas.name, config, inputCanvas);
 
         this.validateConfig(config);
 
@@ -149,6 +149,7 @@ export abstract class StitchCanvas extends StitchCanvasBase {
             } else {
                 // remove current thread
                 this.pattern.pop();
+                super.invokeChange(this.pattern);
 
                 const previousThread = this.getCurrentThread();
                 assert.defined(previousThread, "previousThread");
@@ -173,6 +174,7 @@ export abstract class StitchCanvas extends StitchCanvasBase {
                 this.changeCanvasSide();
                 this.clickedDotIdx = currentThread.lastDot()!;
             }
+            super.invokeChange(this.pattern);
         }
 
         this.draw();

@@ -9,7 +9,7 @@ export class StitchDrawingCanvas extends CanvasBase implements IStitchDrawingCan
     private readonly rasterDrawing: IStitchRasterDrawingCanvas;
 
     constructor(stitchCanvas: IStitchCanvas, rasterDrawing: IStitchRasterDrawingCanvas) {
-        super();
+        super(StitchDrawingCanvas.name);
 
         this.stitchCanvas = stitchCanvas;
         assert.defined(this.stitchCanvas, "stitchCanvas");

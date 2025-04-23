@@ -15,8 +15,8 @@ import {
 export abstract class MoveInputBase extends CanvasBase {
     private readonly messaging: IMessaging3<MoveStartEvent, MoveEvent, MoveStopEvent>;
 
-    constructor() {
-        super();
+    constructor(className: string) {
+        super(className);
         this.messaging = new Messaging3();
     }
 

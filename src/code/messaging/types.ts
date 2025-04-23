@@ -1,5 +1,4 @@
-import { IDisposable } from "../canvas/types.js";
-import { Listener, Unsubscribe, VoidListener, VoidUnsubscribe } from "../types";
+import { IDisposable, Listener, Unsubscribe, VoidListener, VoidUnsubscribe } from "../types";
 
 export type Channel = string;
 export type ChannelData = any;

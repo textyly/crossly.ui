@@ -6,7 +6,7 @@ import { CueCanvasConfig } from "../../../config/types.js";
 
 export class CueCanvasFacade extends CueCanvas implements ICueCanvasFacade {
     constructor(config: CueCanvasConfig, input: IInputCanvas) {
-        super(config, input);
+        super(CueCanvasFacade.name, config, input);
     }
 
     public useNewThread(color: string, width: number): void {

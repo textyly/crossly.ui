@@ -35,13 +35,14 @@ export abstract class CrosslyCanvas extends CrosslyCanvasBase implements ICrossl
     private cueVectorDrawing!: IVectorDrawingCanvas;
 
     constructor(
+        className: string,
         config: CrosslyCanvasConfig,
         inputCanvas: IInputCanvas,
         fabricRasterDrawing: IFabricRasterDrawingCanvas,
         stitchRasterDrawing: IStitchRasterDrawingCanvas,
         cueVectorDrawing: IVectorDrawingCanvas) {
 
-        super(config);
+        super(className, config);
 
         assert.defined(this.config, "CrosslyCanvasConfig");
 

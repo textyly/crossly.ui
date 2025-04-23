@@ -9,7 +9,7 @@ export class FabricDrawingCanvas extends CanvasBase implements IFabricDrawingCan
     private readonly rasterDrawing: IFabricRasterDrawingCanvas;
 
     constructor(fabricCanvas: IFabricCanvas, rasterDrawing: IFabricRasterDrawingCanvas) {
-        super();
+        super(FabricDrawingCanvas.name);
 
         this.fabricCanvas = fabricCanvas;
         assert.defined(this.fabricCanvas, "fabricCanvas");

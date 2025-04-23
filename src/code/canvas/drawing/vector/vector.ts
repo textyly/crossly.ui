@@ -8,7 +8,7 @@ export class VectorDrawingCanvas extends CanvasBase implements IVectorDrawingCan
     protected readonly offset: number;
 
     constructor(svgCanvas: HTMLElement) {
-        super();
+        super(VectorDrawingCanvas.name);
         this.svgCanvas = svgCanvas;
         assert.defined(this.svgCanvas, "svgCanvas");
 

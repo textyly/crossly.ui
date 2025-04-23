@@ -7,8 +7,8 @@ import { Position, ZoomInEvent, ZoomInListener, ZoomOutEvent, ZoomOutListener } 
 export abstract class TouchInputBase extends CanvasBase {
     private readonly messaging: IMessaging2<ZoomInEvent, ZoomOutEvent>;
 
-    constructor() {
-        super();
+    constructor(className: string) {
+        super(className);
         this.messaging = new Messaging2();
     }
 
