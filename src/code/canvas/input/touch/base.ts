@@ -21,6 +21,7 @@ export abstract class TouchInputBase extends CanvasBase {
     }
 
     public override dispose(): void {
+        super.ensureAlive();
         this.messaging.dispose();
         super.dispose();
     }

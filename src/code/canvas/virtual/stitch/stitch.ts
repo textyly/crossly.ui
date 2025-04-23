@@ -38,6 +38,7 @@ export abstract class StitchCanvas extends StitchCanvasBase {
     }
 
     public override dispose(): void {
+        super.ensureAlive();
         // TODO: ARRAYS!!!
         super.dispose();
     }

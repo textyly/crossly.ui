@@ -43,6 +43,7 @@ export abstract class VirtualCanvasBase extends VirtualCanvasDimensions implemen
     }
 
     public override dispose(): void {
+        super.ensureAlive();
         this.virtualMessaging.dispose();
         super.dispose();
     }

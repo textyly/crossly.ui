@@ -62,6 +62,7 @@ export abstract class InputCanvasBase extends CanvasBase implements IInputCanvas
     }
 
     public override dispose(): void {
+        super.ensureAlive();
         this.messaging.dispose();
         super.dispose();
     }

@@ -37,6 +37,7 @@ export abstract class StitchCanvasBase extends VirtualCanvasBase implements ISti
     }
 
     public override dispose(): void {
+        this.ensureAlive();
         this.messaging.dispose();
         super.dispose();
     }

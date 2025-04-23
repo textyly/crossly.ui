@@ -38,6 +38,7 @@ export abstract class FabricCanvasBase extends VirtualCanvasBase implements IFab
     }
 
     public override dispose(): void {
+        super.ensureAlive();
         this.messaging.dispose();
         super.dispose();
     }

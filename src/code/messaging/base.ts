@@ -1,20 +1,18 @@
+import { Base } from "../base.js";
 import assert from "../asserts/assert.js";
 import { Unsubscribe } from "../types.js";
 import { Channel, ChannelData, ChannelListener, ChannelListeners, IMessaging } from "./types.js";
 
-export abstract class MessagingBase implements IMessaging {
-    private readonly className: string;
+export abstract class MessagingBase extends Base implements IMessaging {
     private readonly channels: Map<Channel, ChannelListeners>;
-    private disposed: boolean;
 
     constructor() {
-        this.className = MessagingBase.name;
+        super(MessagingBase.name);
         this.channels = new Map<Channel, ChannelListeners>();
-        this.disposed = false;
     }
 
     public create(channel: Channel): void {
-        this.ensureAlive();
+        super.ensureAlive();
 
         assert.defined(channel, "channel");
         assert.greaterThanZero(channel.length, "channel.length");
@@ -26,7 +24,7 @@ export abstract class MessagingBase implements IMessaging {
     }
 
     public on(channel: Channel, listener: ChannelListener): Unsubscribe<ChannelListener> {
-        this.ensureAlive();
+        super.ensureAlive();
 
         assert.defined(channel, "channel");
         assert.defined(listener, "listener");
@@ -39,7 +37,7 @@ export abstract class MessagingBase implements IMessaging {
     }
 
     public send(channel: Channel, data: ChannelData): void {
-        this.ensureAlive();
+        super.ensureAlive();
 
         assert.defined(channel, "channel");
         assert.defined(data, "data");
@@ -50,15 +48,14 @@ export abstract class MessagingBase implements IMessaging {
         listeners.forEach((listener) => listener(data));
     }
 
-    public dispose(): void {
-        this.ensureAlive();
-
+    public override dispose(): void {
+        super.ensureAlive();
         this.channels.clear();
-        this.disposed = true;
+        super.dispose();
     }
 
     private unsubscribe(channel: Channel, listener: ChannelListener): ChannelListener {
-        this.ensureAlive();
+        super.ensureAlive();
 
         const listeners = this.channels.get(channel);
         assert.defined(listeners, `channel ${channel} does not exist.`);
@@ -70,9 +67,5 @@ export abstract class MessagingBase implements IMessaging {
         assert.greaterThanZero(removed.length, "removed.length");
 
         return removed[0];
-    }
-
-    private ensureAlive(): void {
-        assert.alive(this.disposed, this.className);
     }
 }

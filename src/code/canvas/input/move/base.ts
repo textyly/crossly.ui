@@ -33,6 +33,7 @@ export abstract class MoveInputBase extends CanvasBase {
     }
 
     public override dispose(): void {
+        super.ensureAlive();
         this.messaging.dispose();
         super.dispose();
     }

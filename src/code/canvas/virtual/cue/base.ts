@@ -56,6 +56,7 @@ export abstract class CueCanvasBase extends VirtualCanvasBase implements ICueCan
     }
 
     public override dispose(): void {
+        super.ensureAlive();
         this.messaging.dispose();
         super.dispose();
     }
