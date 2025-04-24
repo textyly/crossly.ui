@@ -1,13 +1,13 @@
-import assert from "../asserts/assert.js";
-import { InputCanvas } from "./input/input.js";
-import { IInputCanvas } from "./input/types.js";
-import { ICrosslyCanvasFacade } from "./types.js";
+import assert from "../../asserts/assert.js";
+import { InputCanvas } from "../input/input.js";
+import { IInputCanvas } from "../input/types.js";
+import { ICrosslyCanvasFacade } from "../types.js";
 import { CrosslyCanvasFacade } from "./facade.js";
-import { CrosslyCanvasConfig } from "../config/types.js";
-import { VectorDrawingCanvas } from "./drawing/vector/vector.js";
-import { FabricRasterDrawingCanvas } from "./drawing/raster/fabric.js";
-import { StitchRasterDrawingCanvas } from "./drawing/raster/stitch.js";
-import { IFabricRasterDrawingCanvas, IStitchRasterDrawingCanvas, IVectorDrawingCanvas } from "./drawing/types.js";
+import { CrosslyCanvasConfig } from "../../config/types.js";
+import { VectorDrawingCanvas } from "../drawing/vector/vector.js";
+import { FabricRasterDrawingCanvas } from "../drawing/raster/fabric.js";
+import { StitchRasterDrawingCanvas } from "../drawing/raster/stitch.js";
+import { IFabricRasterDrawingCanvas, IStitchRasterDrawingCanvas, IVectorDrawingCanvas } from "../drawing/types.js";
 
 export class CrosslyCanvasBuilder {
     private config!: CrosslyCanvasConfig;

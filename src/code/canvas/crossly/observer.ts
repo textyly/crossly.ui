@@ -1,12 +1,12 @@
-import { Base } from "../base.js";
-import assert from "../asserts/assert.js";
-import { VoidUnsubscribe } from "../types.js";
-import { Messaging1 } from "../messaging/impl.js";
-import { ICrosslyCanvas } from "../canvas/types.js";
-import { IMessaging1 } from "../messaging/types.js";
-import { IThreadPath } from "../canvas/utilities/arrays/types.js";
-import { ChangeFabricEvent, ChangeStitchPatternEvent } from "../canvas/virtual/types.js";
-import { ChangeEvent, ChangeListener, CrosslyCanvasProject, ICrosslyCanvasObserver } from "./types.js";
+import { Base } from "../../base.js";
+import assert from "../../asserts/assert.js";
+import { VoidUnsubscribe } from "../../types.js";
+import { Messaging1 } from "../../messaging/impl.js";
+import { ICrosslyCanvas } from "../types.js";
+import { IMessaging1 } from "../../messaging/types.js";
+import { IThreadPath } from "../utilities/arrays/types.js";
+import { ChangeFabricEvent, ChangeStitchPatternEvent } from "../virtual/types.js";
+import { ChangeEvent, ChangeListener, CrosslyCanvasProject, ICrosslyCanvasObserver } from "../types.js";
 
 export class CrosslyCanvasObserver extends Base implements ICrosslyCanvasObserver {
     private readonly messaging: IMessaging1<ChangeEvent>;

@@ -3,7 +3,7 @@ import { CrosslyCanvasConfig } from "../config/types.js";
 import { IThreadPath } from "./utilities/arrays/types.js";
 import { CueThreadArray } from "./utilities/arrays/thread/cue.js";
 import { IDisposable, Listener, VoidUnsubscribe } from "../types";
-import { ChangeFabricListener, ChangeStitchPatternListener } from "./virtual/types.js";
+import { ChangeFabricListener, ChangeStitchPatternListener, Fabric } from "./virtual/types.js";
 
 export type Bounds = { left: number, top: number, width: number, height: number };
 
@@ -38,6 +38,10 @@ export interface ICrosslyCanvasFacade extends ICrosslyCanvas {
     useNewThread(color: string, width: number): void;
 }
 
+export interface ICrosslyCanvasObserver {
+    onChange(listener: ChangeListener): VoidUnsubscribe;
+}
+
 export enum CanvasSide {
     Front,
     Back,
@@ -50,3 +54,7 @@ export enum Visibility {
 
 export type BoundsChangeEvent = { bounds: Bounds };
 export type BoundsChangeListener = Listener<BoundsChangeEvent>;
+
+export type CrosslyCanvasProject = { name: string, fabric: Fabric; pattern: StitchPattern; };
+export type ChangeEvent = { project: CrosslyCanvasProject; }
+export type ChangeListener = Listener<ChangeEvent>;

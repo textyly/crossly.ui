@@ -1,16 +1,16 @@
-import { CanvasBase } from "./base.js";
-import { VoidUnsubscribe } from "../types.js";
-import { Messaging2 } from "../messaging/impl.js";
-import { IMessaging2 } from "../messaging/types.js";
-import { CrosslyCanvasConfig } from "../config/types.js";
-import { ICrosslyCanvas, StitchPattern } from "./types.js";
+import { CanvasBase } from "../base.js";
+import { VoidUnsubscribe } from "../../types.js";
+import { Messaging2 } from "../../messaging/impl.js";
+import { IMessaging2 } from "../../messaging/types.js";
+import { CrosslyCanvasConfig } from "../../config/types.js";
+import { ICrosslyCanvas, StitchPattern } from "../types.js";
 import {
     Fabric,
     ChangeFabricEvent,
     ChangeFabricListener,
     ChangeStitchPatternEvent,
     ChangeStitchPatternListener,
-} from "./virtual/types.js";
+} from "../virtual/types.js";
 
 export abstract class CrosslyCanvasBase extends CanvasBase implements ICrosslyCanvas {
     private readonly messaging: IMessaging2<ChangeFabricEvent, ChangeStitchPatternEvent>;

@@ -1,15 +1,15 @@
-import assert from "../asserts/assert.js";
-import { ICrosslyCanvas } from "./types.js";
-import { IInputCanvas } from "./input/types.js";
-import { CueDrawingCanvas } from "./drawing/cue.js";
-import { CrosslyCanvasBase } from "./crosslyBase.js";
-import { CrosslyCanvasConfig } from "../config/types.js";
-import { FabricCanvas } from "./virtual/fabric/fabric.js";
-import { FabricDrawingCanvas } from "./drawing/fabric.js";
-import { StitchDrawingCanvas } from "./drawing/stitch.js";
-import { CueCanvasFacade } from "./virtual/cue/facade.js";
-import { StitchCanvasFacade } from "./virtual/stitch/facade.js";
-import { ChangeFabricEvent, ChangeStitchPatternEvent, ICueCanvasFacade, IFabricCanvas, IStitchCanvasFacade } from "./virtual/types.js";
+import assert from "../../asserts/assert.js";
+import { ICrosslyCanvas } from "../types.js";
+import { IInputCanvas } from "../input/types.js";
+import { CueDrawingCanvas } from "../drawing/cue.js";
+import { CrosslyCanvasBase } from "./base.js";
+import { CrosslyCanvasConfig } from "../../config/types.js";
+import { FabricCanvas } from "../virtual/fabric/fabric.js";
+import { FabricDrawingCanvas } from "../drawing/fabric.js";
+import { StitchDrawingCanvas } from "../drawing/stitch.js";
+import { CueCanvasFacade } from "../virtual/cue/facade.js";
+import { StitchCanvasFacade } from "../virtual/stitch/facade.js";
+import { ChangeFabricEvent, ChangeStitchPatternEvent, ICueCanvasFacade, IFabricCanvas, IStitchCanvasFacade } from "../virtual/types.js";
 import {
     ICueDrawingCanvas,
     IFabricDrawingCanvas,
@@ -17,7 +17,7 @@ import {
     IVectorDrawingCanvas,
     IFabricRasterDrawingCanvas,
     IStitchRasterDrawingCanvas,
-} from "./drawing/types.js";
+} from "../drawing/types.js";
 
 export abstract class CrosslyCanvas extends CrosslyCanvasBase implements ICrosslyCanvas {
     private readonly inputCanvas: IInputCanvas;
