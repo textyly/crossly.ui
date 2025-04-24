@@ -6,13 +6,13 @@ import { ICrosslyCanvas } from "../types.js";
 import { IMessaging1 } from "../../messaging/types.js";
 import { IThreadPath } from "../utilities/arrays/types.js";
 import { ChangeFabricEvent, ChangeStitchPatternEvent } from "../virtual/types.js";
-import { ChangeEvent, ChangeListener, CrosslyCanvasProject, ICrosslyCanvasObserver } from "../types.js";
+import { ChangeEvent, ChangeListener, CrosslyCanvasData, ICrosslyCanvasObserver } from "../types.js";
 
 export class CrosslyCanvasObserver extends Base implements ICrosslyCanvasObserver {
     private readonly messaging: IMessaging1<ChangeEvent>;
     private readonly canvas: ICrosslyCanvas;
 
-    private project: CrosslyCanvasProject;
+    private data: CrosslyCanvasData;
 
     constructor(canvas: ICrosslyCanvas) {
         super(CrosslyCanvasObserver.name);
@@ -27,7 +27,7 @@ export class CrosslyCanvasObserver extends Base implements ICrosslyCanvasObserve
         assert.defined(fabric, "FabricCanvasConfig");
 
         const pattern = new Array<IThreadPath>();
-        this.project = { name, fabric, pattern };
+        this.data = { name, fabric, pattern };
 
         this.subscribe();
     }
@@ -42,10 +42,10 @@ export class CrosslyCanvasObserver extends Base implements ICrosslyCanvasObserve
 
         const fabric = event.fabric;
         assert.defined(fabric, "Fabric");
-        assert.defined(this.project, "project");
+        assert.defined(this.data, "data");
 
-        this.project.fabric = fabric;
-        this.invokeProjectChange(this.project);
+        this.data.fabric = fabric;
+        this.invokeDataChange(this.data);
     }
 
     private handleChangeStitchPattern(event: ChangeStitchPatternEvent): void {
@@ -53,14 +53,14 @@ export class CrosslyCanvasObserver extends Base implements ICrosslyCanvasObserve
 
         const pattern = event.pattern;
         assert.defined(event.pattern, "StitchPattern");
-        assert.defined(this.project, "project");
+        assert.defined(this.data, "data");
 
-        this.project.pattern = pattern;
-        this.invokeProjectChange(this.project);
+        this.data.pattern = pattern;
+        this.invokeDataChange(this.data);
     }
 
-    private invokeProjectChange(project: CrosslyCanvasProject): void {
-        const event = { project };
+    private invokeDataChange(data: CrosslyCanvasData): void {
+        const event = { data };
         this.messaging.sendToChannel1(event);
     }
 

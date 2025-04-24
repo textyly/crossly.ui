@@ -36,15 +36,19 @@ export class ConfigFactory {
 
     private createFabricCanvasConfig(columns: number, rows: number, dotsSpacing: DotsSpacingConfig): FabricCanvasConfig {
         const fabricConfig = {
+            name: "Aida 14",
             columns, rows, dotsSpacing,
             color: "white", // TODO: implement
-            dot: {
+            dots: {
                 color: "#9fa19f",
                 radius: 1.4,
                 minRadius: 0.6,
-                radiusZoomStep: 0.1
+                radiusZoomStep: 0.1,
+                hidden: {
+                    enabled: true
+                }
             },
-            thread: {
+            threads: {
                 color: "#d2d4d2",
                 width: 1.4,
                 minWidth: 0.8,
@@ -57,7 +61,7 @@ export class ConfigFactory {
     private createStitchCanvasConfig(columns: number, rows: number, dotsSpacing: DotsSpacingConfig): StitchCanvasConfig {
         const stitchConfig = {
             columns, rows, dotsSpacing,
-            thread: {
+            threads: {
                 color: "gray",
                 width: 12,
                 minWidth: 1,
@@ -70,13 +74,13 @@ export class ConfigFactory {
     private createCueCanvasConfig(columns: number, rows: number, dotsSpacing: DotsSpacingConfig): CueCanvasConfig {
         const cueConfig = {
             columns, rows, dotsSpacing,
-            dot: {
+            dots: {
                 color: "#615858",
                 radius: 12,
                 minRadius: 1,
                 radiusZoomStep: 1
             },
-            thread: {
+            threads: {
                 color: "gray",
                 width: 12,
                 minWidth: 1,

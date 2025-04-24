@@ -30,8 +30,8 @@ export abstract class CueCanvas extends CueCanvasBase {
 
         this.validateConfig(config);
 
-        const dotConfig = config.dot;
-        const threadConfig = config.thread;
+        const dotConfig = config.dots;
+        const threadConfig = config.threads;
 
         this.dotColor = dotConfig.color;
         this.dotRadius = dotConfig.radius;
@@ -348,10 +348,10 @@ export abstract class CueCanvas extends CueCanvasBase {
     }
 
     private validateConfig(config: CueCanvasConfig): void {
-        const dotConfig = config.dot;
+        const dotConfig = config.dots;
         assert.defined(dotConfig, "DotConfig");
 
-        const threadConfig = config.thread;
+        const threadConfig = config.threads;
         assert.defined(threadConfig, "ThreadConfig");
 
         assert.greaterThanZero(dotConfig.radius, "dotRadius");

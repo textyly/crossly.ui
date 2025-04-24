@@ -23,7 +23,7 @@ export abstract class StitchCanvas extends StitchCanvasBase {
 
         this.validateConfig(config);
 
-        const threadConfig = config.thread;
+        const threadConfig = config.threads;
         this.minThreadWidth = threadConfig.minWidth;
         this.threadWidthZoomStep = threadConfig.widthZoomStep;
 
@@ -256,7 +256,7 @@ export abstract class StitchCanvas extends StitchCanvasBase {
     }
 
     private validateConfig(config: StitchCanvasConfig): void {
-        const threadConfig = config.thread;
+        const threadConfig = config.threads;
         assert.defined(threadConfig, "ThreadConfig");
 
         assert.greaterThanZero(threadConfig.color.length, "color.length");

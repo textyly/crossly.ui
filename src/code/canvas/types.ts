@@ -55,6 +55,6 @@ export enum Visibility {
 export type BoundsChangeEvent = { bounds: Bounds };
 export type BoundsChangeListener = Listener<BoundsChangeEvent>;
 
-export type CrosslyCanvasProject = { name: string, fabric: Fabric; pattern: StitchPattern; };
-export type ChangeEvent = { project: CrosslyCanvasProject; }
+export type CrosslyCanvasData = { name: string, fabric: Fabric; pattern: StitchPattern; };
+export type ChangeEvent = { data: CrosslyCanvasData; }
 export type ChangeListener = Listener<ChangeEvent>;
