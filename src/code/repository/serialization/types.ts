@@ -33,8 +33,10 @@ export type ThreadDataModel = {
     width: number;
 };
 
-export type HoleDataModel = Dot;
-export type NeedlePathDataModel = Array<HoleDataModel>;
+export type NeedlePathDataModel = {
+    indexesX: Array<number>,
+    indexesY: Array<number>,
+}
 export type ThreadIndexDataModel = number;
 
 export type ThreadPathDataModel = {

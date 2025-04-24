@@ -1,4 +1,4 @@
-import { Base } from "../../base.js";
+import assert from "../../asserts/assert.js";
 import { Fabric } from "../../canvas/virtual/types.js";
 import { CrosslyCanvasData, StitchPattern } from "../../canvas/types.js";
 import {
@@ -9,15 +9,9 @@ import {
     CrosslyDataModel,
     ICrosslySerializer,
     ThreadPathDataModel,
-    HoleDataModel,
 } from "./types.js";
-import assert from "../../asserts/assert.js";
 
-// TODO: asserts!!!
-export class CrosslySerializer extends Base implements ICrosslySerializer {
-    constructor() {
-        super(CrosslySerializer.name);
-    }
+export class CrosslySerializer implements ICrosslySerializer {
 
     public serialize(canvasData: CrosslyCanvasData): CrosslyDataModel {
         const name = canvasData.name;
@@ -26,19 +20,19 @@ export class CrosslySerializer extends Base implements ICrosslySerializer {
 
         const fabricDataModel = this.convertToFabricDataModel(fabric);
         const threadsDataModel = this.convertToThreadsDataMode(pattern);
-        const PatternDataModel = this.convertToPatternDataModel(pattern, threadsDataModel);
+        const patternDataModel = this.convertToPatternDataModel(pattern, threadsDataModel);
 
         const dataModel = {
             name,
             fabric: fabricDataModel,
             threads: threadsDataModel,
-            pattern: PatternDataModel,
+            pattern: patternDataModel,
         };
 
         return dataModel;
     }
 
-    public deserialize(project: CrosslyDataModel): CrosslyCanvasData {
+    public deserialize(dataModel: CrosslyDataModel): CrosslyCanvasData {
         throw new Error("Method not implemented.");
     }
 
@@ -49,12 +43,12 @@ export class CrosslySerializer extends Base implements ICrosslySerializer {
         const color = fabric.color;
 
         const fabricDots = fabric.dots;
-        const fabricDotSpacing = fabric.dotsSpacing;
+        const fabricDotsSpacing = fabric.dotsSpacing;
 
         const dots = {
             color: fabricDots.color,
             radius: fabricDots.radius,
-            space: fabricDotSpacing.space,
+            space: fabricDotsSpacing.space,
             hidden: {
                 enabled: fabricDots.hidden.enabled,
             },
@@ -75,14 +69,16 @@ export class CrosslySerializer extends Base implements ICrosslySerializer {
         const threadsDataModel = new Array<ThreadDataModel>();
 
         pattern.forEach((thread) => {
-            // TODO: user thread equality func
+            // TODO: use thread equality func
             const exists = threadsDataModel.find((t) => t.color === thread.color && t.width === thread.width);
             if (!exists) {
+
                 const threadDataModel = {
                     name: thread.color, // TODO: introduce a name!!!
                     color: thread.color,
                     width: thread.width,
-                }
+                };
+
                 threadsDataModel.push(threadDataModel);
             }
         });
@@ -94,21 +90,16 @@ export class CrosslySerializer extends Base implements ICrosslySerializer {
         const patternDataModel = new Array<ThreadPathDataModel>();
 
         pattern.forEach((threadPath) => {
-            // TODO: user thread equality func
+            // TODO: use thread equality func
             const threadIndex = threads.findIndex((t) => t.color === threadPath.color && t.width === threadPath.width);
-            assert.positive(threadIndex, "threadIdx");
+            assert.positive(threadIndex, "threadIndex");
 
-            const indexesX = threadPath.indexesX;
-            const indexesY = threadPath.indexesY;
+            const indexesX = [...threadPath.indexesX];
+            const indexesY = [...threadPath.indexesY];
+            const needlePath = { indexesX, indexesY };
 
-            const needlePath = new Array<HoleDataModel>;
-            for (let index = 0; index < threadPath.length; index++) {
-                const x = indexesX[index];
-                const y = indexesY[index];
-                needlePath.push({ x, y });
-            }
-
-            patternDataModel.push({ threadIndex, needlePath });
+            const threadPathDataModel = { threadIndex, needlePath };
+            patternDataModel.push(threadPathDataModel);
         });
 
         return patternDataModel;

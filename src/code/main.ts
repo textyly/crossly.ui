@@ -15,11 +15,11 @@ canvasFacade.draw();
 // Delete !!!
 (window as any).crossly = canvasFacade;
 
-const serializer = new CrosslySerializer();
-const observer = new CrosslyCanvasObserver(canvasFacade);
-observer.onChange((event) => {
-    const canvasData = event.data;
-    const dataModel = serializer.serialize(canvasData);
-    console.log(dataModel);
-});
+// const serializer = new CrosslySerializer();
+// const observer = new CrosslyCanvasObserver(canvasFacade);
+// observer.onChange((event) => {
+//     const canvasData = event.data;
+//     const dataModel = serializer.serialize(canvasData);
+//     console.log(dataModel);
+// });
 
