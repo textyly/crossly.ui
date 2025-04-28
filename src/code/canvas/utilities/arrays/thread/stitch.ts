@@ -39,6 +39,10 @@ export class ThreadPath extends ThreadBase implements IThreadPath {
         return this._visibilities.slice(0, this.length);
     }
 
+    public pushDotIndex(indexX: number, indexY: number): void {
+        this.pushDot(indexX, indexY, 0, 0, false);
+    }
+
     public pushDot(indexX: number, indexY: number, positionX: number, positionY: number, visible: boolean): void {
         super.push(positionX, positionY);
 

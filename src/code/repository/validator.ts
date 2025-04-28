@@ -1,5 +1,5 @@
 import { CrosslyDataModel } from "./types.js";
-import { CrosslyCanvasData } from "../../canvas/types.js";
+import { CrosslyCanvasData } from "../canvas/types.js";
 
 // TODO: implement!!!
 export class CrosslyDataModelValidator {

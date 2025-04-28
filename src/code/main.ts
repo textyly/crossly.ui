@@ -1,7 +1,7 @@
 import { CanvasBuilder } from "./builder.js";
 import { ConfigFactory } from "./config/factory.js";
 import { CrosslyCanvasObserver } from "./canvas/crossly/observer.js";
-import { CrosslyDataModelConverter } from "./repository/serialization/converter.js";
+import { CrosslyDataModelConverter } from "./repository/converter.js";
 
 const canvasBuilder = new CanvasBuilder();
 

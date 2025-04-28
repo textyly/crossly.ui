@@ -1,7 +1,7 @@
-import { FabricCanvasData } from "../../canvas/virtual/types.js";
-import { IThreadPath } from "../../canvas/utilities/arrays/types.js";
-import { ThreadPath } from "../../canvas/utilities/arrays/thread/stitch.js";
-import { CrosslyCanvasData, StitchPatternCanvasData } from "../../canvas/types.js";
+import { FabricCanvasData } from "../canvas/virtual/types.js";
+import { IThreadPath } from "../canvas/utilities/arrays/types.js";
+import { ThreadPath } from "../canvas/utilities/arrays/thread/stitch.js";
+import { CrosslyCanvasData, StitchPatternCanvasData } from "../canvas/types.js";
 import {
     FabricDataModel,
     ThreadDataModel,
@@ -142,9 +142,10 @@ export class CrosslyDataModelConverter implements ICrosslyDataModelConverter {
             const thread = new ThreadPath(threadDataModel.color, threadDataModel.width);
 
             for (let index = 0; index < length; index++) {
+
                 const indexX = indexesX[index];
                 const indexY = indexesY[index];
-                thread.pushDot(indexX, indexY, 0, 0, false);
+                thread.pushDotIndex(indexX, indexY);
             }
 
             stitchPattern.push(thread);

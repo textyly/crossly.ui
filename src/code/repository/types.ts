@@ -1,4 +1,4 @@
-import { CrosslyCanvasData } from "../../canvas/types.js";
+import { CrosslyCanvasData } from "../canvas/types.js";
 
 export type CrosslyDataModel = {
     name: string;
