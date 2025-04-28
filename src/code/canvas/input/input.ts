@@ -1,7 +1,6 @@
 import { MoveInput } from "./move/move.js";
-import { TouchInput } from "./touch/touch.js";
 import { InputCanvasBase } from "./base.js";
-import assert from "../../asserts/assert.js";
+import { TouchInput } from "./touch/touch.js";
 import { InputCanvasConfig } from "../../config/types.js";
 import {
     Position,
@@ -35,11 +34,9 @@ export class InputCanvas extends InputCanvasBase {
 
     constructor(config: InputCanvasConfig, inputHtmlElement: HTMLElement) {
         super(InputCanvas.name);
-        this.config = config;
-        assert.defined(this.config, "InputCanvasConfig");
 
+        this.config = config;
         this.inputHtmlElement = inputHtmlElement;
-        assert.defined(this.inputHtmlElement, "inputHtmlElement");
 
         const bounds = { left: inputHtmlElement.clientLeft, top: inputHtmlElement.clientTop, width: inputHtmlElement.clientWidth, height: inputHtmlElement.clientHeight };
         super.bounds = bounds;
@@ -74,42 +71,36 @@ export class InputCanvas extends InputCanvasBase {
 
     private handleZoomIn(event: ZoomInEvent): void {
         super.ensureAlive();
-        assert.defined(event, "ZoomInEvent");
 
         super.invokeZoomIn(event);
     }
 
     private handleZoomOut(event: ZoomOutEvent): void {
         super.ensureAlive();
-        assert.defined(event, "ZoomOutEvent");
 
         super.invokeZoomOut(event);
     }
 
     private handleMoveStart(event: MoveStartEvent): void {
         super.ensureAlive();
-        assert.defined(event, "MoveStartEvent");
 
         super.invokeMoveStart(event);
     }
 
     private handleMove(event: MoveEvent): void {
         super.ensureAlive();
-        assert.defined(event, "MoveEvent");
 
         super.invokeMove(event);
     }
 
     private handleMoveStop(event: MoveStopEvent): void {
         super.ensureAlive();
-        assert.defined(event, "MoveStopEvent");
 
         super.invokeMoveStop(event);
     }
 
     private handleWheelChange(event: WheelEvent): void {
         super.ensureAlive();
-        assert.defined(event, "WheelEvent");
 
         this.wheelChange(event);
         event.preventDefault();
@@ -117,7 +108,6 @@ export class InputCanvas extends InputCanvasBase {
 
     private handlePointerUp(event: PointerEvent): void {
         super.ensureAlive();
-        assert.defined(event, "PointerUpEvent");
 
         this.isPointerDown = false;
 
@@ -134,14 +124,12 @@ export class InputCanvas extends InputCanvasBase {
 
     private handlePointerDown(event: PointerEvent): void {
         super.ensureAlive();
-        assert.defined(event, "PointerDownEvent");
 
         this.isPointerDown = true;
     }
 
     private handlePointerMove(event: PointerEvent): void {
         super.ensureAlive();
-        assert.defined(event, "PointerMoveEvent");
 
         if (this.touchInput.inZoomMode) {
             return;
@@ -158,7 +146,6 @@ export class InputCanvas extends InputCanvasBase {
 
     private handleKeyDown(event: KeyboardEvent): void {
         super.ensureAlive();
-        assert.defined(event, "KeyboardEvent");
 
         const keyZ = "KeyZ";
 
@@ -169,7 +156,6 @@ export class InputCanvas extends InputCanvasBase {
 
     private handleBoundsChange(event: ResizeObserverEntry[]): void {
         super.ensureAlive();
-        assert.defined(event, "ResizeObserverEntries");
 
         this.boundsChange(event);
     }

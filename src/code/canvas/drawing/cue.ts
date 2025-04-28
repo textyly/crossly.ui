@@ -22,10 +22,7 @@ export class CueDrawingCanvas extends CanvasBase implements ICueDrawingCanvas {
         super(CueDrawingCanvas.name);
 
         this.cueCanvas = cueCanvas;
-        assert.defined(this.cueCanvas, "cueCanvas");
-
         this.vectorDrawing = vectorDrawing;
-        assert.defined(this.vectorDrawing, "vectorDrawing");
 
         this.svgDots = new Map<Id, SvgDot>();
         this.svgLines = new Map<Id, SvgLine>();
@@ -41,7 +38,6 @@ export class CueDrawingCanvas extends CanvasBase implements ICueDrawingCanvas {
 
     private handleDrawDot(event: DrawCueDotEvent): void {
         this.ensureAlive();
-        assert.defined(event, "DrawCueDotEvent");
 
         const dot = event.dot;
         const id = dot.id;
@@ -53,7 +49,6 @@ export class CueDrawingCanvas extends CanvasBase implements ICueDrawingCanvas {
 
     private handleDrawDashDot(event: DrawCueDotEvent): void {
         this.ensureAlive();
-        assert.defined(event, "DrawCueDotEvent");
 
         const dot = event.dot;
         const id = dot.id;
@@ -65,7 +60,6 @@ export class CueDrawingCanvas extends CanvasBase implements ICueDrawingCanvas {
 
     private handleRemoveDot(event: RemoveCueDotEvent): void {
         this.ensureAlive();
-        assert.defined(event, "RemoveCueDotEvent");
 
         const id = event.dotId;
         const svgDot = this.svgDots.get(id);
@@ -77,7 +71,6 @@ export class CueDrawingCanvas extends CanvasBase implements ICueDrawingCanvas {
 
     private handleDrawSegment(event: DrawCueSegmentEvent): void {
         this.ensureAlive();
-        assert.defined(event, "DrawCueSegmentEvent");
 
         const thread = event.segment;
         const id = thread.id;
@@ -89,7 +82,6 @@ export class CueDrawingCanvas extends CanvasBase implements ICueDrawingCanvas {
 
     private handleMoveSegment(event: MoveCueSegmentEvent): void {
         this.ensureAlive();
-        assert.defined(event, "MoveCueSegmentEvent");
 
         const thread = event.segment;
         const id = event.segment.id;
@@ -101,7 +93,6 @@ export class CueDrawingCanvas extends CanvasBase implements ICueDrawingCanvas {
 
     private handleDrawDashSegment(event: DrawCueSegmentEvent): void {
         this.ensureAlive();
-        assert.defined(event, "DrawCueSegmentEvent");
 
         const thread = event.segment;
         const id = thread.id;
@@ -113,7 +104,6 @@ export class CueDrawingCanvas extends CanvasBase implements ICueDrawingCanvas {
 
     private handleRemoveSegment(event: RemoveCueSegmentEvent): void {
         this.ensureAlive();
-        assert.defined(event, "RemoveCueSegmentEvent");
 
         const id = event.segmentId;
 

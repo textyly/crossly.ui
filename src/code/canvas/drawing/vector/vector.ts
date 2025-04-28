@@ -9,8 +9,8 @@ export class VectorDrawingCanvas extends CanvasBase implements IVectorDrawingCan
 
     constructor(svgCanvas: HTMLElement) {
         super(VectorDrawingCanvas.name);
+        
         this.svgCanvas = svgCanvas;
-        assert.defined(this.svgCanvas, "svgCanvas");
 
         this.offset = 5;
     }
@@ -31,7 +31,6 @@ export class VectorDrawingCanvas extends CanvasBase implements IVectorDrawingCan
     public drawDot(dot: Dot, radius: number, color: string): SvgDot {
         this.ensureAlive();
 
-        assert.defined(dot, "dot");
         assert.greaterThanZero(radius, "radius");
         assert.greaterThanZero(color.length, "color.length");
 
@@ -42,7 +41,6 @@ export class VectorDrawingCanvas extends CanvasBase implements IVectorDrawingCan
     public drawDashDot(dot: Dot, radius: number, color: string): SvgDot {
         this.ensureAlive();
 
-        assert.defined(dot, "dot");
         assert.greaterThanZero(radius, "radius");
         assert.greaterThanZero(color.length, "color.length");
 
@@ -53,15 +51,11 @@ export class VectorDrawingCanvas extends CanvasBase implements IVectorDrawingCan
     public removeDot(dot: SvgDot): void {
         this.ensureAlive();
 
-        assert.defined(dot, "dot");
-
         this.svgCanvas.removeChild(dot);
     }
 
     public drawLine(segment: CueSegment): SvgLine {
         this.ensureAlive();
-
-        assert.defined(segment, "segment");
 
         const svgLine = this.drawLineCore(segment);
         return svgLine;
@@ -70,8 +64,6 @@ export class VectorDrawingCanvas extends CanvasBase implements IVectorDrawingCan
     public drawDashLine(segment: CueSegment): SvgLine {
         this.ensureAlive();
 
-        assert.defined(segment, "segment");
-
         const svgLine = this.drawDashLineCore(segment);
         return svgLine;
     }
@@ -79,16 +71,12 @@ export class VectorDrawingCanvas extends CanvasBase implements IVectorDrawingCan
     public removeLine(line: SvgLine): void {
         this.ensureAlive();
 
-        assert.defined(line, "line");
-
         this.svgCanvas.removeChild(line);
     }
 
     public moveLine(segment: CueSegment, svgLine: SvgLine): SvgLine {
         this.ensureAlive();
 
-        assert.defined(segment, "segment");
-        assert.defined(svgLine, "svgLine");
         assert.greaterThanZero(segment.width, "segment.width");
         assert.greaterThanZero(segment.color.length, "segment.color.length");
 

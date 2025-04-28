@@ -257,7 +257,6 @@ export abstract class StitchCanvas extends StitchCanvasBase {
 
     private validateConfig(config: StitchCanvasConfig): void {
         const threadConfig = config.threads;
-        assert.defined(threadConfig, "ThreadConfig");
 
         assert.greaterThanZero(threadConfig.color.length, "color.length");
         assert.greaterThanZero(threadConfig.width, "width");

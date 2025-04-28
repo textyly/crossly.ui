@@ -27,37 +27,28 @@ export class CrosslyCanvasBuilder {
     }
 
     public withConfig(config: CrosslyCanvasConfig): CrosslyCanvasBuilder {
-        assert.defined(config, "CrosslyCanvasConfig");
-
         this.config = config;
         return this;
     }
 
     public withInputCanvas(inputHtmlElement: HTMLElement): CrosslyCanvasBuilder {
         assert.defined(this.config, "CrosslyCanvasConfig");
-        assert.defined(inputHtmlElement, "inputHtmlElement");
 
         this.inputCanvas = new InputCanvas(this.config.input, inputHtmlElement);
         return this;
     }
 
     public withFabricCanvas(fabricHtmlElement: HTMLCanvasElement): CrosslyCanvasBuilder {
-        assert.defined(fabricHtmlElement, "fabricHtmlElement");
-
         this.fabricRasterDrawing = new FabricRasterDrawingCanvas(fabricHtmlElement);
         return this;
     }
 
     public withStitchCanvas(stitchHtmlElement: HTMLCanvasElement): CrosslyCanvasBuilder {
-        assert.defined(stitchHtmlElement, "stitchHtmlElement");
-
         this.stitchRasterDrawing = new StitchRasterDrawingCanvas(stitchHtmlElement);
         return this;
     }
 
     public withCueCanvas(cueHtmlElement: HTMLElement): CrosslyCanvasBuilder {
-        assert.defined(cueHtmlElement, "cueHtmlElement");
-
         this.cueVectorDrawing = new VectorDrawingCanvas(cueHtmlElement);
         return this;
     }

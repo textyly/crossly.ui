@@ -21,7 +21,6 @@ export class TouchInput extends TouchInputBase implements ITouchInput {
         assert.greaterThanZero(ignoreZoomUntil, "ignoreZoomUntil");
 
         this.htmlElement = htmlElement;
-        assert.defined(this.htmlElement, "htmlElement");
 
         this.touchStartHandler = this.handleTouchStart.bind(this);
         this.touchEndHandler = this.handleTouchEnd.bind(this);

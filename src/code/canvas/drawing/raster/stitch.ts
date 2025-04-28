@@ -39,9 +39,7 @@ export class StitchRasterDrawingCanvas extends RasterDrawingCanvas implements IS
     public drawLines(pattern: StitchPattern, density: Density): void {
         super.ensureAlive();
 
-        assert.defined(pattern, "StitchPattern");
-        assert.defined(density, "density");
-        assert.greaterThanZero(pattern.length, "pattern");
+        assert.greaterThanZero(pattern.length, "pattern.length");
 
         this.drawLinesCore(pattern, density);
     }

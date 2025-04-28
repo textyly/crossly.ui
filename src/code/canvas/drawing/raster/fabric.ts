@@ -1,4 +1,3 @@
-import assert from "../../../asserts/assert.js";
 import { RasterDrawingCanvas } from "./raster.js";
 import { IFabricRasterDrawingCanvas } from "../types.js";
 import { IDotArray } from "../../utilities/arrays/types.js";
@@ -15,14 +14,12 @@ export class FabricRasterDrawingCanvas extends RasterDrawingCanvas implements IF
 
     public drawDots(dots: IDotArray): void {
         super.ensureAlive();
-        assert.defined(dots, "DotArray");
 
         this.drawDotsCore(dots);
     }
 
     public drawLines(threads: FabricThreadArray): void {
         super.ensureAlive();
-        assert.defined(threads, "ThreadArray");
 
         this.drawLinesCore(threads);
     }

@@ -58,14 +58,12 @@ export abstract class VirtualCanvasBase extends VirtualCanvasDimensions implemen
 
     private handleVisibleBoundsChange(event: BoundsChangeEvent): void {
         super.ensureAlive();
-        assert.defined(event, "BoundsChangeEvent");
 
         this.draw();
     }
 
     private handleZoomIn(event: ZoomInEvent): void {
         super.ensureAlive();
-        assert.defined(event, "ZoomInEvent");
 
         const currentPosition = event.currentPosition;
         assert.positive(currentPosition.x, "currentPosition");
@@ -81,7 +79,6 @@ export abstract class VirtualCanvasBase extends VirtualCanvasDimensions implemen
 
     private handleZoomOut(event: ZoomOutEvent): void {
         super.ensureAlive();
-        assert.defined(event, "ZoomOutEvent");
 
         const currentPosition = event.currentPosition;
         assert.positive(currentPosition.x, "currentPosition.x");
@@ -99,7 +96,6 @@ export abstract class VirtualCanvasBase extends VirtualCanvasDimensions implemen
 
     private handleMoveStart(event: MoveStartEvent): void {
         super.ensureAlive();
-        assert.defined(event, "MoveStartEvent");
 
         const currentPosition = event.currentPosition;
         assert.positive(currentPosition.x, "currentPosition.x");
@@ -119,7 +115,6 @@ export abstract class VirtualCanvasBase extends VirtualCanvasDimensions implemen
 
     private handleMove(event: MoveEvent): void {
         super.ensureAlive();
-        assert.defined(event, "MoveEvent");
 
         if (this.inMovingMode) {
 
@@ -138,7 +133,6 @@ export abstract class VirtualCanvasBase extends VirtualCanvasDimensions implemen
 
     private handleMoveStop(event: MoveStopEvent): void {
         super.ensureAlive();
-        assert.defined(event, "MoveStopEvent");
 
         if (this.inMovingMode) {
             this.stopMove();

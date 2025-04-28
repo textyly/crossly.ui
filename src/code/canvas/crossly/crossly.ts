@@ -1,4 +1,3 @@
-import assert from "../../asserts/assert.js";
 import { ICrosslyCanvas } from "../types.js";
 import { IInputCanvas } from "../input/types.js";
 import { CueDrawingCanvas } from "../drawing/cue.js";
@@ -44,10 +43,7 @@ export abstract class CrosslyCanvas extends CrosslyCanvasBase implements ICrossl
 
         super(className, config);
 
-        assert.defined(this.config, "CrosslyCanvasConfig");
-
         this.inputCanvas = inputCanvas;
-        assert.defined(this.inputCanvas, "inputCanvas");
 
         this.initializeFabricCanvas(fabricRasterDrawing);
         this.initializeStitchCanvas(stitchRasterDrawing);
@@ -76,24 +72,18 @@ export abstract class CrosslyCanvas extends CrosslyCanvasBase implements ICrossl
     }
 
     private initializeFabricCanvas(fabricRasterDrawing: IFabricRasterDrawingCanvas): void {
-        assert.defined(fabricRasterDrawing, "fabricRasterDrawing");
-
         this.fabricRasterDrawing = fabricRasterDrawing;
         this.fabricCanvas = new FabricCanvas(this.config.fabric, this.inputCanvas);
         this.fabricDrawingCanvas = new FabricDrawingCanvas(this.fabricCanvas, this.fabricRasterDrawing);
     }
 
     private initializeStitchCanvas(stitchRasterDrawing: IStitchRasterDrawingCanvas): void {
-        assert.defined(stitchRasterDrawing, "stitchRasterDrawing");
-
         this.stitchRasterDrawing = stitchRasterDrawing;
         this.stitchCanvasFacade = new StitchCanvasFacade(this.config.stitch, this.inputCanvas);
         this.stitchDrawingCanvas = new StitchDrawingCanvas(this.stitchCanvasFacade, this.stitchRasterDrawing);
     }
 
     private initializeCueCanvas(curVectorDrawing: IVectorDrawingCanvas): void {
-        assert.defined(curVectorDrawing, "curVectorDrawing");
-
         this.cueVectorDrawing = curVectorDrawing;
         this.cueCanvasFacade = new CueCanvasFacade(this.config.cue, this.inputCanvas);
         this.cueDrawingCanvas = new CueDrawingCanvas(this.cueCanvasFacade, this.cueVectorDrawing);

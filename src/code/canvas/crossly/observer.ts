@@ -21,10 +21,7 @@ export class CrosslyCanvasObserver extends Base implements ICrosslyCanvasObserve
         this.messaging = new Messaging1();
 
         const name = this.canvas.config.name;
-        assert.defined(name, "name");
-
         const fabric = this.canvas.config.fabric;
-        assert.defined(fabric, "FabricCanvasConfig");
 
         const pattern = new Array<IThreadPath>();
         this.data = { name, fabric, pattern };
@@ -40,22 +37,22 @@ export class CrosslyCanvasObserver extends Base implements ICrosslyCanvasObserve
     private handleChangeFabric(event: ChangeFabricEvent): void {
         super.ensureAlive();
 
-        const fabric = event.fabric;
-        assert.defined(fabric, "Fabric");
         assert.defined(this.data, "data");
 
+        const fabric = event.fabric;
         this.data.fabric = fabric;
+
         this.invokeDataChange(this.data);
     }
 
     private handleChangeStitchPattern(event: ChangeStitchPatternEvent): void {
         super.ensureAlive();
 
-        const pattern = event.pattern;
-        assert.defined(event.pattern, "StitchPattern");
         assert.defined(this.data, "data");
 
+        const pattern = event.pattern;
         this.data.pattern = pattern;
+
         this.invokeDataChange(this.data);
     }
 
