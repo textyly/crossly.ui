@@ -2,7 +2,6 @@ import { IDotArray } from "../utilities/arrays/types.js";
 import { FabricThreadArray } from "../utilities/arrays/thread/fabric.js";
 import { Listener, VoidListener, VoidUnsubscribe } from "../../types.js";
 import { Id, CueDot, ICanvas, CueSegment, StitchPattern, StitchSegment } from "../types.js";
-import { FabricCanvasConfig } from "../../config/types.js";
 
 export interface IVirtualCanvas extends ICanvas {
     draw(): void;
@@ -43,8 +42,8 @@ export interface ICueCanvasFacade extends ICueCanvas {
     useNewThread(color: string, width: number): void;
 }
 
-export type Fabric = FabricCanvasConfig;
-export type ChangeFabricEvent = { fabric: Fabric };
+export type FabricCanvasData = { name: string, color: string, columns: number, rows: number, dots: { color: string }, threads: { color: string } };
+export type ChangeFabricEvent = { fabric: FabricCanvasData };
 export type ChangeFabricListener = Listener<ChangeFabricEvent>;
 
 export type DrawFabricDotsEvent = { dots: IDotArray; };

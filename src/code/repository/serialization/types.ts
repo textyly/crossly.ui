@@ -1,4 +1,4 @@
-import { CrosslyCanvasData, Dot } from "../../canvas/types.js";
+import { CrosslyCanvasData } from "../../canvas/types.js";
 
 export type CrosslyDataModel = {
     name: string;
@@ -14,16 +14,10 @@ export type FabricDataModel = {
     color: string;
     dots: {
         color: string;
-        radius: number;
-        space: number;
-        hidden: {
-            enabled: boolean;
-        }
-    },
+    };
     threads: {
         color: string;
-        width: number;
-    }
+    };
 };
 
 export type ThreadsDataModel = Array<ThreadDataModel>;
@@ -34,21 +28,22 @@ export type ThreadDataModel = {
 };
 
 export type NeedlePathDataModel = {
-    indexesX: Array<number>,
-    indexesY: Array<number>,
-}
+    indexesX: Array<number>;
+    indexesY: Array<number>;
+};
+
 export type ThreadIndexDataModel = number;
 
 export type ThreadPathDataModel = {
     threadIndex: ThreadIndexDataModel;
     needlePath: NeedlePathDataModel;
-}
+};
 
 export type PatternDataModel = Array<ThreadPathDataModel>;
 
-export interface ICrosslySerializer {
-    serialize(canvasData: CrosslyCanvasData): CrosslyDataModel;
-    deserialize(dataModel: CrosslyDataModel): CrosslyCanvasData;
-}
+export interface ICrosslyDataModelConverter {
+    convertToDataModel(canvasData: CrosslyCanvasData): CrosslyDataModel;
+    convertToCanvasData(dataModel: CrosslyDataModel): CrosslyCanvasData;
+};
 
 

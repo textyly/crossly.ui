@@ -1,8 +1,8 @@
 import { Base } from "../../base.js";
+import { ICrosslyCanvas } from "../types.js";
 import assert from "../../asserts/assert.js";
 import { VoidUnsubscribe } from "../../types.js";
 import { Messaging1 } from "../../messaging/impl.js";
-import { ICrosslyCanvas } from "../types.js";
 import { IMessaging1 } from "../../messaging/types.js";
 import { IThreadPath } from "../utilities/arrays/types.js";
 import { ChangeFabricEvent, ChangeStitchPatternEvent } from "../virtual/types.js";

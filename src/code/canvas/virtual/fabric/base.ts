@@ -8,13 +8,13 @@ import { IDotArray } from "../../utilities/arrays/types.js";
 import { FabricThreadArray } from "../../utilities/arrays/thread/fabric.js";
 import {
     IFabricCanvas,
+    FabricCanvasData,
     ChangeFabricEvent,
     DrawFabricDotsEvent,
     ChangeFabricListener,
     DrawFabricDotsListener,
     DrawFabricThreadsEvent,
     DrawFabricThreadsListener,
-    Fabric,
 } from "../types.js";
 
 export abstract class FabricCanvasBase extends VirtualCanvasBase implements IFabricCanvas {
@@ -43,7 +43,7 @@ export abstract class FabricCanvasBase extends VirtualCanvasBase implements IFab
         super.dispose();
     }
 
-    protected invokeChange(fabric: Fabric): void {
+    protected invokeChange(fabric: FabricCanvasData,): void {
         const event = { fabric };
         this.messaging.sendToChannel1(event);
     }

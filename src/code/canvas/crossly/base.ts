@@ -5,7 +5,7 @@ import { IMessaging2 } from "../../messaging/types.js";
 import { CrosslyCanvasConfig } from "../../config/types.js";
 import { ICrosslyCanvas, StitchPattern } from "../types.js";
 import {
-    Fabric,
+    FabricCanvasData,
     ChangeFabricEvent,
     ChangeFabricListener,
     ChangeStitchPatternEvent,
@@ -37,7 +37,7 @@ export abstract class CrosslyCanvasBase extends CanvasBase implements ICrosslyCa
 
     public abstract draw(): void;
 
-    protected invokeChangeFabric(fabric: Fabric): void {
+    protected invokeChangeFabric(fabric: FabricCanvasData): void {
         const event = { fabric };
         this.messaging.sendToChannel1(event);
     }

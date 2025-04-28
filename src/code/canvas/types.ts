@@ -3,7 +3,7 @@ import { CrosslyCanvasConfig } from "../config/types.js";
 import { IThreadPath } from "./utilities/arrays/types.js";
 import { CueThreadArray } from "./utilities/arrays/thread/cue.js";
 import { IDisposable, Listener, VoidUnsubscribe } from "../types";
-import { ChangeFabricListener, ChangeStitchPatternListener, Fabric } from "./virtual/types.js";
+import { ChangeFabricListener, ChangeStitchPatternListener, FabricCanvasData } from "./virtual/types.js";
 
 export type Bounds = { left: number, top: number, width: number, height: number };
 
@@ -17,6 +17,7 @@ export type CueSegment = { id: Id, from: Dot, to: Dot, width: number, color: str
 export type CuePattern = Array<CueThreadArray>;
 export type StitchSegment = { from: Dot, to: Dot, width: number, color: string };
 export type StitchPattern = Array<IThreadPath>;
+export type StitchPatternCanvasData = StitchPattern; 
 
 export interface ICanvas extends IDisposable {
     get bounds(): Bounds;
@@ -55,6 +56,6 @@ export enum Visibility {
 export type BoundsChangeEvent = { bounds: Bounds };
 export type BoundsChangeListener = Listener<BoundsChangeEvent>;
 
-export type CrosslyCanvasData = { name: string, fabric: Fabric; pattern: StitchPattern; };
+export type CrosslyCanvasData = { name: string, fabric: FabricCanvasData; pattern: StitchPatternCanvasData; };
 export type ChangeEvent = { data: CrosslyCanvasData; }
 export type ChangeListener = Listener<ChangeEvent>;
