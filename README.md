@@ -1,4 +1,4 @@
 # crossly.ui
-web application for knitting
+A modern web embroidery application
 
 TBD !!!
