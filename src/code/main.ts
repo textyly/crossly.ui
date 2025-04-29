@@ -12,7 +12,7 @@ canvasBuilder.withConfig(config);
 const canvasFacade = canvasBuilder.build();
 canvasFacade.draw();
 
-// Delete !!!
+// Delete everything below !!!
 (window as any).crossly = canvasFacade;
 
 const observer = new CrosslyCanvasObserver(canvasFacade);
