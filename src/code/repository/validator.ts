@@ -1,14 +1,14 @@
-import { CrosslyDataModel } from "./types.js";
 import { CrosslyCanvasData } from "../canvas/types.js";
+import { CrosslyDataModel, ICrosslyDataModelValidator } from "./types.js";
 
 // TODO: implement!!!
-export class CrosslyDataModelValidator {
+export class CrosslyDataModelValidator implements ICrosslyDataModelValidator {
 
     public validateDataModel(dataModel: CrosslyDataModel): void {
-        throw new Error();
+        // TODO: implement
     }
 
     public validateCanvasData(canvasData: CrosslyCanvasData): void {
-        throw new Error();
+        // TODO: implement
     }
 }

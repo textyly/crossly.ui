@@ -1,7 +1,7 @@
 import { CanvasBuilder } from "./builder.js";
 import { ConfigFactory } from "./config/factory.js";
+import { CrosslyCanvasWatcher } from "./repository/watcher.js";
 import { CrosslyCanvasObserver } from "./canvas/crossly/observer.js";
-import { CrosslyDataModelConverter } from "./repository/converter.js";
 
 const canvasBuilder = new CanvasBuilder();
 
@@ -15,11 +15,5 @@ canvasFacade.draw();
 // Delete !!!
 (window as any).crossly = canvasFacade;
 
-// const converter = new CrosslyDataModelConverter();
-// const observer = new CrosslyCanvasObserver(canvasFacade);
-// observer.onChange((event) => {
-//     const canvasData = event.data;
-//     const dataModel = converter.convertToDataModel(canvasData);
-//     console.log(dataModel);
-// });
-
+const observer = new CrosslyCanvasObserver(canvasFacade);
+const watcher = new CrosslyCanvasWatcher(observer);
