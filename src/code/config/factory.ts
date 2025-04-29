@@ -2,8 +2,9 @@ import { CrosslyCanvasConfig, CueCanvasConfig, FabricCanvasConfig, InputCanvasCo
 
 export class ConfigFactory {
     public create(): CrosslyCanvasConfig {
-        const columns = 30;
-        const rows = 30;
+        const name = Date.now().toString(); // TODO: get the name after creating or loading of an project
+        const columns = 40;
+        const rows = 40;
 
         const input = this.createInputConfig();
         const dotsSpacing = this.createDotsSpacingConfig();
@@ -12,7 +13,7 @@ export class ConfigFactory {
         const stitch = this.createStitchCanvasConfig(columns, rows, dotsSpacing);
         const cue = this.createCueCanvasConfig(columns, rows, dotsSpacing);
 
-        const canvasConfig = { input, fabric, stitch, cue };
+        const canvasConfig = { name, input, fabric, stitch, cue };
         return canvasConfig;
     }
 
@@ -35,14 +36,19 @@ export class ConfigFactory {
 
     private createFabricCanvasConfig(columns: number, rows: number, dotsSpacing: DotsSpacingConfig): FabricCanvasConfig {
         const fabricConfig = {
+            name: "Aida 14",
             columns, rows, dotsSpacing,
-            dot: {
+            color: "white", // TODO: implement
+            dots: {
                 color: "#9fa19f",
                 radius: 1.4,
                 minRadius: 0.6,
-                radiusZoomStep: 0.1
+                radiusZoomStep: 0.1,
+                hidden: {
+                    enabled: true
+                }
             },
-            thread: {
+            threads: {
                 color: "#d2d4d2",
                 width: 1.4,
                 minWidth: 0.8,
@@ -55,7 +61,7 @@ export class ConfigFactory {
     private createStitchCanvasConfig(columns: number, rows: number, dotsSpacing: DotsSpacingConfig): StitchCanvasConfig {
         const stitchConfig = {
             columns, rows, dotsSpacing,
-            thread: {
+            threads: {
                 color: "gray",
                 width: 12,
                 minWidth: 1,
@@ -68,13 +74,13 @@ export class ConfigFactory {
     private createCueCanvasConfig(columns: number, rows: number, dotsSpacing: DotsSpacingConfig): CueCanvasConfig {
         const cueConfig = {
             columns, rows, dotsSpacing,
-            dot: {
+            dots: {
                 color: "#615858",
                 radius: 12,
                 minRadius: 1,
                 radiusZoomStep: 1
             },
-            thread: {
+            threads: {
                 color: "gray",
                 width: 12,
                 minWidth: 1,

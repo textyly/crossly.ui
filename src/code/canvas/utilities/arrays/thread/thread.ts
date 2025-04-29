@@ -1,7 +1,8 @@
 import { ArrayBase } from "../base.js";
 import { Dot } from "../../../types.js";
+import { IThreadPathArray } from "../types.js";
 
-export class Thread extends ArrayBase {
+export abstract class ThreadBase extends ArrayBase implements IThreadPathArray {
     private readonly _color: string;
     private readonly _width: number;
 
@@ -34,14 +35,14 @@ export class Thread extends ArrayBase {
         return this._positionsY.slice(0, this.length);
     }
 
-    public push(x: number, y: number): void {
+    protected push(x: number, y: number): void {
         super.occupyItemSpace();
 
         this._positionsX[this.index] = x;
         this._positionsY[this.index] = y;
     }
 
-    public set(index: number, x: number, y: number): void {
+    protected set(index: number, x: number, y: number): void {
         this._positionsX[index] = x;
         this._positionsY[index] = y;
     }

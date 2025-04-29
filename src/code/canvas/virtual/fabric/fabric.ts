@@ -3,7 +3,7 @@ import assert from "../../../asserts/assert.js";
 import { IInputCanvas } from "../../input/types.js";
 import { DotArray } from "../../utilities/arrays/dot/dot.js";
 import { FabricCanvasConfig } from "../../../config/types.js";
-import { FabricThread } from "../../utilities/arrays/thread/fabric.js";
+import { FabricThreadArray } from "../../utilities/arrays/thread/fabric.js";
 
 export class FabricCanvas extends FabricCanvasBase {
     private dotColor: string;
@@ -17,12 +17,12 @@ export class FabricCanvas extends FabricCanvasBase {
     private threadWidthZoomStep: number;
 
     constructor(config: FabricCanvasConfig, inputCanvas: IInputCanvas) {
-        super(config, inputCanvas);
+        super(FabricCanvas.name, config, inputCanvas);
 
         this.validateConfig(config);
 
-        const dotConfig = config.dot;
-        const threadConfig = config.thread;
+        const dotConfig = config.dots;
+        const threadConfig = config.threads;
 
         this.dotColor = dotConfig.color;
         this.dotRadius = dotConfig.radius;
@@ -73,7 +73,7 @@ export class FabricCanvas extends FabricCanvasBase {
         // Do not create types/classes for thread (objects are extremely slow and memory/GC consuming)
 
         const bounds = this.bounds;
-        const threads = new FabricThread(this.threadColor, this.threadWidth);
+        const threads = new FabricThreadArray(this.threadColor, this.threadWidth);
 
         for (let dotYIdx = startDotIndexY; dotYIdx <= endDotIndexY; dotYIdx += 2) {
 
@@ -109,10 +109,10 @@ export class FabricCanvas extends FabricCanvasBase {
     }
 
     private validateConfig(config: FabricCanvasConfig): void {
-        const dotConfig = config.dot;
+        const dotConfig = config.dots;
         assert.defined(dotConfig, "DotConfig");
 
-        const threadConfig = config.thread;
+        const threadConfig = config.threads;
         assert.defined(threadConfig, "ThreadConfig");
 
         assert.greaterThanZero(dotConfig.radius, "dotRadius");

@@ -16,16 +16,13 @@ export class MoveInput extends MoveInputBase implements IMoveInput {
     private lastPointerPos?: Position;
 
     constructor(ignoreMoveUntil: number, htmlElement: HTMLElement, touchInput: ITouchInput) {
-        super();
+        super(MoveInput.name);
 
         this.ignoreMoveUntil = ignoreMoveUntil;
         assert.greaterThanZero(this.ignoreMoveUntil, "ignoreMoveUntil");
 
         this.htmlElement = htmlElement;
-        assert.defined(this.htmlElement, "htmlElement");
-
         this.touchInput = touchInput;
-        assert.defined(this.touchInput, "touchInput");
 
         this.pointerUpHandler = this.handlePointerUp.bind(this);
         this.pointerMoveHandler = this.handlePointerMove.bind(this);

@@ -15,13 +15,12 @@ export class TouchInput extends TouchInputBase implements ITouchInput {
     private lastTouchTime?: number;
 
     constructor(ignoreZoomUntil: number, htmlElement: HTMLElement) {
-        super();
+        super(TouchInput.name);
 
         this.ignoreZoomUntil = ignoreZoomUntil;
         assert.greaterThanZero(ignoreZoomUntil, "ignoreZoomUntil");
 
         this.htmlElement = htmlElement;
-        assert.defined(this.htmlElement, "htmlElement");
 
         this.touchStartHandler = this.handleTouchStart.bind(this);
         this.touchEndHandler = this.handleTouchEnd.bind(this);

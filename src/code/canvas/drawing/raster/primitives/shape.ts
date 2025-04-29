@@ -1,5 +1,4 @@
 import { IShapeDrawing } from "../../types.js";
-import assert from "../../../../asserts/assert.js";
 import { Density } from "../../../virtual/types.js";
 
 export class ShapeDrawing {
@@ -9,13 +8,8 @@ export class ShapeDrawing {
 
     constructor(line: IShapeDrawing, rectangle: IShapeDrawing, polygon: IShapeDrawing) {
         this.line = line;
-        assert.defined(this.line, "line");
-
         this.polygon = polygon;
-        assert.defined(this.polygon, "polygon");
-
         this.rectangle = rectangle;
-        assert.defined(this.rectangle, "rectangle");
     }
 
     public draw(density: Density, path: Path2D, fromX: number, fromY: number, toX: number, toY: number, width: number): void {

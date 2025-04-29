@@ -1,6 +1,10 @@
 export type VoidData = {};
 export type VoidEvent = VoidData;
 
+export interface IDisposable {
+    dispose(): void;
+}
+
 export type Listener<T> = (event: T) => void;
 export type VoidListener = Listener<VoidData>;
 export type ErrorListener = Listener<unknown>;
