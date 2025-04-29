@@ -9,13 +9,10 @@ export class FabricDrawingCanvas extends CanvasBase implements IFabricDrawingCan
     private readonly rasterDrawing: IFabricRasterDrawingCanvas;
 
     constructor(fabricCanvas: IFabricCanvas, rasterDrawing: IFabricRasterDrawingCanvas) {
-        super();
+        super(FabricDrawingCanvas.name);
 
         this.fabricCanvas = fabricCanvas;
-        assert.defined(this.fabricCanvas, "fabricCanvas");
-
         this.rasterDrawing = rasterDrawing;
-        assert.defined(this.rasterDrawing, "rasterDrawing");
 
         this.subscribe();
     }
@@ -28,14 +25,12 @@ export class FabricDrawingCanvas extends CanvasBase implements IFabricDrawingCan
 
     private handleDrawDots(event: DrawFabricDotsEvent): void {
         this.ensureAlive();
-        assert.defined(event, "DrawFabricDotsEvent");
 
         this.rasterDrawing.drawDots(event.dots);
     }
 
     private handleDrawThreads(event: DrawFabricThreadsEvent): void {
         this.ensureAlive();
-        assert.defined(event, "DrawFabricThreadsEvent");
 
         this.rasterDrawing.drawLines(event.threads);
     }

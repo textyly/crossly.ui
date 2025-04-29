@@ -1,6 +1,6 @@
 import { Density } from "../virtual/types.js";
-import { DotArray } from "../utilities/arrays/dot/dot.js";
-import { FabricThread } from "../utilities/arrays/thread/fabric.js";
+import { IDotArray } from "../utilities/arrays/types.js";
+import { FabricThreadArray } from "../utilities/arrays/thread/fabric.js";
 import { CueSegment, Dot, ICanvas, StitchPattern, StitchSegment } from "../types.js";
 
 export type SvgDot = SVGCircleElement;
@@ -17,8 +17,8 @@ export interface IRasterDrawingCanvas extends ICanvas {
 }
 
 export interface IFabricRasterDrawingCanvas extends IRasterDrawingCanvas {
-    drawDots(dots: DotArray): void;
-    drawLines(threads: FabricThread): void;
+    drawDots(dots: IDotArray): void;
+    drawLines(threads: FabricThreadArray): void;
 }
 
 export interface IStitchRasterDrawingCanvas extends IRasterDrawingCanvas {

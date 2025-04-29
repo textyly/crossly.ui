@@ -9,14 +9,11 @@ export class StitchDrawingCanvas extends CanvasBase implements IStitchDrawingCan
     private readonly rasterDrawing: IStitchRasterDrawingCanvas;
 
     constructor(stitchCanvas: IStitchCanvas, rasterDrawing: IStitchRasterDrawingCanvas) {
-        super();
+        super(StitchDrawingCanvas.name);
 
         this.stitchCanvas = stitchCanvas;
-        assert.defined(this.stitchCanvas, "stitchCanvas");
-
         this.rasterDrawing = rasterDrawing;
-        assert.defined(this.rasterDrawing, "rasterDrawing");
-
+        
         this.subscribe();
     }
 
@@ -28,7 +25,6 @@ export class StitchDrawingCanvas extends CanvasBase implements IStitchDrawingCan
 
     private handleDrawPattern(event: DrawStitchPatternEvent): void {
         this.ensureAlive();
-        assert.defined(event, "DrawStitchPatternEvent");
 
         const pattern = event.pattern;
         if (pattern.length > 0) {
@@ -94,6 +90,6 @@ export class StitchDrawingCanvas extends CanvasBase implements IStitchDrawingCan
         super.registerUn(drawPatternUn);
 
         const drawSegmentUn = this.stitchCanvas.onDrawSegment(this.handleDrawSegment.bind(this));
-        super.registerUn(drawPatternUn);
+        super.registerUn(drawSegmentUn);
     }
 }

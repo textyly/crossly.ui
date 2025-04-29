@@ -1,7 +1,7 @@
 import assert from "./asserts/assert.js";
 import { CrosslyCanvasConfig } from "./config/types.js";
 import { ICrosslyCanvasFacade } from "./canvas/types.js";
-import { CrosslyCanvasBuilder } from "./canvas/builder.js";
+import { CrosslyCanvasBuilder } from "./canvas/crossly/builder.js";
 
 export class CanvasBuilder {
     private readonly crosslyCanvasBuilder: CrosslyCanvasBuilder;

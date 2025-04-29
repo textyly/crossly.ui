@@ -4,14 +4,17 @@ export type DotsSpacingConfig = {
     spaceZoomStep: number;
 };
 
-export type DotConfig = {
+export type DotsConfig = {
     color: string;
     radius: number;
     minRadius: number;
     radiusZoomStep: number;
+    hidden: {
+        enabled: boolean;
+    }
 };
 
-export type ThreadConfig = {
+export type ThreadsConfig = {
     color: string;
     width: number;
     minWidth: number;
@@ -30,22 +33,25 @@ export type InputCanvasConfig = {
 };
 
 export type FabricCanvasConfig = CanvasConfig & {
-    dot: DotConfig;
-    thread: ThreadConfig;
+    name: string,
+    color: string;
+    dots: DotsConfig;
+    threads: ThreadsConfig;
 };
 
 export type StitchCanvasConfig = CanvasConfig & {
-    thread: ThreadConfig;
+    threads: ThreadsConfig;
 };
 
 export type CueCanvasConfig = CanvasConfig & {
-    dot: DotConfig;
-    thread: ThreadConfig;
+    dots: Omit<DotsConfig, "hidden">;
+    threads: ThreadsConfig;
 };
 
 export type CrosslyCanvasConfig = {
+    name: string;
     input: InputCanvasConfig;
-    fabric: FabricCanvasConfig,
-    stitch: StitchCanvasConfig,
-    cue: CueCanvasConfig
+    fabric: FabricCanvasConfig;
+    stitch: StitchCanvasConfig;
+    cue: CueCanvasConfig;
 };

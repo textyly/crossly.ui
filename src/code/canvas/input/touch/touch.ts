@@ -15,13 +15,12 @@ export class TouchInput extends TouchInputBase implements ITouchInput {
     private lastTouchTime?: number;
 
     constructor(ignoreZoomUntil: number, htmlElement: HTMLElement) {
-        super();
+        super(TouchInput.name);
 
         this.ignoreZoomUntil = ignoreZoomUntil;
         assert.greaterThanZero(ignoreZoomUntil, "ignoreZoomUntil");
 
         this.htmlElement = htmlElement;
-        assert.defined(this.htmlElement, "htmlElement");
 
         this.touchStartHandler = this.handleTouchStart.bind(this);
         this.touchEndHandler = this.handleTouchEnd.bind(this);
@@ -89,7 +88,15 @@ export class TouchInput extends TouchInputBase implements ITouchInput {
         if (touches.length > 1) {
             const touch1 = touches[0];
             const touch2 = touches[1];
-            this.zoom(touch1, touch2);
+
+            const pos1 = this.getPosition(touch1);
+            const pos2 = this.getPosition(touch2);
+
+            const isVisible = this.isVisible(pos1) && this.isVisible(pos2);
+
+            if (isVisible) {
+                this.zoom(touch1, touch2);
+            }
         }
     }
 
@@ -99,7 +106,15 @@ export class TouchInput extends TouchInputBase implements ITouchInput {
         } else {
             const touch1 = touches[0];
             const touch2 = touches[1];
-            this.zoom(touch1, touch2);
+
+            const pos1 = this.getPosition(touch1);
+            const pos2 = this.getPosition(touch2);
+
+            const isVisible = this.isVisible(pos1) && this.isVisible(pos2);
+
+            if (isVisible) {
+                this.zoom(touch1, touch2);
+            }
         }
     }
 
@@ -165,6 +180,10 @@ export class TouchInput extends TouchInputBase implements ITouchInput {
 
         const middle = { x, y };
         return middle;
+    }
+
+    private isVisible(position: Position): boolean {
+        return position.x > 0 && position.y > 0;
     }
 
     private getPosition(touch: Touch): Position {

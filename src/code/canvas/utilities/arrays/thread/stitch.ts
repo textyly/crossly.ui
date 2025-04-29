@@ -1,7 +1,8 @@
-import { Thread } from "./thread.js";
+import { ThreadBase } from "./thread.js";
+import { IThreadPath } from "../types.js";
 import { Dot, DotIndex } from "../../../types.js";
 
-export class StitchThread extends Thread {
+export class ThreadPath extends ThreadBase implements IThreadPath {
     private _zoomedWidth: number;
 
     private _indexesX: Int16Array;
@@ -38,6 +39,10 @@ export class StitchThread extends Thread {
         return this._visibilities.slice(0, this.length);
     }
 
+    public pushDotIndex(indexX: number, indexY: number): void {
+        this.pushDot(indexX, indexY, 0, 0, false);
+    }
+
     public pushDot(indexX: number, indexY: number, positionX: number, positionY: number, visible: boolean): void {
         super.push(positionX, positionY);
 
@@ -56,12 +61,12 @@ export class StitchThread extends Thread {
     }
 
     public popDot(): (Dot & DotIndex) | undefined {
-        const last = this.last();
+        const last = this.lastDot();
         super.pop();
         return last;
     }
 
-    public last(): (Dot & DotIndex) | undefined {
+    public lastDot(): (Dot & DotIndex) | undefined {
         if (this.length > 0) {
             const from = this.length - 1;
             const to = this.length;

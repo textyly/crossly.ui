@@ -22,8 +22,8 @@ import {
 export abstract class CueCanvasBase extends VirtualCanvasBase implements ICueCanvas {
     private readonly messaging: IMessaging7<DrawCueDotEvent, DrawCueDotEvent, DrawCueSegmentEvent, RemoveCueDotEvent, MoveCueSegmentEvent, DrawCueSegmentEvent, RemoveCueSegmentEvent>;
 
-    constructor(config: CanvasConfig, input: IInputCanvas) {
-        super(config, input);
+    constructor(className: string, config: CanvasConfig, input: IInputCanvas) {
+        super(className, config, input);
         this.messaging = new Messaging7();
     }
 
@@ -56,6 +56,7 @@ export abstract class CueCanvasBase extends VirtualCanvasBase implements ICueCan
     }
 
     public override dispose(): void {
+        super.ensureAlive();
         this.messaging.dispose();
         super.dispose();
     }

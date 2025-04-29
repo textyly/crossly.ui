@@ -16,16 +16,13 @@ export class MoveInput extends MoveInputBase implements IMoveInput {
     private lastPointerPos?: Position;
 
     constructor(ignoreMoveUntil: number, htmlElement: HTMLElement, touchInput: ITouchInput) {
-        super();
+        super(MoveInput.name);
 
         this.ignoreMoveUntil = ignoreMoveUntil;
         assert.greaterThanZero(this.ignoreMoveUntil, "ignoreMoveUntil");
 
         this.htmlElement = htmlElement;
-        assert.defined(this.htmlElement, "htmlElement");
-
         this.touchInput = touchInput;
-        assert.defined(this.touchInput, "touchInput");
 
         this.pointerUpHandler = this.handlePointerUp.bind(this);
         this.pointerMoveHandler = this.handlePointerMove.bind(this);
@@ -50,7 +47,11 @@ export class MoveInput extends MoveInputBase implements IMoveInput {
 
         if (!this.touchInput.inZoomMode) {
             const position = this.getPosition(event);
-            this.startMove(position);
+            const isVisible = this.isVisible(position);
+
+            if (isVisible) {
+                this.startMove(position);
+            }
         }
     }
 
@@ -59,7 +60,11 @@ export class MoveInput extends MoveInputBase implements IMoveInput {
 
         if (!this.touchInput.inZoomMode) {
             const position = this.getPosition(event);
-            this.move(position);
+            const isVisible = this.isVisible(position);
+
+            if (isVisible) {
+                this.move(position);
+            }
         }
     }
 
@@ -68,7 +73,11 @@ export class MoveInput extends MoveInputBase implements IMoveInput {
 
         if (!this.touchInput.inZoomMode) {
             const position = this.getPosition(event);
-            this.stopMove(position);
+            const isVisible = this.isVisible(position);
+
+            if (isVisible) {
+                this.stopMove(position);
+            }
         }
     }
 
@@ -116,6 +125,10 @@ export class MoveInput extends MoveInputBase implements IMoveInput {
         if (inMoveMode) {
             this.invokeMoveStop(position);
         }
+    }
+
+    private isVisible(position: Position): boolean {
+        return position.x > 0 && position.y > 0;
     }
 
     private getPosition(event: PointerEvent): Position {

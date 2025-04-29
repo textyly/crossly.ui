@@ -1,5 +1,5 @@
-import { DotArray } from "../utilities/arrays/dot/dot.js";
-import { FabricThread } from "../utilities/arrays/thread/fabric.js";
+import { IDotArray } from "../utilities/arrays/types.js";
+import { FabricThreadArray } from "../utilities/arrays/thread/fabric.js";
 import { Listener, VoidListener, VoidUnsubscribe } from "../../types.js";
 import { Id, CueDot, ICanvas, CueSegment, StitchPattern, StitchSegment } from "../types.js";
 
@@ -9,17 +9,16 @@ export interface IVirtualCanvas extends ICanvas {
 
     onMoveStart(listener: VoidListener): VoidUnsubscribe;
     onMoveStop(listener: VoidListener): VoidUnsubscribe;
-
-    onThreadColorChange(listener: ColorChangeListener): VoidUnsubscribe;
-    onThreadWidthChange(listener: WidthChangeListener): VoidUnsubscribe;
 }
 
 export interface IFabricCanvas extends IVirtualCanvas {
+    onChange(listener: ChangeFabricListener): VoidUnsubscribe;
     onDrawDots(listener: DrawFabricDotsListener): VoidUnsubscribe;
     onDrawThreads(listener: DrawFabricThreadsListener): VoidUnsubscribe;
 }
 
 export interface IStitchCanvas extends IVirtualCanvas {
+    onChange(listener: ChangeStitchPatternListener): VoidUnsubscribe;
     onDrawSegment(listener: DrawStitchSegmentListener): VoidUnsubscribe;
     onDrawPattern(listener: DrawStitchPatternListener): VoidUnsubscribe;
 }
@@ -43,37 +42,38 @@ export interface ICueCanvasFacade extends ICueCanvas {
     useNewThread(color: string, width: number): void;
 }
 
-export type ColorChangeEvent = { color: string };
-export type ColorChangeListener = Listener<ColorChangeEvent>;
+export type FabricCanvasData = { name: string, color: string, columns: number, rows: number, dots: { color: string }, threads: { color: string } };
+export type ChangeFabricEvent = { fabric: FabricCanvasData };
+export type ChangeFabricListener = Listener<ChangeFabricEvent>;
 
-export type WidthChangeEvent = { width: number };
-export type WidthChangeListener = Listener<WidthChangeEvent>;
-
-export type DrawFabricDotsEvent = { dots: DotArray };
+export type DrawFabricDotsEvent = { dots: IDotArray; };
 export type DrawFabricDotsListener = Listener<DrawFabricDotsEvent>;
 
-export type DrawFabricThreadsEvent = { threads: FabricThread };
+export type DrawFabricThreadsEvent = { threads: FabricThreadArray; };
 export type DrawFabricThreadsListener = Listener<DrawFabricThreadsEvent>;
 
-export type DrawStitchSegmentEvent = { segment: StitchSegment, density: Density };
+export type DrawStitchSegmentEvent = { segment: StitchSegment; density: Density; };
 export type DrawStitchSegmentListener = Listener<DrawStitchSegmentEvent>;
 
-export type DrawStitchPatternEvent = { pattern: StitchPattern, density: Density };
+export type ChangeStitchPatternEvent = { pattern: StitchPattern };
+export type ChangeStitchPatternListener = Listener<ChangeStitchPatternEvent>;
+
+export type DrawStitchPatternEvent = { pattern: StitchPattern; density: Density; };
 export type DrawStitchPatternListener = Listener<DrawStitchPatternEvent>;
 
-export type DrawCueDotEvent = { dot: CueDot, dotRadius: number, dotColor: string };
+export type DrawCueDotEvent = { dot: CueDot; dotRadius: number; dotColor: string; };
 export type DrawCueDotListener = Listener<DrawCueDotEvent>;
 
-export type DrawCueSegmentEvent = { segment: CueSegment };
+export type DrawCueSegmentEvent = { segment: CueSegment; };
 export type DrawCueSegmentListener = Listener<DrawCueSegmentEvent>;
 
-export type RemoveCueDotEvent = { dotId: Id };
+export type RemoveCueDotEvent = { dotId: Id; };
 export type RemoveCueDotListener = Listener<RemoveCueDotEvent>;
 
-export type MoveCueSegmentEvent = { segment: CueSegment };
+export type MoveCueSegmentEvent = { segment: CueSegment; };
 export type MoveCueSegmentListener = Listener<MoveCueSegmentEvent>;
 
-export type RemoveCueSegmentEvent = { segmentId: Id };
+export type RemoveCueSegmentEvent = { segmentId: Id; };
 export type RemoveCueSegmentListener = Listener<RemoveCueSegmentEvent>;
 
 export enum Density {

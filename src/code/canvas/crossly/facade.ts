@@ -1,8 +1,8 @@
 import { CrosslyCanvas } from "./crossly.js";
-import { IInputCanvas } from "./input/types.js";
-import { ICrosslyCanvasFacade } from "./types.js";
-import { CrosslyCanvasConfig } from "../config/types.js";
-import { IFabricRasterDrawingCanvas, IStitchRasterDrawingCanvas, IVectorDrawingCanvas } from "./drawing/types.js";
+import { IInputCanvas } from "../input/types.js";
+import { ICrosslyCanvasFacade } from "../types.js";
+import { CrosslyCanvasConfig } from "../../config/types.js";
+import { IFabricRasterDrawingCanvas, IStitchRasterDrawingCanvas, IVectorDrawingCanvas } from "../drawing/types.js";
 
 export class CrosslyCanvasFacade extends CrosslyCanvas implements ICrosslyCanvasFacade {
     constructor(
@@ -12,7 +12,7 @@ export class CrosslyCanvasFacade extends CrosslyCanvas implements ICrosslyCanvas
         stitchRasterDrawing: IStitchRasterDrawingCanvas,
         cueVectorDrawing: IVectorDrawingCanvas) {
 
-        super(config, inputCanvas, fabricRasterDrawing, stitchRasterDrawing, cueVectorDrawing);
+        super(CrosslyCanvasFacade.name, config, inputCanvas, fabricRasterDrawing, stitchRasterDrawing, cueVectorDrawing);
     }
 
     public useNewThread(color: string, width: number): void {
