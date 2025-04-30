@@ -1,3 +1,4 @@
+import { ICrosslyDataModelConverter } from "./types.js";
 import { FabricCanvasData } from "../canvas/virtual/types.js";
 import { IThreadPath } from "../canvas/utilities/arrays/types.js";
 import { ThreadPath } from "../canvas/utilities/arrays/thread/stitch.js";
@@ -9,8 +10,7 @@ import {
     ThreadsDataModel,
     CrosslyDataModel,
     ThreadPathDataModel,
-    ICrosslyDataModelConverter,
-} from "./types.js";
+} from "../data-model/types.js";
 
 export class CrosslyDataModelConverter implements ICrosslyDataModelConverter {
 

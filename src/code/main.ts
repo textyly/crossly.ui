@@ -15,5 +15,5 @@ canvasFacade.draw();
 // Delete everything below !!!
 (window as any).crossly = canvasFacade;
 
-// const observer = new CrosslyCanvasObserver(canvasFacade);
-// const watcher = new CrosslyCanvasWatcher(observer);
+const observer = new CrosslyCanvasObserver(canvasFacade);
+const watcher = new CrosslyCanvasWatcher(observer);

@@ -1,6 +1,7 @@
 import assert from "../asserts/assert.js";
 import { CrosslyCanvasData } from "../canvas/types.js";
-import { CrosslyDataModel, ICrosslyDataModelValidator } from "./types.js";
+import { ICrosslyDataModelValidator } from "./types.js";
+import { CrosslyDataModel } from "../data-model/types.js";
 
 export class CrosslyDataModelValidator implements ICrosslyDataModelValidator {
 

@@ -1,4 +1,5 @@
-import { CrosslyDataModel, ICrosslyDataModelSerializer } from "./types.js";
+import { ICrosslyDataModelSerializer } from "./types.js";
+import { CrosslyDataModel } from "../data-model/types.js";
 
 export class CrosslyDataModelSerializer implements ICrosslyDataModelSerializer {
 
