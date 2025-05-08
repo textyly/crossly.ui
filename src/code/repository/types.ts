@@ -13,12 +13,10 @@ export interface ICrosslyDataModelConverter {
 
 export interface ICrosslyDataModelSerializer {
     compressToGzip(data: CrosslyDataModel): Promise<Uint8Array>;
-    decompressFromGzip(compressed: Uint8Array): Promise<CrosslyDataModel>;
+    decompressFromGzip(compressed: ReadableStream<Uint8Array>): Promise<CrosslyDataModel>;
 }
 
 export interface IRepositoryClient {
-    save(data: Uint8Array): Promise<void>;
-    read(): Promise<Uint8Array>;
+    save(data: Uint8Array): Promise<string>;
+    get(id: string): Promise<ReadableStream<Uint8Array> | null>;
 }
-
-

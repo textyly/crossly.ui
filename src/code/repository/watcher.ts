@@ -44,7 +44,13 @@ export class CrosslyCanvasWatcher extends Base {
 
         const compressedDataModel = await this.serializer.compressToGzip(dataModel);
 
-        this.repository.save(compressedDataModel);
+        const id = await this.repository.save(compressedDataModel);
+
+        const savedDataModel = await this.repository.get(id);
+
+        const decompressedDataModel = await this.serializer.decompressFromGzip(savedDataModel!);
+
+        console.log(JSON.stringify(decompressedDataModel));
 
     }
 

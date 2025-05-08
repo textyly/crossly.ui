@@ -17,10 +17,10 @@ export class CrosslyDataModelSerializer implements ICrosslyDataModelSerializer {
         return new Uint8Array(buffer);
     }
 
-    public async decompressFromGzip(compressedDataModel: Uint8Array): Promise<CrosslyDataModel> {
+    public async decompressFromGzip(compressedDataModel: ReadableStream<Uint8Array>): Promise<CrosslyDataModel> {
         const ds = new DecompressionStream('gzip');
 
-        const decompressedStream = new Blob([compressedDataModel]).stream().pipeThrough(ds);
+        const decompressedStream = compressedDataModel.pipeThrough(ds);
         const decompressedBlob = await new Response(decompressedStream).blob();
         const text = await decompressedBlob.text();
 
