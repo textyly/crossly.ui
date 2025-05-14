@@ -1,9 +1,9 @@
-import { ICrosslyDataModelSerializer } from "./types.js";
+import { ICompressor } from "./types.js";
 import { CrosslyDataModel } from "../data-model/types.js";
 
-export class CrosslyDataModelSerializer implements ICrosslyDataModelSerializer {
+export class Compressor implements ICompressor {
 
-    public async compressToGzip(dataModel: CrosslyDataModel): Promise<Uint8Array> {
+    public async compress(dataModel: CrosslyDataModel): Promise<Uint8Array> {
         const json = JSON.stringify(dataModel);
 
         const encoder = new TextEncoder();
@@ -17,7 +17,7 @@ export class CrosslyDataModelSerializer implements ICrosslyDataModelSerializer {
         return new Uint8Array(buffer);
     }
 
-    public async decompressFromGzip(compressedDataModel: ReadableStream<Uint8Array>): Promise<CrosslyDataModel> {
+    public async decompress(compressedDataModel: ReadableStream<Uint8Array>): Promise<CrosslyDataModel> {
         const ds = new DecompressionStream("gzip");
 
         const decompressedStream = compressedDataModel.pipeThrough(ds);

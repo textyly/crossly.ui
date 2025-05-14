@@ -1,26 +1,31 @@
 import { CrosslyCanvasData } from "../canvas/types.js";
 import { CrosslyDataModel } from "../data-model/types.js";
 
-export type DataModelId = string;
+export type Id = string;
 export type DataModel = Uint8Array;
 export type DataModelStream = ReadableStream<Uint8Array>;
 
-export interface ICrosslyDataModelValidator {
+export interface IValidator {
     validateDataModel(dataModel: CrosslyDataModel): void;
     validateCanvasData(canvasData: CrosslyCanvasData): void;
 }
 
-export interface ICrosslyDataModelConverter {
+export interface IConverter {
     convertToDataModel(canvasData: CrosslyCanvasData): CrosslyDataModel;
     convertToCanvasData(dataModel: CrosslyDataModel): CrosslyCanvasData;
 };
 
-export interface ICrosslyDataModelSerializer {
-    compressToGzip(data: CrosslyDataModel): Promise<Uint8Array>;
-    decompressFromGzip(compressed: ReadableStream<Uint8Array>): Promise<CrosslyDataModel>;
+export interface ICompressor {
+    compress(dataModel: CrosslyDataModel): Promise<Uint8Array>;
+    decompress(dataModelStream: ReadableStream<Uint8Array>): Promise<CrosslyDataModel>;
 }
 
-export interface IRepositoryClient {
-    save(dataModel: DataModel): Promise<DataModelId>;
-    get(id: DataModelId): Promise<DataModelStream | null>;
+export interface IPersistence {
+    save(dataModel: DataModel): Promise<Id>;
+    get(id: Id): Promise<DataModelStream | null>;
+}
+
+export interface IRepository {
+    save(canvasData: CrosslyCanvasData): Promise<Id>;
+    get(id: Id): Promise<CrosslyCanvasData>;
 }
