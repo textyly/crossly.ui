@@ -9,7 +9,6 @@ export class RepositoryWrapper implements IRepository {
     }
 
     public save(canvasData: CrosslyCanvasData): Promise<Id> {
-        // TODO: create a repository wrapper which:
         // TODO: must be done in a queue so that save and get requests are ordered
         // TODO: must save periodically and all middle updates must be filtered out
 
