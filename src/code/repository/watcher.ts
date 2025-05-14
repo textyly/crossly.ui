@@ -9,7 +9,9 @@ import {
     ICrosslyDataModelConverter,
     ICrosslyDataModelValidator,
     ICrosslyDataModelSerializer,
+    DataModelId,
 } from "./types.js";
+import { CrosslyDataModel } from "../data-model/types.js";
 
 
 export class CrosslyCanvasWatcher extends Base {
@@ -36,22 +38,19 @@ export class CrosslyCanvasWatcher extends Base {
         this.ensureAlive();
 
         // TODO: must be done in a queue so that save requests are ordered
-        const canvasData = event.data;
-        const dataModel = this.converter.convertToDataModel(canvasData);
-        console.log(dataModel); // delete
+        // TODO: must save periodically and all middle updates must be filtered out
 
+        const dataModel = this.converter.convertToDataModel(event.data);
         this.validator.validateDataModel(dataModel);
+        const id = await this.saveDataModel(dataModel);
 
-        const compressedDataModel = await this.serializer.compressToGzip(dataModel);
+        console.log(`${dataModel.name} has been saved, id: ${id}`);
+    }
 
-        const id = await this.repository.save(compressedDataModel);
-
-        const savedDataModel = await this.repository.get(id);
-
-        const decompressedDataModel = await this.serializer.decompressFromGzip(savedDataModel!);
-
-        console.log(JSON.stringify(decompressedDataModel));
-
+    private async saveDataModel(dataModel: CrosslyDataModel): Promise<DataModelId> {
+        const gzipDataModel = await this.serializer.compressToGzip(dataModel);
+        const id = await this.repository.save(gzipDataModel);
+        return id;
     }
 
     private subscribe(): void {
