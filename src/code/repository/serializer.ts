@@ -9,7 +9,7 @@ export class CrosslyDataModelSerializer implements ICrosslyDataModelSerializer {
         const encoder = new TextEncoder();
         const input = encoder.encode(json);
 
-        const cs = new CompressionStream('gzip');
+        const cs = new CompressionStream("gzip");
         const compressedStream = new Blob([input]).stream().pipeThrough(cs);
         const compressedBlob = await new Response(compressedStream).blob();
         const buffer = await compressedBlob.arrayBuffer();
@@ -18,7 +18,7 @@ export class CrosslyDataModelSerializer implements ICrosslyDataModelSerializer {
     }
 
     public async decompressFromGzip(compressedDataModel: ReadableStream<Uint8Array>): Promise<CrosslyDataModel> {
-        const ds = new DecompressionStream('gzip');
+        const ds = new DecompressionStream("gzip");
 
         const decompressedStream = compressedDataModel.pipeThrough(ds);
         const decompressedBlob = await new Response(decompressedStream).blob();
