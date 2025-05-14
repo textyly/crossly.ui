@@ -1,6 +1,6 @@
-import { Base } from "../base.js";
-import { IRepository } from "./types.js";
-import { ChangeEvent, ICrosslyCanvasObserver } from "../canvas/types.js";
+import { Base } from "../../base.js";
+import { IRepository } from "../../repository/types.js";
+import { ChangeEvent, ICrosslyCanvasObserver } from "../types.js";
 
 export class CrosslyCanvasWatcher extends Base {
     private readonly observer: ICrosslyCanvasObserver;
