@@ -21,9 +21,6 @@ export class Repository implements IRepository {
     }
 
     public async save(canvasData: CrosslyCanvasData): Promise<Id> {
-        // TODO: must be done in a queue so that save requests are ordered
-        // TODO: must save periodically and all middle updates must be filtered out
-
         const dataModel = this.converter.convertToDataModel(canvasData);
         this.validator.validateDataModel(dataModel);
         const id = await this.saveDataModel(dataModel);
