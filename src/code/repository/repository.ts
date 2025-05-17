@@ -1,4 +1,4 @@
-import { CrosslyCanvasData } from "../canvas/types.js";
+import { CrosslyCanvasPattern } from "../canvas/types.js";
 import { CrosslyDataModel } from "../data-model/types.js";
 import { ICompressor, IValidator, Id, IRepository, IConverter, IPersistence } from "./types.js";
 
@@ -20,14 +20,14 @@ export class Repository implements IRepository {
         this.persistence = persistence;
     }
 
-    public async save(canvasData: CrosslyCanvasData): Promise<Id> {
+    public async save(canvasData: CrosslyCanvasPattern): Promise<Id> {
         const dataModel = this.converter.convertToDataModel(canvasData);
         this.validator.validateDataModel(dataModel);
         const id = await this.saveDataModel(dataModel);
         return id
     }
 
-    public async get(id: Id): Promise<CrosslyCanvasData> {
+    public async get(id: Id): Promise<CrosslyCanvasPattern> {
         const dataModel = await this.getDataModel(id);
         const canvasData = this.converter.convertToCanvasData(dataModel);
         this.validator.validateCanvasData(canvasData);

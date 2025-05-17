@@ -1,11 +1,15 @@
 import { CanvasBase } from "../base.js";
 import { VoidUnsubscribe } from "../../types.js";
-import { Messaging2 } from "../../messaging/impl.js";
-import { IMessaging2 } from "../../messaging/types.js";
-import { CrosslyCanvasConfig } from "../../config/types.js";
-import { ICrosslyCanvas, StitchPattern } from "../types.js";
+import { Messaging3 } from "../../messaging/impl.js";
+import { IMessaging3 } from "../../messaging/types.js";
 import {
-    FabricCanvasData,
+    FabricPattern,
+    StitchPattern,
+    ICrosslyCanvas,
+    ChangeNameEvent,
+    ChangeNameListener,
+} from "../types.js";
+import {
     ChangeFabricEvent,
     ChangeFabricListener,
     ChangeStitchPatternEvent,
@@ -13,18 +17,11 @@ import {
 } from "../virtual/types.js";
 
 export abstract class CrosslyCanvasBase extends CanvasBase implements ICrosslyCanvas {
-    private readonly messaging: IMessaging2<ChangeFabricEvent, ChangeStitchPatternEvent>;
+    private readonly messaging: IMessaging3<ChangeFabricEvent, ChangeStitchPatternEvent, ChangeNameEvent>;
 
-    private readonly configuration: CrosslyCanvasConfig;
-
-    constructor(className: string, config: CrosslyCanvasConfig) {
+    constructor(className: string) {
         super(className);
-        this.configuration = config;
-        this.messaging = new Messaging2();
-    }
-
-    public get config(): Readonly<CrosslyCanvasConfig> {
-        return this.configuration;
+        this.messaging = new Messaging3();
     }
 
     public onChangeFabric(listener: ChangeFabricListener): VoidUnsubscribe {
@@ -35,9 +32,11 @@ export abstract class CrosslyCanvasBase extends CanvasBase implements ICrosslyCa
         return this.messaging.listenOnChannel2(listener);
     }
 
-    public abstract draw(): void;
+    public onChangeName(listener: ChangeNameListener): VoidUnsubscribe {
+        return this.messaging.listenOnChannel3(listener);
+    }
 
-    protected invokeChangeFabric(fabric: FabricCanvasData): void {
+    protected invokeChangeFabric(fabric: FabricPattern): void {
         const event = { fabric };
         this.messaging.sendToChannel1(event);
     }
@@ -45,5 +44,10 @@ export abstract class CrosslyCanvasBase extends CanvasBase implements ICrosslyCa
     protected invokeChangeStitchPattern(pattern: StitchPattern): void {
         const event = { pattern };
         this.messaging.sendToChannel2(event);
+    }
+
+    protected invokeChangeName(name: string): void {
+        const event = { name };
+        this.messaging.sendToChannel3(event);
     }
 }

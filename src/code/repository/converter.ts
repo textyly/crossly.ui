@@ -1,8 +1,7 @@
 import { IConverter } from "./types.js";
-import { FabricCanvasData } from "../canvas/virtual/types.js";
 import { IThreadPath } from "../canvas/utilities/arrays/types.js";
 import { ThreadPath } from "../canvas/utilities/arrays/thread/stitch.js";
-import { CrosslyCanvasData, StitchPatternCanvasData } from "../canvas/types.js";
+import { CrosslyCanvasPattern, FabricPattern, StitchPattern } from "../canvas/types.js";
 import {
     FabricDataModel,
     ThreadDataModel,
@@ -14,10 +13,10 @@ import {
 
 export class Converter implements IConverter {
 
-    public convertToDataModel(canvasData: CrosslyCanvasData): CrosslyDataModel {
+    public convertToDataModel(canvasData: CrosslyCanvasPattern): CrosslyDataModel {
         const name = canvasData.name;
-        const fabric = canvasData.fabric;
-        const pattern = canvasData.pattern;
+        const fabric = canvasData.fabricPattern;
+        const pattern = canvasData.stitchPattern;
 
         const fabricDataModel = this.convertToFabricDataModel(fabric);
         const threadsDataModel = this.convertToThreadsDataModel(pattern);
@@ -33,20 +32,20 @@ export class Converter implements IConverter {
         return dataModel;
     }
 
-    public convertToCanvasData(dataModel: CrosslyDataModel): CrosslyCanvasData {
+    public convertToCanvasData(dataModel: CrosslyDataModel): CrosslyCanvasPattern {
         const name = dataModel.name;
         const fabricDataModel = dataModel.fabric;
         const threadsDataModel = dataModel.threads;
         const patternDataModel = dataModel.pattern;
 
-        const fabric = this.convertToFabricCanvasData(fabricDataModel);
-        const pattern = this.convertToPatternCanvasData(patternDataModel, threadsDataModel);
+        const fabricPattern = this.convertToFabricCanvasData(fabricDataModel);
+        const stitchPattern = this.convertToPatternCanvasData(patternDataModel, threadsDataModel);
 
-        const canvasData = { name, fabric, pattern };
+        const canvasData = { name, fabricPattern, stitchPattern };
         return canvasData;
     }
 
-    private convertToFabricDataModel(fabric: FabricCanvasData): FabricDataModel {
+    private convertToFabricDataModel(fabric: FabricPattern): FabricDataModel {
         const name = fabric.name;
         const columns = fabric.columns;
         const rows = fabric.rows;
@@ -66,7 +65,7 @@ export class Converter implements IConverter {
         return fabricDataMode;
     }
 
-    private convertToThreadsDataModel(pattern: StitchPatternCanvasData): ThreadsDataModel {
+    private convertToThreadsDataModel(pattern: StitchPattern): ThreadsDataModel {
         const threadsDataModel = new Array<ThreadDataModel>();
 
         pattern.forEach((thread) => {
@@ -87,7 +86,7 @@ export class Converter implements IConverter {
         return threadsDataModel;
     }
 
-    private convertToPatternDataModel(pattern: StitchPatternCanvasData, threads: ThreadsDataModel): PatternDataModel {
+    private convertToPatternDataModel(pattern: StitchPattern, threads: ThreadsDataModel): PatternDataModel {
         const patternDataModel = new Array<ThreadPathDataModel>();
 
         pattern.forEach((threadPath) => {
@@ -106,7 +105,7 @@ export class Converter implements IConverter {
     }
 
     // TODO: this method has not been tested!!!
-    private convertToFabricCanvasData(fabricDataModel: FabricDataModel): FabricCanvasData {
+    private convertToFabricCanvasData(fabricDataModel: FabricDataModel): FabricPattern {
         const name = fabricDataModel.name;
         const color = fabricDataModel.color;
         const rows = fabricDataModel.rows;
@@ -127,7 +126,7 @@ export class Converter implements IConverter {
     }
 
     // TODO: this method has not been tested!!!
-    private convertToPatternCanvasData(patternDataModel: PatternDataModel, threadsDataModel: ThreadsDataModel): StitchPatternCanvasData {
+    private convertToPatternCanvasData(patternDataModel: PatternDataModel, threadsDataModel: ThreadsDataModel): StitchPattern {
         const stitchPattern = new Array<IThreadPath>();
 
         patternDataModel.forEach((threadPathDataModel) => {

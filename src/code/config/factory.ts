@@ -1,8 +1,14 @@
-import { CrosslyCanvasConfig, CueCanvasConfig, FabricCanvasConfig, InputCanvasConfig, DotsSpacingConfig, StitchCanvasConfig } from "../config/types.js";
+import {
+    CueCanvasConfig,
+    InputCanvasConfig,
+    DotsSpacingConfig,
+    StitchCanvasConfig,
+    FabricCanvasConfig,
+    CrosslyCanvasConfig,
+} from "../config/types.js";
 
 export class ConfigFactory {
     public create(): CrosslyCanvasConfig {
-        const name = Date.now().toString(); // TODO: get the name after creating or loading of an project
         const columns = 40;
         const rows = 40;
 
@@ -13,7 +19,7 @@ export class ConfigFactory {
         const stitch = this.createStitchCanvasConfig(columns, rows, dotsSpacing);
         const cue = this.createCueCanvasConfig(columns, rows, dotsSpacing);
 
-        const canvasConfig = { name, input, fabric, stitch, cue };
+        const canvasConfig = { input, fabric, stitch, cue };
         return canvasConfig;
     }
 

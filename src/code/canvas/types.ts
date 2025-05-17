@@ -1,9 +1,8 @@
 import { Position } from "./input/types.js";
 import { CrosslyCanvasConfig } from "../config/types.js";
-import { IThreadPath } from "./utilities/arrays/types.js";
-import { CueThreadArray } from "./utilities/arrays/thread/cue.js";
 import { IDisposable, Listener, VoidUnsubscribe } from "../types";
-import { ChangeFabricListener, ChangeStitchPatternListener, FabricCanvasData } from "./virtual/types.js";
+import { ICueThreadArray, IThreadPath } from "./utilities/arrays/types.js";
+import { ChangeFabricListener, ChangeStitchPatternListener } from "./virtual/types.js";
 
 export type Bounds = { left: number, top: number, width: number, height: number };
 
@@ -14,10 +13,19 @@ export type Id = number;
 export type Dot = Position;
 export type CueDot = Dot & { id: Id };
 export type CueSegment = { id: Id, from: Dot, to: Dot, width: number, color: string };
-export type CuePattern = Array<CueThreadArray>;
+export type CuePattern = Array<ICueThreadArray>;
+
 export type StitchSegment = { from: Dot, to: Dot, width: number, color: string };
 export type StitchPattern = Array<IThreadPath>;
-export type StitchPatternCanvasData = StitchPattern; 
+
+export type FabricPattern = {
+    name: string;
+    color: string;
+    columns: number;
+    rows: number;
+    dots: { color: string };
+    threads: { color: string };
+};
 
 export interface ICanvas extends IDisposable {
     get bounds(): Bounds;
@@ -27,20 +35,26 @@ export interface ICanvas extends IDisposable {
 }
 
 export interface ICrosslyCanvas extends ICanvas {
-    get config(): Readonly<CrosslyCanvasConfig>;
-
-    draw(): void;
-
+    onChangeName(listener: ChangeNameListener): VoidUnsubscribe;
     onChangeFabric(listener: ChangeFabricListener): VoidUnsubscribe;
     onChangeStitchPattern(listener: ChangeStitchPatternListener): VoidUnsubscribe;
 }
 
 export interface ICrosslyCanvasFacade extends ICrosslyCanvas {
-    useNewThread(color: string, width: number): void;
+    get name(): string;
+    get config(): CrosslyCanvasConfig;
+
+    get fabricPattern(): FabricPattern;
+    get stitchPattern(): StitchPattern;
+    get cuePattern(): CuePattern;
+
+    draw(): void;
+    load(pattern: CrosslyCanvasPattern): void;
+    useThread(color: string, width: number): void;
 }
 
 export interface ICrosslyCanvasObserver {
-    onChange(listener: ChangeListener): VoidUnsubscribe;
+    onChange(listener: CrosslyCanvasChangeListener): VoidUnsubscribe;
 }
 
 export enum CanvasSide {
@@ -56,6 +70,9 @@ export enum Visibility {
 export type BoundsChangeEvent = { bounds: Bounds };
 export type BoundsChangeListener = Listener<BoundsChangeEvent>;
 
-export type CrosslyCanvasData = { name: string, fabric: FabricCanvasData; pattern: StitchPatternCanvasData; };
-export type ChangeEvent = { data: CrosslyCanvasData; }
-export type ChangeListener = Listener<ChangeEvent>;
+export type ChangeNameEvent = { name: string; };
+export type ChangeNameListener = Listener<ChangeNameEvent>;
+
+export type CrosslyCanvasPattern = { name: string; fabricPattern: FabricPattern; stitchPattern: StitchPattern; };
+export type CrosslyCanvasChangeEvent = { pattern: CrosslyCanvasPattern; }
+export type CrosslyCanvasChangeListener = Listener<CrosslyCanvasChangeEvent>;

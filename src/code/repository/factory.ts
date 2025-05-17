@@ -4,7 +4,7 @@ import { Converter } from "./converter.js";
 import { Compressor } from "./compressor.js";
 import { Repository } from "./repository.js";
 import { Persistence } from "./persistence.js";
-import { RepositoryWrapper } from "./wrapper.js";
+import { RepositoryThrottler } from "./throttler.js";
 
 export class RepositoryFactory {
     public create(): IRepository {
@@ -14,7 +14,7 @@ export class RepositoryFactory {
         const persistence = new Persistence();
 
         const repository = new Repository(validator, converter, compressor, persistence);
-        const wrapper = new RepositoryWrapper(repository);
-        return wrapper;
+        const throttler = new RepositoryThrottler(repository);
+        return throttler;
     };
 }

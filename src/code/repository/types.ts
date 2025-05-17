@@ -1,4 +1,4 @@
-import { CrosslyCanvasData } from "../canvas/types.js";
+import { CrosslyCanvasPattern } from "../canvas/types.js";
 import { CrosslyDataModel } from "../data-model/types.js";
 
 export type Id = string;
@@ -7,12 +7,12 @@ export type DataModelStream = ReadableStream<Uint8Array>;
 
 export interface IValidator {
     validateDataModel(dataModel: CrosslyDataModel): void;
-    validateCanvasData(canvasData: CrosslyCanvasData): void;
+    validateCanvasData(canvasData: CrosslyCanvasPattern): void;
 }
 
 export interface IConverter {
-    convertToDataModel(canvasData: CrosslyCanvasData): CrosslyDataModel;
-    convertToCanvasData(dataModel: CrosslyDataModel): CrosslyCanvasData;
+    convertToDataModel(canvasData: CrosslyCanvasPattern): CrosslyDataModel;
+    convertToCanvasData(dataModel: CrosslyDataModel): CrosslyCanvasPattern;
 };
 
 export interface ICompressor {
@@ -26,6 +26,6 @@ export interface IPersistence {
 }
 
 export interface IRepository {
-    save(canvasData: CrosslyCanvasData): Promise<Id>;
-    get(id: Id): Promise<CrosslyCanvasData>;
+    save(canvasData: CrosslyCanvasPattern): Promise<Id>;
+    get(id: Id): Promise<CrosslyCanvasPattern>;
 }

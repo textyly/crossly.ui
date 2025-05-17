@@ -1,11 +1,12 @@
 import { FabricCanvasBase } from "./base.js";
+import { FabricPattern } from "../../types.js";
 import assert from "../../../asserts/assert.js";
 import { IInputCanvas } from "../../input/types.js";
 import { DotArray } from "../../utilities/arrays/dot/dot.js";
 import { FabricCanvasConfig } from "../../../config/types.js";
 import { FabricThreadArray } from "../../utilities/arrays/thread/fabric.js";
 
-export class FabricCanvas extends FabricCanvasBase {
+export abstract class FabricCanvas extends FabricCanvasBase {
     private dotColor: string;
     private dotRadius: number;
     private minDotRadius: number;
@@ -15,6 +16,8 @@ export class FabricCanvas extends FabricCanvasBase {
     private threadWidth: number;
     private minThreadWidth: number;
     private threadWidthZoomStep: number;
+
+    protected _pattern: FabricPattern;
 
     constructor(config: FabricCanvasConfig, inputCanvas: IInputCanvas) {
         super(FabricCanvas.name, config, inputCanvas);
@@ -33,6 +36,16 @@ export class FabricCanvas extends FabricCanvasBase {
         this.threadWidth = threadConfig.width;
         this.minThreadWidth = threadConfig.minWidth;
         this.threadWidthZoomStep = threadConfig.widthZoomStep;
+
+        // TODO: keep state of this properties and emit event when any change
+        this._pattern = {
+            name: config.name,
+            color: config.color,
+            columns: config.columns,
+            rows: config.rows,
+            dots: { color: this.dotColor },
+            threads: { color: this.threadColor }
+        };
     }
 
     protected override zoomIn(): void {

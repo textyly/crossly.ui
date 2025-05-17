@@ -10,11 +10,16 @@ import { StitchRasterDrawingCanvas } from "../drawing/raster/stitch.js";
 import { IFabricRasterDrawingCanvas, IStitchRasterDrawingCanvas, IVectorDrawingCanvas } from "../drawing/types.js";
 
 export class CrosslyCanvasBuilder {
+    private name: string;
     private config!: CrosslyCanvasConfig;
     private inputCanvas!: IInputCanvas;
     private fabricRasterDrawing!: IFabricRasterDrawingCanvas;
     private stitchRasterDrawing!: IStitchRasterDrawingCanvas;
     private cueVectorDrawing!: IVectorDrawingCanvas;
+
+    constructor() {
+        this.name = "Untitled1";
+    }
 
     public build(): ICrosslyCanvasFacade {
         assert.defined(this.config, "CrosslyCanvasConfig");
@@ -55,6 +60,7 @@ export class CrosslyCanvasBuilder {
 
     private buildCore(): ICrosslyCanvasFacade {
         const crosslyCanvasFacade = new CrosslyCanvasFacade(
+            this.name,
             this.config,
             this.inputCanvas,
             this.fabricRasterDrawing,
