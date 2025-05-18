@@ -1,5 +1,5 @@
 import { StitchCanvas } from "./stitch.js";
-import { StitchPattern } from "../../types.js";
+import { CanvasSide, DotIndex, StitchPattern } from "../../types.js";
 import assert from "../../../asserts/assert.js";
 import { IStitchCanvasFacade } from "../types.js";
 import { IInputCanvas } from "../../input/types.js";
@@ -19,16 +19,23 @@ export class StitchCanvasFacade extends StitchCanvas implements IStitchCanvasFac
     public load(pattern: StitchPattern): void {
         this._pattern = new Array<ThreadPath>();
 
+        let lastDotIdx: DotIndex | undefined = undefined;
+        
         pattern.forEach((threadPath) => {
-            super.createThread(threadPath.name, threadPath.color, threadPath.width);
+            this.useNewThread(threadPath.name, threadPath.color, threadPath.width);
 
-            const thread = super.getCurrentThread()!;
+            const thread = this.getCurrentThread()!;
             for (let index = 0; index < threadPath.length; index++) {
                 const indexX = threadPath.indexesX[index];
                 const indexY = threadPath.indexesY[index];
                 thread.pushDotIndex(indexX, indexY);
+
+                this.changeCanvasSide();
+                lastDotIdx = { dotX: indexX, dotY: indexY };
             }
         });
+
+        this.clickedDotIdx = lastDotIdx;
     }
 
     public useThread(name: string, color: string, width: number): void {

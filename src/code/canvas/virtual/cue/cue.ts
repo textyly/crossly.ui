@@ -22,7 +22,7 @@ export abstract class CueCanvas extends CueCanvasBase {
 
     private zooms: number;
     private currentSegmentId?: Id;
-    private clickedDotIdx?: DotIndex;
+    protected clickedDotIdx?: DotIndex;
     private hoveredDotIdx?: DotIndex & { id: Id };
 
     constructor(className: string, config: CueCanvasConfig, input: IInputCanvas) {

@@ -15,7 +15,7 @@ export abstract class StitchCanvas extends StitchCanvasBase {
     private readonly threadWidthZoomStep: number;
 
     private zooms: number;
-    private clickedDotIdx?: DotIndex;
+    protected clickedDotIdx?: DotIndex;
 
     constructor(config: StitchCanvasConfig, inputCanvas: IInputCanvas) {
         super(StitchCanvas.name, config, inputCanvas);

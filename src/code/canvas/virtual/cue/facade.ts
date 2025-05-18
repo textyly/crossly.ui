@@ -1,5 +1,5 @@
 import { CueCanvas } from "./cue.js";
-import { CuePattern, StitchPattern } from "../../types.js";
+import { CanvasSide, CuePattern, DotIndex, StitchPattern } from "../../types.js";
 import { ICueCanvasFacade } from "../types.js";
 import assert from "../../../asserts/assert.js";
 import { IInputCanvas } from "../../input/types.js";
@@ -19,16 +19,23 @@ export class CueCanvasFacade extends CueCanvas implements ICueCanvasFacade {
     public load(pattern: StitchPattern): void {
         this._pattern = new Array<CueThreadArray>;
 
-        pattern.forEach((threadPath) => {
-            super.createThread(threadPath.color, threadPath.width);
+        let lastDotIdx: DotIndex | undefined = undefined;
 
-            const thread = super.getCurrentThread()!;
+        pattern.forEach((threadPath) => {
+            this.useNewThread(threadPath.name, threadPath.color, threadPath.width);
+
+            const thread = this.getCurrentThread()!;
             for (let index = 0; index < threadPath.length; index++) {
                 const indexX = threadPath.indexesX[index];
                 const indexY = threadPath.indexesY[index];
                 thread.pushDotIndex(indexX, indexY);
+
+                this.changeCanvasSide();
+                lastDotIdx = { dotX: indexX, dotY: indexY };
             }
         });
+
+        this.clickedDotIdx = lastDotIdx;
     }
 
     public useThread(name: string, color: string, width: number): void {

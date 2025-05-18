@@ -21,3 +21,5 @@ const repositoryFactory = new RepositoryFactory();
 const repository = repositoryFactory.create();
 
 const watcher = new CrosslyCanvasWatcher(observer, repository);
+
+(window as any).crosslyRepository = repository;
