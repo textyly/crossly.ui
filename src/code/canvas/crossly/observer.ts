@@ -47,7 +47,7 @@ export class CrosslyCanvasObserver extends Base implements ICrosslyCanvasObserve
     private handleChangeFabric(event: ChangeFabricEvent): void {
         super.ensureAlive();
 
-        this.data.fabricPattern = event.fabric;
+        this.data.fabricPattern = event.pattern;
         this.invokeDataChange(this.data);
     }
 

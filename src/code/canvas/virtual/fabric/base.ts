@@ -43,8 +43,8 @@ export abstract class FabricCanvasBase extends VirtualCanvasBase implements IFab
         super.dispose();
     }
 
-    protected invokeChange(fabric: FabricPattern): void {
-        const event = { fabric };
+    protected invokeChange(pattern: FabricPattern): void {
+        const event = { pattern };
         this.messaging.sendToChannel1(event);
     }
 

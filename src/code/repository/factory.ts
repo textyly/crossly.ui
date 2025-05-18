@@ -1,6 +1,6 @@
 import { IRepository } from "./types.js";
-import { Validator } from "./validator.js";
-import { Converter } from "./converter.js";
+import { Validator } from "../data-model/validator.js";
+import { Converter } from "../data-model/converter.js";
 import { Compressor } from "./compressor.js";
 import { Repository } from "./repository.js";
 import { Persistence } from "./persistence.js";

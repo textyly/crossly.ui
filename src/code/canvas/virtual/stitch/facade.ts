@@ -4,6 +4,7 @@ import assert from "../../../asserts/assert.js";
 import { IStitchCanvasFacade } from "../types.js";
 import { IInputCanvas } from "../../input/types.js";
 import { StitchCanvasConfig } from "../../../config/types.js";
+import { ThreadPath } from "../../utilities/arrays/thread/stitch.js";
 
 export class StitchCanvasFacade extends StitchCanvas implements IStitchCanvasFacade {
 
@@ -16,18 +17,27 @@ export class StitchCanvasFacade extends StitchCanvas implements IStitchCanvasFac
     }
 
     public load(pattern: StitchPattern): void {
-        throw new Error("Method not implemented.");
+        this._pattern = new Array<ThreadPath>();
+
+        pattern.forEach((threadPath) => {
+            super.createThread(threadPath.name, threadPath.color, threadPath.width);
+
+            const thread = super.getCurrentThread()!;
+            for (let index = 0; index < threadPath.length; index++) {
+                const indexX = threadPath.indexesX[index];
+                const indexY = threadPath.indexesY[index];
+                thread.pushDotIndex(indexX, indexY);
+            }
+        });
     }
 
-    public useThread(color: string, width: number): void {
+    public useThread(name: string, color: string, width: number): void {
         super.ensureAlive();
 
-        assert.defined(color, "color");
+        assert.greaterThanZero(name.length, "name.length");
         assert.greaterThanZero(color.length, "color.length");
-
-        assert.defined(width, "width");
         assert.greaterThanZero(width, "width");
 
-        super.useNewThread(color, width);
+        super.useNewThread(name, color, width);
     }
 }

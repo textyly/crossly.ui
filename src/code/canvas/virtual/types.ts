@@ -52,18 +52,18 @@ export interface IStitchCanvasFacade extends IStitchCanvas {
 
     draw(): void;
     load(pattern: StitchPattern): void;
-    useThread(color: string, width: number): void;
+    useThread(name: string, color: string, width: number): void;
 }
 
 export interface ICueCanvasFacade extends ICueCanvas {
     get pattern(): CuePattern;
 
     draw(): void;
-    load(pattern: CuePattern): void;
-    useThread(color: string, width: number): void;
+    load(pattern: StitchPattern): void;
+    useThread(name: string, color: string, width: number): void;
 }
 
-export type ChangeFabricEvent = { fabric: FabricPattern; };
+export type ChangeFabricEvent = { pattern: FabricPattern; };
 export type ChangeFabricListener = Listener<ChangeFabricEvent>;
 
 export type DrawFabricDotsEvent = { dots: IDotArray; };

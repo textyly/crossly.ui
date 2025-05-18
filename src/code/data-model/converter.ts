@@ -1,4 +1,4 @@
-import { IConverter } from "./types.js";
+import { IConverter } from "../repository/types.js";
 import { IThreadPath } from "../canvas/utilities/arrays/types.js";
 import { ThreadPath } from "../canvas/utilities/arrays/thread/stitch.js";
 import { CrosslyCanvasPattern, FabricPattern, StitchPattern } from "../canvas/types.js";
@@ -9,7 +9,7 @@ import {
     ThreadsDataModel,
     CrosslyDataModel,
     ThreadPathDataModel,
-} from "../data-model/types.js";
+} from "./types.js";
 
 export class Converter implements IConverter {
 
@@ -74,7 +74,7 @@ export class Converter implements IConverter {
             if (!exists) {
 
                 const threadDataModel = {
-                    name: thread.color, // TODO: introduce a name!!!
+                    name: thread.name,
                     color: thread.color,
                     width: thread.width
                 };
@@ -138,7 +138,7 @@ export class Converter implements IConverter {
             const indexesY = needlePath.indexesY;
             const length = indexesX.length;
 
-            const thread = new ThreadPath(threadDataModel.color, threadDataModel.width);
+            const thread = new ThreadPath(threadDataModel.name, threadDataModel.color, threadDataModel.width);
 
             for (let index = 0; index < length; index++) {
 

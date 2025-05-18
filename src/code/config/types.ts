@@ -15,6 +15,7 @@ export type DotsConfig = {
 };
 
 export type ThreadsConfig = {
+    name: string,
     color: string;
     width: number;
     minWidth: number;

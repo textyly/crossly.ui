@@ -16,28 +16,35 @@ export class CrosslyCanvasFacade extends CrosslyCanvas implements ICrosslyCanvas
         super(name, config, inputCanvas, fabricRasterDrawing, stitchRasterDrawing, cueVectorDrawing);
     }
 
+    public get config(): CrosslyCanvasConfig {
+        this.ensureAlive();
+        return this.configuration;
+    }
+
     public get name(): string {
+        this.ensureAlive();
         return this._name;
     }
 
     public set name(value: string) {
+        this.ensureAlive();
+
         this._name = value;
         super.invokeChangeName(this._name);
     }
 
-    public get config(): CrosslyCanvasConfig {
-        return this.configuration;
-    }
-
     public get fabricPattern(): FabricPattern {
+        this.ensureAlive();
         return this.fabricCanvasFacade.pattern;
     }
 
     public get stitchPattern(): StitchPattern {
+        this.ensureAlive();
         return this.stitchCanvasFacade.pattern;
     }
 
     public get cuePattern(): CuePattern {
+        this.ensureAlive();
         return this.cueCanvasFacade.pattern;
     }
 
@@ -50,11 +57,17 @@ export class CrosslyCanvasFacade extends CrosslyCanvas implements ICrosslyCanvas
     }
 
     public load(pattern: CrosslyCanvasPattern): void {
-        throw new Error("");
+        this.ensureAlive();
+
+        this.fabricCanvasFacade.load(pattern.fabricPattern);
+        this.stitchCanvasFacade.load(pattern.stitchPattern);
+        this.cueCanvasFacade.load(pattern.stitchPattern);
     }
 
-    public useThread(color: string, width: number): void {
-        this.stitchCanvasFacade.useThread(color, width);
-        this.cueCanvasFacade.useThread(color, width);
+    public useThread(name: string, color: string, width: number): void {
+        this.ensureAlive();
+
+        this.stitchCanvasFacade.useThread(name, color, width);
+        this.cueCanvasFacade.useThread(name, color, width);
     }
-}
+} 

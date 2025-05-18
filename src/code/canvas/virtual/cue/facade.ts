@@ -1,9 +1,10 @@
 import { CueCanvas } from "./cue.js";
-import { CuePattern } from "../../types.js";
+import { CuePattern, StitchPattern } from "../../types.js";
 import { ICueCanvasFacade } from "../types.js";
 import assert from "../../../asserts/assert.js";
 import { IInputCanvas } from "../../input/types.js";
 import { CueCanvasConfig } from "../../../config/types.js";
+import { CueThreadArray } from "../../utilities/arrays/thread/cue.js";
 
 export class CueCanvasFacade extends CueCanvas implements ICueCanvasFacade {
 
@@ -15,19 +16,28 @@ export class CueCanvasFacade extends CueCanvas implements ICueCanvasFacade {
         return this._pattern;
     }
 
-    public load(pattern: CuePattern): void {
-        throw new Error("Method not implemented.");
+    public load(pattern: StitchPattern): void {
+        this._pattern = new Array<CueThreadArray>;
+
+        pattern.forEach((threadPath) => {
+            super.createThread(threadPath.color, threadPath.width);
+
+            const thread = super.getCurrentThread()!;
+            for (let index = 0; index < threadPath.length; index++) {
+                const indexX = threadPath.indexesX[index];
+                const indexY = threadPath.indexesY[index];
+                thread.pushDotIndex(indexX, indexY);
+            }
+        });
     }
 
-    public useThread(color: string, width: number): void {
+    public useThread(name: string, color: string, width: number): void {
         super.ensureAlive();
 
-        assert.defined(color, "color");
+        assert.greaterThanZero(name.length, "name.length");
         assert.greaterThanZero(color.length, "color.length");
-
-        assert.defined(width, "width");
         assert.greaterThanZero(width, "width");
 
-        super.useNewThread(color, width);
+        super.useNewThread(name, color, width);
     }
 }

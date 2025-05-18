@@ -85,7 +85,7 @@ export abstract class VirtualCanvasBase extends VirtualCanvasDimensions implemen
         assert.positive(currentPosition.y, "currentPosition.y");
 
         const inBounds = this.inBounds(currentPosition);
-        const minSpace = this.config.dotsSpacing.minSpace / 2;
+        const minSpace = this.dotsSpaceZoomStep;
 
         if (inBounds && (this.currentDotsSpace > minSpace)) {
             this.zoomOutCanvas(currentPosition);

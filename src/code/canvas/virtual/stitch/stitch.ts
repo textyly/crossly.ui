@@ -9,7 +9,7 @@ import { IInputCanvas, PointerUpEvent, Position } from "../../input/types.js";
 
 export abstract class StitchCanvas extends StitchCanvasBase {
     private readonly dotsUtility: DotsUtility<Dot>;
-    protected readonly _pattern: Array<ThreadPath>;
+    protected _pattern: Array<ThreadPath>;
 
     private readonly minThreadWidth: number;
     private readonly threadWidthZoomStep: number;
@@ -27,7 +27,7 @@ export abstract class StitchCanvas extends StitchCanvasBase {
         this.threadWidthZoomStep = threadConfig.widthZoomStep;
 
         this._pattern = new Array<ThreadPath>();
-        this.createThread(threadConfig.color, threadConfig.width);
+        this.createThread(threadConfig.name, threadConfig.color, threadConfig.width);
 
         this.dotsUtility = new DotsUtility();
 
@@ -92,13 +92,13 @@ export abstract class StitchCanvas extends StitchCanvasBase {
         super.invokeDrawPattern(this._pattern, density);
     }
 
-    protected useNewThread(color: string, width: number): void {
+    protected useNewThread(name: string, color: string, width: number): void {
         this.removeThread();
-        this.createThread(color, width);
+        this.createThread(name, color, width);
     }
 
-    protected createThread(color: string, width: number): void {
-        const stitchThread = new ThreadPath(color, width);
+    protected createThread(name: string, color: string, width: number): void {
+        const stitchThread = new ThreadPath(name, color, width);
         this._pattern.push(stitchThread);
     }
 
@@ -107,7 +107,7 @@ export abstract class StitchCanvas extends StitchCanvasBase {
         this.currentSide = CanvasSide.Back;
     }
 
-    private getCurrentThread(): ThreadPath | undefined {
+    protected getCurrentThread(): ThreadPath | undefined {
         const length = this._pattern.length;
         const array = this._pattern.slice(length - 1, length);
 

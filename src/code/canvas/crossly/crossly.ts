@@ -95,7 +95,7 @@ export abstract class CrosslyCanvas extends CrosslyCanvasBase implements ICrossl
     private handleChangeFabric(event: ChangeFabricEvent): void {
         this.ensureAlive();
 
-        super.invokeChangeFabric(event.fabric);
+        super.invokeChangeFabric(event.pattern);
     }
 
     private handleChangeStitchPattern(event: ChangeStitchPatternEvent): void {

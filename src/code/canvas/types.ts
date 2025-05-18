@@ -42,7 +42,6 @@ export interface ICrosslyCanvas extends ICanvas {
 
 export interface ICrosslyCanvasFacade extends ICrosslyCanvas {
     get name(): string;
-    get config(): CrosslyCanvasConfig;
 
     get fabricPattern(): FabricPattern;
     get stitchPattern(): StitchPattern;
@@ -50,7 +49,7 @@ export interface ICrosslyCanvasFacade extends ICrosslyCanvas {
 
     draw(): void;
     load(pattern: CrosslyCanvasPattern): void;
-    useThread(color: string, width: number): void;
+    useThread(name: string, color: string, width: number): void;
 }
 
 export interface ICrosslyCanvasObserver {

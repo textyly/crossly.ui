@@ -10,7 +10,7 @@ import { Position, IInputCanvas, PointerUpEvent, PointerMoveEvent } from "../../
 export abstract class CueCanvas extends CueCanvasBase {
     private readonly ids: IdGenerator;
     private readonly dotsUtility: DotsUtility<Dot>;
-    protected readonly _pattern: Array<CueThreadArray>;
+    protected _pattern: Array<CueThreadArray>;
 
     private dotColor: string;
     private dotRadius: number;
@@ -40,6 +40,7 @@ export abstract class CueCanvas extends CueCanvasBase {
 
         this._pattern = new Array<CueThreadArray>();
         this.createThread(threadConfig.color, threadConfig.width);
+
         this.minThreadWidth = threadConfig.minWidth;
         this.threadWidthZoomStep = threadConfig.widthZoomStep;
 
@@ -72,13 +73,13 @@ export abstract class CueCanvas extends CueCanvasBase {
         this._pattern.push(thread);
     }
 
-    protected useNewThread(color: string, width: number): void {
+    protected useNewThread(name: string, color: string, width: number): void {
         this.removeThread();
         this.createThread(color, width);
         this.draw();
     }
 
-    private getCurrentThread(): CueThreadArray | undefined {
+    protected getCurrentThread(): CueThreadArray | undefined {
         const length = this._pattern.length;
         const array = this._pattern.slice(length - 1, length);
 

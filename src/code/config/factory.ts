@@ -55,6 +55,7 @@ export class ConfigFactory {
                 }
             },
             threads: {
+                name: "Aida 14",
                 color: "#d2d4d2",
                 width: 1.4,
                 minWidth: 0.8,
@@ -68,6 +69,7 @@ export class ConfigFactory {
         const stitchConfig = {
             columns, rows, dotsSpacing,
             threads: {
+                name: "DMC 321",
                 color: "gray",
                 width: 12,
                 minWidth: 1,
@@ -87,6 +89,7 @@ export class ConfigFactory {
                 radiusZoomStep: 1
             },
             threads: {
+                name: "DMC 321",
                 color: "gray",
                 width: 12,
                 minWidth: 1,

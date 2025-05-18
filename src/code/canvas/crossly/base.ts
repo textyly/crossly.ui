@@ -36,8 +36,8 @@ export abstract class CrosslyCanvasBase extends CanvasBase implements ICrosslyCa
         return this.messaging.listenOnChannel3(listener);
     }
 
-    protected invokeChangeFabric(fabric: FabricPattern): void {
-        const event = { fabric };
+    protected invokeChangeFabric(pattern: FabricPattern): void {
+        const event = { pattern };
         this.messaging.sendToChannel1(event);
     }
 

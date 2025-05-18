@@ -1,5 +1,4 @@
 import { FabricCanvasBase } from "./base.js";
-import { FabricPattern } from "../../types.js";
 import assert from "../../../asserts/assert.js";
 import { IInputCanvas } from "../../input/types.js";
 import { DotArray } from "../../utilities/arrays/dot/dot.js";
@@ -7,45 +6,39 @@ import { FabricCanvasConfig } from "../../../config/types.js";
 import { FabricThreadArray } from "../../utilities/arrays/thread/fabric.js";
 
 export abstract class FabricCanvas extends FabricCanvasBase {
-    private dotColor: string;
+    protected _name: string;
+    protected _color: string;
+
+    protected _dotsColor: string;
     private dotRadius: number;
-    private minDotRadius: number;
+    private dotMinRadius: number;
     private dotRadiusZoomStep: number;
 
-    private threadColor: string;
+    protected _threadsColor: string;
     private threadWidth: number;
-    private minThreadWidth: number;
+    private threadMinWidth: number;
     private threadWidthZoomStep: number;
-
-    protected _pattern: FabricPattern;
 
     constructor(config: FabricCanvasConfig, inputCanvas: IInputCanvas) {
         super(FabricCanvas.name, config, inputCanvas);
 
         this.validateConfig(config);
 
+        this._name = config.name;
+        this._color = config.color;
+
         const dotConfig = config.dots;
         const threadConfig = config.threads;
 
-        this.dotColor = dotConfig.color;
+        this._dotsColor = dotConfig.color;
         this.dotRadius = dotConfig.radius;
-        this.minDotRadius = dotConfig.minRadius;
+        this.dotMinRadius = dotConfig.minRadius;
         this.dotRadiusZoomStep = dotConfig.radiusZoomStep;
 
-        this.threadColor = threadConfig.color;
+        this._threadsColor = threadConfig.color;
         this.threadWidth = threadConfig.width;
-        this.minThreadWidth = threadConfig.minWidth;
+        this.threadMinWidth = threadConfig.minWidth;
         this.threadWidthZoomStep = threadConfig.widthZoomStep;
-
-        // TODO: keep state of this properties and emit event when any change
-        this._pattern = {
-            name: config.name,
-            color: config.color,
-            columns: config.columns,
-            rows: config.rows,
-            dots: { color: this.dotColor },
-            threads: { color: this.threadColor }
-        };
     }
 
     protected override zoomIn(): void {
@@ -70,12 +63,12 @@ export abstract class FabricCanvas extends FabricCanvasBase {
         const endIndexX = boundsIndexes.rightTop.dotX;
         const endIndexY = boundsIndexes.leftBottom.dotY;
 
-        const canRedrawThreads = (this.threadWidth >= this.minThreadWidth);
+        const canRedrawThreads = (this.threadWidth >= this.threadMinWidth);
         if (canRedrawThreads) {
             this.redrawThreads(startIndexX, startIndexY, endIndexX, endIndexY);
         }
 
-        const canRedrawDots = !this.inMovingMode && (this.dotRadius >= this.minDotRadius);
+        const canRedrawDots = !this.inMovingMode && (this.dotRadius >= this.dotMinRadius);
         if (canRedrawDots) {
             this.redrawDots(startIndexX, startIndexY, endIndexX, endIndexY);
         }
@@ -86,7 +79,7 @@ export abstract class FabricCanvas extends FabricCanvasBase {
         // Do not create types/classes for thread (objects are extremely slow and memory/GC consuming)
 
         const bounds = this.bounds;
-        const threads = new FabricThreadArray(this.threadColor, this.threadWidth);
+        const threads = new FabricThreadArray(this._threadsColor, this.threadWidth);
 
         for (let dotYIdx = startDotIndexY; dotYIdx <= endDotIndexY; dotYIdx += 2) {
 
@@ -107,7 +100,7 @@ export abstract class FabricCanvas extends FabricCanvasBase {
         // CPU, GPU, memory and GC intensive code
         // Do not create types/classes for dot (objects are extremely slow and memory/GC consuming)
 
-        const dots = new DotArray(this.dotColor, this.dotRadius);
+        const dots = new DotArray(this._dotsColor, this.dotRadius);
 
         for (let dotYIdx = startIndexY; dotYIdx <= endIndexY; dotYIdx += 2) {
             for (let dotXIdX = startIndexX; dotXIdX <= endIndexX; dotXIdX += 2) {
@@ -123,10 +116,7 @@ export abstract class FabricCanvas extends FabricCanvasBase {
 
     private validateConfig(config: FabricCanvasConfig): void {
         const dotConfig = config.dots;
-        assert.defined(dotConfig, "DotConfig");
-
         const threadConfig = config.threads;
-        assert.defined(threadConfig, "ThreadConfig");
 
         assert.greaterThanZero(dotConfig.radius, "dotRadius");
         assert.greaterThanZero(dotConfig.minRadius, "minDotRadius");
