@@ -1,7 +1,6 @@
-import { IValidator } from "../repository/types.js";
 import assert from "../asserts/assert.js";
 import { CrosslyCanvasPattern, FabricPattern, StitchPattern } from "../canvas/types.js";
-import { CrosslyDataModel, FabricDataModel, PatternDataModel } from "./types.js";
+import { CrosslyDataModel, FabricDataModel, IValidator, PatternDataModel } from "./types.js";
 
 export class Validator implements IValidator {
 

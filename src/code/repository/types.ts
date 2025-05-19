@@ -5,16 +5,6 @@ export type Id = string;
 export type DataModel = Uint8Array;
 export type DataModelStream = ReadableStream<Uint8Array>;
 
-export interface IValidator {
-    validateDataModel(dataModel: CrosslyDataModel): void;
-    validateCanvasData(canvasData: CrosslyCanvasPattern): void;
-}
-
-export interface IConverter {
-    convertToDataModel(canvasData: CrosslyCanvasPattern): CrosslyDataModel;
-    convertToCanvasData(dataModel: CrosslyDataModel): CrosslyCanvasPattern;
-};
-
 export interface ICompressor {
     compress(dataModel: CrosslyDataModel): Promise<Uint8Array>;
     decompress(dataModelStream: ReadableStream<Uint8Array>): Promise<CrosslyDataModel>;

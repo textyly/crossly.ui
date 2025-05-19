@@ -1,4 +1,3 @@
-import { IConverter } from "../repository/types.js";
 import { IThreadPath } from "../canvas/utilities/arrays/types.js";
 import { ThreadPath } from "../canvas/utilities/arrays/thread/stitch.js";
 import { CrosslyCanvasPattern, FabricPattern, StitchPattern } from "../canvas/types.js";
@@ -9,6 +8,7 @@ import {
     ThreadsDataModel,
     CrosslyDataModel,
     ThreadPathDataModel,
+    IConverter,
 } from "./types.js";
 
 export class Converter implements IConverter {

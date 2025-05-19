@@ -1,6 +1,6 @@
 import { CrosslyCanvasPattern } from "../canvas/types.js";
-import { CrosslyDataModel } from "../data-model/types.js";
-import { ICompressor, IValidator, Id, IRepository, IConverter, IPersistence } from "./types.js";
+import { ICompressor, Id, IRepository, IPersistence } from "./types.js";
+import { CrosslyDataModel, IConverter, IValidator } from "../data-model/types.js";
 
 export class Repository implements IRepository {
     private readonly validator: IValidator;
