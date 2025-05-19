@@ -1,5 +1,4 @@
 import { Position } from "./input/types.js";
-import { CrosslyCanvasConfig } from "../config/types.js";
 import { IDisposable, Listener, VoidUnsubscribe } from "../types";
 import { ICueThreadArray, IThreadPath } from "./utilities/arrays/types.js";
 import { ChangeFabricListener, ChangeStitchPatternListener } from "./virtual/types.js";
