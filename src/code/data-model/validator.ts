@@ -9,7 +9,7 @@ export class Validator implements IValidator {
     }
 
     public validateCanvasData(canvasData: CrosslyCanvasPattern): void {
-        this.validate(canvasData.name, canvasData.fabricPattern, canvasData.stitchPattern);
+        this.validate(canvasData.name, canvasData.fabric, canvasData.stitch);
     }
 
     private validate(name: string, fabric: FabricDataModel | FabricPattern, stitchPattern: PatternDataModel | StitchPattern): void {

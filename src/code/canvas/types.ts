@@ -42,10 +42,7 @@ export interface ICrosslyCanvas extends ICanvas {
 
 export interface ICrosslyCanvasFacade extends ICrosslyCanvas {
     get name(): string;
-
-    get fabricPattern(): FabricPattern;
-    get stitchPattern(): StitchPattern;
-    get cuePattern(): CuePattern;
+    get pattern(): CrosslyCanvasPattern;
 
     draw(): void;
     load(pattern: CrosslyCanvasPattern): void;
@@ -72,6 +69,6 @@ export type BoundsChangeListener = Listener<BoundsChangeEvent>;
 export type ChangeNameEvent = { name: string; };
 export type ChangeNameListener = Listener<ChangeNameEvent>;
 
-export type CrosslyCanvasPattern = { name: string; fabricPattern: FabricPattern; stitchPattern: StitchPattern; };
+export type CrosslyCanvasPattern = { name: string; fabric: FabricPattern; stitch: StitchPattern; };
 export type CrosslyCanvasChangeEvent = { pattern: CrosslyCanvasPattern; }
 export type CrosslyCanvasChangeListener = Listener<CrosslyCanvasChangeEvent>;

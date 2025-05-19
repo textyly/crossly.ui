@@ -33,19 +33,14 @@ export class CrosslyCanvasFacade extends CrosslyCanvas implements ICrosslyCanvas
         super.invokeChangeName(this._name);
     }
 
-    public get fabricPattern(): FabricPattern {
+    public get pattern(): CrosslyCanvasPattern {
         this.ensureAlive();
-        return this.fabricCanvasFacade.pattern;
-    }
 
-    public get stitchPattern(): StitchPattern {
-        this.ensureAlive();
-        return this.stitchCanvasFacade.pattern;
-    }
-
-    public get cuePattern(): CuePattern {
-        this.ensureAlive();
-        return this.cueCanvasFacade.pattern;
+        return {
+            name: this.name,
+            fabric: this.fabricCanvasFacade.pattern,
+            stitch: this.stitchCanvasFacade.pattern
+        };
     }
 
     public draw(): void {
@@ -59,9 +54,9 @@ export class CrosslyCanvasFacade extends CrosslyCanvas implements ICrosslyCanvas
     public load(pattern: CrosslyCanvasPattern): void {
         this.ensureAlive();
 
-        this.fabricCanvasFacade.load(pattern.fabricPattern);
-        this.stitchCanvasFacade.load(pattern.stitchPattern);
-        this.cueCanvasFacade.load(pattern.stitchPattern);
+        this.fabricCanvasFacade.load(pattern.fabric);
+        this.stitchCanvasFacade.load(pattern.stitch);
+        this.cueCanvasFacade.load(pattern.stitch);
     }
 
     public useThread(name: string, color: string, width: number): void {

@@ -20,8 +20,8 @@ export class Repository implements IRepository {
         this.persistence = persistence;
     }
 
-    public async save(canvasData: CrosslyCanvasPattern): Promise<Id> {
-        const dataModel = this.converter.convertToDataModel(canvasData);
+    public async save(pattern: CrosslyCanvasPattern): Promise<Id> {
+        const dataModel = this.converter.convertToDataModel(pattern);
         this.validator.validateDataModel(dataModel);
         const id = await this.saveDataModel(dataModel);
         return id
@@ -29,7 +29,7 @@ export class Repository implements IRepository {
 
     public async get(id: Id): Promise<CrosslyCanvasPattern> {
         const dataModel = await this.getDataModel(id);
-        const canvasData = this.converter.convertToCanvasData(dataModel);
+        const canvasData = this.converter.convertToCrosslyPattern(dataModel);
         this.validator.validateCanvasData(canvasData);
         return canvasData;
     }

@@ -24,9 +24,9 @@ export class CrosslyCanvasObserver extends Base implements ICrosslyCanvasObserve
 
         this.canvasFacade = canvas;
         const name = this.canvasFacade.name;
-        const fabricPattern = this.canvasFacade.fabricPattern;
-        const stitchPattern = this.canvasFacade.stitchPattern;
-        this.data = { name, fabricPattern: fabricPattern, stitchPattern: stitchPattern };
+        const pattern = this.canvasFacade.pattern;
+
+        this.data = { name, fabric: pattern.fabric, stitch: pattern.stitch };
 
         this.subscribe();
     }
@@ -47,14 +47,14 @@ export class CrosslyCanvasObserver extends Base implements ICrosslyCanvasObserve
     private handleChangeFabric(event: ChangeFabricEvent): void {
         super.ensureAlive();
 
-        this.data.fabricPattern = event.pattern;
+        this.data.fabric = event.pattern;
         this.invokeDataChange(this.data);
     }
 
     private handleChangeStitchPattern(event: ChangeStitchPatternEvent): void {
         super.ensureAlive();
 
-        this.data.stitchPattern = event.pattern;
+        this.data.stitch = event.pattern;
         this.invokeDataChange(this.data);
     }
 

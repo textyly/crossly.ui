@@ -13,14 +13,14 @@ import {
 
 export class Converter implements IConverter {
 
-    public convertToDataModel(canvasData: CrosslyCanvasPattern): CrosslyDataModel {
-        const name = canvasData.name;
-        const fabric = canvasData.fabricPattern;
-        const pattern = canvasData.stitchPattern;
+    public convertToDataModel(pattern: CrosslyCanvasPattern): CrosslyDataModel {
+        const name = pattern.name;
+        const fabricPattern = pattern.fabric;
+        const stitchPattern = pattern.stitch;
 
-        const fabricDataModel = this.convertToFabricDataModel(fabric);
-        const threadsDataModel = this.convertToThreadsDataModel(pattern);
-        const patternDataModel = this.convertToPatternDataModel(pattern, threadsDataModel);
+        const fabricDataModel = this.convertToFabricDataModel(fabricPattern);
+        const threadsDataModel = this.convertToThreadsDataModel(stitchPattern);
+        const patternDataModel = this.convertToPatternDataModel(stitchPattern, threadsDataModel);
 
         const dataModel = {
             name,
@@ -32,17 +32,17 @@ export class Converter implements IConverter {
         return dataModel;
     }
 
-    public convertToCanvasData(dataModel: CrosslyDataModel): CrosslyCanvasPattern {
+    public convertToCrosslyPattern(dataModel: CrosslyDataModel): CrosslyCanvasPattern {
         const name = dataModel.name;
         const fabricDataModel = dataModel.fabric;
         const threadsDataModel = dataModel.threads;
         const patternDataModel = dataModel.pattern;
 
-        const fabricPattern = this.convertToFabricCanvasData(fabricDataModel);
-        const stitchPattern = this.convertToPatternCanvasData(patternDataModel, threadsDataModel);
+        const fabric = this.convertToFabricPattern(fabricDataModel);
+        const stitch = this.convertToStitchPattern(patternDataModel, threadsDataModel);
 
-        const canvasData = { name, fabricPattern, stitchPattern };
-        return canvasData;
+        const pattern = { name, fabric, stitch };
+        return pattern;
     }
 
     private convertToFabricDataModel(fabric: FabricPattern): FabricDataModel {
@@ -105,7 +105,7 @@ export class Converter implements IConverter {
     }
 
     // TODO: this method has not been tested!!!
-    private convertToFabricCanvasData(fabricDataModel: FabricDataModel): FabricPattern {
+    private convertToFabricPattern(fabricDataModel: FabricDataModel): FabricPattern {
         const name = fabricDataModel.name;
         const color = fabricDataModel.color;
         const rows = fabricDataModel.rows;
@@ -125,8 +125,7 @@ export class Converter implements IConverter {
         return fabric;
     }
 
-    // TODO: this method has not been tested!!!
-    private convertToPatternCanvasData(patternDataModel: PatternDataModel, threadsDataModel: ThreadsDataModel): StitchPattern {
+    private convertToStitchPattern(patternDataModel: PatternDataModel, threadsDataModel: ThreadsDataModel): StitchPattern {
         const stitchPattern = new Array<IThreadPath>();
 
         patternDataModel.forEach((threadPathDataModel) => {

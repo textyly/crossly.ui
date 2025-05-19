@@ -13,13 +13,14 @@ canvasBuilder.withConfig(config);
 const canvasFacade = canvasBuilder.build();
 canvasFacade.draw();
 
-// TODO: delete everything below !!!
-(window as any).crossly = canvasFacade;
+// TODO: delete everything below !!! It is used for testing purpose only
 
-const observer = new CrosslyCanvasObserver(canvasFacade);
 const repositoryFactory = new RepositoryFactory();
 const repository = repositoryFactory.create();
 
-const watcher = new CrosslyCanvasWatcher(observer, repository);
+const w = window as any;
+w.crossly = canvasFacade;
+w.crosslyRepository = repository;
 
-(window as any).crosslyRepository = repository;
+// const observer = new CrosslyCanvasObserver(canvasFacade);
+// const watcher = new CrosslyCanvasWatcher(observer, repository);

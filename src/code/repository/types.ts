@@ -1,5 +1,5 @@
-import { CrosslyCanvasPattern } from "../canvas/types.js";
 import { CrosslyDataModel } from "../data-model/types.js";
+import { CrosslyCanvasPattern } from "../canvas/types.js";
 
 export type Id = string;
 export type DataModel = Uint8Array;
@@ -16,6 +16,6 @@ export interface IPersistence {
 }
 
 export interface IRepository {
-    save(canvasData: CrosslyCanvasPattern): Promise<Id>;
+    save(pattern: CrosslyCanvasPattern): Promise<Id>;
     get(id: Id): Promise<CrosslyCanvasPattern>;
 }
