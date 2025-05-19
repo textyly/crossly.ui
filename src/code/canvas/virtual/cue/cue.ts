@@ -350,16 +350,12 @@ export abstract class CueCanvas extends CueCanvasBase {
 
     private validateConfig(config: CueCanvasConfig): void {
         const dotConfig = config.dots;
-        assert.defined(dotConfig, "DotConfig");
-
-        const threadConfig = config.threads;
-        assert.defined(threadConfig, "ThreadConfig");
-
         assert.greaterThanZero(dotConfig.radius, "dotRadius");
         assert.greaterThanZero(dotConfig.minRadius, "minDotRadius");
         assert.greaterThanZero(dotConfig.radiusZoomStep, "dotRadiusZoomStep");
         assert.greaterThanZero(dotConfig.color.length, "dotColor.length");
 
+        const threadConfig = config.threads;
         assert.greaterThanZero(threadConfig.width, "threadWidth");
         assert.greaterThanZero(threadConfig.minWidth, "minThreadWidth");
         assert.greaterThanZero(threadConfig.widthZoomStep, "threadWidthZoomStep");

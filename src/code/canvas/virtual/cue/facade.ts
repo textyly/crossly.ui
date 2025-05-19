@@ -1,9 +1,9 @@
 import { CueCanvas } from "./cue.js";
-import { CanvasSide, CuePattern, DotIndex, StitchPattern } from "../../types.js";
 import { ICueCanvasFacade } from "../types.js";
 import assert from "../../../asserts/assert.js";
 import { IInputCanvas } from "../../input/types.js";
 import { CueCanvasConfig } from "../../../config/types.js";
+import { CuePattern, DotIndex, StitchPattern } from "../../types.js";
 import { CueThreadArray } from "../../utilities/arrays/thread/cue.js";
 
 export class CueCanvasFacade extends CueCanvas implements ICueCanvasFacade {
@@ -13,10 +13,26 @@ export class CueCanvasFacade extends CueCanvas implements ICueCanvasFacade {
     }
 
     public get pattern(): CuePattern {
+        super.ensureAlive();
         return this._pattern;
     }
 
     public load(pattern: StitchPattern): void {
+        super.ensureAlive();
+        this.loadCore(pattern);
+    }
+
+    public useThread(name: string, color: string, width: number): void {
+        super.ensureAlive();
+
+        assert.greaterThanZero(name.length, "name.length");
+        assert.greaterThanZero(color.length, "color.length");
+        assert.greaterThanZero(width, "width");
+
+        super.useNewThread(name, color, width);
+    }
+
+    private loadCore(pattern: StitchPattern): void {
         this._pattern = new Array<CueThreadArray>;
 
         let lastDotIdx: DotIndex | undefined = undefined;
@@ -24,7 +40,9 @@ export class CueCanvasFacade extends CueCanvas implements ICueCanvasFacade {
         pattern.forEach((threadPath) => {
             this.useNewThread(threadPath.name, threadPath.color, threadPath.width);
 
-            const thread = this.getCurrentThread()!;
+            const thread = this.getCurrentThread();
+            assert.defined(thread, "thread");
+
             for (let index = 0; index < threadPath.length; index++) {
                 const indexX = threadPath.indexesX[index];
                 const indexY = threadPath.indexesY[index];
@@ -36,15 +54,5 @@ export class CueCanvasFacade extends CueCanvas implements ICueCanvasFacade {
         });
 
         this.clickedDotIdx = lastDotIdx;
-    }
-
-    public useThread(name: string, color: string, width: number): void {
-        super.ensureAlive();
-
-        assert.greaterThanZero(name.length, "name.length");
-        assert.greaterThanZero(color.length, "color.length");
-        assert.greaterThanZero(width, "width");
-
-        super.useNewThread(name, color, width);
     }
 }

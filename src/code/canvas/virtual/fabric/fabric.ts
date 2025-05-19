@@ -116,13 +116,12 @@ export abstract class FabricCanvas extends FabricCanvasBase {
 
     private validateConfig(config: FabricCanvasConfig): void {
         const dotConfig = config.dots;
-        const threadConfig = config.threads;
-
         assert.greaterThanZero(dotConfig.radius, "dotRadius");
         assert.greaterThanZero(dotConfig.minRadius, "minDotRadius");
         assert.greaterThanZero(dotConfig.radiusZoomStep, "dotRadiusZoomStep");
         assert.greaterThanZero(dotConfig.color.length, "dotColor.length");
 
+        const threadConfig = config.threads;
         assert.greaterThanZero(threadConfig.width, "threadWidth");
         assert.greaterThanZero(threadConfig.minWidth, "minThreadWidth");
         assert.greaterThanZero(threadConfig.widthZoomStep, "threadWidthZoomStep");
