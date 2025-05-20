@@ -1,5 +1,6 @@
 html,
 body {
+  background-color: darkgray;
   overflow: hidden;
   margin: 0;
   padding: 0;
@@ -12,6 +13,7 @@ body {
   display: flex;
   width: 100%;
   height: 100%;
+  gap: 0.5rem;
 }
 
 #fabric {
@@ -37,26 +39,20 @@ body {
 }
 
 #input {
-  position: relative;
   flex: 1;
+  position: relative;
   overflow: hidden;
   border: none;
   outline: none;
-  left: 10px;
-  top: 10px;
+  margin: 0.5rem;
   z-index: 4;
-  width: 100%;
-  height: 100%;
 }
 
 #back {
+  background-color: #fff8dc;
   flex: 1;
-  background-color: rgb(179, 241, 221);
   overflow: hidden;
   border: none;
   outline: none;
-  left: 10px;
-  top: 10px;
-  width: 100%;
-  height: 100%;
+  margin: 0.5rem;
 }
