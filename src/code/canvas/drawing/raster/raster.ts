@@ -3,18 +3,31 @@ import { CanvasBase } from "../../base.js";
 import assert from "../../../asserts/assert.js";
 
 export abstract class RasterDrawingCanvas extends CanvasBase {
-    protected readonly rasterCanvas: HTMLCanvasElement
-    protected readonly context: CanvasRenderingContext2D;
+    protected readonly rasterCanvas: HTMLCanvasElement;
+    protected readonly backRasterCanvas: HTMLCanvasElement;
+
+    protected readonly rasterCanvasContext: CanvasRenderingContext2D;
+    protected readonly backRasterCanvasContext: CanvasRenderingContext2D;
+
     protected readonly offset: number;
 
-    constructor(className: string, rasterCanvas: HTMLCanvasElement) {
+    constructor(
+        className: string,
+        rasterCanvas: HTMLCanvasElement,
+        backRasterCanvas: HTMLCanvasElement) {
+
         super(className);
+
         this.rasterCanvas = rasterCanvas;
+        this.backRasterCanvas = backRasterCanvas;
 
-        this.context = this.rasterCanvas.getContext("2d")!;
-        assert.defined(this.context, "context");
+        this.rasterCanvasContext = this.rasterCanvas.getContext("2d")!;
+        assert.defined(this.rasterCanvasContext, "rasterCanvasContext");
 
-        this.offset = 5;
+        this.backRasterCanvasContext = this.backRasterCanvas.getContext("2d")!;
+        assert.defined(this.backRasterCanvasContext, "backRasterCanvasContext");
+
+        this.offset = 5; // TODO: remove this hardcoded value
     }
 
     public override get bounds(): Bounds {
@@ -43,14 +56,14 @@ export abstract class RasterDrawingCanvas extends CanvasBase {
         super.ensureAlive();
 
         const bounds = this.bounds;
-        this.context.drawImage(bitmap, 0, 0, bounds.width, bounds.height);
+        this.rasterCanvasContext.drawImage(bitmap, 0, 0, bounds.width, bounds.height);
     }
 
     public clear(): void {
         super.ensureAlive();
 
         const bounds = this.bounds;
-        this.context.clearRect(0, 0, bounds.width, bounds.height);
+        this.rasterCanvasContext.clearRect(0, 0, bounds.width, bounds.height);
     }
 
     protected override invokeBoundsChange(bounds: Bounds): void {
@@ -62,10 +75,14 @@ export abstract class RasterDrawingCanvas extends CanvasBase {
         const height = bounds.height;
 
         this.rasterCanvas.style.transform = `translate(${x}px, ${y}px)`;
+        this.backRasterCanvas.style.transform = `translate(${x}px, ${y}px)`;
 
         if (width !== this.rasterCanvas.width || height !== this.rasterCanvas.height) {
             this.rasterCanvas.height = height;
             this.rasterCanvas.width = width;
+
+            this.backRasterCanvas.height = height;
+            this.backRasterCanvas.width = width;
         }
     }
 }

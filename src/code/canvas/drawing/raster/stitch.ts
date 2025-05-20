@@ -11,8 +11,8 @@ import { RasterRectangleDrawing } from "./primitives/rectangle.js";
 export class StitchRasterDrawingCanvas extends RasterDrawingCanvas implements IStitchRasterDrawingCanvas {
     private shape: ShapeDrawing;
 
-    constructor(rasterCanvas: HTMLCanvasElement) {
-        super(StitchRasterDrawingCanvas.name, rasterCanvas);
+    constructor(rasterCanvas: HTMLCanvasElement, backRasterCanvas: HTMLCanvasElement) {
+        super(StitchRasterDrawingCanvas.name, rasterCanvas, backRasterCanvas);
 
         const line = new RasterLineDrawing();
         const polygon = new RasterPolygonDrawing();
@@ -96,10 +96,10 @@ export class StitchRasterDrawingCanvas extends RasterDrawingCanvas implements IS
     }
 
     private drawPath(path: Path2D, color: string): void {
-        this.context.strokeStyle = color;
-        this.context.stroke(path);
+        this.rasterCanvasContext.strokeStyle = color;
+        this.rasterCanvasContext.stroke(path);
 
-        this.context.fillStyle = color;
-        this.context.fill(path);
+        this.rasterCanvasContext.fillStyle = color;
+        this.rasterCanvasContext.fill(path);
     }
 }

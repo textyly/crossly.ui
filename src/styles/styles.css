@@ -16,6 +16,16 @@ body {
   gap: 0.5rem;
 }
 
+#input {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  border: none;
+  outline: none;
+  margin: 0.5rem;
+  z-index: 4;
+}
+
 #fabric {
   background-color: #fff8dc;
   left: 5px;
@@ -38,21 +48,24 @@ body {
   z-index: 3;
 }
 
-#input {
+#back {
   flex: 1;
   position: relative;
   overflow: hidden;
   border: none;
   outline: none;
   margin: 0.5rem;
-  z-index: 4;
 }
 
-#back {
+#back-fabric {
   background-color: #fff8dc;
-  flex: 1;
-  overflow: hidden;
-  border: none;
-  outline: none;
-  margin: 0.5rem;
+  position: absolute;
+  left: 5px;
+  top: 5px;
+}
+
+#back-stitch {
+  position: absolute;
+  left: 5px;
+  top: 5px;
 }
