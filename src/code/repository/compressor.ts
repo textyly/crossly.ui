@@ -24,6 +24,7 @@ export class Compressor implements ICompressor {
         const decompressedBlob = await new Response(decompressedStream).blob();
         const text = await decompressedBlob.text();
 
-        return JSON.parse(text);
+        const dataModel = JSON.parse(text);
+        return dataModel;
     }
 }

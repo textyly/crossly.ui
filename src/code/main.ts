@@ -9,6 +9,7 @@ const config = configFactory.create();
 
 const canvasBuilder = new CanvasBuilder();
 canvasBuilder.withConfig(config);
+
 const canvasFacade = canvasBuilder.build();
 canvasFacade.draw();
 

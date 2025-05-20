@@ -23,15 +23,18 @@ export class Repository implements IRepository {
     public async save(pattern: CrosslyCanvasPattern): Promise<Id> {
         const dataModel = this.converter.convertToDataModel(pattern);
         this.validator.validateDataModel(dataModel);
+
         const id = await this.saveDataModel(dataModel);
         return id
     }
 
     public async get(id: Id): Promise<CrosslyCanvasPattern> {
         const dataModel = await this.getDataModel(id);
-        const canvasData = this.converter.convertToCrosslyPattern(dataModel);
-        this.validator.validateCanvasData(canvasData);
-        return canvasData;
+
+        const pattern = this.converter.convertToCrosslyPattern(dataModel);
+        this.validator.validatePattern(pattern);
+
+        return pattern;
     }
 
     private async saveDataModel(dataModel: CrosslyDataModel): Promise<Id> {
@@ -42,10 +45,6 @@ export class Repository implements IRepository {
 
     private async getDataModel(id: Id): Promise<CrosslyDataModel> {
         const dataModelStream = await this.persistence.get(id);
-        if (!dataModelStream) {
-            throw new Error(`data model with id: ${id} cannot be found.`);
-        }
-
         const decompressedDataModel = await this.compressor.decompress(dataModelStream);
         return decompressedDataModel;
     }

@@ -12,7 +12,7 @@ export interface ICompressor {
 
 export interface IPersistence {
     save(dataModel: DataModel): Promise<Id>;
-    get(id: Id): Promise<DataModelStream | null>;
+    get(id: Id): Promise<DataModelStream>;
 }
 
 export interface IRepository {

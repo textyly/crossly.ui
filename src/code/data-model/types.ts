@@ -43,7 +43,7 @@ export type PatternDataModel = Array<ThreadPathDataModel>;
 
 export interface IValidator {
     validateDataModel(dataModel: CrosslyDataModel): void;
-    validateCanvasData(canvasData: CrosslyCanvasPattern): void;
+    validatePattern(pattern: CrosslyCanvasPattern): void;
 };
 
 export interface IConverter {

@@ -1,3 +1,4 @@
+import assert from "../asserts/assert.js";
 import { DataModel, Id, DataModelStream, IPersistence } from "./types.js";
 
 export class Persistence implements IPersistence {
@@ -22,11 +23,15 @@ export class Persistence implements IPersistence {
 		};
 	}
 
-	public async get(id: Id): Promise<DataModelStream | null> {
+	public async get(id: Id): Promise<DataModelStream> {
 		const encodedId = encodeURIComponent(id);
+
 		const getEndPoint = this.getEndPoint + encodedId;
 		const response = await fetch(getEndPoint);
 		const dataModel = response.body;
+
+		assert.defined(dataModel, "dataModel");
+
 		return dataModel;
 	}
 
@@ -34,8 +39,13 @@ export class Persistence implements IPersistence {
 		const body = dataModel;
 		const options = { ...this.saveOptions, body };
 		const result = await fetch(this.saveEndPoint, options);
+
 		const resultData = await result.json();
-		const id = resultData.id;
+		const id = resultData.id as string;
+
+		assert.defined(id, "id");
+		assert.greaterThanZero(id.length, "id.length");
+
 		return id;
 	}
 }
