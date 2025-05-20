@@ -1,14 +1,20 @@
 import { ICrosslyCanvas } from "../types.js";
+import { CrosslyCanvasBase } from "./base.js";
 import { IInputCanvas } from "../input/types.js";
 import { CueDrawingCanvas } from "../drawing/cue.js";
-import { CrosslyCanvasBase } from "./base.js";
-import { CrosslyCanvasConfig } from "../../config/types.js";
-import { FabricCanvas } from "../virtual/fabric/fabric.js";
 import { FabricDrawingCanvas } from "../drawing/fabric.js";
 import { StitchDrawingCanvas } from "../drawing/stitch.js";
 import { CueCanvasFacade } from "../virtual/cue/facade.js";
+import { CrosslyCanvasConfig } from "../../config/types.js";
+import { FabricCanvasFacade } from "../virtual/fabric/facade.js";
 import { StitchCanvasFacade } from "../virtual/stitch/facade.js";
-import { ChangeFabricEvent, ChangeStitchPatternEvent, ICueCanvasFacade, IFabricCanvas, IStitchCanvasFacade } from "../virtual/types.js";
+import {
+    ICueCanvasFacade,
+    ChangeFabricEvent,
+    IFabricCanvasFacade,
+    IStitchCanvasFacade,
+    ChangeStitchPatternEvent,
+} from "../virtual/types.js";
 import {
     ICueDrawingCanvas,
     IFabricDrawingCanvas,
@@ -20,8 +26,9 @@ import {
 
 export abstract class CrosslyCanvas extends CrosslyCanvasBase implements ICrosslyCanvas {
     private readonly inputCanvas: IInputCanvas;
+    protected readonly configuration: CrosslyCanvasConfig;
 
-    protected fabricCanvas!: IFabricCanvas;
+    protected fabricCanvasFacade!: IFabricCanvasFacade;
     private fabricDrawingCanvas!: IFabricDrawingCanvas;
     private fabricRasterDrawing!: IFabricRasterDrawingCanvas;
 
@@ -33,16 +40,20 @@ export abstract class CrosslyCanvas extends CrosslyCanvasBase implements ICrossl
     private cueDrawingCanvas!: ICueDrawingCanvas;
     private cueVectorDrawing!: IVectorDrawingCanvas;
 
+    protected _name: string;
+
     constructor(
-        className: string,
+        name: string,
         config: CrosslyCanvasConfig,
         inputCanvas: IInputCanvas,
         fabricRasterDrawing: IFabricRasterDrawingCanvas,
         stitchRasterDrawing: IStitchRasterDrawingCanvas,
         cueVectorDrawing: IVectorDrawingCanvas) {
 
-        super(className, config);
+        super(CrosslyCanvas.name);
 
+        this._name = name;
+        this.configuration = config;
         this.inputCanvas = inputCanvas;
 
         this.initializeFabricCanvas(fabricRasterDrawing);
@@ -50,14 +61,6 @@ export abstract class CrosslyCanvas extends CrosslyCanvasBase implements ICrossl
         this.initializeCueCanvas(cueVectorDrawing);
 
         this.subscribe();
-    }
-
-    public draw(): void {
-        this.ensureAlive();
-
-        this.fabricCanvas.draw();
-        this.stitchCanvasFacade.draw();
-        this.cueCanvasFacade.draw();
     }
 
     public override dispose(): void {
@@ -73,32 +76,36 @@ export abstract class CrosslyCanvas extends CrosslyCanvasBase implements ICrossl
 
     private initializeFabricCanvas(fabricRasterDrawing: IFabricRasterDrawingCanvas): void {
         this.fabricRasterDrawing = fabricRasterDrawing;
-        this.fabricCanvas = new FabricCanvas(this.config.fabric, this.inputCanvas);
-        this.fabricDrawingCanvas = new FabricDrawingCanvas(this.fabricCanvas, this.fabricRasterDrawing);
+        this.fabricCanvasFacade = new FabricCanvasFacade(this.configuration.fabric, this.inputCanvas);
+        this.fabricDrawingCanvas = new FabricDrawingCanvas(this.fabricCanvasFacade, this.fabricRasterDrawing);
     }
 
     private initializeStitchCanvas(stitchRasterDrawing: IStitchRasterDrawingCanvas): void {
         this.stitchRasterDrawing = stitchRasterDrawing;
-        this.stitchCanvasFacade = new StitchCanvasFacade(this.config.stitch, this.inputCanvas);
+        this.stitchCanvasFacade = new StitchCanvasFacade(this.configuration.stitch, this.inputCanvas);
         this.stitchDrawingCanvas = new StitchDrawingCanvas(this.stitchCanvasFacade, this.stitchRasterDrawing);
     }
 
     private initializeCueCanvas(curVectorDrawing: IVectorDrawingCanvas): void {
         this.cueVectorDrawing = curVectorDrawing;
-        this.cueCanvasFacade = new CueCanvasFacade(this.config.cue, this.inputCanvas);
+        this.cueCanvasFacade = new CueCanvasFacade(this.configuration.cue, this.inputCanvas);
         this.cueDrawingCanvas = new CueDrawingCanvas(this.cueCanvasFacade, this.cueVectorDrawing);
     }
 
     private handleChangeFabric(event: ChangeFabricEvent): void {
-        super.invokeChangeFabric(event.fabric);
+        this.ensureAlive();
+
+        super.invokeChangeFabric(event.pattern);
     }
 
     private handleChangeStitchPattern(event: ChangeStitchPatternEvent): void {
+        this.ensureAlive();
+
         super.invokeChangeStitchPattern(event.pattern);
     }
 
     private subscribe() {
-        const unChangeFabric = this.fabricCanvas.onChange(this.handleChangeFabric.bind(this));
+        const unChangeFabric = this.fabricCanvasFacade.onChange(this.handleChangeFabric.bind(this));
         super.registerUn(unChangeFabric);
 
         const unChangeStitchPattern = this.stitchCanvasFacade.onChange(this.handleChangeStitchPattern.bind(this));
@@ -118,7 +125,7 @@ export abstract class CrosslyCanvas extends CrosslyCanvasBase implements ICrossl
     }
 
     private disposeFabricCanvas(): void {
-        this.fabricCanvas.dispose();
+        this.fabricCanvasFacade.dispose();
         this.fabricDrawingCanvas.dispose();
         this.fabricRasterDrawing.dispose();
     }

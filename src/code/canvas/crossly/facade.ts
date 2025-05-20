@@ -1,24 +1,68 @@
 import { CrosslyCanvas } from "./crossly.js";
 import { IInputCanvas } from "../input/types.js";
-import { ICrosslyCanvasFacade } from "../types.js";
 import { CrosslyCanvasConfig } from "../../config/types.js";
 import { IFabricRasterDrawingCanvas, IStitchRasterDrawingCanvas, IVectorDrawingCanvas } from "../drawing/types.js";
+import { CrosslyCanvasPattern, CuePattern, FabricPattern, ICrosslyCanvasFacade, StitchPattern } from "../types.js";
 
 export class CrosslyCanvasFacade extends CrosslyCanvas implements ICrosslyCanvasFacade {
     constructor(
+        name: string,
         config: CrosslyCanvasConfig,
         inputCanvas: IInputCanvas,
         fabricRasterDrawing: IFabricRasterDrawingCanvas,
         stitchRasterDrawing: IStitchRasterDrawingCanvas,
         cueVectorDrawing: IVectorDrawingCanvas) {
 
-        super(CrosslyCanvasFacade.name, config, inputCanvas, fabricRasterDrawing, stitchRasterDrawing, cueVectorDrawing);
+        super(name, config, inputCanvas, fabricRasterDrawing, stitchRasterDrawing, cueVectorDrawing);
     }
 
-    public useNewThread(color: string, width: number): void {
-        this.stitchCanvasFacade.useNewThread(color, width);
-        this.cueCanvasFacade.useNewThread(color, width);
+    public get config(): CrosslyCanvasConfig {
+        this.ensureAlive();
+        return this.configuration;
     }
 
-    // TODO: load patterns (stitches) must add stitch threads and cue threads as well!!! Otherwise `undo` logic will not work correctly.
-}
+    public get name(): string {
+        this.ensureAlive();
+        return this._name;
+    }
+
+    public set name(value: string) {
+        this.ensureAlive();
+
+        this._name = value;
+        super.invokeChangeName(this._name);
+    }
+
+    public get pattern(): CrosslyCanvasPattern {
+        this.ensureAlive();
+
+        return {
+            name: this.name,
+            fabric: this.fabricCanvasFacade.pattern,
+            stitch: this.stitchCanvasFacade.pattern
+        };
+    }
+
+    public draw(): void {
+        this.ensureAlive();
+
+        this.fabricCanvasFacade.draw();
+        this.stitchCanvasFacade.draw();
+        this.cueCanvasFacade.draw();
+    }
+
+    public load(pattern: CrosslyCanvasPattern): void {
+        this.ensureAlive();
+
+        this.fabricCanvasFacade.load(pattern.fabric);
+        this.stitchCanvasFacade.load(pattern.stitch);
+        this.cueCanvasFacade.load(pattern.stitch);
+    }
+
+    public useThread(name: string, color: string, width: number): void {
+        this.ensureAlive();
+
+        this.stitchCanvasFacade.useThread(name, color, width);
+        this.cueCanvasFacade.useThread(name, color, width);
+    }
+} 

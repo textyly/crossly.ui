@@ -1,12 +1,19 @@
 import { IDotArray } from "../utilities/arrays/types.js";
 import { FabricThreadArray } from "../utilities/arrays/thread/fabric.js";
 import { Listener, VoidListener, VoidUnsubscribe } from "../../types.js";
-import { Id, CueDot, ICanvas, CueSegment, StitchPattern, StitchSegment } from "../types.js";
+import {
+    Id,
+    CueDot,
+    ICanvas,
+    CuePattern,
+    CueSegment,
+    StitchPattern,
+    StitchSegment,
+    FabricPattern,
+} from "../types.js";
 
 export interface IVirtualCanvas extends ICanvas {
-    draw(): void;
     onRedraw(listener: VoidListener): VoidUnsubscribe;
-
     onMoveStart(listener: VoidListener): VoidUnsubscribe;
     onMoveStop(listener: VoidListener): VoidUnsubscribe;
 }
@@ -27,23 +34,36 @@ export interface ICueCanvas extends IVirtualCanvas {
     onDrawDot(listener: DrawCueDotListener): VoidUnsubscribe;
     onDrawDashDot(listener: DrawCueDotListener): VoidUnsubscribe;
     onRemoveDot(listener: RemoveCueDotListener): VoidUnsubscribe;
-
     onDrawSegment(listener: DrawCueSegmentListener): VoidUnsubscribe;
     onDrawDashSegment(listener: DrawCueSegmentListener): VoidUnsubscribe;
     onMoveSegment(listener: MoveCueSegmentListener): VoidUnsubscribe;
     onRemoveSegment(listener: RemoveCueSegmentListener): VoidUnsubscribe;
 }
 
+export interface IFabricCanvasFacade extends IFabricCanvas {
+    get pattern(): FabricPattern;
+
+    draw(): void;
+    load(pattern: FabricPattern): void;
+}
+
 export interface IStitchCanvasFacade extends IStitchCanvas {
-    useNewThread(color: string, width: number): void;
+    get pattern(): StitchPattern;
+
+    draw(): void;
+    load(pattern: StitchPattern): void;
+    useThread(name: string, color: string, width: number): void;
 }
 
 export interface ICueCanvasFacade extends ICueCanvas {
-    useNewThread(color: string, width: number): void;
+    get pattern(): CuePattern;
+
+    draw(): void;
+    load(pattern: StitchPattern): void;
+    useThread(name: string, color: string, width: number): void;
 }
 
-export type FabricCanvasData = { name: string, color: string, columns: number, rows: number, dots: { color: string }, threads: { color: string } };
-export type ChangeFabricEvent = { fabric: FabricCanvasData };
+export type ChangeFabricEvent = { pattern: FabricPattern; };
 export type ChangeFabricListener = Listener<ChangeFabricEvent>;
 
 export type DrawFabricDotsEvent = { dots: IDotArray; };
@@ -55,7 +75,7 @@ export type DrawFabricThreadsListener = Listener<DrawFabricThreadsEvent>;
 export type DrawStitchSegmentEvent = { segment: StitchSegment; density: Density; };
 export type DrawStitchSegmentListener = Listener<DrawStitchSegmentEvent>;
 
-export type ChangeStitchPatternEvent = { pattern: StitchPattern };
+export type ChangeStitchPatternEvent = { pattern: StitchPattern; };
 export type ChangeStitchPatternListener = Listener<ChangeStitchPatternEvent>;
 
 export type DrawStitchPatternEvent = { pattern: StitchPattern; density: Density; };

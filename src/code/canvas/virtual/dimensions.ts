@@ -2,13 +2,15 @@ import { CanvasBase } from "../base.js";
 import { CanvasConfig } from "../../config/types.js";
 import { IInputCanvas, Position } from "../input/types.js";
 import { Bounds, BoundsIndexes, DotIndex } from "../types.js";
-import assert from "../../asserts/assert.js";
 
 export abstract class VirtualCanvasDimensions extends CanvasBase {
-    protected readonly config: Readonly<CanvasConfig>;
     protected readonly inputCanvas: IInputCanvas;
 
+    protected _rows: number;
+    protected _columns: number;
+
     protected dotsSpace: number;
+    protected dotsSpaceZoomStep: number;
     protected currentDotsSpace: number;
     protected minDotsSpace: number;
 
@@ -18,31 +20,28 @@ export abstract class VirtualCanvasDimensions extends CanvasBase {
     constructor(className: string, config: CanvasConfig, inputCanvas: IInputCanvas) {
         super(className);
 
-        this.config = config;
-        assert.defined(this.config, "config");
-
         this.inputCanvas = inputCanvas;
-        assert.defined(this.inputCanvas, "inputCanvas");
+
+        this._rows = config.rows;
+        this._columns = config.columns;
 
         const dotsSpacing = config.dotsSpacing;
-        assert.greaterThanZero(dotsSpacing.space, "space");
-        assert.greaterThanZero(dotsSpacing.minSpace, "minSpace");
-
         this.currentDotsSpace = this.dotsSpace = dotsSpacing.space / 2;
         this.minDotsSpace = dotsSpacing.minSpace / 2;
+        this.dotsSpaceZoomStep = config.dotsSpacing.spaceZoomStep / 2;
 
         this._virtualBounds = { left: 0, top: 0, width: 0, height: 0 };
     }
 
     protected get allDotsY(): number {
-        const invisibleRows = this.config.rows - 1;
-        const all = this.config.rows + invisibleRows;
+        const invisibleRows = this._rows - 1;
+        const all = this._rows + invisibleRows;
         return all;
     }
 
     protected get allDotsX(): number {
-        const invisibleColumns = this.config.columns - 1;
-        const all = this.config.columns + invisibleColumns;
+        const invisibleColumns = this._columns - 1;
+        const all = this._columns + invisibleColumns;
         return all;
     }
 
@@ -79,7 +78,7 @@ export abstract class VirtualCanvasDimensions extends CanvasBase {
         const oldDotIdx = this.calculateDotIndex(position);
         const oldDotSpace = this.currentDotsSpace;
 
-        const spaceZoomStep = this.config.dotsSpacing.spaceZoomStep / 2;
+        const spaceZoomStep = this.dotsSpaceZoomStep;
         this.currentDotsSpace += spaceZoomStep;
 
         const diffX = (oldDotSpace - this.currentDotsSpace) * oldDotIdx.dotX;
@@ -91,7 +90,7 @@ export abstract class VirtualCanvasDimensions extends CanvasBase {
         const oldDotIdx = this.calculateDotIndex(position);
         const oldDotSpace = this.currentDotsSpace;
 
-        const spaceZoomStep = this.config.dotsSpacing.spaceZoomStep / 2;
+        const spaceZoomStep = this.dotsSpaceZoomStep;
         this.currentDotsSpace -= spaceZoomStep;
 
         const diffX = (oldDotSpace - this.currentDotsSpace) * oldDotIdx.dotX;

@@ -9,14 +9,13 @@ import { IInputCanvas, PointerUpEvent, Position } from "../../input/types.js";
 
 export abstract class StitchCanvas extends StitchCanvasBase {
     private readonly dotsUtility: DotsUtility<Dot>;
-    private readonly pattern: Array<ThreadPath>;
+    protected _pattern: Array<ThreadPath>;
 
     private readonly minThreadWidth: number;
     private readonly threadWidthZoomStep: number;
 
     private zooms: number;
-    private clickedDotIdx?: DotIndex;
-
+    protected clickedDotIdx?: DotIndex;
 
     constructor(config: StitchCanvasConfig, inputCanvas: IInputCanvas) {
         super(StitchCanvas.name, config, inputCanvas);
@@ -27,8 +26,8 @@ export abstract class StitchCanvas extends StitchCanvasBase {
         this.minThreadWidth = threadConfig.minWidth;
         this.threadWidthZoomStep = threadConfig.widthZoomStep;
 
-        this.pattern = new Array<ThreadPath>();
-        this.createThread(threadConfig.color, threadConfig.width);
+        this._pattern = new Array<ThreadPath>();
+        this.createThread(threadConfig.name, threadConfig.color, threadConfig.width);
 
         this.dotsUtility = new DotsUtility();
 
@@ -62,8 +61,8 @@ export abstract class StitchCanvas extends StitchCanvasBase {
         const rightTopIdxX = boundsIndexes.rightTop.dotX;
         const leftBottomIdxY = boundsIndexes.leftBottom.dotY;
 
-        for (let threadIdx = 0; threadIdx < this.pattern.length; threadIdx++) {
-            const thread = this.pattern[threadIdx];
+        for (let threadIdx = 0; threadIdx < this._pattern.length; threadIdx++) {
+            const thread = this._pattern[threadIdx];
             thread.zoomedWidth = this.calculateThreadZoomedWidth(thread.width);
 
             const indexesX = thread.indexesX;
@@ -90,17 +89,17 @@ export abstract class StitchCanvas extends StitchCanvasBase {
         }
 
         const density = this.calculateDensity();
-        super.invokeDrawPattern(this.pattern, density);
+        super.invokeDrawPattern(this._pattern, density);
     }
 
-    protected useNewThread(color: string, width: number): void {
+    protected useNewThread(name: string, color: string, width: number): void {
         this.removeThread();
-        this.createThread(color, width);
+        this.createThread(name, color, width);
     }
 
-    protected createThread(color: string, width: number): void {
-        const stitchThread = new ThreadPath(color, width);
-        this.pattern.push(stitchThread);
+    protected createThread(name: string, color: string, width: number): void {
+        const stitchThread = new ThreadPath(name, color, width);
+        this._pattern.push(stitchThread);
     }
 
     protected removeThread(): void {
@@ -108,9 +107,9 @@ export abstract class StitchCanvas extends StitchCanvasBase {
         this.currentSide = CanvasSide.Back;
     }
 
-    private getCurrentThread(): ThreadPath | undefined {
-        const length = this.pattern.length;
-        const array = this.pattern.slice(length - 1, length);
+    protected getCurrentThread(): ThreadPath | undefined {
+        const length = this._pattern.length;
+        const array = this._pattern.slice(length - 1, length);
 
         return array.length === 0 ? undefined : array[0];
     }
@@ -131,7 +130,7 @@ export abstract class StitchCanvas extends StitchCanvasBase {
     private handleUndo(): void {
         super.ensureAlive();
 
-        const threadsCount = this.pattern.length;
+        const threadsCount = this._pattern.length;
         assert.greaterThanZero(threadsCount, "threadsCount");
 
         const currentThread = this.getCurrentThread();
@@ -149,8 +148,8 @@ export abstract class StitchCanvas extends StitchCanvasBase {
                 // cannot undo any more
             } else {
                 // remove current thread
-                this.pattern.pop();
-                super.invokeChange(this.pattern);
+                this._pattern.pop();
+                super.invokeChange(this._pattern);
 
                 const previousThread = this.getCurrentThread();
                 assert.defined(previousThread, "previousThread");
@@ -175,7 +174,7 @@ export abstract class StitchCanvas extends StitchCanvasBase {
                 this.changeCanvasSide();
                 this.clickedDotIdx = currentThread.lastDot()!;
             }
-            super.invokeChange(this.pattern);
+            super.invokeChange(this._pattern);
         }
 
         this.draw();
@@ -213,7 +212,7 @@ export abstract class StitchCanvas extends StitchCanvasBase {
             assert.defined(thread, "thread");
 
             thread.pushDot(clickedDotIdx.dotX, clickedDotIdx.dotY, clickedDotPos.x, clickedDotPos.y, visible);
-            super.invokeChange(this.pattern);
+            super.invokeChange(this._pattern);
 
             if (visible) {
                 const zoomedWidth = this.calculateThreadZoomedWidth(thread.width);
@@ -257,7 +256,6 @@ export abstract class StitchCanvas extends StitchCanvasBase {
 
     private validateConfig(config: StitchCanvasConfig): void {
         const threadConfig = config.threads;
-
         assert.greaterThanZero(threadConfig.color.length, "color.length");
         assert.greaterThanZero(threadConfig.width, "width");
         assert.greaterThanZero(threadConfig.minWidth, "minWidth");

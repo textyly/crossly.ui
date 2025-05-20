@@ -1,4 +1,5 @@
 import { VirtualCanvasBase } from "../base.js";
+import { FabricPattern } from "../../types.js";
 import { VoidUnsubscribe } from "../../../types.js";
 import { IInputCanvas } from "../../input/types.js";
 import { CanvasConfig } from "../../../config/types.js";
@@ -8,7 +9,6 @@ import { IDotArray } from "../../utilities/arrays/types.js";
 import { FabricThreadArray } from "../../utilities/arrays/thread/fabric.js";
 import {
     IFabricCanvas,
-    FabricCanvasData,
     ChangeFabricEvent,
     DrawFabricDotsEvent,
     ChangeFabricListener,
@@ -43,8 +43,8 @@ export abstract class FabricCanvasBase extends VirtualCanvasBase implements IFab
         super.dispose();
     }
 
-    protected invokeChange(fabric: FabricCanvasData,): void {
-        const event = { fabric };
+    protected invokeChange(pattern: FabricPattern): void {
+        const event = { pattern };
         this.messaging.sendToChannel1(event);
     }
 
