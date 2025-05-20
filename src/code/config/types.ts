@@ -15,6 +15,7 @@ export type DotsConfig = {
 };
 
 export type ThreadsConfig = {
+    name: string,
     color: string;
     width: number;
     minWidth: number;
@@ -49,7 +50,6 @@ export type CueCanvasConfig = CanvasConfig & {
 };
 
 export type CrosslyCanvasConfig = {
-    name: string;
     input: InputCanvasConfig;
     fabric: FabricCanvasConfig;
     stitch: StitchCanvasConfig;

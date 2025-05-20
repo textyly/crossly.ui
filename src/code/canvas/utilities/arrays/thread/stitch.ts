@@ -3,20 +3,26 @@ import { IThreadPath } from "../types.js";
 import { Dot, DotIndex } from "../../../types.js";
 
 export class ThreadPath extends ThreadBase implements IThreadPath {
+    private _name: string;
     private _zoomedWidth: number;
 
     private _indexesX: Int16Array;
     private _indexesY: Int16Array;
     private _visibilities: Array<boolean>;
 
-    constructor(color: string, width: number) {
+    constructor(name: string, color: string, width: number) {
         super(color, width);
 
+        this._name = name;
         this._zoomedWidth = super.width;
 
         this._indexesX = new Int16Array(this.space);
         this._indexesY = new Int16Array(this.space);
         this._visibilities = new Array<boolean>();
+    }
+
+    public get name(): string {
+        return this._name;
     }
 
     public get zoomedWidth(): number {

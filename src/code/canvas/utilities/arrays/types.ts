@@ -51,6 +51,7 @@ export interface IThreadPathArray {
 
 // same motivation as dot array
 export interface IThreadPath extends IThreadPathArray {
+    get name(): string;
     get zoomedWidth(): number;
 
     get indexesX(): Readonly<Int16Array>;

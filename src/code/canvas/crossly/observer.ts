@@ -1,71 +1,76 @@
 import { Base } from "../../base.js";
-import { ICrosslyCanvas } from "../types.js";
-import assert from "../../asserts/assert.js";
 import { VoidUnsubscribe } from "../../types.js";
 import { Messaging1 } from "../../messaging/impl.js";
 import { IMessaging1 } from "../../messaging/types.js";
-import { IThreadPath } from "../utilities/arrays/types.js";
+import { ChangeNameEvent, ICrosslyCanvasFacade } from "../types.js";
 import { ChangeFabricEvent, ChangeStitchPatternEvent } from "../virtual/types.js";
-import { ChangeEvent, ChangeListener, CrosslyCanvasData, ICrosslyCanvasObserver } from "../types.js";
+import {
+    CrosslyCanvasPattern,
+    ICrosslyCanvasObserver,
+    CrosslyCanvasChangeEvent,
+    CrosslyCanvasChangeListener,
+} from "../types.js";
 
 export class CrosslyCanvasObserver extends Base implements ICrosslyCanvasObserver {
-    private readonly messaging: IMessaging1<ChangeEvent>;
-    private readonly canvas: ICrosslyCanvas;
+    private readonly canvasFacade: ICrosslyCanvasFacade;
+    private readonly messaging: IMessaging1<CrosslyCanvasChangeEvent>;
 
-    private data: CrosslyCanvasData;
+    private data: CrosslyCanvasPattern;
 
-    constructor(canvas: ICrosslyCanvas) {
+    constructor(canvas: ICrosslyCanvasFacade) {
         super(CrosslyCanvasObserver.name);
 
-        this.canvas = canvas;
         this.messaging = new Messaging1();
 
-        const name = this.canvas.config.name;
-        const fabric = this.canvas.config.fabric;
+        this.canvasFacade = canvas;
+        const name = this.canvasFacade.name;
+        const pattern = this.canvasFacade.pattern;
 
-        const pattern = new Array<IThreadPath>();
-        this.data = { name, fabric, pattern };
+        this.data = { name, fabric: pattern.fabric, stitch: pattern.stitch };
 
         this.subscribe();
     }
 
-    public onChange(listener: ChangeListener): VoidUnsubscribe {
+    public onChange(listener: CrosslyCanvasChangeListener): VoidUnsubscribe {
         super.ensureAlive();
+
         return this.messaging.listenOnChannel1(listener);
+    }
+
+    private handleChangeName(event: ChangeNameEvent): void {
+        super.ensureAlive();
+
+        this.data.name = event.name;
+        this.invokeDataChange(this.data);
     }
 
     private handleChangeFabric(event: ChangeFabricEvent): void {
         super.ensureAlive();
 
-        assert.defined(this.data, "data");
-
-        const fabric = event.fabric;
-        this.data.fabric = fabric;
-
+        this.data.fabric = event.pattern;
         this.invokeDataChange(this.data);
     }
 
     private handleChangeStitchPattern(event: ChangeStitchPatternEvent): void {
         super.ensureAlive();
 
-        assert.defined(this.data, "data");
-
-        const pattern = event.pattern;
-        this.data.pattern = pattern;
-
+        this.data.stitch = event.pattern;
         this.invokeDataChange(this.data);
     }
 
-    private invokeDataChange(data: CrosslyCanvasData): void {
-        const event = { data };
+    private invokeDataChange(pattern: CrosslyCanvasPattern): void {
+        const event = { pattern };
         this.messaging.sendToChannel1(event);
     }
 
     private subscribe() {
-        const unChangeFabric = this.canvas.onChangeFabric(this.handleChangeFabric.bind(this));
+        const unChangeName = this.canvasFacade.onChangeName(this.handleChangeName.bind(this));
+        super.registerUn(unChangeName);
+
+        const unChangeFabric = this.canvasFacade.onChangeFabric(this.handleChangeFabric.bind(this));
         super.registerUn(unChangeFabric);
 
-        const unChangeStitchPattern = this.canvas.onChangeStitchPattern(this.handleChangeStitchPattern.bind(this));
+        const unChangeStitchPattern = this.canvasFacade.onChangeStitchPattern(this.handleChangeStitchPattern.bind(this));
         super.registerUn(unChangeStitchPattern);
     }
 }

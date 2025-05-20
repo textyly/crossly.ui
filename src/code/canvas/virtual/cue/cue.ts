@@ -4,13 +4,13 @@ import { DotsUtility } from "../../utilities/dots.js";
 import { IdGenerator } from "../../utilities/generator.js";
 import { CueCanvasConfig } from "../../../config/types.js";
 import { CueThreadArray } from "../../utilities/arrays/thread/cue.js";
-import { CanvasSide, Id, CueSegment, CueDot, Dot, DotIndex, CuePattern } from "../../types.js";
+import { CanvasSide, Id, CueSegment, CueDot, Dot, DotIndex } from "../../types.js";
 import { Position, IInputCanvas, PointerUpEvent, PointerMoveEvent } from "../../input/types.js";
 
 export abstract class CueCanvas extends CueCanvasBase {
     private readonly ids: IdGenerator;
     private readonly dotsUtility: DotsUtility<Dot>;
-    private readonly pattern: CuePattern;
+    protected _pattern: Array<CueThreadArray>;
 
     private dotColor: string;
     private dotRadius: number;
@@ -22,7 +22,7 @@ export abstract class CueCanvas extends CueCanvasBase {
 
     private zooms: number;
     private currentSegmentId?: Id;
-    private clickedDotIdx?: DotIndex;
+    protected clickedDotIdx?: DotIndex;
     private hoveredDotIdx?: DotIndex & { id: Id };
 
     constructor(className: string, config: CueCanvasConfig, input: IInputCanvas) {
@@ -38,8 +38,9 @@ export abstract class CueCanvas extends CueCanvasBase {
         this.minDotRadius = dotConfig.minRadius;
         this.dotRadiusZoomStep = dotConfig.radiusZoomStep;
 
-        this.pattern = new Array<CueThreadArray>();
+        this._pattern = new Array<CueThreadArray>();
         this.createThread(threadConfig.color, threadConfig.width);
+
         this.minThreadWidth = threadConfig.minWidth;
         this.threadWidthZoomStep = threadConfig.widthZoomStep;
 
@@ -69,18 +70,18 @@ export abstract class CueCanvas extends CueCanvasBase {
 
     protected createThread(color: string, width: number): void {
         const thread = new CueThreadArray(color, width);
-        this.pattern.push(thread);
+        this._pattern.push(thread);
     }
 
-    protected useNewThread(color: string, width: number): void {
+    protected useNewThread(name: string, color: string, width: number): void {
         this.removeThread();
         this.createThread(color, width);
         this.draw();
     }
 
-    private getCurrentThread(): CueThreadArray | undefined {
-        const length = this.pattern.length;
-        const array = this.pattern.slice(length - 1, length);
+    protected getCurrentThread(): CueThreadArray | undefined {
+        const length = this._pattern.length;
+        const array = this._pattern.slice(length - 1, length);
 
         return array.length === 0 ? undefined : array[0];
     }
@@ -149,7 +150,7 @@ export abstract class CueCanvas extends CueCanvasBase {
     private handleUndo(): void {
         super.ensureAlive();
 
-        const threadsCount = this.pattern.length;
+        const threadsCount = this._pattern.length;
         assert.greaterThanZero(threadsCount, "threadsCount");
 
         const currentThread = this.getCurrentThread();
@@ -163,7 +164,7 @@ export abstract class CueCanvas extends CueCanvasBase {
                 // cannot undo any more
             } else {
                 // remove current thread
-                this.pattern.pop();
+                this._pattern.pop();
 
                 const previousThread = this.getCurrentThread();
                 assert.defined(previousThread, "previousThread");
@@ -349,16 +350,12 @@ export abstract class CueCanvas extends CueCanvasBase {
 
     private validateConfig(config: CueCanvasConfig): void {
         const dotConfig = config.dots;
-        assert.defined(dotConfig, "DotConfig");
-
-        const threadConfig = config.threads;
-        assert.defined(threadConfig, "ThreadConfig");
-
         assert.greaterThanZero(dotConfig.radius, "dotRadius");
         assert.greaterThanZero(dotConfig.minRadius, "minDotRadius");
         assert.greaterThanZero(dotConfig.radiusZoomStep, "dotRadiusZoomStep");
         assert.greaterThanZero(dotConfig.color.length, "dotColor.length");
 
+        const threadConfig = config.threads;
         assert.greaterThanZero(threadConfig.width, "threadWidth");
         assert.greaterThanZero(threadConfig.minWidth, "minThreadWidth");
         assert.greaterThanZero(threadConfig.widthZoomStep, "threadWidthZoomStep");
