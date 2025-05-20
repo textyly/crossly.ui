@@ -102,4 +102,12 @@ export class StitchRasterDrawingCanvas extends RasterDrawingCanvas implements IS
         this.rasterCanvasContext.fillStyle = color;
         this.rasterCanvasContext.fill(path);
     }
+
+    private drawBackPath(path: Path2D, color: string): void {
+        this.backRasterCanvasContext.strokeStyle = color;
+        this.backRasterCanvasContext.stroke(path);
+
+        this.backRasterCanvasContext.fillStyle = color;
+        this.backRasterCanvasContext.fill(path);
+    }
 }

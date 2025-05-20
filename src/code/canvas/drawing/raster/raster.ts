@@ -44,26 +44,30 @@ export abstract class RasterDrawingCanvas extends CanvasBase {
     }
 
     public async createBitMap(): Promise<ImageBitmap> {
-        super.ensureAlive();
+        const bitmap = await this.createBitMapCore(this.rasterCanvas);
+        return bitmap;
+    }
 
-        const bitmap = await createImageBitmap(this.rasterCanvas);
-        assert.defined(bitmap, "bitmap");
-
+    public async createBackBitMap(): Promise<ImageBitmap> {
+        const bitmap = await this.createBitMapCore(this.backRasterCanvas);
         return bitmap;
     }
 
     public drawBitMap(bitmap: ImageBitmap): void {
-        super.ensureAlive();
+        this.drawBitMapCore(bitmap, this.rasterCanvasContext);
+    }
 
-        const bounds = this.bounds;
-        this.rasterCanvasContext.drawImage(bitmap, 0, 0, bounds.width, bounds.height);
+    public drawBackBitMap(bitmap: ImageBitmap): void {
+        this.drawBitMapCore(bitmap, this.backRasterCanvasContext);
     }
 
     public clear(): void {
         super.ensureAlive();
 
         const bounds = this.bounds;
+
         this.rasterCanvasContext.clearRect(0, 0, bounds.width, bounds.height);
+        this.backRasterCanvasContext.clearRect(0, 0, bounds.width, bounds.height);
     }
 
     protected override invokeBoundsChange(bounds: Bounds): void {
@@ -84,5 +88,21 @@ export abstract class RasterDrawingCanvas extends CanvasBase {
             this.backRasterCanvas.height = height;
             this.backRasterCanvas.width = width;
         }
+    }
+
+    private async createBitMapCore(canvas: HTMLCanvasElement): Promise<ImageBitmap> {
+        super.ensureAlive();
+
+        const bitmap = await createImageBitmap(canvas);
+        assert.defined(bitmap, "bitmap");
+
+        return bitmap;
+    }
+
+    public drawBitMapCore(bitmap: ImageBitmap, canvasContext: CanvasRenderingContext2D): void {
+        super.ensureAlive();
+
+        const bounds = this.bounds;
+        canvasContext.drawImage(bitmap, 0, 0, bounds.width, bounds.height);
     }
 }
