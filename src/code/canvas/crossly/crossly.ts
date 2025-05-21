@@ -1,7 +1,7 @@
 import { ICrosslyCanvas } from "../types.js";
 import { CrosslyCanvasBase } from "./base.js";
 import { IInputCanvas } from "../input/types.js";
-import { CueDrawingCanvas } from "../drawing/cue.js";
+import { FrontCueDrawingCanvas } from "../drawing/front/cue.js";
 import { FabricDrawingCanvas } from "../drawing/fabric.js";
 import { StitchDrawingCanvas } from "../drawing/stitch.js";
 import { CueCanvasFacade } from "../virtual/cue/facade.js";
@@ -23,6 +23,7 @@ import {
     IFabricRasterDrawingCanvas,
     IStitchRasterDrawingCanvas,
 } from "../drawing/types.js";
+import { BackCueDrawingCanvas } from "../drawing/back/cue.js";
 
 export abstract class CrosslyCanvas extends CrosslyCanvasBase implements ICrosslyCanvas {
     private readonly inputCanvas: IInputCanvas;
@@ -40,6 +41,9 @@ export abstract class CrosslyCanvas extends CrosslyCanvasBase implements ICrossl
     private cueDrawingCanvas!: ICueDrawingCanvas;
     private cueVectorDrawing!: IVectorDrawingCanvas;
 
+    private backCueDrawingCanvas!: ICueDrawingCanvas;
+    private backCueVectorDrawing!: IVectorDrawingCanvas;
+
     protected _name: string;
 
     constructor(
@@ -48,7 +52,8 @@ export abstract class CrosslyCanvas extends CrosslyCanvasBase implements ICrossl
         inputCanvas: IInputCanvas,
         fabricRasterDrawing: IFabricRasterDrawingCanvas,
         stitchRasterDrawing: IStitchRasterDrawingCanvas,
-        cueVectorDrawing: IVectorDrawingCanvas) {
+        cueVectorDrawing: IVectorDrawingCanvas,
+        backCueVectorDrawing: IVectorDrawingCanvas) {
 
         super(CrosslyCanvas.name);
 
@@ -58,7 +63,7 @@ export abstract class CrosslyCanvas extends CrosslyCanvasBase implements ICrossl
 
         this.initializeFabricCanvas(fabricRasterDrawing);
         this.initializeStitchCanvas(stitchRasterDrawing);
-        this.initializeCueCanvas(cueVectorDrawing);
+        this.initializeCueCanvas(cueVectorDrawing, backCueVectorDrawing);
 
         this.subscribe();
     }
@@ -86,10 +91,13 @@ export abstract class CrosslyCanvas extends CrosslyCanvasBase implements ICrossl
         this.stitchDrawingCanvas = new StitchDrawingCanvas(this.stitchCanvasFacade, this.stitchRasterDrawing);
     }
 
-    private initializeCueCanvas(curVectorDrawing: IVectorDrawingCanvas): void {
-        this.cueVectorDrawing = curVectorDrawing;
+    private initializeCueCanvas(cueVectorDrawing: IVectorDrawingCanvas, backCueVectorDrawing: IVectorDrawingCanvas): void {
+        this.cueVectorDrawing = cueVectorDrawing;
+        this.backCueVectorDrawing = backCueVectorDrawing;
+
         this.cueCanvasFacade = new CueCanvasFacade(this.configuration.cue, this.inputCanvas);
-        this.cueDrawingCanvas = new CueDrawingCanvas(this.cueCanvasFacade, this.cueVectorDrawing);
+        this.cueDrawingCanvas = new FrontCueDrawingCanvas(this.cueCanvasFacade, this.cueVectorDrawing);
+        this.backCueDrawingCanvas = new BackCueDrawingCanvas(this.cueCanvasFacade, this.backCueVectorDrawing);
     }
 
     private handleChangeFabric(event: ChangeFabricEvent): void {

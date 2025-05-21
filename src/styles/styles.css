@@ -48,7 +48,7 @@ body {
   z-index: 3;
 }
 
-#back {
+#back-input {
   flex: 1;
   position: relative;
   overflow: hidden;
@@ -62,10 +62,19 @@ body {
   position: absolute;
   left: 5px;
   top: 5px;
+  z-index: 1;
 }
 
 #back-stitch {
   position: absolute;
   left: 5px;
   top: 5px;
+  z-index: 2;
+}
+
+#back-cue {
+  position: absolute;
+  left: 5px;
+  top: 5px;
+  z-index: 3;
 }

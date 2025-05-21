@@ -42,6 +42,9 @@ export class CanvasBuilder {
         const backStitchHtmlElement = this.buildBackStitchHtmlElement();
         this.crosslyCanvasBuilder.withBackStitchCanvas(backStitchHtmlElement);
 
+        const backCueHtmlElement = this.buildBackCueHtmlElement();
+        this.crosslyCanvasBuilder.withBackCueCanvas(backCueHtmlElement);
+
         const crosslyCanvas = this.crosslyCanvasBuilder.build();
         return crosslyCanvas;
     }
@@ -80,5 +83,11 @@ export class CanvasBuilder {
         const backStitchHtmlElement = document.getElementById("back-stitch") as HTMLCanvasElement;
         assert.defined(backStitchHtmlElement, "backStitchHtmlElement");
         return backStitchHtmlElement;
+    }
+
+    private buildBackCueHtmlElement(): HTMLElement {
+        const backCueHtmlElement = document.getElementById("back-cue") as HTMLElement;
+        assert.defined(backCueHtmlElement, "backCueHtmlElement");
+        return backCueHtmlElement;
     }
 }

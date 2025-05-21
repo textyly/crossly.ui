@@ -10,12 +10,15 @@ import { StitchRasterDrawingCanvas } from "../drawing/raster/stitch.js";
 export class CrosslyCanvasBuilder {
     private name: string;
     private config!: CrosslyCanvasConfig;
+
     private inputHtmlElement!: HTMLElement;
     private fabricHtmlElement!: HTMLCanvasElement;
     private stitchHtmlElement!: HTMLCanvasElement;
     private cueHtmlElement!: HTMLElement;
+
     private backFabricHtmlElement!: HTMLCanvasElement;
     private backStitchHtmlElement!: HTMLCanvasElement;
+    private backCueHtmlElement!: HTMLElement;
 
     constructor() {
         this.name = "Untitled1"; // TODO: remove this hardcoded name
@@ -23,12 +26,15 @@ export class CrosslyCanvasBuilder {
 
     public build(): ICrosslyCanvasFacade {
         assert.defined(this.config, "CrosslyCanvasConfig");
+
         assert.defined(this.inputHtmlElement, "inputHtmlElement");
         assert.defined(this.fabricHtmlElement, "fabricHtmlElement");
         assert.defined(this.stitchHtmlElement, "stitchHtmlElement");
         assert.defined(this.cueHtmlElement, "cueHtmlElement");
+
         assert.defined(this.backFabricHtmlElement, "backFabricHtmlElement");
         assert.defined(this.backStitchHtmlElement, "backStitchHtmlElement");
+        assert.defined(this.backCueHtmlElement, "backCueHtmlElement");
 
         return this.buildCore();
     }
@@ -69,12 +75,20 @@ export class CrosslyCanvasBuilder {
         return this;
     }
 
+    public withBackCueCanvas(backCueHtmlElement: HTMLElement): CrosslyCanvasBuilder {
+        this.backCueHtmlElement = backCueHtmlElement
+        return this;
+    }
+
     private buildCore(): ICrosslyCanvasFacade {
 
         const inputCanvas = new InputCanvas(this.config.input, this.inputHtmlElement);
+
         const fabricRasterDrawing = new FabricRasterDrawingCanvas(this.fabricHtmlElement, this.backFabricHtmlElement);
         const stitchRasterDrawing = new StitchRasterDrawingCanvas(this.stitchHtmlElement, this.backStitchHtmlElement);
+
         const cueVectorDrawing = new VectorDrawingCanvas(this.cueHtmlElement);
+        const backCueVectorDrawing = new VectorDrawingCanvas(this.backCueHtmlElement);
 
         const crosslyCanvasFacade = new CrosslyCanvasFacade(
             this.name,
@@ -82,7 +96,8 @@ export class CrosslyCanvasBuilder {
             inputCanvas,
             fabricRasterDrawing,
             stitchRasterDrawing,
-            cueVectorDrawing);
+            cueVectorDrawing,
+            backCueVectorDrawing);
 
         return crosslyCanvasFacade;
     }

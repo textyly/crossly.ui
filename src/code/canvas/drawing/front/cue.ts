@@ -1,7 +1,7 @@
-import { CanvasBase } from "../base.js";
-import assert from "../../asserts/assert.js";
-import { Id, BoundsChangeEvent } from "../types.js";
-import { ICueDrawingCanvas, IVectorDrawingCanvas, SvgDot, SvgLine } from "./types.js";
+import { CanvasBase } from "../../base.js";
+import assert from "../../../asserts/assert.js";
+import { Id, BoundsChangeEvent } from "../../types.js";
+import { ICueDrawingCanvas, IVectorDrawingCanvas, SvgDot, SvgLine } from "../types.js";
 import {
     ICueCanvas,
     DrawCueDotEvent,
@@ -9,9 +9,9 @@ import {
     MoveCueSegmentEvent,
     DrawCueSegmentEvent,
     RemoveCueSegmentEvent,
-} from "../virtual/types.js";
+} from "../../virtual/types.js";
 
-export class CueDrawingCanvas extends CanvasBase implements ICueDrawingCanvas {
+export class FrontCueDrawingCanvas extends CanvasBase implements ICueDrawingCanvas {
     private readonly cueCanvas: ICueCanvas;
     private readonly vectorDrawing: IVectorDrawingCanvas;
 
@@ -19,7 +19,7 @@ export class CueDrawingCanvas extends CanvasBase implements ICueDrawingCanvas {
     private readonly svgLines: Map<Id, SvgLine>;
 
     constructor(cueCanvas: ICueCanvas, vectorDrawing: IVectorDrawingCanvas) {
-        super(CueDrawingCanvas.name);
+        super(FrontCueDrawingCanvas.name);
 
         this.cueCanvas = cueCanvas;
         this.vectorDrawing = vectorDrawing;
@@ -44,6 +44,7 @@ export class CueDrawingCanvas extends CanvasBase implements ICueDrawingCanvas {
 
         const svgDot = this.vectorDrawing.drawDot(dot, event.dotRadius, event.dotColor);
         assert.defined(svgDot, "svgDot");
+
         this.svgDots.set(id, svgDot);
     }
 

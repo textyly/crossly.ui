@@ -1,5 +1,5 @@
-import assert from "../../../asserts/assert.js";
 import { CanvasBase } from "../../base.js";
+import assert from "../../../asserts/assert.js";
 import { Dot, Bounds, CueSegment } from "../../types.js";
 import { IVectorDrawingCanvas, SvgDot, SvgLine } from "../types.js";
 
@@ -9,9 +9,8 @@ export class VectorDrawingCanvas extends CanvasBase implements IVectorDrawingCan
 
     constructor(svgCanvas: HTMLElement) {
         super(VectorDrawingCanvas.name);
-        
-        this.svgCanvas = svgCanvas;
 
+        this.svgCanvas = svgCanvas;
         this.offset = 5;
     }
 

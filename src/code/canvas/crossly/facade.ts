@@ -1,8 +1,8 @@
 import { CrosslyCanvas } from "./crossly.js";
 import { IInputCanvas } from "../input/types.js";
 import { CrosslyCanvasConfig } from "../../config/types.js";
+import { CrosslyCanvasPattern, ICrosslyCanvasFacade } from "../types.js";
 import { IFabricRasterDrawingCanvas, IStitchRasterDrawingCanvas, IVectorDrawingCanvas } from "../drawing/types.js";
-import { CrosslyCanvasPattern, CuePattern, FabricPattern, ICrosslyCanvasFacade, StitchPattern } from "../types.js";
 
 export class CrosslyCanvasFacade extends CrosslyCanvas implements ICrosslyCanvasFacade {
     constructor(
@@ -11,9 +11,10 @@ export class CrosslyCanvasFacade extends CrosslyCanvas implements ICrosslyCanvas
         inputCanvas: IInputCanvas,
         fabricRasterDrawing: IFabricRasterDrawingCanvas,
         stitchRasterDrawing: IStitchRasterDrawingCanvas,
-        cueVectorDrawing: IVectorDrawingCanvas) {
+        cueVectorDrawing: IVectorDrawingCanvas,
+        backCueVectorDrawing: IVectorDrawingCanvas) {
 
-        super(name, config, inputCanvas, fabricRasterDrawing, stitchRasterDrawing, cueVectorDrawing);
+        super(name, config, inputCanvas, fabricRasterDrawing, stitchRasterDrawing, cueVectorDrawing, backCueVectorDrawing);
     }
 
     public get config(): CrosslyCanvasConfig {
