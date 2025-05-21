@@ -11,7 +11,7 @@ export class CrosslyCanvasBuilder {
     private name: string;
     private config!: CrosslyCanvasConfig;
 
-    private inputHtmlElement!: HTMLElement;
+    private frontInputHtmlElement!: HTMLElement;
     private frontFabricHtmlElement!: HTMLCanvasElement;
     private frontStitchHtmlElement!: HTMLCanvasElement;
     private frontCueHtmlElement!: HTMLElement;
@@ -27,10 +27,10 @@ export class CrosslyCanvasBuilder {
     public build(): ICrosslyCanvasFacade {
         assert.defined(this.config, "CrosslyCanvasConfig");
 
-        assert.defined(this.inputHtmlElement, "inputHtmlElement");
-        assert.defined(this.frontFabricHtmlElement, "fabricHtmlElement");
-        assert.defined(this.frontStitchHtmlElement, "stitchHtmlElement");
-        assert.defined(this.frontCueHtmlElement, "cueHtmlElement");
+        assert.defined(this.frontInputHtmlElement, "frontInputHtmlElement");
+        assert.defined(this.frontFabricHtmlElement, "frontFabricHtmlElement");
+        assert.defined(this.frontStitchHtmlElement, "frontStitchHtmlElement");
+        assert.defined(this.frontCueHtmlElement, "frontCueHtmlElement");
 
         assert.defined(this.backFabricHtmlElement, "backFabricHtmlElement");
         assert.defined(this.backStitchHtmlElement, "backStitchHtmlElement");
@@ -44,9 +44,9 @@ export class CrosslyCanvasBuilder {
         return this;
     }
 
-    public withInputCanvas(frontHtmlElement: HTMLElement): CrosslyCanvasBuilder {
+    public withFrontInputCanvas(frontInputHtmlElement: HTMLElement): CrosslyCanvasBuilder {
         assert.defined(this.config, "CrosslyCanvasConfig");
-        this.inputHtmlElement = frontHtmlElement;
+        this.frontInputHtmlElement = frontInputHtmlElement;
         return this;
     }
 
@@ -82,7 +82,7 @@ export class CrosslyCanvasBuilder {
 
     private buildCore(): ICrosslyCanvasFacade {
 
-        const inputCanvas = new InputCanvas(this.config.input, this.inputHtmlElement);
+        const inputCanvas = new InputCanvas(this.config.input, this.frontInputHtmlElement);
 
         const frontFabricRasterDrawing = new FabricRasterDrawingCanvas(this.frontFabricHtmlElement);
         const backFabricRasterDrawing = new FabricRasterDrawingCanvas(this.backFabricHtmlElement);

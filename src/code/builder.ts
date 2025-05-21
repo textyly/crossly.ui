@@ -24,8 +24,8 @@ export class CanvasBuilder {
     private buildCore(config: CrosslyCanvasConfig): ICrosslyCanvasFacade {
         this.crosslyCanvasBuilder.withConfig(config);
 
-        const inputHtmlElement = this.buildInputHtmlElement();
-        this.crosslyCanvasBuilder.withInputCanvas(inputHtmlElement);
+        const frontInputHtmlElement = this.buildFrontInputHtmlElement();
+        this.crosslyCanvasBuilder.withFrontInputCanvas(frontInputHtmlElement);
 
         const frontFabricHtmlElement = this.buildFrontFabricHtmlElement();
         this.crosslyCanvasBuilder.withFrontFabricCanvas(frontFabricHtmlElement);
@@ -49,10 +49,10 @@ export class CanvasBuilder {
         return crosslyCanvas;
     }
 
-    private buildInputHtmlElement(): HTMLElement {
-        const inputHtmlElement = document.getElementById("input") as HTMLElement;
-        assert.defined(inputHtmlElement, "inputHtmlElement");
-        return inputHtmlElement;
+    private buildFrontInputHtmlElement(): HTMLElement {
+        const frontInputHtmlElement = document.getElementById("front-input") as HTMLElement;
+        assert.defined(frontInputHtmlElement, "inputHtmlElement");
+        return frontInputHtmlElement;
     }
 
     private buildFrontFabricHtmlElement(): HTMLCanvasElement {

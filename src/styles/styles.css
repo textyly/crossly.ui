@@ -16,7 +16,7 @@ body {
   gap: 0.5rem;
 }
 
-#input {
+#front-input {
   flex: 1;
   position: relative;
   overflow: hidden;
