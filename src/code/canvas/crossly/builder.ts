@@ -44,24 +44,24 @@ export class CrosslyCanvasBuilder {
         return this;
     }
 
-    public withInputCanvas(inputHtmlElement: HTMLElement): CrosslyCanvasBuilder {
+    public withInputCanvas(frontHtmlElement: HTMLElement): CrosslyCanvasBuilder {
         assert.defined(this.config, "CrosslyCanvasConfig");
-        this.inputHtmlElement = inputHtmlElement;
+        this.inputHtmlElement = frontHtmlElement;
         return this;
     }
 
-    public withFabricCanvas(fabricHtmlElement: HTMLCanvasElement): CrosslyCanvasBuilder {
-        this.frontFabricHtmlElement = fabricHtmlElement;
+    public withFrontFabricCanvas(frontFabricHtmlElement: HTMLCanvasElement): CrosslyCanvasBuilder {
+        this.frontFabricHtmlElement = frontFabricHtmlElement;
         return this;
     }
 
-    public withStitchCanvas(stitchHtmlElement: HTMLCanvasElement): CrosslyCanvasBuilder {
-        this.frontStitchHtmlElement = stitchHtmlElement;
+    public withFrontStitchCanvas(frontStitchHtmlElement: HTMLCanvasElement): CrosslyCanvasBuilder {
+        this.frontStitchHtmlElement = frontStitchHtmlElement;
         return this;
     }
 
-    public withCueCanvas(cueHtmlElement: HTMLElement): CrosslyCanvasBuilder {
-        this.frontCueHtmlElement = cueHtmlElement
+    public withFrontCueCanvas(frontCueHtmlElement: HTMLElement): CrosslyCanvasBuilder {
+        this.frontCueHtmlElement = frontCueHtmlElement
         return this;
     }
 

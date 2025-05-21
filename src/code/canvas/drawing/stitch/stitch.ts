@@ -1,8 +1,8 @@
-import { CanvasBase } from "../base.js";
-import assert from "../../asserts/assert.js";
-import { BoundsChangeEvent } from "../types.js";
-import { IStitchDrawingCanvas, IStitchRasterDrawingCanvas } from "./types.js";
-import { DrawStitchPatternEvent, DrawStitchSegmentEvent, IStitchCanvas } from "../virtual/types.js";
+import { CanvasBase } from "../../base.js";
+import assert from "../../../asserts/assert.js";
+import { BoundsChangeEvent } from "../../types.js";
+import { IStitchDrawingCanvas, IStitchRasterDrawingCanvas } from "../types.js";
+import { DrawStitchPatternEvent, DrawStitchSegmentEvent, IStitchCanvas } from "../../virtual/types.js";
 
 export class StitchDrawingCanvas extends CanvasBase implements IStitchDrawingCanvas {
     private readonly stitchCanvas: IStitchCanvas;

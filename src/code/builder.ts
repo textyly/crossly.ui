@@ -27,14 +27,14 @@ export class CanvasBuilder {
         const inputHtmlElement = this.buildInputHtmlElement();
         this.crosslyCanvasBuilder.withInputCanvas(inputHtmlElement);
 
-        const fabricHtmlElement = this.buildFabricHtmlElement();
-        this.crosslyCanvasBuilder.withFabricCanvas(fabricHtmlElement);
+        const frontFabricHtmlElement = this.buildFrontFabricHtmlElement();
+        this.crosslyCanvasBuilder.withFrontFabricCanvas(frontFabricHtmlElement);
 
-        const stitchHtmlElement = this.buildStitchHtmlElement();
-        this.crosslyCanvasBuilder.withStitchCanvas(stitchHtmlElement);
+        const frontStitchHtmlElement = this.buildFrontStitchHtmlElement();
+        this.crosslyCanvasBuilder.withFrontStitchCanvas(frontStitchHtmlElement);
 
-        const cueHtmlElement = this.buildCueHtmlElement();
-        this.crosslyCanvasBuilder.withCueCanvas(cueHtmlElement);
+        const frontCueHtmlElement = this.buildFrontCueHtmlElement();
+        this.crosslyCanvasBuilder.withFrontCueCanvas(frontCueHtmlElement);
 
         const backFabricHtmlElement = this.buildBackFabricHtmlElement();
         this.crosslyCanvasBuilder.withBackFabricCanvas(backFabricHtmlElement);
@@ -55,22 +55,22 @@ export class CanvasBuilder {
         return inputHtmlElement;
     }
 
-    private buildFabricHtmlElement(): HTMLCanvasElement {
-        const fabricHtmlElement = document.getElementById("fabric") as HTMLCanvasElement;
-        assert.defined(fabricHtmlElement, "fabricHtmlElement");
-        return fabricHtmlElement;
+    private buildFrontFabricHtmlElement(): HTMLCanvasElement {
+        const frontFabricHtmlElement = document.getElementById("front-fabric") as HTMLCanvasElement;
+        assert.defined(frontFabricHtmlElement, "frontFabricHtmlElement");
+        return frontFabricHtmlElement;
     }
 
-    private buildStitchHtmlElement(): HTMLCanvasElement {
-        const stitchHtmlElement = document.getElementById("stitch") as HTMLCanvasElement;
-        assert.defined(stitchHtmlElement, "stitchHtmlElement");
-        return stitchHtmlElement;
+    private buildFrontStitchHtmlElement(): HTMLCanvasElement {
+        const frontStitchHtmlElement = document.getElementById("front-stitch") as HTMLCanvasElement;
+        assert.defined(frontStitchHtmlElement, "frontStitchHtmlElement");
+        return frontStitchHtmlElement;
     }
 
-    private buildCueHtmlElement(): HTMLElement {
-        const cueHtmlElement = document.getElementById("cue") as HTMLElement;
-        assert.defined(cueHtmlElement, "cueHtmlElement");
-        return cueHtmlElement;
+    private buildFrontCueHtmlElement(): HTMLElement {
+        const frontCueHtmlElement = document.getElementById("front-cue") as HTMLElement;
+        assert.defined(frontCueHtmlElement, "frontCueHtmlElement");
+        return frontCueHtmlElement;
     }
 
     private buildBackFabricHtmlElement(): HTMLCanvasElement {

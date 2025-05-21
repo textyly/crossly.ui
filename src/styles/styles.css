@@ -26,7 +26,7 @@ body {
   z-index: 4;
 }
 
-#fabric {
+#front-fabric {
   background-color: #fff8dc;
   left: 5px;
   top: 5px;
@@ -34,14 +34,14 @@ body {
   z-index: 1;
 }
 
-#stitch {
+#front-stitch {
   position: absolute;
   left: 5px;
   top: 5px;
   z-index: 2;
 }
 
-#cue {
+#front-cue {
   position: absolute;
   left: 5px;
   top: 5px;
