@@ -1,8 +1,8 @@
 import assert from "../../asserts/assert.js";
 import { InputCanvas } from "../input/input.js";
-import { ICrosslyCanvasFacade } from "../types.js";
 import { CrosslyCanvasFacade } from "./facade.js";
 import { CrosslyCanvasConfig } from "../../config/types.js";
+import { CanvasSide, ICrosslyCanvasFacade } from "../types.js";
 import { VectorDrawingCanvas } from "../drawing/vector/vector.js";
 import { FabricRasterDrawingCanvas } from "../drawing/raster/fabric.js";
 import { StitchRasterDrawingCanvas } from "../drawing/raster/stitch.js";
@@ -12,9 +12,9 @@ export class CrosslyCanvasBuilder {
     private config!: CrosslyCanvasConfig;
 
     private inputHtmlElement!: HTMLElement;
-    private fabricHtmlElement!: HTMLCanvasElement;
-    private stitchHtmlElement!: HTMLCanvasElement;
-    private cueHtmlElement!: HTMLElement;
+    private frontFabricHtmlElement!: HTMLCanvasElement;
+    private frontStitchHtmlElement!: HTMLCanvasElement;
+    private frontCueHtmlElement!: HTMLElement;
 
     private backFabricHtmlElement!: HTMLCanvasElement;
     private backStitchHtmlElement!: HTMLCanvasElement;
@@ -28,9 +28,9 @@ export class CrosslyCanvasBuilder {
         assert.defined(this.config, "CrosslyCanvasConfig");
 
         assert.defined(this.inputHtmlElement, "inputHtmlElement");
-        assert.defined(this.fabricHtmlElement, "fabricHtmlElement");
-        assert.defined(this.stitchHtmlElement, "stitchHtmlElement");
-        assert.defined(this.cueHtmlElement, "cueHtmlElement");
+        assert.defined(this.frontFabricHtmlElement, "fabricHtmlElement");
+        assert.defined(this.frontStitchHtmlElement, "stitchHtmlElement");
+        assert.defined(this.frontCueHtmlElement, "cueHtmlElement");
 
         assert.defined(this.backFabricHtmlElement, "backFabricHtmlElement");
         assert.defined(this.backStitchHtmlElement, "backStitchHtmlElement");
@@ -51,17 +51,17 @@ export class CrosslyCanvasBuilder {
     }
 
     public withFabricCanvas(fabricHtmlElement: HTMLCanvasElement): CrosslyCanvasBuilder {
-        this.fabricHtmlElement = fabricHtmlElement;
+        this.frontFabricHtmlElement = fabricHtmlElement;
         return this;
     }
 
     public withStitchCanvas(stitchHtmlElement: HTMLCanvasElement): CrosslyCanvasBuilder {
-        this.stitchHtmlElement = stitchHtmlElement;
+        this.frontStitchHtmlElement = stitchHtmlElement;
         return this;
     }
 
     public withCueCanvas(cueHtmlElement: HTMLElement): CrosslyCanvasBuilder {
-        this.cueHtmlElement = cueHtmlElement
+        this.frontCueHtmlElement = cueHtmlElement
         return this;
     }
 
@@ -84,19 +84,24 @@ export class CrosslyCanvasBuilder {
 
         const inputCanvas = new InputCanvas(this.config.input, this.inputHtmlElement);
 
-        const fabricRasterDrawing = new FabricRasterDrawingCanvas(this.fabricHtmlElement, this.backFabricHtmlElement);
-        const stitchRasterDrawing = new StitchRasterDrawingCanvas(this.stitchHtmlElement, this.backStitchHtmlElement);
+        const frontFabricRasterDrawing = new FabricRasterDrawingCanvas(this.frontFabricHtmlElement);
+        const backFabricRasterDrawing = new FabricRasterDrawingCanvas(this.backFabricHtmlElement);
 
-        const cueVectorDrawing = new VectorDrawingCanvas(this.cueHtmlElement);
+        const frontStitchRasterDrawing = new StitchRasterDrawingCanvas(this.frontStitchHtmlElement, CanvasSide.Front);
+        const backStitchRasterDrawing = new StitchRasterDrawingCanvas(this.backStitchHtmlElement, CanvasSide.Back);
+
+        const frontCueVectorDrawing = new VectorDrawingCanvas(this.frontCueHtmlElement);
         const backCueVectorDrawing = new VectorDrawingCanvas(this.backCueHtmlElement);
 
         const crosslyCanvasFacade = new CrosslyCanvasFacade(
             this.name,
             this.config,
             inputCanvas,
-            fabricRasterDrawing,
-            stitchRasterDrawing,
-            cueVectorDrawing,
+            frontFabricRasterDrawing,
+            backFabricRasterDrawing,
+            frontStitchRasterDrawing,
+            backStitchRasterDrawing,
+            frontCueVectorDrawing,
             backCueVectorDrawing);
 
         return crosslyCanvasFacade;

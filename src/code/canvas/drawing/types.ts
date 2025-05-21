@@ -12,11 +12,7 @@ export interface IShapeDrawing {
 
 export interface IRasterDrawingCanvas extends ICanvas {
     createBitMap(): Promise<ImageBitmap>;
-    createBackBitMap(): Promise<ImageBitmap>;
-
     drawBitMap(bitmap: ImageBitmap): void;
-    drawBackBitMap(bitmap: ImageBitmap): void;
-
     clear(): void;
 }
 

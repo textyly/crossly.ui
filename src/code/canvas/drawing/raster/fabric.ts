@@ -6,8 +6,8 @@ import { FabricThreadArray } from "../../utilities/arrays/thread/fabric.js";
 export class FabricRasterDrawingCanvas extends RasterDrawingCanvas implements IFabricRasterDrawingCanvas {
     private readonly endAngle: number;
 
-    constructor(rasterCanvas: HTMLCanvasElement, backRasterCanvas: HTMLCanvasElement) {
-        super(FabricRasterDrawingCanvas.name, rasterCanvas, backRasterCanvas);
+    constructor(rasterCanvas: HTMLCanvasElement) {
+        super(FabricRasterDrawingCanvas.name, rasterCanvas);
 
         this.endAngle = Math.PI * 2;
     }
@@ -32,7 +32,6 @@ export class FabricRasterDrawingCanvas extends RasterDrawingCanvas implements IF
         const radius = dots.radius;
 
         this.rasterCanvasContext.beginPath();
-        this.backRasterCanvasContext.beginPath();
 
         for (let index = 0; index < dots.length; index++) {
             const x = dotsX[index] - this.bounds.left;
@@ -40,19 +39,12 @@ export class FabricRasterDrawingCanvas extends RasterDrawingCanvas implements IF
 
             this.rasterCanvasContext.moveTo(x, y);
             this.rasterCanvasContext.arc(x, y, radius, 0, this.endAngle);
-
-            this.backRasterCanvasContext.moveTo(x, y);
-            this.backRasterCanvasContext.arc(x, y, radius, 0, this.endAngle);
         }
 
         this.rasterCanvasContext.fillStyle = color;
         this.rasterCanvasContext.fill();
 
-        this.backRasterCanvasContext.fillStyle = color;
-        this.backRasterCanvasContext.fill();
-
         this.rasterCanvasContext.closePath();
-        this.backRasterCanvasContext.closePath();
     }
 
     private drawLinesCore(threads: FabricThreadArray): void {
@@ -63,26 +55,16 @@ export class FabricRasterDrawingCanvas extends RasterDrawingCanvas implements IF
         const positionsY2 = threads.positionsY2;
 
         this.rasterCanvasContext.beginPath();
-        this.backRasterCanvasContext.beginPath();
 
         for (let index = 0; index < threads.length; index++) {
             this.rasterCanvasContext.moveTo(positionsX1[index] - this.bounds.left, positionsY1[index] - this.bounds.top);
-            this.backRasterCanvasContext.moveTo(positionsX1[index] - this.bounds.left, positionsY1[index] - this.bounds.top);
-
             this.rasterCanvasContext.lineTo(positionsX2[index] - this.bounds.left, positionsY2[index] - this.bounds.top);
-            this.backRasterCanvasContext.lineTo(positionsX2[index] - this.bounds.left, positionsY2[index] - this.bounds.top);
         }
 
         this.rasterCanvasContext.lineWidth = threads.width;
         this.rasterCanvasContext.strokeStyle = threads.color;
 
-        this.backRasterCanvasContext.lineWidth = threads.width;
-        this.backRasterCanvasContext.strokeStyle = threads.color;
-
         this.rasterCanvasContext.stroke();
         this.rasterCanvasContext.closePath();
-
-        this.backRasterCanvasContext.stroke();
-        this.backRasterCanvasContext.closePath();
     }
 }

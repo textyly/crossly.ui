@@ -9,12 +9,23 @@ export class CrosslyCanvasFacade extends CrosslyCanvas implements ICrosslyCanvas
         name: string,
         config: CrosslyCanvasConfig,
         inputCanvas: IInputCanvas,
-        fabricRasterDrawing: IFabricRasterDrawingCanvas,
-        stitchRasterDrawing: IStitchRasterDrawingCanvas,
-        cueVectorDrawing: IVectorDrawingCanvas,
+        frontFabricRasterDrawing: IFabricRasterDrawingCanvas,
+        backFabricRasterDrawing: IFabricRasterDrawingCanvas,
+        frontStitchRasterDrawing: IStitchRasterDrawingCanvas,
+        backStitchRasterDrawing: IStitchRasterDrawingCanvas,
+        frontCueVectorDrawing: IVectorDrawingCanvas,
         backCueVectorDrawing: IVectorDrawingCanvas) {
 
-        super(name, config, inputCanvas, fabricRasterDrawing, stitchRasterDrawing, cueVectorDrawing, backCueVectorDrawing);
+        super(
+            name,
+            config,
+            inputCanvas,
+            frontFabricRasterDrawing,
+            backFabricRasterDrawing,
+            frontStitchRasterDrawing,
+            backStitchRasterDrawing,
+            frontCueVectorDrawing,
+            backCueVectorDrawing);
     }
 
     public get config(): CrosslyCanvasConfig {

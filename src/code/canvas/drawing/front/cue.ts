@@ -56,6 +56,7 @@ export class FrontCueDrawingCanvas extends CanvasBase implements ICueDrawingCanv
 
         const svgDot = this.vectorDrawing.drawDashDot(dot, event.dotRadius, event.dotColor);
         assert.defined(svgDot, "svgDot");
+
         this.svgDots.set(id, svgDot);
     }
 
@@ -63,6 +64,7 @@ export class FrontCueDrawingCanvas extends CanvasBase implements ICueDrawingCanv
         this.ensureAlive();
 
         const id = event.dotId;
+
         const svgDot = this.svgDots.get(id);
         assert.defined(svgDot, "svgDot");
 
@@ -78,6 +80,7 @@ export class FrontCueDrawingCanvas extends CanvasBase implements ICueDrawingCanv
 
         const svgLine = this.vectorDrawing.drawLine(thread);
         assert.defined(svgLine, "svgLine");
+
         this.svgLines.set(id, svgLine);
     }
 
@@ -89,6 +92,7 @@ export class FrontCueDrawingCanvas extends CanvasBase implements ICueDrawingCanv
 
         const svgLine = this.svgLines.get(id);
         assert.defined(svgLine, "svgLine");
+
         this.vectorDrawing.moveLine(thread, svgLine);
     }
 
@@ -100,6 +104,7 @@ export class FrontCueDrawingCanvas extends CanvasBase implements ICueDrawingCanv
 
         const svgLine = this.vectorDrawing.drawDashLine(thread);
         assert.defined(svgLine, "svgLine");
+
         this.svgLines.set(id, svgLine);
     }
 
@@ -110,6 +115,7 @@ export class FrontCueDrawingCanvas extends CanvasBase implements ICueDrawingCanv
 
         const svgLine = this.svgLines.get(id);
         assert.defined(svgLine, "svgLine");
+
         this.vectorDrawing.removeLine(svgLine);
         this.svgLines.delete(id);
     }
@@ -138,6 +144,8 @@ export class FrontCueDrawingCanvas extends CanvasBase implements ICueDrawingCanv
     }
 
     private clear(): void {
+        this.ensureAlive();
+
         this.svgDots.clear();
         this.svgLines.clear();
     }
