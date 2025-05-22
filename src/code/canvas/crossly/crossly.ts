@@ -76,12 +76,12 @@ export abstract class CrosslyCanvas extends CrosslyCanvasBase implements ICrossl
     public override dispose(): void {
         this.ensureAlive();
 
+        super.dispose();
+
         this.disposeCueCanvas();
         this.disposeStitchCanvas();
         this.disposeFabricCanvas();
         this.disposeInputCanvas();
-
-        super.dispose();
     }
 
     private initializeFabricCanvas(frontFabricRasterDrawing: IFabricRasterDrawingCanvas, backFabricRasterDrawing: IFabricRasterDrawingCanvas): void {
@@ -135,27 +135,27 @@ export abstract class CrosslyCanvas extends CrosslyCanvasBase implements ICrossl
     }
 
     private disposeCueCanvas(): void {
-        this.cueCanvasFacade.dispose();
         this.frontCueDrawingCanvas.dispose();
         this.backCueDrawingCanvas.dispose();
         this.frontCueVectorDrawing.dispose();
         this.backCueVectorDrawing.dispose();
+        this.cueCanvasFacade.dispose();
     }
 
     private disposeStitchCanvas(): void {
-        this.stitchCanvasFacade.dispose();
         this.frontStitchDrawingCanvas.dispose();
         this.backStitchDrawingCanvas.dispose();
         this.frontStitchRasterDrawing.dispose();
         this.backStitchRasterDrawing.dispose();
+        this.stitchCanvasFacade.dispose
     }
 
     private disposeFabricCanvas(): void {
-        this.fabricCanvasFacade.dispose();
         this.frontFabricDrawingCanvas.dispose();
         this.backFabricDrawingCanvas.dispose();
         this.frontFabricRasterDrawing.dispose();
         this.backFabricRasterDrawing.dispose();
+        this.fabricCanvasFacade.dispose();
     }
 
     private disposeInputCanvas(): void {

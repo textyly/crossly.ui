@@ -63,10 +63,10 @@ export class InputCanvas extends InputCanvasBase {
         super.ensureAlive();
 
         this.unsubscribe();
+        super.dispose();
+
         this.moveInput.dispose();
         this.touchInput.dispose();
-
-        super.dispose();
     }
 
     private handleZoomIn(event: ZoomInEvent): void {
