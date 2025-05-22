@@ -38,7 +38,10 @@ export abstract class StitchCanvas extends StitchCanvasBase {
 
     public override dispose(): void {
         super.ensureAlive();
-        // TODO: ARRAYS!!!
+
+        this._pattern.forEach((threadPath) => threadPath.clear());
+        this._pattern = [];
+
         super.dispose();
     }
 

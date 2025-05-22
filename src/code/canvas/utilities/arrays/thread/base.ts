@@ -68,6 +68,11 @@ export abstract class ThreadBase extends ArrayBase implements IThreadPathArray {
         }
     }
 
+    public clear(): void {
+        this._positionsX = new Int32Array(0);
+        this._positionsY = new Int32Array(0);
+    }
+
     protected override expand(): void {
         this.expandPositionsX();
         this.expandPositionsY();

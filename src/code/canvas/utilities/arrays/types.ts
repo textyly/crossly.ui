@@ -20,6 +20,8 @@ export interface IDotArray {
     // e.g. const dot = {x: positionsX[index], y: positionsY[index]};
     get positionsX(): Readonly<Int32Array>;
     get positionsY(): Readonly<Int32Array>;
+
+    clear(): void;
 }
 
 export interface IFabricThreadArray {
@@ -47,6 +49,8 @@ export interface IThreadPathArray {
     get positionsY(): Readonly<Int32Array>;
 
     last(): Dot | undefined;
+
+    clear(): void;
 }
 
 // same motivation as dot array
@@ -59,6 +63,8 @@ export interface IThreadPath extends IThreadPathArray {
     get visibilities(): Readonly<Array<boolean>>;
 
     lastDot(): (Dot & DotIndex) | undefined;
+
+    clear(): void;
 }
 
 // same motivation as dot array
@@ -70,6 +76,8 @@ export interface ICueThreadArray {
     get indexesY(): Readonly<Int16Array>;
 
     lastDotIndex(): DotIndex | undefined;
+
+    clear(): void;
 }
 
 

@@ -3,6 +3,7 @@ import { ConfigFactory } from "../../config/factory.js";
 import { CrosslyCanvasFacadeBuilder } from "./facadeBuilder.js";
 
 export class CrosslyCanvasFacadeFactory {
+
     public create(): ICrosslyCanvasFacade {
         const configFactory = new ConfigFactory();
         const config = configFactory.create();

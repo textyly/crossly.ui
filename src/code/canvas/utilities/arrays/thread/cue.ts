@@ -63,6 +63,11 @@ export class CueThreadArray extends ArrayBase implements ICueThreadArray {
         }
     }
 
+    public clear(): void {
+        this._indexesX = new Int16Array(0);
+        this._indexesY = new Int16Array(0);
+    }
+
     protected override expand(): void {
         this.expandIndexesX();
         this.expandIndexesY();

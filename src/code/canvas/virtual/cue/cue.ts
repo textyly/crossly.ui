@@ -52,6 +52,16 @@ export abstract class CueCanvas extends CueCanvasBase {
         this.startListening();
     }
 
+    public override dispose(): void {
+        super.ensureAlive();
+
+        this._pattern.forEach((threadArray) => threadArray.clear());
+        this._pattern = [];
+
+        super.dispose();
+    }
+
+
     protected override zoomIn(): void {
         this.zooms += 1;
     }

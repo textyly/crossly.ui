@@ -41,6 +41,11 @@ export class DotArray extends ArrayBase implements IDotArray {
         this._positionsY[this.index] = y;
     }
 
+    public clear(): void {
+        this._positionsX = new Int32Array(0);
+        this._positionsY = new Int32Array(0);
+    }
+
     protected override expand(): void {
         this.expandPositionsX();
         this.expandPositionsY();
