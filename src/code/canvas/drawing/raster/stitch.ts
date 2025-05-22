@@ -4,9 +4,9 @@ import { RasterDrawingCanvas } from "./raster.js";
 import { ShapeDrawing } from "./primitives/shape.js";
 import { IStitchRasterDrawingCanvas } from "../types.js";
 import { RasterLineDrawing } from "./primitives/line.js";
-import { CanvasSide, StitchPattern, StitchSegment } from "../../types.js";
 import { RasterPolygonDrawing } from "./primitives/polygon.js";
 import { RasterRectangleDrawing } from "./primitives/rectangle.js";
+import { CanvasSide, StitchPattern, StitchSegment } from "../../types.js";
 
 export class StitchRasterDrawingCanvas extends RasterDrawingCanvas implements IStitchRasterDrawingCanvas {
     private readonly side: CanvasSide;
