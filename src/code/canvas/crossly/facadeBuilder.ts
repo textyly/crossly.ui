@@ -1,9 +1,9 @@
-import assert from "./asserts/assert.js";
-import { CrosslyCanvasConfig } from "./config/types.js";
-import { ICrosslyCanvasFacade } from "./canvas/types.js";
-import { CrosslyCanvasBuilder } from "./canvas/crossly/builder.js";
+import assert from "../../asserts/assert.js";
+import { CrosslyCanvasConfig } from "../../config/types.js";
+import { ICrosslyCanvasFacade } from "../types.js";
+import { CrosslyCanvasBuilder } from "./canvasBuilder.js";
 
-export class CanvasBuilder {
+export class CrosslyCanvasFacadeBuilder {
     private readonly crosslyCanvasBuilder: CrosslyCanvasBuilder;
     private config!: CrosslyCanvasConfig;
 
@@ -16,7 +16,7 @@ export class CanvasBuilder {
         return this.buildCore(this.config);
     }
 
-    public withConfig(config: CrosslyCanvasConfig): CanvasBuilder {
+    public withConfig(config: CrosslyCanvasConfig): CrosslyCanvasFacadeBuilder {
         this.config = config;
         return this;
     }
@@ -45,8 +45,8 @@ export class CanvasBuilder {
         const backCueHtmlElement = this.buildBackCueHtmlElement();
         this.crosslyCanvasBuilder.withBackCueCanvas(backCueHtmlElement);
 
-        const crosslyCanvas = this.crosslyCanvasBuilder.build();
-        return crosslyCanvas;
+        const crosslyCanvasFacade = this.crosslyCanvasBuilder.build();
+        return crosslyCanvasFacade;
     }
 
     private buildFrontInputHtmlElement(): HTMLElement {
