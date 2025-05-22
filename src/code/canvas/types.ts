@@ -14,7 +14,7 @@ export type CueDot = Dot & { id: Id };
 export type CueSegment = { id: Id, from: Dot, to: Dot, width: number, color: string };
 export type CuePattern = Array<ICueThreadArray>;
 
-export type StitchSegment = { from: Dot, to: Dot, width: number, color: string };
+export type StitchSegment = { from: Dot, to: Dot, width: number, color: string, side: CanvasSide };
 export type StitchPattern = Array<IThreadPath>;
 
 export type FabricPattern = {

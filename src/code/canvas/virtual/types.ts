@@ -32,10 +32,10 @@ export interface IStitchCanvas extends IVirtualCanvas {
 
 export interface ICueCanvas extends IVirtualCanvas {
     onDrawDot(listener: DrawCueDotListener): VoidUnsubscribe;
-    onDrawDashDot(listener: DrawCueDotListener): VoidUnsubscribe;
+    onDrawDashDot(listener: DrawCueDotListener): VoidUnsubscribe; //TODO: rename
     onRemoveDot(listener: RemoveCueDotListener): VoidUnsubscribe;
     onDrawSegment(listener: DrawCueSegmentListener): VoidUnsubscribe;
-    onDrawDashSegment(listener: DrawCueSegmentListener): VoidUnsubscribe;
+    onDrawDashSegment(listener: DrawCueSegmentListener): VoidUnsubscribe; //TODO: rename
     onMoveSegment(listener: MoveCueSegmentListener): VoidUnsubscribe;
     onRemoveSegment(listener: RemoveCueSegmentListener): VoidUnsubscribe;
 }

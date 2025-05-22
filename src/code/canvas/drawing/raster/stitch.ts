@@ -4,15 +4,18 @@ import { RasterDrawingCanvas } from "./raster.js";
 import { ShapeDrawing } from "./primitives/shape.js";
 import { IStitchRasterDrawingCanvas } from "../types.js";
 import { RasterLineDrawing } from "./primitives/line.js";
-import { StitchPattern, StitchSegment } from "../../types.js";
 import { RasterPolygonDrawing } from "./primitives/polygon.js";
 import { RasterRectangleDrawing } from "./primitives/rectangle.js";
+import { CanvasSide, StitchPattern, StitchSegment } from "../../types.js";
 
 export class StitchRasterDrawingCanvas extends RasterDrawingCanvas implements IStitchRasterDrawingCanvas {
-    private shape: ShapeDrawing;
+    private readonly side: CanvasSide;
+    private readonly shape: ShapeDrawing;
 
-    constructor(rasterCanvas: HTMLCanvasElement) {
+    constructor(rasterCanvas: HTMLCanvasElement, side: CanvasSide) {
         super(StitchRasterDrawingCanvas.name, rasterCanvas);
+
+        this.side = side;
 
         const line = new RasterLineDrawing();
         const polygon = new RasterPolygonDrawing();
@@ -22,18 +25,9 @@ export class StitchRasterDrawingCanvas extends RasterDrawingCanvas implements IS
     }
 
     public drawLine(segment: StitchSegment, density: Density): void {
-        const path = this.createPath();
-
-        const width = segment.width;
-        const color = segment.color;
-        const fromX = segment.from.x - this.bounds.left;
-        const fromY = segment.from.y - this.bounds.top;
-        const toX = segment.to.x - this.bounds.left;
-        const toY = segment.to.y - this.bounds.top;
-
-        this.shape.draw(density, path, fromX, fromY, toX, toY, width);
-
-        this.drawPath(path, color);
+        if (segment.side === this.side) {
+            this.drawLineCore(segment, density);
+        }
     }
 
     public drawLines(pattern: StitchPattern, density: Density): void {
@@ -65,13 +59,14 @@ export class StitchRasterDrawingCanvas extends RasterDrawingCanvas implements IS
 
             for (let dotIdx = 1; dotIdx < currentThread.length; dotIdx++) {
 
-                // filter out back stitches as well as stitches positioned out of the visible area
-                if ((dotIdx % 2 !== 0)) {
+                // if `from` or `to` visible then draw the line (segment)
+                const isSegmentVisible = visibilities[dotIdx - 1] || visibilities[dotIdx];
+                if (isSegmentVisible) {
 
-                    // if `from` or `to` visible then draw the line (segment)
-                    const isSegmentVisible = visibilities[dotIdx - 1] || visibilities[dotIdx];
+                    // filter out back or front stitches depending on the this.side
+                    const side = dotIdx % 2 !== 0 ? CanvasSide.Front : CanvasSide.Back;
+                    if (side === this.side) {
 
-                    if (isSegmentVisible) {
                         this.shape.draw(
                             density,
                             path,
@@ -90,16 +85,31 @@ export class StitchRasterDrawingCanvas extends RasterDrawingCanvas implements IS
         this.drawPath(path, previousThreadColor);
     }
 
+    private drawLineCore(segment: StitchSegment, density: Density): void {
+        const path = this.createPath();
+
+        const width = segment.width;
+        const color = segment.color;
+        const fromX = segment.from.x - this.bounds.left;
+        const fromY = segment.from.y - this.bounds.top;
+        const toX = segment.to.x - this.bounds.left;
+        const toY = segment.to.y - this.bounds.top;
+
+        this.shape.draw(density, path, fromX, fromY, toX, toY, width);
+
+        this.drawPath(path, color);
+    }
+
     private createPath(): Path2D {
         const path = new Path2D();
         return path;
     }
 
     private drawPath(path: Path2D, color: string): void {
-        this.context.strokeStyle = color;
-        this.context.stroke(path);
+        this.rasterCanvasContext.strokeStyle = color;
+        this.rasterCanvasContext.stroke(path);
 
-        this.context.fillStyle = color;
-        this.context.fill(path);
+        this.rasterCanvasContext.fillStyle = color;
+        this.rasterCanvasContext.fill(path);
     }
 }

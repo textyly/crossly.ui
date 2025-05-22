@@ -10,10 +10,15 @@
 
 <body>
     <div id="crossly">
-        <div id="input" tabindex="0">
-            <canvas id="fabric"></canvas>
-            <canvas id="stitch"></canvas>
-            <svg id="cue" xmlns="http://www.w3.org/2000/svg"> </svg>
+        <div id="front-input" tabindex="0">
+            <canvas id="front-fabric"></canvas>
+            <canvas id="front-stitch"></canvas>
+            <svg id="front-cue" xmlns="http://www.w3.org/2000/svg"> </svg>
+        </div>
+        <div id="back-input">
+            <canvas id="back-fabric"></canvas>
+            <canvas id="back-stitch"></canvas>
+            <svg id="back-cue" xmlns="http://www.w3.org/2000/svg"></svg>
         </div>
     </div>
     <script type="module" src="./code/main.js"></script>

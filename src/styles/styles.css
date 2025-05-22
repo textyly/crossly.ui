@@ -1,5 +1,6 @@
 html,
 body {
+  background-color: darkgray;
   overflow: hidden;
   margin: 0;
   padding: 0;
@@ -9,11 +10,23 @@ body {
 
 #crossly {
   overflow: hidden;
+  display: flex;
   width: 100%;
   height: 100%;
+  gap: 0.5rem;
 }
 
-#fabric {
+#front-input {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  border: none;
+  outline: none;
+  margin: 0.5rem;
+  z-index: 4;
+}
+
+#front-fabric {
   background-color: #fff8dc;
   left: 5px;
   top: 5px;
@@ -21,28 +34,47 @@ body {
   z-index: 1;
 }
 
-#stitch {
+#front-stitch {
   position: absolute;
   left: 5px;
   top: 5px;
   z-index: 2;
 }
 
-#cue {
+#front-cue {
   position: absolute;
   left: 5px;
   top: 5px;
   z-index: 3;
 }
 
-#input {
+#back-input {
+  flex: 1;
   position: relative;
   overflow: hidden;
   border: none;
   outline: none;
-  left: 10px;
-  top: 10px;
-  z-index: 4;
-  width: 100%;
-  height: 100%;
+  margin: 0.5rem;
+}
+
+#back-fabric {
+  background-color: #fff8dc;
+  position: absolute;
+  left: 5px;
+  top: 5px;
+  z-index: 1;
+}
+
+#back-stitch {
+  position: absolute;
+  left: 5px;
+  top: 5px;
+  z-index: 2;
+}
+
+#back-cue {
+  position: absolute;
+  left: 5px;
+  top: 5px;
+  z-index: 3;
 }

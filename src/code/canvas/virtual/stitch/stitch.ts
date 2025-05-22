@@ -206,21 +206,18 @@ export abstract class StitchCanvas extends StitchCanvasBase {
 
         const areClicksIdentical = this.dotsUtility.areDotsEqual(previouslyClickedDotPos, clickedDotPos);
         if (!areClicksIdentical) {
-            const visible = this.currentSide === CanvasSide.Front;
-
             const thread = this.getCurrentThread();
             assert.defined(thread, "thread");
 
+            const visible = this.currentSide === CanvasSide.Front;
             thread.pushDot(clickedDotIdx.dotX, clickedDotIdx.dotY, clickedDotPos.x, clickedDotPos.y, visible);
             super.invokeChange(this._pattern);
 
-            if (visible) {
-                const zoomedWidth = this.calculateThreadZoomedWidth(thread.width);
-                const segment = { from: previouslyClickedDotPos, to: clickedDotPos, color: thread.color, width: zoomedWidth };
+            const zoomedWidth = this.calculateThreadZoomedWidth(thread.width);
+            const segment = { from: previouslyClickedDotPos, to: clickedDotPos, color: thread.color, width: zoomedWidth, side: this.currentSide };
 
-                const density = this.calculateDensity();
-                super.invokeDrawSegment(segment, density);
-            }
+            const density = this.calculateDensity();
+            super.invokeDrawSegment(segment, density);
 
             this.changeCanvasSide();
         }
