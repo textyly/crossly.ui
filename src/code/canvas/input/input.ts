@@ -62,9 +62,9 @@ export class InputCanvas extends InputCanvasBase {
     public override dispose(): void {
         super.ensureAlive();
 
-        this.unsubscribe();
         super.dispose();
 
+        this.unsubscribe();
         this.moveInput.dispose();
         this.touchInput.dispose();
     }

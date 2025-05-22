@@ -31,10 +31,10 @@ export interface IVectorDrawingCanvas extends ICanvas {
     drawDashDot(dot: Dot, radius: number, color: string): SvgDot;
     removeDot(dot: SvgDot): void;
 
-    drawLine(thread: CueSegment): SvgLine;
-    drawDashLine(thread: CueSegment): SvgLine;
-    moveLine(thread: CueSegment, svgLine: SvgLine): void;
-    removeLine(thread: SvgLine): void;
+    drawLine(segment: CueSegment): SvgLine;
+    drawDashLine(segment: CueSegment): SvgLine;
+    moveLine(segment: CueSegment, svgLine: SvgLine): void;
+    removeLine(segment: SvgLine): void;
 }
 
 export interface IDrawingCanvas extends ICanvas {
