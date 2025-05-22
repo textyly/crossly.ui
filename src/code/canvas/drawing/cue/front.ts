@@ -1,7 +1,7 @@
-import { CanvasBase } from "../base.js";
-import assert from "../../asserts/assert.js";
-import { Id, BoundsChangeEvent } from "../types.js";
-import { ICueDrawingCanvas, IVectorDrawingCanvas, SvgDot, SvgLine } from "./types.js";
+import { CanvasBase } from "../../base.js";
+import assert from "../../../asserts/assert.js";
+import { Id, BoundsChangeEvent } from "../../types.js";
+import { ICueDrawingCanvas, IVectorDrawingCanvas, SvgDot, SvgLine } from "../types.js";
 import {
     ICueCanvas,
     DrawCueDotEvent,
@@ -9,9 +9,9 @@ import {
     MoveCueSegmentEvent,
     DrawCueSegmentEvent,
     RemoveCueSegmentEvent,
-} from "../virtual/types.js";
+} from "../../virtual/types.js";
 
-export class CueDrawingCanvas extends CanvasBase implements ICueDrawingCanvas {
+export class FrontCueDrawingCanvas extends CanvasBase implements ICueDrawingCanvas {
     private readonly cueCanvas: ICueCanvas;
     private readonly vectorDrawing: IVectorDrawingCanvas;
 
@@ -19,7 +19,7 @@ export class CueDrawingCanvas extends CanvasBase implements ICueDrawingCanvas {
     private readonly svgLines: Map<Id, SvgLine>;
 
     constructor(cueCanvas: ICueCanvas, vectorDrawing: IVectorDrawingCanvas) {
-        super(CueDrawingCanvas.name);
+        super(FrontCueDrawingCanvas.name);
 
         this.cueCanvas = cueCanvas;
         this.vectorDrawing = vectorDrawing;
@@ -44,6 +44,7 @@ export class CueDrawingCanvas extends CanvasBase implements ICueDrawingCanvas {
 
         const svgDot = this.vectorDrawing.drawDot(dot, event.dotRadius, event.dotColor);
         assert.defined(svgDot, "svgDot");
+
         this.svgDots.set(id, svgDot);
     }
 
@@ -55,6 +56,7 @@ export class CueDrawingCanvas extends CanvasBase implements ICueDrawingCanvas {
 
         const svgDot = this.vectorDrawing.drawDashDot(dot, event.dotRadius, event.dotColor);
         assert.defined(svgDot, "svgDot");
+
         this.svgDots.set(id, svgDot);
     }
 
@@ -62,6 +64,7 @@ export class CueDrawingCanvas extends CanvasBase implements ICueDrawingCanvas {
         this.ensureAlive();
 
         const id = event.dotId;
+
         const svgDot = this.svgDots.get(id);
         assert.defined(svgDot, "svgDot");
 
@@ -77,6 +80,7 @@ export class CueDrawingCanvas extends CanvasBase implements ICueDrawingCanvas {
 
         const svgLine = this.vectorDrawing.drawLine(thread);
         assert.defined(svgLine, "svgLine");
+
         this.svgLines.set(id, svgLine);
     }
 
@@ -88,6 +92,7 @@ export class CueDrawingCanvas extends CanvasBase implements ICueDrawingCanvas {
 
         const svgLine = this.svgLines.get(id);
         assert.defined(svgLine, "svgLine");
+
         this.vectorDrawing.moveLine(thread, svgLine);
     }
 
@@ -99,6 +104,7 @@ export class CueDrawingCanvas extends CanvasBase implements ICueDrawingCanvas {
 
         const svgLine = this.vectorDrawing.drawDashLine(thread);
         assert.defined(svgLine, "svgLine");
+
         this.svgLines.set(id, svgLine);
     }
 
@@ -109,6 +115,7 @@ export class CueDrawingCanvas extends CanvasBase implements ICueDrawingCanvas {
 
         const svgLine = this.svgLines.get(id);
         assert.defined(svgLine, "svgLine");
+
         this.vectorDrawing.removeLine(svgLine);
         this.svgLines.delete(id);
     }
@@ -137,6 +144,8 @@ export class CueDrawingCanvas extends CanvasBase implements ICueDrawingCanvas {
     }
 
     private clear(): void {
+        this.ensureAlive();
+
         this.svgDots.clear();
         this.svgLines.clear();
     }

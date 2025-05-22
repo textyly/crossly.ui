@@ -1,8 +1,8 @@
-import { CanvasBase } from "../base.js";
-import assert from "../../asserts/assert.js";
-import { BoundsChangeEvent } from "../types.js";
-import { IFabricDrawingCanvas, IFabricRasterDrawingCanvas } from "./types.js";
-import { DrawFabricDotsEvent, DrawFabricThreadsEvent, IFabricCanvas } from "../virtual/types.js";
+import { CanvasBase } from "../../base.js";
+import assert from "../../../asserts/assert.js";
+import { BoundsChangeEvent } from "../../types.js";
+import { IFabricDrawingCanvas, IFabricRasterDrawingCanvas } from "../types.js";
+import { DrawFabricDotsEvent, DrawFabricThreadsEvent, IFabricCanvas } from "../../virtual/types.js";
 
 export class FabricDrawingCanvas extends CanvasBase implements IFabricDrawingCanvas {
     private readonly fabricCanvas: IFabricCanvas;
