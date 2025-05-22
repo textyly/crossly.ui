@@ -1,4 +1,4 @@
-import { Base } from "../base.js";
+import { Base } from "../general/base.js";
 import assert from "../asserts/assert.js";
 import { Unsubscribe } from "../types.js";
 import { Channel, ChannelData, ChannelListener, ChannelListeners, IMessaging } from "./types.js";
