@@ -190,7 +190,6 @@ export abstract class CueCanvas extends CueCanvasBase {
     private undoClickDotCore(threadsCount: number, currentThread: CueThreadArray): void {
         const dotsCount = currentThread.length;
         if (dotsCount > 0) {
-
             // thread has crossed at least one hole
             if (dotsCount === 1) {
                 // remove last dot
@@ -211,7 +210,6 @@ export abstract class CueCanvas extends CueCanvasBase {
                 }
             }
         } else if (threadsCount > 1) {
-
             // remove current thread
             this._pattern.pop();
             const previousThread = this.getCurrentThread();

@@ -161,7 +161,6 @@ export abstract class StitchCanvas extends StitchCanvasBase {
     private undoClickDotCore(threadsCount: number, currentThread: ThreadPath): void {
         const dotsCount = currentThread.length;
         if (dotsCount > 0) {
-
             if (dotsCount === 1) {
                 // remove last dot
                 currentThread.pop();
@@ -173,14 +172,11 @@ export abstract class StitchCanvas extends StitchCanvasBase {
                 this.changeCanvasSide();
             }
         } else if (threadsCount > 1) {
-
             // remove current thread
             this._pattern.pop();
             const previousThread = this.getCurrentThread();
 
-            if (previousThread.length === 0) {
-                // previous thread have not crossed any dots as well, just remove it
-            } else {
+            if (previousThread.length > 0) {
                 this.clickedDotIdx = previousThread.lastDot()!;
                 this.currentSide = previousThread.length % 2 === 0 ? CanvasSide.Back : CanvasSide.Front;
             }
