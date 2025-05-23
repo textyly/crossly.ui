@@ -101,6 +101,28 @@ export abstract class CueCanvas extends CueCanvasBase {
         this.currentSide = CanvasSide.Back;
     }
 
+    protected undoClickDot(): void {
+        super.ensureAlive();
+
+        const threadsCount = this._pattern.length;
+        assert.greaterThanZero(threadsCount, "threadsCount");
+
+        const currentThread = this.getCurrentThread();
+        assert.defined(currentThread, "currentThread");
+
+        this.undoClickDotCore(threadsCount, currentThread);
+    }
+
+    protected redoClickDot(): void {
+        const threadsCount = this._pattern.length;
+        assert.greaterThanZero(threadsCount, "threadsCount");
+
+        const currentThread = this.getCurrentThread();
+        assert.defined(currentThread, "currentThread");
+
+        this.redoClickDotCore(threadsCount, currentThread);
+    }
+
     private redrawWhileMoving(): void {
         this.removeSegment();
 
@@ -159,13 +181,10 @@ export abstract class CueCanvas extends CueCanvasBase {
 
     private handleUndo(): void {
         super.ensureAlive();
+        this.undoClickDot();
+    }
 
-        const threadsCount = this._pattern.length;
-        assert.greaterThanZero(threadsCount, "threadsCount");
-
-        const currentThread = this.getCurrentThread();
-        assert.defined(currentThread, "currentThread");
-
+    private undoClickDotCore(threadsCount: number, currentThread: CueThreadArray): void {
         const dotsCount = currentThread.length;
         if (dotsCount === 0) {
             // thread is just created without crossing any hole (state immediately following `use new thread` operation)
@@ -218,6 +237,10 @@ export abstract class CueCanvas extends CueCanvasBase {
         }
 
         this.draw();
+    }
+
+    private redoClickDotCore(threadsCount: number, currentThread: CueThreadArray): void {
+        throw new Error();
     }
 
     private moveDot(position: Position): void {

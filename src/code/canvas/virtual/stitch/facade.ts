@@ -53,4 +53,12 @@ export class StitchCanvasFacade extends StitchCanvas implements IStitchCanvasFac
 
         this.clickedDotIdx = lastDotIdx;
     }
+
+    public undo(): void {
+        this.undoClickDot();
+    }
+
+    public redo(): void {
+        this.redoClickDot();
+    }
 }

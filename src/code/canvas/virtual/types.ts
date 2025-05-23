@@ -53,6 +53,9 @@ export interface IStitchCanvasFacade extends IStitchCanvas {
     draw(): void;
     load(pattern: StitchPattern): void;
     useThread(name: string, color: string, width: number): void;
+
+    undo(): void;
+    redo(): void;
 }
 
 export interface ICueCanvasFacade extends ICueCanvas {
@@ -61,6 +64,9 @@ export interface ICueCanvasFacade extends ICueCanvas {
     draw(): void;
     load(pattern: StitchPattern): void;
     useThread(name: string, color: string, width: number): void;
+
+    undo(): void;
+    redo(): void;
 }
 
 export type ChangeFabricEvent = { pattern: FabricPattern; };

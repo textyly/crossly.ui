@@ -117,6 +117,26 @@ export abstract class StitchCanvas extends StitchCanvasBase {
         return array.length === 0 ? undefined : array[0];
     }
 
+    protected undoClickDot(): void {
+        const threadsCount = this._pattern.length;
+        assert.greaterThanZero(threadsCount, "threadsCount");
+
+        const currentThread = this.getCurrentThread();
+        assert.defined(currentThread, "currentThread");
+
+        this.undoClickDotCore(threadsCount, currentThread);
+    }
+
+    protected redoClickDot(): void {
+        const threadsCount = this._pattern.length;
+        assert.greaterThanZero(threadsCount, "threadsCount");
+
+        const currentThread = this.getCurrentThread();
+        assert.defined(currentThread, "currentThread");
+
+        this.redoClickDotCore(threadsCount, currentThread);
+    }
+
     private handlePointerUp(event: PointerUpEvent): void {
         super.ensureAlive();
 
@@ -132,17 +152,10 @@ export abstract class StitchCanvas extends StitchCanvasBase {
 
     private handleUndo(): void {
         super.ensureAlive();
-
-        const threadsCount = this._pattern.length;
-        assert.greaterThanZero(threadsCount, "threadsCount");
-
-        const currentThread = this.getCurrentThread();
-        assert.defined(currentThread, "currentThread");
-
-        this.handleUndoCore(threadsCount, currentThread);
+        this.undoClickDot();
     }
 
-    private handleUndoCore(threadsCount: number, currentThread: ThreadPath): void {
+    private undoClickDotCore(threadsCount: number, currentThread: ThreadPath): void {
         const dotsCount = currentThread.length;
         if (dotsCount === 0) {
             // thread is just created without crossing any hole (state immediately following `use new thread` operation)
@@ -181,6 +194,10 @@ export abstract class StitchCanvas extends StitchCanvasBase {
         }
 
         this.draw();
+    }
+
+    private redoClickDotCore(threadsCount: number, currentThread: ThreadPath): void {
+        throw new Error();
     }
 
     private clickDot(position: Position): void {

@@ -55,4 +55,12 @@ export class CueCanvasFacade extends CueCanvas implements ICueCanvasFacade {
 
         this.clickedDotIdx = lastDotIdx;
     }
+
+    public undo(): void {
+        this.undoClickDot();
+    }
+
+    public redo(): void {
+        this.redoClickDot();
+    }
 }
