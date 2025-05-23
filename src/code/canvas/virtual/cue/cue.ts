@@ -89,11 +89,14 @@ export abstract class CueCanvas extends CueCanvasBase {
         this.draw();
     }
 
-    protected getCurrentThread(): CueThreadArray | undefined {
+    protected getCurrentThread(): CueThreadArray {
         const length = this._pattern.length;
         const array = this._pattern.slice(length - 1, length);
 
-        return array.length === 0 ? undefined : array[0];
+        const thread = array.length === 0 ? undefined : array[0];
+        assert.defined(thread, "thread");
+
+        return thread;
     }
 
     protected removeThread(): void {
@@ -186,36 +189,9 @@ export abstract class CueCanvas extends CueCanvasBase {
 
     private undoClickDotCore(threadsCount: number, currentThread: CueThreadArray): void {
         const dotsCount = currentThread.length;
-        if (dotsCount === 0) {
-            // thread is just created without crossing any hole (state immediately following `use new thread` operation)
-            if (threadsCount === 1) {
-                // there is only 1 thread which has not crossed any hole
-                // cannot undo any more
-            } else {
-                // remove current thread
-                this._pattern.pop();
+        if (dotsCount > 0) {
 
-                const previousThread = this.getCurrentThread();
-                assert.defined(previousThread, "previousThread");
-
-                const previousThreadDotsCount = previousThread.length;
-                if (previousThreadDotsCount === 0) {
-                    // previous thread have not crossed any dots as well, just remove it
-                } else {
-                    this.currentSide = previousThreadDotsCount % 2 === 0 ? CanvasSide.Back : CanvasSide.Front;
-
-                    const lastDotIdx = previousThread.lastDotIndex()!;
-                    this.clickedDotIdx = lastDotIdx;
-
-                    if (this.hoveredDotIdx) {
-                        const dotPos = this.calculateDotPosition(this.hoveredDotIdx);
-                        const event = { position: dotPos };
-                        this.handlePointerMove(event);
-                    }
-                }
-            }
-        } else {
-            // thread has crossed at leas one hole
+            // thread has crossed at least one hole
             if (dotsCount === 1) {
                 // remove last dot
                 currentThread.popDotIndex();
@@ -227,6 +203,23 @@ export abstract class CueCanvas extends CueCanvasBase {
 
                 const lastDotIdx = currentThread.lastDotIndex()!;
                 this.clickedDotIdx = lastDotIdx;
+
+                if (this.hoveredDotIdx) {
+                    const dotPos = this.calculateDotPosition(this.hoveredDotIdx);
+                    const event = { position: dotPos };
+                    this.handlePointerMove(event);
+                }
+            }
+        } else if (threadsCount > 1) {
+
+            // remove current thread
+            this._pattern.pop();
+            const previousThread = this.getCurrentThread();
+
+            if (previousThread.length > 0) {
+                const lastDotIdx = previousThread.lastDotIndex()!;
+                this.clickedDotIdx = lastDotIdx;
+                this.currentSide = previousThread.length % 2 === 0 ? CanvasSide.Back : CanvasSide.Front;
 
                 if (this.hoveredDotIdx) {
                     const dotPos = this.calculateDotPosition(this.hoveredDotIdx);
