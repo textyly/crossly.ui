@@ -9,6 +9,11 @@ import { IStitchThreadPath } from "../../utilities/arrays/types.js";
 import { StitchThreadPath } from "../../utilities/arrays/thread/stitch.js";
 import { IInputCanvas, PointerUpEvent, Position } from "../../input/types.js";
 
+// TODO: there is common logic between CueCanvas and StitchCanvas, and therefore:
+// 1. when features are added code must be duplicated with some small differences
+// 2. bug fixes must be present in both classes
+// Common logic must be extracted in a base class
+// This can be done once a good amount of unit/integration tests are written
 export abstract class StitchCanvas extends StitchCanvasBase {
     private readonly dotsUtility: DotsUtility<Dot>;
     protected _pattern: Array<StitchThreadPath>;

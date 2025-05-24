@@ -9,6 +9,11 @@ import { CueThreadPath } from "../../utilities/arrays/thread/cue.js";
 import { CanvasSide, Id, CueSegment, CueDot, Dot, DotIndex } from "../../types.js";
 import { Position, IInputCanvas, PointerUpEvent, PointerMoveEvent } from "../../input/types.js";
 
+// TODO: there is common logic between CueCanvas and StitchCanvas, and therefore:
+// 1. when features are added code must be duplicated with some small differences
+// 2. bug fixes must be present in both classes
+// Common logic must be extracted in a base class
+// This can be done once a good amount of unit/integration tests are written
 export abstract class CueCanvas extends CueCanvasBase {
     private readonly ids: IdGenerator;
     private readonly dotsUtility: DotsUtility<Dot>;
@@ -87,7 +92,9 @@ export abstract class CueCanvas extends CueCanvasBase {
     }
 
     protected useNewThread(name: string, color: string, width: number): void {
-        this.removeThread();
+        this.clickedDotIdx = undefined;
+        this.currentSide = CanvasSide.Back;
+
         this.createThread(color, width);
         this.draw();
     }
@@ -100,11 +107,6 @@ export abstract class CueCanvas extends CueCanvasBase {
         assert.defined(thread, "thread");
 
         return thread;
-    }
-
-    protected removeThread(): void {
-        this.clickedDotIdx = undefined;
-        this.currentSide = CanvasSide.Back;
     }
 
     protected undoClickDot(): void {
@@ -209,9 +211,10 @@ export abstract class CueCanvas extends CueCanvasBase {
             if (currentThreadDots === 1) {
                 // remove last dot
                 currentThread.popDotIndex();
-                this.removeThread();
+
+                this.clickedDotIdx = undefined;
+                this.currentSide = CanvasSide.Back;
             } else {
-                // remove last dot
                 currentThread.popDotIndex();
                 this.changeCanvasSide();
 
@@ -224,27 +227,57 @@ export abstract class CueCanvas extends CueCanvasBase {
                     this.handlePointerMove(event);
                 }
             }
-        } else if (currentThreadDots > 1) {
-            // remove current thread
-            this._pattern.pop();
-            const previousThread = this.getCurrentThread();
+        } else {
+            const threads = this._pattern.length;
 
-            if (previousThread.length > 0) {
-                const lastDotIdx = previousThread.lastDotIndex()!;
-                this.clickedDotIdx = lastDotIdx;
-                this.currentSide = previousThread.length % 2 === 0 ? CanvasSide.Back : CanvasSide.Front;
+            if (threads > 1) {
+                // remove current thread
+                this._pattern.pop();
+                const previousThread = this.getCurrentThread();
 
-                if (this.hoveredDotIdx) {
-                    const dotPos = this.calculateDotPosition(this.hoveredDotIdx);
-                    const event = { position: dotPos };
-                    this.handlePointerMove(event);
+                if (previousThread.length > 0) {
+                    const lastDotIdx = previousThread.lastDotIndex()!;
+                    this.clickedDotIdx = lastDotIdx;
+                    this.currentSide = previousThread.length % 2 === 0 ? CanvasSide.Back : CanvasSide.Front;
+
+                    if (this.hoveredDotIdx) {
+                        const dotPos = this.calculateDotPosition(this.hoveredDotIdx);
+                        const event = { position: dotPos };
+                        this.handlePointerMove(event);
+                    }
                 }
             }
         }
     }
 
     private redoClickDotCore(currentPattern: Array<CueThreadPath>, redoPattern: Array<ICueThreadPath>): void {
-        // TODO: 
+        const currentThreadPathIndex = currentPattern.length - 1;
+        const redoThreadPath = redoPattern[currentThreadPathIndex];
+        const currentThreadPath = currentPattern[currentThreadPathIndex];
+
+        if (redoThreadPath.length > currentThreadPath.length) {
+            const redoDotIndex = currentThreadPath.length;
+            const indexX = redoThreadPath.indexesX[redoDotIndex];
+            const indexY = redoThreadPath.indexesY[redoDotIndex];
+            currentThreadPath.pushDotIndex(indexX, indexY);
+
+            this.clickedDotIdx = { dotX: indexX, dotY: indexY };
+            this.changeCanvasSide();
+
+        } else if (redoPattern.length > currentPattern.length) {
+            const nextRedoThreadPath = redoPattern[currentPattern.length];
+            const newCurrentThreadPath = new CueThreadPath(nextRedoThreadPath.color, nextRedoThreadPath.width);
+            currentPattern.push(newCurrentThreadPath);
+
+            this.clickedDotIdx = undefined;
+            this.currentSide = CanvasSide.Back;
+        }
+
+        if (this.hoveredDotIdx) {
+            const dotPos = this.calculateDotPosition(this.hoveredDotIdx);
+            const event = { position: dotPos };
+            this.handlePointerMove(event);
+        }
     }
 
     private moveDot(position: Position): void {
