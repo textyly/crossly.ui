@@ -197,6 +197,11 @@ export abstract class StitchCanvas extends StitchCanvasBase {
         this.undoClickDot();
     }
 
+    private handleRedo(): void {
+        super.ensureAlive();
+        this.redoClickDot();
+    }
+
     private undoClickDotCore(): void {
         const currentThread = this.getCurrentThread();
         this._redoPattern = this._redoPattern ?? patternCloning.cloneStitchPattern(this._pattern);
@@ -325,6 +330,9 @@ export abstract class StitchCanvas extends StitchCanvasBase {
 
         const undoUn = this.inputCanvas.onUndo(this.handleUndo.bind(this));
         super.registerUn(undoUn);
+
+        const redoUn = this.inputCanvas.onRedo(this.handleRedo.bind(this));
+        super.registerUn(redoUn);
     }
 
     private validateConfig(config: StitchCanvasConfig): void {

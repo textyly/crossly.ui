@@ -218,6 +218,11 @@ export abstract class CueCanvas extends CueCanvasBase {
         }
     }
 
+    private handleRedo(): void {
+        super.ensureAlive();
+        this.redoClickDot();
+    }
+
     private handleUndo(): void {
         super.ensureAlive();
         this.undoClickDot();
@@ -437,6 +442,9 @@ export abstract class CueCanvas extends CueCanvasBase {
 
         const undoUn = this.inputCanvas.onUndo(this.handleUndo.bind(this));
         super.registerUn(undoUn);
+
+        const redoUn = this.inputCanvas.onRedo(this.handleRedo.bind(this));
+        super.registerUn(redoUn);
     }
 
     private validateConfig(config: CueCanvasConfig): void {

@@ -147,10 +147,16 @@ export class InputCanvas extends InputCanvasBase {
     private handleKeyDown(event: KeyboardEvent): void {
         super.ensureAlive();
 
-        const keyZ = "KeyZ";
+        if (event.ctrlKey) {
 
-        if (event.ctrlKey && event.code == keyZ) {
-            super.invokeUndo();
+            const keyZ = "KeyZ";
+            const keyY = "KeyY";
+
+            if (event.code == keyZ) {
+                super.invokeUndo();
+            } else if (event.code == keyY) {
+                super.invokeRedo();
+            }
         }
     }
 
