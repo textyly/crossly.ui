@@ -8,7 +8,7 @@ import { Dot, DotIndex } from "../../types.js";
 // In order to mitigate this problem the below impl has been introduced
 // color and radius properties are common for all dots
 // x and y are divided in typed arrays
-export interface IDotArray {
+export interface IFabricDotArray {
     get length(): number;
 
     // common properties for all dots
@@ -39,7 +39,7 @@ export interface IFabricThreadArray {
 }
 
 // same motivation as dot array
-export interface IThreadPathArray {
+export interface IThreadPath {
     get length(): number;
 
     get color(): string;
@@ -49,12 +49,11 @@ export interface IThreadPathArray {
     get positionsY(): Readonly<Int32Array>;
 
     last(): Dot | undefined;
-
     clear(): void;
 }
 
 // same motivation as dot array
-export interface IThreadPath extends IThreadPathArray {
+export interface IStitchThreadPath extends IThreadPath {
     get name(): string;
     get zoomedWidth(): number;
 
@@ -63,12 +62,13 @@ export interface IThreadPath extends IThreadPathArray {
     get visibilities(): Readonly<Array<boolean>>;
 
     lastDot(): (Dot & DotIndex) | undefined;
-
     clear(): void;
 }
 
 // same motivation as dot array
-export interface ICueThreadArray {
+export interface ICueThreadPath {
+    get length(): number;
+
     get color(): string;
     get width(): number;
 
@@ -76,7 +76,6 @@ export interface ICueThreadArray {
     get indexesY(): Readonly<Int16Array>;
 
     lastDotIndex(): DotIndex | undefined;
-
     clear(): void;
 }
 

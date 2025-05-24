@@ -1,5 +1,5 @@
 import { Density } from "../virtual/types.js";
-import { IDotArray } from "../utilities/arrays/types.js";
+import { IFabricDotArray } from "../utilities/arrays/types.js";
 import { FabricThreadArray } from "../utilities/arrays/thread/fabric.js";
 import { CueSegment, Dot, ICanvas, StitchPattern, StitchSegment } from "../types.js";
 
@@ -17,7 +17,7 @@ export interface IRasterDrawingCanvas extends ICanvas {
 }
 
 export interface IFabricRasterDrawingCanvas extends IRasterDrawingCanvas {
-    drawDots(dots: IDotArray): void;
+    drawDots(dots: IFabricDotArray): void;
     drawLines(threads: FabricThreadArray): void;
 }
 

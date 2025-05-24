@@ -4,7 +4,7 @@ import { IStitchCanvasFacade } from "../types.js";
 import { IInputCanvas } from "../../input/types.js";
 import { DotIndex, StitchPattern } from "../../types.js";
 import { StitchCanvasConfig } from "../../../config/types.js";
-import { ThreadPath } from "../../utilities/arrays/thread/stitch.js";
+import { StitchThreadPath } from "../../utilities/arrays/thread/stitch.js";
 
 export class StitchCanvasFacade extends StitchCanvas implements IStitchCanvasFacade {
 
@@ -35,7 +35,7 @@ export class StitchCanvasFacade extends StitchCanvas implements IStitchCanvasFac
     private loadCore(pattern: StitchPattern): void {
         super.ensureAlive();
 
-        this._pattern = new Array<ThreadPath>();
+        this._pattern = new Array<StitchThreadPath>();
         let lastDotIdx: DotIndex | undefined = undefined;
 
         pattern.forEach((threadPath) => {

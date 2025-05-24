@@ -1,4 +1,4 @@
-import { IDotArray } from "../utilities/arrays/types.js";
+import { IFabricDotArray } from "../utilities/arrays/types.js";
 import { FabricThreadArray } from "../utilities/arrays/thread/fabric.js";
 import { Listener, VoidListener, VoidUnsubscribe } from "../../types.js";
 import {
@@ -72,7 +72,7 @@ export interface ICueCanvasFacade extends ICueCanvas {
 export type ChangeFabricEvent = { pattern: FabricPattern; };
 export type ChangeFabricListener = Listener<ChangeFabricEvent>;
 
-export type DrawFabricDotsEvent = { dots: IDotArray; };
+export type DrawFabricDotsEvent = { dots: IFabricDotArray; };
 export type DrawFabricDotsListener = Listener<DrawFabricDotsEvent>;
 
 export type DrawFabricThreadsEvent = { threads: FabricThreadArray; };

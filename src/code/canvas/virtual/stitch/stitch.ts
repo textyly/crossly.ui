@@ -2,17 +2,17 @@ import { Density } from "../types.js";
 import { StitchCanvasBase } from "./base.js";
 import assert from "../../../asserts/assert.js";
 import { DotsUtility } from "../../utilities/dots.js";
-import { Dot, CanvasSide, DotIndex, StitchPattern } from "../../types.js";
-import { IThreadPath } from "../../utilities/arrays/types.js";
+import { Dot, CanvasSide, DotIndex, } from "../../types.js";
 import { StitchCanvasConfig } from "../../../config/types.js";
 import patternCloning from "../../utilities/arrays/cloning.js";
-import { ThreadPath } from "../../utilities/arrays/thread/stitch.js";
+import { IStitchThreadPath } from "../../utilities/arrays/types.js";
+import { StitchThreadPath } from "../../utilities/arrays/thread/stitch.js";
 import { IInputCanvas, PointerUpEvent, Position } from "../../input/types.js";
 
 export abstract class StitchCanvas extends StitchCanvasBase {
     private readonly dotsUtility: DotsUtility<Dot>;
-    protected _pattern: Array<ThreadPath>;
-    protected _redoPattern: Array<IThreadPath> | undefined;
+    protected _pattern: Array<StitchThreadPath>;
+    protected _redoPattern: Array<IStitchThreadPath> | undefined;
 
     private readonly minThreadWidth: number;
     private readonly threadWidthZoomStep: number;
@@ -29,7 +29,7 @@ export abstract class StitchCanvas extends StitchCanvasBase {
         this.minThreadWidth = threadConfig.minWidth;
         this.threadWidthZoomStep = threadConfig.widthZoomStep;
 
-        this._pattern = new Array<ThreadPath>();
+        this._pattern = new Array<StitchThreadPath>();
         this.createThread(threadConfig.name, threadConfig.color, threadConfig.width);
 
         this.dotsUtility = new DotsUtility();
@@ -105,11 +105,11 @@ export abstract class StitchCanvas extends StitchCanvasBase {
     }
 
     protected createThread(name: string, color: string, width: number): void {
-        const stitchThread = new ThreadPath(name, color, width);
+        const stitchThread = new StitchThreadPath(name, color, width);
         this._pattern.push(stitchThread);
     }
 
-    protected getCurrentThread(): ThreadPath {
+    protected getCurrentThread(): StitchThreadPath {
         const length = this._pattern.length;
         const array = this._pattern.slice(length - 1, length);
 
@@ -170,7 +170,7 @@ export abstract class StitchCanvas extends StitchCanvasBase {
 
     private undoClickDotCore(): void {
         const currentThread = this.getCurrentThread();
-        this._redoPattern = this._redoPattern ?? patternCloning.clone(this._pattern);
+        this._redoPattern = this._redoPattern ?? patternCloning.cloneStitchPattern(this._pattern);
 
         const currentThreadDots = currentThread.length;
         if (currentThreadDots > 0) {
@@ -199,7 +199,7 @@ export abstract class StitchCanvas extends StitchCanvasBase {
         }
     }
 
-    private redoClickDotCore(currentPattern: Array<ThreadPath>, redoPattern: Array<IThreadPath>): void {
+    private redoClickDotCore(currentPattern: Array<StitchThreadPath>, redoPattern: Array<IStitchThreadPath>): void {
         const currentThreadPathIndex = currentPattern.length - 1;
         const redoThreadPath = redoPattern[currentThreadPathIndex];
         const currentThreadPath = currentPattern[currentThreadPathIndex];
@@ -210,10 +210,16 @@ export abstract class StitchCanvas extends StitchCanvasBase {
             const indexY = redoThreadPath.indexesY[redoDotIndex];
             currentThreadPath.pushDotIndex(indexX, indexY);
 
+            this.clickedDotIdx = { dotX: indexX, dotY: indexY };
+            this.changeCanvasSide();
+
         } else if (redoPattern.length > currentPattern.length) {
             const nextRedoThreadPath = redoPattern[currentPattern.length];
-            const newCurrentThreadPath = new ThreadPath(nextRedoThreadPath.name, nextRedoThreadPath.color, nextRedoThreadPath.width);
+            const newCurrentThreadPath = new StitchThreadPath(nextRedoThreadPath.name, nextRedoThreadPath.color, nextRedoThreadPath.width);
             currentPattern.push(newCurrentThreadPath);
+
+            this.clickedDotIdx = undefined;
+            this.currentSide = CanvasSide.Back;
         }
     }
 

@@ -1,6 +1,6 @@
 import { Position } from "./input/types.js";
 import { IDisposable, Listener, VoidUnsubscribe } from "../types";
-import { ICueThreadArray, IThreadPath } from "./utilities/arrays/types.js";
+import { ICueThreadPath, IStitchThreadPath } from "./utilities/arrays/types.js";
 import { ChangeFabricListener, ChangeStitchPatternListener } from "./virtual/types.js";
 
 export type Bounds = { left: number, top: number, width: number, height: number };
@@ -12,10 +12,10 @@ export type Id = number;
 export type Dot = Position;
 export type CueDot = Dot & { id: Id };
 export type CueSegment = { id: Id, from: Dot, to: Dot, width: number, color: string };
-export type CuePattern = Array<ICueThreadArray>;
+export type CuePattern = Array<ICueThreadPath>;
 
 export type StitchSegment = { from: Dot, to: Dot, width: number, color: string, side: CanvasSide };
-export type StitchPattern = Array<IThreadPath>;
+export type StitchPattern = Array<IStitchThreadPath>;
 
 export type FabricPattern = {
     name: string;

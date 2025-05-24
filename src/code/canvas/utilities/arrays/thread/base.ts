@@ -1,8 +1,8 @@
 import { ArrayBase } from "../base.js";
 import { Dot } from "../../../types.js";
-import { IThreadPathArray } from "../types.js";
+import { IThreadPath } from "../types.js";
 
-export abstract class ThreadBase extends ArrayBase implements IThreadPathArray {
+export abstract class ThreadBase extends ArrayBase implements IThreadPath {
     private readonly _color: string;
     private readonly _width: number;
 

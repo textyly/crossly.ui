@@ -1,14 +1,14 @@
-import { IThreadPath } from "../canvas/utilities/arrays/types.js";
-import { ThreadPath } from "../canvas/utilities/arrays/thread/stitch.js";
+import { IStitchThreadPath } from "../canvas/utilities/arrays/types.js";
+import { StitchThreadPath } from "../canvas/utilities/arrays/thread/stitch.js";
 import { CrosslyCanvasPattern, FabricPattern, StitchPattern } from "../canvas/types.js";
 import {
+    IConverter,
     FabricDataModel,
     ThreadDataModel,
     PatternDataModel,
     ThreadsDataModel,
     CrosslyDataModel,
     ThreadPathDataModel,
-    IConverter,
 } from "./types.js";
 
 export class Converter implements IConverter {
@@ -126,7 +126,7 @@ export class Converter implements IConverter {
     }
 
     private convertToStitchPattern(patternDataModel: PatternDataModel, threadsDataModel: ThreadsDataModel): StitchPattern {
-        const stitchPattern = new Array<IThreadPath>();
+        const stitchPattern = new Array<IStitchThreadPath>();
 
         patternDataModel.forEach((threadPathDataModel) => {
             const threadIndex = threadPathDataModel.threadIndex;
@@ -138,7 +138,7 @@ export class Converter implements IConverter {
             const indexesY = needlePath.indexesY;
             const length = indexesX.length;
 
-            const thread = new ThreadPath(threadDataModel.name, threadDataModel.color, threadDataModel.width);
+            const thread = new StitchThreadPath(threadDataModel.name, threadDataModel.color, threadDataModel.width);
 
             for (let index = 0; index < length; index++) {
 

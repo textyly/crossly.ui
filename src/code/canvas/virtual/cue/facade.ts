@@ -4,7 +4,7 @@ import assert from "../../../asserts/assert.js";
 import { IInputCanvas } from "../../input/types.js";
 import { CueCanvasConfig } from "../../../config/types.js";
 import { CuePattern, DotIndex, StitchPattern } from "../../types.js";
-import { CueThreadArray } from "../../utilities/arrays/thread/cue.js";
+import { CueThreadPath } from "../../utilities/arrays/thread/cue.js";
 
 export class CueCanvasFacade extends CueCanvas implements ICueCanvasFacade {
 
@@ -35,7 +35,7 @@ export class CueCanvasFacade extends CueCanvas implements ICueCanvasFacade {
     private loadCore(pattern: StitchPattern): void {
         super.ensureAlive();
 
-        this._pattern = new Array<CueThreadArray>;
+        this._pattern = new Array<CueThreadPath>;
         let lastDotIdx: DotIndex | undefined = undefined;
 
         pattern.forEach((threadPath) => {

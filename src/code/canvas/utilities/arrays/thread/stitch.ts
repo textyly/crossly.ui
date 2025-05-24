@@ -1,8 +1,8 @@
 import { ThreadBase } from "./base.js";
-import { IThreadPath } from "../types.js";
+import { IStitchThreadPath } from "../types.js";
 import { Dot, DotIndex } from "../../../types.js";
 
-export class ThreadPath extends ThreadBase implements IThreadPath {
+export class StitchThreadPath extends ThreadBase implements IStitchThreadPath {
     private _name: string;
     private _zoomedWidth: number;
 

@@ -3,14 +3,17 @@ import assert from "../../../asserts/assert.js";
 import { DotsUtility } from "../../utilities/dots.js";
 import { IdGenerator } from "../../utilities/generator.js";
 import { CueCanvasConfig } from "../../../config/types.js";
-import { CueThreadArray } from "../../utilities/arrays/thread/cue.js";
+import patternCloning from "../../utilities/arrays/cloning.js";
+import { ICueThreadPath } from "../../utilities/arrays/types.js";
+import { CueThreadPath } from "../../utilities/arrays/thread/cue.js";
 import { CanvasSide, Id, CueSegment, CueDot, Dot, DotIndex } from "../../types.js";
 import { Position, IInputCanvas, PointerUpEvent, PointerMoveEvent } from "../../input/types.js";
 
 export abstract class CueCanvas extends CueCanvasBase {
     private readonly ids: IdGenerator;
     private readonly dotsUtility: DotsUtility<Dot>;
-    protected _pattern: Array<CueThreadArray>;
+    protected _pattern: Array<CueThreadPath>;
+    protected _redoPattern: Array<ICueThreadPath> | undefined;
 
     private dotColor: string;
     private dotRadius: number;
@@ -38,7 +41,7 @@ export abstract class CueCanvas extends CueCanvasBase {
         this.minDotRadius = dotConfig.minRadius;
         this.dotRadiusZoomStep = dotConfig.radiusZoomStep;
 
-        this._pattern = new Array<CueThreadArray>();
+        this._pattern = new Array<CueThreadPath>();
         this.createThread(threadConfig.color, threadConfig.width);
 
         this.minThreadWidth = threadConfig.minWidth;
@@ -79,7 +82,7 @@ export abstract class CueCanvas extends CueCanvasBase {
     }
 
     protected createThread(color: string, width: number): void {
-        const thread = new CueThreadArray(color, width);
+        const thread = new CueThreadPath(color, width);
         this._pattern.push(thread);
     }
 
@@ -89,7 +92,7 @@ export abstract class CueCanvas extends CueCanvasBase {
         this.draw();
     }
 
-    protected getCurrentThread(): CueThreadArray {
+    protected getCurrentThread(): CueThreadPath {
         const length = this._pattern.length;
         const array = this._pattern.slice(length - 1, length);
 
@@ -113,7 +116,8 @@ export abstract class CueCanvas extends CueCanvasBase {
         const currentThread = this.getCurrentThread();
         assert.defined(currentThread, "currentThread");
 
-        this.undoClickDotCore(threadsCount, currentThread);
+        this.undoClickDotCore();
+        this.draw();
     }
 
     protected redoClickDot(): void {
@@ -123,7 +127,14 @@ export abstract class CueCanvas extends CueCanvasBase {
         const currentThread = this.getCurrentThread();
         assert.defined(currentThread, "currentThread");
 
-        this.redoClickDotCore(threadsCount, currentThread);
+        if (this._redoPattern) {
+            const errorMsg = "redo pattern cannot have less thread paths than the current one (on which undo operations have been performed)";
+            assert.that(this._pattern.length <= this._redoPattern.length, errorMsg);
+
+            this.redoClickDotCore(this._pattern, this._redoPattern);
+
+            this.draw();
+        }
     }
 
     private redrawWhileMoving(): void {
@@ -187,12 +198,15 @@ export abstract class CueCanvas extends CueCanvasBase {
         this.undoClickDot();
     }
 
-    private undoClickDotCore(threadsCount: number, currentThread: CueThreadArray): void {
-        const dotsCount = currentThread.length;
+    private undoClickDotCore(): void {
+        const currentThread = this.getCurrentThread();
+        this._redoPattern = this._redoPattern ?? patternCloning.cloneCuePattern(this._pattern);
 
-        if (dotsCount > 0) {
+        const currentThreadDots = currentThread.length;
+
+        if (currentThreadDots > 0) {
             // thread has crossed at least one hole
-            if (dotsCount === 1) {
+            if (currentThreadDots === 1) {
                 // remove last dot
                 currentThread.popDotIndex();
                 this.removeThread();
@@ -210,7 +224,7 @@ export abstract class CueCanvas extends CueCanvasBase {
                     this.handlePointerMove(event);
                 }
             }
-        } else if (threadsCount > 1) {
+        } else if (currentThreadDots > 1) {
             // remove current thread
             this._pattern.pop();
             const previousThread = this.getCurrentThread();
@@ -227,12 +241,10 @@ export abstract class CueCanvas extends CueCanvasBase {
                 }
             }
         }
-
-        this.draw();
     }
 
-    private redoClickDotCore(threadsCount: number, currentThread: CueThreadArray): void {
-        // TODO: throw new Error();
+    private redoClickDotCore(currentPattern: Array<CueThreadPath>, redoPattern: Array<ICueThreadPath>): void {
+        // TODO: 
     }
 
     private moveDot(position: Position): void {
@@ -256,9 +268,9 @@ export abstract class CueCanvas extends CueCanvasBase {
             this.changeSide(clickedDotPos, clickedDotIdx);
 
             const currentThread = this.getCurrentThread();
-            assert.defined(currentThread, "currentThread");
 
             currentThread.pushDotIndex(clickedDotIdx.dotX, clickedDotIdx.dotY);
+            this._redoPattern = undefined;
 
         } else {
             const previouslyClickedDotPos = this.calculateDotPosition(previouslyClickedDotIdx);
@@ -268,9 +280,9 @@ export abstract class CueCanvas extends CueCanvasBase {
                 this.changeSide(clickedDotPos, clickedDotIdx);
 
                 const currentThread = this.getCurrentThread();
-                assert.defined(currentThread, "currentThread");
 
                 currentThread.pushDotIndex(clickedDotIdx.dotX, clickedDotIdx.dotY);
+                this._redoPattern = undefined;
             }
         }
 
@@ -347,7 +359,6 @@ export abstract class CueCanvas extends CueCanvasBase {
 
     private createSegment(id: number, previouslyClickedDotPos: Position, clickedDotPos: Position): CueSegment {
         const currentThread = this.getCurrentThread();
-        assert.defined(currentThread, "currentThread");
 
         const color = currentThread.color;
         const width = this.calculateZoomedThreadWidth(currentThread.width);
