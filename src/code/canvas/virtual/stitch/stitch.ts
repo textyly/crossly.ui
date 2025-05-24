@@ -2,11 +2,11 @@ import { Density } from "../types.js";
 import { StitchCanvasBase } from "./base.js";
 import assert from "../../../asserts/assert.js";
 import { DotsUtility } from "../../utilities/dots.js";
-import { Dot, CanvasSide, DotIndex, } from "../../types.js";
 import { StitchCanvasConfig } from "../../../config/types.js";
 import patternCloning from "../../utilities/arrays/cloning.js";
 import { IStitchThreadPath } from "../../utilities/arrays/types.js";
 import { StitchThreadPath } from "../../utilities/arrays/thread/stitch.js";
+import { Dot, CanvasSide, DotIndex, StitchPattern, } from "../../types.js";
 import { IInputCanvas, PointerUpEvent, Position } from "../../input/types.js";
 
 // TODO: there is common logic between CueCanvas and StitchCanvas, and therefore:
@@ -103,9 +103,33 @@ export abstract class StitchCanvas extends StitchCanvasBase {
         super.invokeDrawPattern(this._pattern, density);
     }
 
+    protected loadPattern(pattern: StitchPattern): void {
+        this._pattern = new Array<StitchThreadPath>();
+        this._redoPattern = undefined;
+        let lastDotIdx: DotIndex | undefined = undefined;
+
+        pattern.forEach((threadPath) => {
+            this.useNewThread(threadPath.name, threadPath.color, threadPath.width);
+
+            const thread = this.getCurrentThread();
+            for (let index = 0; index < threadPath.length; index++) {
+                const indexX = threadPath.indexesX[index];
+                const indexY = threadPath.indexesY[index];
+                thread.pushDotIndex(indexX, indexY);
+
+                this.changeCanvasSide();
+                lastDotIdx = { dotX: indexX, dotY: indexY };
+            }
+        });
+
+        this.clickedDotIdx = lastDotIdx;
+    }
+
     protected useNewThread(name: string, color: string, width: number): void {
         this.clickedDotIdx = undefined;
         this.currentSide = CanvasSide.Back;
+        this._redoPattern = undefined;
+
         this.createThread(name, color, width);
     }
 

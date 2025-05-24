@@ -6,8 +6,8 @@ import { CueCanvasConfig } from "../../../config/types.js";
 import patternCloning from "../../utilities/arrays/cloning.js";
 import { ICueThreadPath } from "../../utilities/arrays/types.js";
 import { CueThreadPath } from "../../utilities/arrays/thread/cue.js";
-import { CanvasSide, Id, CueSegment, CueDot, Dot, DotIndex } from "../../types.js";
 import { Position, IInputCanvas, PointerUpEvent, PointerMoveEvent } from "../../input/types.js";
+import { CanvasSide, Id, CueSegment, CueDot, Dot, DotIndex, StitchPattern } from "../../types.js";
 
 // TODO: there is common logic between CueCanvas and StitchCanvas, and therefore:
 // 1. when features are added code must be duplicated with some small differences
@@ -86,6 +86,28 @@ export abstract class CueCanvas extends CueCanvasBase {
         }
     }
 
+    protected loadPattern(pattern: StitchPattern): void {
+        this._pattern = new Array<CueThreadPath>;
+        this._redoPattern = undefined;
+        let lastDotIdx: DotIndex | undefined = undefined;
+
+        pattern.forEach((threadPath) => {
+            this.useNewThread("", threadPath.color, threadPath.width);
+
+            const thread = this.getCurrentThread();
+            for (let index = 0; index < threadPath.length; index++) {
+                const indexX = threadPath.indexesX[index];
+                const indexY = threadPath.indexesY[index];
+                thread.pushDotIndex(indexX, indexY);
+
+                this.changeCanvasSide();
+                lastDotIdx = { dotX: indexX, dotY: indexY };
+            }
+        });
+
+        this.clickedDotIdx = lastDotIdx;
+    }
+
     protected createThread(color: string, width: number): void {
         const thread = new CueThreadPath(color, width);
         this._pattern.push(thread);
@@ -94,6 +116,7 @@ export abstract class CueCanvas extends CueCanvasBase {
     protected useNewThread(name: string, color: string, width: number): void {
         this.clickedDotIdx = undefined;
         this.currentSide = CanvasSide.Back;
+        this._redoPattern = undefined;
 
         this.createThread(color, width);
         this.draw();
@@ -229,7 +252,6 @@ export abstract class CueCanvas extends CueCanvasBase {
             }
         } else {
             const threads = this._pattern.length;
-
             if (threads > 1) {
                 // remove current thread
                 this._pattern.pop();

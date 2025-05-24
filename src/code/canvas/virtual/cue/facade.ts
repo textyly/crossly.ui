@@ -3,8 +3,7 @@ import { ICueCanvasFacade } from "../types.js";
 import assert from "../../../asserts/assert.js";
 import { IInputCanvas } from "../../input/types.js";
 import { CueCanvasConfig } from "../../../config/types.js";
-import { CuePattern, DotIndex, StitchPattern } from "../../types.js";
-import { CueThreadPath } from "../../utilities/arrays/thread/cue.js";
+import { CuePattern, StitchPattern } from "../../types.js";
 
 export class CueCanvasFacade extends CueCanvas implements ICueCanvasFacade {
 
@@ -19,7 +18,7 @@ export class CueCanvasFacade extends CueCanvas implements ICueCanvasFacade {
 
     public load(pattern: StitchPattern): void {
         super.ensureAlive();
-        this.loadCore(pattern);
+        super.loadPattern(pattern);
     }
 
     public useThread(name: string, color: string, width: number): void {
@@ -32,36 +31,13 @@ export class CueCanvasFacade extends CueCanvas implements ICueCanvasFacade {
         super.useNewThread(name, color, width);
     }
 
-    private loadCore(pattern: StitchPattern): void {
-        super.ensureAlive();
-
-        this._pattern = new Array<CueThreadPath>;
-        let lastDotIdx: DotIndex | undefined = undefined;
-
-        pattern.forEach((threadPath) => {
-            this.useNewThread(threadPath.name, threadPath.color, threadPath.width);
-
-            const thread = this.getCurrentThread();
-            for (let index = 0; index < threadPath.length; index++) {
-                const indexX = threadPath.indexesX[index];
-                const indexY = threadPath.indexesY[index];
-                thread.pushDotIndex(indexX, indexY);
-
-                this.changeCanvasSide();
-                lastDotIdx = { dotX: indexX, dotY: indexY };
-            }
-        });
-
-        this.clickedDotIdx = lastDotIdx;
-    }
-
     public undo(): void {
         super.ensureAlive();
-        this.undoClickDot();
+        super.undoClickDot();
     }
 
     public redo(): void {
         super.ensureAlive();
-        this.redoClickDot();
+        super.redoClickDot();
     }
 }

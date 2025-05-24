@@ -1,10 +1,9 @@
 import { StitchCanvas } from "./stitch.js";
+import { StitchPattern } from "../../types.js";
 import assert from "../../../asserts/assert.js";
 import { IStitchCanvasFacade } from "../types.js";
 import { IInputCanvas } from "../../input/types.js";
-import { DotIndex, StitchPattern } from "../../types.js";
 import { StitchCanvasConfig } from "../../../config/types.js";
-import { StitchThreadPath } from "../../utilities/arrays/thread/stitch.js";
 
 export class StitchCanvasFacade extends StitchCanvas implements IStitchCanvasFacade {
 
@@ -19,7 +18,7 @@ export class StitchCanvasFacade extends StitchCanvas implements IStitchCanvasFac
 
     public load(pattern: StitchPattern): void {
         super.ensureAlive();
-        this.loadCore(pattern);
+        super.loadPattern(pattern);
     }
 
     public useThread(name: string, color: string, width: number): void {
@@ -32,36 +31,13 @@ export class StitchCanvasFacade extends StitchCanvas implements IStitchCanvasFac
         super.useNewThread(name, color, width);
     }
 
-    private loadCore(pattern: StitchPattern): void {
-        super.ensureAlive();
-
-        this._pattern = new Array<StitchThreadPath>();
-        let lastDotIdx: DotIndex | undefined = undefined;
-
-        pattern.forEach((threadPath) => {
-            this.useNewThread(threadPath.name, threadPath.color, threadPath.width);
-
-            const thread = this.getCurrentThread();
-            for (let index = 0; index < threadPath.length; index++) {
-                const indexX = threadPath.indexesX[index];
-                const indexY = threadPath.indexesY[index];
-                thread.pushDotIndex(indexX, indexY);
-
-                this.changeCanvasSide();
-                lastDotIdx = { dotX: indexX, dotY: indexY };
-            }
-        });
-
-        this.clickedDotIdx = lastDotIdx;
-    }
-
     public undo(): void {
         super.ensureAlive();
-        this.undoClickDot();
+        super.undoClickDot();
     }
 
     public redo(): void {
         super.ensureAlive();
-        this.redoClickDot();
+        super.redoClickDot();
     }
 }
