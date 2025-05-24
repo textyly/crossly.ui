@@ -33,16 +33,15 @@ export class CueCanvasFacade extends CueCanvas implements ICueCanvasFacade {
     }
 
     private loadCore(pattern: StitchPattern): void {
-        this._pattern = new Array<CueThreadArray>;
+        super.ensureAlive();
 
+        this._pattern = new Array<CueThreadArray>;
         let lastDotIdx: DotIndex | undefined = undefined;
 
         pattern.forEach((threadPath) => {
             this.useNewThread(threadPath.name, threadPath.color, threadPath.width);
 
             const thread = this.getCurrentThread();
-            assert.defined(thread, "thread");
-
             for (let index = 0; index < threadPath.length; index++) {
                 const indexX = threadPath.indexesX[index];
                 const indexY = threadPath.indexesY[index];
@@ -57,10 +56,12 @@ export class CueCanvasFacade extends CueCanvas implements ICueCanvasFacade {
     }
 
     public undo(): void {
+        super.ensureAlive();
         this.undoClickDot();
     }
 
     public redo(): void {
+        super.ensureAlive();
         this.redoClickDot();
     }
 }

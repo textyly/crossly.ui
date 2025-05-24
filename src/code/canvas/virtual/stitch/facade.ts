@@ -33,14 +33,15 @@ export class StitchCanvasFacade extends StitchCanvas implements IStitchCanvasFac
     }
 
     private loadCore(pattern: StitchPattern): void {
-        this._pattern = new Array<ThreadPath>();
+        super.ensureAlive();
 
+        this._pattern = new Array<ThreadPath>();
         let lastDotIdx: DotIndex | undefined = undefined;
 
         pattern.forEach((threadPath) => {
             this.useNewThread(threadPath.name, threadPath.color, threadPath.width);
 
-            const thread = this.getCurrentThread()!;
+            const thread = this.getCurrentThread();
             for (let index = 0; index < threadPath.length; index++) {
                 const indexX = threadPath.indexesX[index];
                 const indexY = threadPath.indexesY[index];
@@ -55,10 +56,12 @@ export class StitchCanvasFacade extends StitchCanvas implements IStitchCanvasFac
     }
 
     public undo(): void {
+        super.ensureAlive();
         this.undoClickDot();
     }
 
     public redo(): void {
+        super.ensureAlive();
         this.redoClickDot();
     }
 }

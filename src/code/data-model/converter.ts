@@ -132,6 +132,7 @@ export class Converter implements IConverter {
             const threadIndex = threadPathDataModel.threadIndex;
             const threadDataModel = threadsDataModel[threadIndex];
 
+            // TODO: use PatternCloning
             const needlePath = threadPathDataModel.needlePath;
             const indexesX = needlePath.indexesX;
             const indexesY = needlePath.indexesY;

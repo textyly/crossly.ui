@@ -2,14 +2,17 @@ import { Density } from "../types.js";
 import { StitchCanvasBase } from "./base.js";
 import assert from "../../../asserts/assert.js";
 import { DotsUtility } from "../../utilities/dots.js";
-import { Dot, CanvasSide, DotIndex } from "../../types.js";
+import { Dot, CanvasSide, DotIndex, StitchPattern } from "../../types.js";
+import { IThreadPath } from "../../utilities/arrays/types.js";
 import { StitchCanvasConfig } from "../../../config/types.js";
+import patternCloning from "../../utilities/arrays/cloning.js";
 import { ThreadPath } from "../../utilities/arrays/thread/stitch.js";
 import { IInputCanvas, PointerUpEvent, Position } from "../../input/types.js";
 
 export abstract class StitchCanvas extends StitchCanvasBase {
     private readonly dotsUtility: DotsUtility<Dot>;
     protected _pattern: Array<ThreadPath>;
+    protected _redoPattern: Array<IThreadPath> | undefined;
 
     private readonly minThreadWidth: number;
     private readonly threadWidthZoomStep: number;
@@ -96,18 +99,14 @@ export abstract class StitchCanvas extends StitchCanvasBase {
     }
 
     protected useNewThread(name: string, color: string, width: number): void {
-        this.removeThread();
+        this.clickedDotIdx = undefined;
+        this.currentSide = CanvasSide.Back;
         this.createThread(name, color, width);
     }
 
     protected createThread(name: string, color: string, width: number): void {
         const stitchThread = new ThreadPath(name, color, width);
         this._pattern.push(stitchThread);
-    }
-
-    protected removeThread(): void {
-        this.clickedDotIdx = undefined;
-        this.currentSide = CanvasSide.Back;
     }
 
     protected getCurrentThread(): ThreadPath {
@@ -127,7 +126,10 @@ export abstract class StitchCanvas extends StitchCanvasBase {
         const currentThread = this.getCurrentThread();
         assert.defined(currentThread, "currentThread");
 
-        this.undoClickDotCore(threadsCount, currentThread);
+        this.undoClickDotCore();
+
+        this.draw();
+        super.invokeChange(this._pattern);
     }
 
     protected redoClickDot(): void {
@@ -137,7 +139,15 @@ export abstract class StitchCanvas extends StitchCanvasBase {
         const currentThread = this.getCurrentThread();
         assert.defined(currentThread, "currentThread");
 
-        this.redoClickDotCore(threadsCount, currentThread);
+        if (this._redoPattern) {
+            const errorMsg = "redo pattern cannot have less thread paths than the current one (on which undo operations have been performed)";
+            assert.that(this._pattern.length <= this._redoPattern.length, errorMsg);
+
+            this.redoClickDotCore(this._pattern, this._redoPattern);
+
+            this.draw();
+            super.invokeChange(this._pattern);
+        }
     }
 
     private handlePointerUp(event: PointerUpEvent): void {
@@ -158,36 +168,53 @@ export abstract class StitchCanvas extends StitchCanvasBase {
         this.undoClickDot();
     }
 
-    private undoClickDotCore(threadsCount: number, currentThread: ThreadPath): void {
-        const dotsCount = currentThread.length;
-        if (dotsCount > 0) {
-            if (dotsCount === 1) {
+    private undoClickDotCore(): void {
+        const currentThread = this.getCurrentThread();
+        this._redoPattern = this._redoPattern ?? patternCloning.clone(this._pattern);
+
+        const currentThreadDots = currentThread.length;
+        if (currentThreadDots > 0) {
+            if (currentThreadDots === 1) {
                 // remove last dot
-                currentThread.pop();
-                this.removeThread();
+                currentThread.popDot()!;
+                this.clickedDotIdx = undefined;
+                this.currentSide = CanvasSide.Back;
             } else {
                 // remove last dot
-                currentThread.pop();
+                currentThread.popDot()!;
                 this.clickedDotIdx = currentThread.lastDot()!;
                 this.changeCanvasSide();
             }
-        } else if (threadsCount > 1) {
-            // remove current thread
-            this._pattern.pop();
-            const previousThread = this.getCurrentThread();
-
-            if (previousThread.length > 0) {
-                this.clickedDotIdx = previousThread.lastDot()!;
-                this.currentSide = previousThread.length % 2 === 0 ? CanvasSide.Back : CanvasSide.Front;
+        } else {
+            const threads = this._pattern.length;
+            if (threads > 1) {
+                // remove current thread
+                this._pattern.pop()!;
+                const previousThread = this.getCurrentThread();
+                if (previousThread.length > 0) {
+                    this.clickedDotIdx = previousThread.lastDot()!;
+                    this.currentSide = previousThread.length % 2 === 0 ? CanvasSide.Back : CanvasSide.Front;
+                }
             }
         }
-
-        this.draw();
-        super.invokeChange(this._pattern);
     }
 
-    private redoClickDotCore(threadsCount: number, currentThread: ThreadPath): void {
-        throw new Error();
+    private redoClickDotCore(currentPattern: Array<ThreadPath>, redoPattern: Array<IThreadPath>): void {
+        const currentThreadPathIndex = currentPattern.length - 1;
+        const redoThreadPath = redoPattern[currentThreadPathIndex];
+        const currentThreadPath = currentPattern[currentThreadPathIndex];
+
+        if (redoThreadPath.length > currentThreadPath.length) {
+            const redoDotIndex = currentThreadPath.length;
+            const indexX = redoThreadPath.indexesX[redoDotIndex];
+            const indexY = redoThreadPath.indexesY[redoDotIndex];
+            currentThreadPath.pushDotIndex(indexX, indexY);
+
+        } else if (redoPattern.length > currentPattern.length) {
+            const nextRedoThreadPath = redoPattern[currentPattern.length];
+            const newCurrentThreadPath = new ThreadPath(nextRedoThreadPath.name, nextRedoThreadPath.color, nextRedoThreadPath.width);
+            currentPattern.push(newCurrentThreadPath);
+        }
     }
 
     private clickDot(position: Position): void {
@@ -199,10 +226,12 @@ export abstract class StitchCanvas extends StitchCanvasBase {
         } else {
             const clickedDotPos = this.calculateDotPosition(clickedDotIdx);
 
+            // TODO: use common method with tryDrawStitchSegment
             const thread = this.getCurrentThread();
-            assert.defined(thread, "thread");
-
             thread.pushDot(clickedDotIdx.dotX, clickedDotIdx.dotY, clickedDotPos.x, clickedDotPos.y, true);
+            this._redoPattern = undefined;
+            super.invokeChange(this._pattern);
+            // till here
 
             this.changeCanvasSide();
         }
@@ -216,12 +245,14 @@ export abstract class StitchCanvas extends StitchCanvasBase {
 
         const areClicksIdentical = this.dotsUtility.areDotsEqual(previouslyClickedDotPos, clickedDotPos);
         if (!areClicksIdentical) {
-            const thread = this.getCurrentThread();
-            assert.defined(thread, "thread");
-
             const visible = this.currentSide === CanvasSide.Front;
+
+            // TODO: use common method with clickDot
+            const thread = this.getCurrentThread();
             thread.pushDot(clickedDotIdx.dotX, clickedDotIdx.dotY, clickedDotPos.x, clickedDotPos.y, visible);
+            this._redoPattern = undefined;
             super.invokeChange(this._pattern);
+            // till here
 
             const zoomedWidth = this.calculateThreadZoomedWidth(thread.width);
             const segment = { from: previouslyClickedDotPos, to: clickedDotPos, color: thread.color, width: zoomedWidth, side: this.currentSide };
