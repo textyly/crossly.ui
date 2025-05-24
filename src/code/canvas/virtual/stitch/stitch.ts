@@ -188,7 +188,7 @@ export abstract class StitchCanvas extends StitchCanvasBase {
 
         const inBounds = this.inBounds(position);
         if (inBounds) {
-            this.clickDot(position);
+            this.clickDotPosition(position);
         }
     }
 
@@ -257,7 +257,7 @@ export abstract class StitchCanvas extends StitchCanvasBase {
         }
     }
 
-    private clickDot(position: Position): void {
+    private clickDotPosition(position: Position): void {
         const previouslyClickedDotIdx = this.clickedDotIdx;
         const clickedDotIdx = this.calculateDotIndex(position);
 

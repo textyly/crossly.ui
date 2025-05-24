@@ -213,7 +213,7 @@ export abstract class CueCanvas extends CueCanvasBase {
 
         const inBounds = this.inBounds(position);
         if (inBounds) {
-            this.clickDot(position);
+            this.clickDotPosition(position);
             this.removeSegment();
         }
     }
@@ -319,7 +319,7 @@ export abstract class CueCanvas extends CueCanvasBase {
         this.hoverDot(dotPos, dotIdx);
     }
 
-    private clickDot(position: Position): void {
+    private clickDotPosition(position: Position): void {
         const clickedDotIdx = this.calculateDotIndex(position);
         const clickedDotPos = this.calculateDotPosition(clickedDotIdx);
         const previouslyClickedDotIdx = this.clickedDotIdx;

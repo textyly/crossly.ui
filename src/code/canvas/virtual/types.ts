@@ -10,6 +10,7 @@ import {
     StitchPattern,
     StitchSegment,
     FabricPattern,
+    DotIndex,
 } from "../types.js";
 
 export interface IVirtualCanvas extends ICanvas {
@@ -52,6 +53,8 @@ export interface IStitchCanvasFacade extends IStitchCanvas {
 
     draw(): void;
     load(pattern: StitchPattern): void;
+
+    clickDot(dotIdx: DotIndex): void;
     useThread(name: string, color: string, width: number): void;
 
     undo(): void;
@@ -63,6 +66,8 @@ export interface ICueCanvasFacade extends ICueCanvas {
 
     draw(): void;
     load(pattern: StitchPattern): void;
+
+    clickDot(dotIdx: DotIndex): void;
     useThread(name: string, color: string, width: number): void;
 
     undo(): void;

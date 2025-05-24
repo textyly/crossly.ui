@@ -3,7 +3,7 @@ import { ICueCanvasFacade } from "../types.js";
 import assert from "../../../asserts/assert.js";
 import { IInputCanvas } from "../../input/types.js";
 import { CueCanvasConfig } from "../../../config/types.js";
-import { CuePattern, StitchPattern } from "../../types.js";
+import { CuePattern, DotIndex, StitchPattern } from "../../types.js";
 
 export class CueCanvasFacade extends CueCanvas implements ICueCanvasFacade {
 
@@ -19,6 +19,10 @@ export class CueCanvasFacade extends CueCanvas implements ICueCanvasFacade {
     public load(pattern: StitchPattern): void {
         super.ensureAlive();
         super.loadPattern(pattern);
+    }
+
+    public clickDot(dotIdx: DotIndex): void {
+        this.ensureAlive();
     }
 
     public useThread(name: string, color: string, width: number): void {

@@ -2,7 +2,7 @@ import assert from "../../asserts/assert.js";
 import { CrosslyCanvas } from "./crossly.js";
 import { IInputCanvas } from "../input/types.js";
 import { CrosslyCanvasConfig } from "../../config/types.js";
-import { CrosslyCanvasPattern, ICrosslyCanvasFacade } from "../types.js";
+import { CrosslyCanvasPattern, DotIndex, ICrosslyCanvasFacade } from "../types.js";
 import { IFabricRasterDrawingCanvas, IStitchRasterDrawingCanvas, IVectorDrawingCanvas } from "../drawing/types.js";
 
 export class CrosslyCanvasFacade extends CrosslyCanvas implements ICrosslyCanvasFacade {
@@ -70,6 +70,13 @@ export class CrosslyCanvasFacade extends CrosslyCanvas implements ICrosslyCanvas
         this.fabricCanvasFacade.load(pattern.fabric);
         this.stitchCanvasFacade.load(pattern.stitch);
         this.cueCanvasFacade.load(pattern.stitch);
+    }
+
+    public clickDot(dotIdx: DotIndex): void {
+        this.ensureAlive();
+
+        this.stitchCanvasFacade.clickDot(dotIdx);
+        this.cueCanvasFacade.clickDot(dotIdx);
     }
 
     public useThread(name: string, color: string, width: number): void {

@@ -45,6 +45,8 @@ export interface ICrosslyCanvasFacade extends ICrosslyCanvas {
 
     draw(): void;
     load(pattern: CrosslyCanvasPattern): void;
+
+    clickDot(dotIdx: DotIndex): void;
     useThread(name: string, color: string, width: number): void;
 
     undo(): void;

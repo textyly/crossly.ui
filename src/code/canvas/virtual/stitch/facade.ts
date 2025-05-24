@@ -1,5 +1,5 @@
 import { StitchCanvas } from "./stitch.js";
-import { StitchPattern } from "../../types.js";
+import { DotIndex, StitchPattern } from "../../types.js";
 import assert from "../../../asserts/assert.js";
 import { IStitchCanvasFacade } from "../types.js";
 import { IInputCanvas } from "../../input/types.js";
@@ -19,6 +19,10 @@ export class StitchCanvasFacade extends StitchCanvas implements IStitchCanvasFac
     public load(pattern: StitchPattern): void {
         super.ensureAlive();
         super.loadPattern(pattern);
+    }
+
+    public clickDot(dotIdx: DotIndex): void {
+        this.ensureAlive();
     }
 
     public useThread(name: string, color: string, width: number): void {
