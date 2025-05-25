@@ -3,6 +3,7 @@ import assert from "../asserts/assert.js";
 import { CrosslyCanvasPattern, ICrosslyCanvasFacade } from "../canvas/types.js";
 
 // TODO: move the canvas so that animation is always visible!!!
+// this functionality probably should be in the canvas itself
 export class CrosslyCanvasAnimation implements IAnimation {
     private readonly crosslyCanvas: ICrosslyCanvasFacade;
     private readonly pattern: CrosslyCanvasPattern;
@@ -40,7 +41,11 @@ export class CrosslyCanvasAnimation implements IAnimation {
             if (threadPathDots !== this.dotIdx) {
                 // more dots left (clickDot)
 
-                const dotIdx = { dotX: currentThreadPath.indexesX[this.dotIdx], dotY: currentThreadPath.indexesY[this.dotIdx] };
+                const dotIdx = {
+                    dotX: currentThreadPath.indexesX[this.dotIdx],
+                    dotY: currentThreadPath.indexesY[this.dotIdx]
+                };
+
                 this.crosslyCanvas.clickDot(dotIdx);
                 this.dotIdx += 1;
 
@@ -72,7 +77,12 @@ export class CrosslyCanvasAnimation implements IAnimation {
         return Promise.resolve();
     }
 
-    public stopAnimate(speed: number): Promise<void> {
-        throw new Error("Method not implemented.");
+    public stopAnimate(): Promise<void> {
+        if (this.timerId) {
+            clearInterval(this.timerId);
+        }
+
+        // TODO: will change when dealing with interruption of animate methods
+        return Promise.resolve();
     }
 }

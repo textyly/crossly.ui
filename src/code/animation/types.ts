@@ -5,5 +5,5 @@ export interface IAnimation {
     manualPrev(): Promise<void>;
 
     startAnimate(speed: number): Promise<void>;
-    stopAnimate(speed: number): Promise<void>;
+    stopAnimate(): Promise<void>;
 }
