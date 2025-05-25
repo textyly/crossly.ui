@@ -22,7 +22,7 @@ export class StitchCanvasFacade extends StitchCanvas implements IStitchCanvasFac
     }
 
     public clickDot(dotIdx: DotIndex): void {
-        this.ensureAlive();
+        this.clickDotIndex(dotIdx);
     }
 
     public useThread(name: string, color: string, width: number): void {

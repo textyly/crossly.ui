@@ -23,6 +23,7 @@ export class CueCanvasFacade extends CueCanvas implements ICueCanvasFacade {
 
     public clickDot(dotIdx: DotIndex): void {
         this.ensureAlive();
+        super.clickDotIndex(dotIdx);
     }
 
     public useThread(name: string, color: string, width: number): void {

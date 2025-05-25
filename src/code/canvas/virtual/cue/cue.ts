@@ -162,6 +162,35 @@ export abstract class CueCanvas extends CueCanvasBase {
         }
     }
 
+    protected clickDotIndex(dotIdx: DotIndex): void {
+        const clickedDotPos = this.calculateDotPosition(dotIdx);
+        const previouslyClickedDotIdx = this.clickedDotIdx;
+
+        if (!previouslyClickedDotIdx) {
+            this.changeSide(clickedDotPos, dotIdx);
+
+            const currentThread = this.getCurrentThread();
+
+            currentThread.pushDotIndex(dotIdx.dotX, dotIdx.dotY);
+            this._redoPattern = undefined;
+
+        } else {
+            const previouslyClickedDotPos = this.calculateDotPosition(previouslyClickedDotIdx);
+            const areIdenticalClicks = this.dotsUtility.areDotsEqual(clickedDotPos, previouslyClickedDotPos);
+
+            if (!areIdenticalClicks) {
+                this.changeSide(clickedDotPos, dotIdx);
+
+                const currentThread = this.getCurrentThread();
+
+                currentThread.pushDotIndex(dotIdx.dotX, dotIdx.dotY);
+                this._redoPattern = undefined;
+            }
+        }
+
+        this.clickedDotIdx = dotIdx;
+    }
+
     private redrawWhileMoving(): void {
         this.removeSegment();
 
@@ -320,33 +349,8 @@ export abstract class CueCanvas extends CueCanvasBase {
     }
 
     private clickDotPosition(position: Position): void {
-        const clickedDotIdx = this.calculateDotIndex(position);
-        const clickedDotPos = this.calculateDotPosition(clickedDotIdx);
-        const previouslyClickedDotIdx = this.clickedDotIdx;
-
-        if (!previouslyClickedDotIdx) {
-            this.changeSide(clickedDotPos, clickedDotIdx);
-
-            const currentThread = this.getCurrentThread();
-
-            currentThread.pushDotIndex(clickedDotIdx.dotX, clickedDotIdx.dotY);
-            this._redoPattern = undefined;
-
-        } else {
-            const previouslyClickedDotPos = this.calculateDotPosition(previouslyClickedDotIdx);
-            const areIdenticalClicks = this.dotsUtility.areDotsEqual(clickedDotPos, previouslyClickedDotPos);
-
-            if (!areIdenticalClicks) {
-                this.changeSide(clickedDotPos, clickedDotIdx);
-
-                const currentThread = this.getCurrentThread();
-
-                currentThread.pushDotIndex(clickedDotIdx.dotX, clickedDotIdx.dotY);
-                this._redoPattern = undefined;
-            }
-        }
-
-        this.clickedDotIdx = clickedDotIdx;
+        const dotIdx = this.calculateDotIndex(position);
+        this.clickDotIndex(dotIdx);
     }
 
     private changeSide(clickedDotPos: Position, clickedDotIdx: DotIndex): void {

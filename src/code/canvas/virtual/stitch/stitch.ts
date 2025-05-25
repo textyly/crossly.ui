@@ -179,6 +179,27 @@ export abstract class StitchCanvas extends StitchCanvasBase {
         }
     }
 
+    protected clickDotIndex(dotIdx: DotIndex): void {
+        const previouslyClickedDotIdx = this.clickedDotIdx;
+
+        if (previouslyClickedDotIdx) {
+            this.tryDrawStitchSegment(previouslyClickedDotIdx, dotIdx);
+        } else {
+            const clickedDotPos = this.calculateDotPosition(dotIdx);
+
+            // TODO: use common method with tryDrawStitchSegment
+            const thread = this.getCurrentThread();
+            thread.pushDot(dotIdx.dotX, dotIdx.dotY, clickedDotPos.x, clickedDotPos.y, true);
+            this._redoPattern = undefined;
+            super.invokeChange(this._pattern);
+            // till here
+
+            this.changeCanvasSide();
+        }
+
+        this.clickedDotIdx = dotIdx;
+    }
+
     private handlePointerUp(event: PointerUpEvent): void {
         super.ensureAlive();
 
@@ -258,25 +279,8 @@ export abstract class StitchCanvas extends StitchCanvasBase {
     }
 
     private clickDotPosition(position: Position): void {
-        const previouslyClickedDotIdx = this.clickedDotIdx;
         const clickedDotIdx = this.calculateDotIndex(position);
-
-        if (previouslyClickedDotIdx) {
-            this.tryDrawStitchSegment(previouslyClickedDotIdx, clickedDotIdx);
-        } else {
-            const clickedDotPos = this.calculateDotPosition(clickedDotIdx);
-
-            // TODO: use common method with tryDrawStitchSegment
-            const thread = this.getCurrentThread();
-            thread.pushDot(clickedDotIdx.dotX, clickedDotIdx.dotY, clickedDotPos.x, clickedDotPos.y, true);
-            this._redoPattern = undefined;
-            super.invokeChange(this._pattern);
-            // till here
-
-            this.changeCanvasSide();
-        }
-
-        this.clickedDotIdx = clickedDotIdx;
+        this.clickDotIndex(clickedDotIdx);
     }
 
     private tryDrawStitchSegment(previouslyClickedDotIdx: DotIndex, clickedDotIdx: DotIndex): void {
