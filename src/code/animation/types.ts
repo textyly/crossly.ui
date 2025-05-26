@@ -4,6 +4,7 @@ export interface IAnimation {
     manualNext(): void;
     manualPrev(): void;
 
-    startAnimate(speed: number): void;
+    startForwardAnimate(speed: number): void;
+    startBackwardAnimate(speed: number): void;
     stopAnimate(): void;
 }
