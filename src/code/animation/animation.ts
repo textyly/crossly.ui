@@ -60,44 +60,39 @@ export class CrosslyCanvasAnimation implements IAnimation {
     }
 
     private manualNextCore(): boolean {
-        // TODO: simplify this algorithm!!!
-
+        let hasNext = false;
         const threadPaths = this.pattern.stitch.length;
 
-        if (threadPaths <= this.threadPathIdx) {
-            return false;
-        } else {
-            const currentThreadPath = this.pattern.stitch[this.threadPathIdx];
-            assert.defined(currentThreadPath, "currentThreadPath");
+        const currentThreadPath = this.pattern.stitch[this.threadPathIdx];
+        assert.defined(currentThreadPath, "currentThreadPath");
 
-            const threadPathDots = currentThreadPath.length;
-            if (threadPathDots !== this.dotIdx) {
-                // more dots left (clickDot)
+        const threadPathDots = currentThreadPath.length;
+        if (threadPathDots !== this.dotIdx) {
+            // more dots left (clickDot)
 
-                const dotIdx = {
-                    dotX: currentThreadPath.indexesX[this.dotIdx],
-                    dotY: currentThreadPath.indexesY[this.dotIdx]
-                };
+            const dotIdx = {
+                dotX: currentThreadPath.indexesX[this.dotIdx],
+                dotY: currentThreadPath.indexesY[this.dotIdx]
+            };
 
-                this.crosslyCanvas.clickDot(dotIdx);
-                this.dotIdx += 1;
+            this.crosslyCanvas.clickDot(dotIdx);
+            this.dotIdx += 1;
 
-            } else {
-                if (threadPaths <= this.threadPathIdx + 1) {
-                    return false;
-                } else {
-                    // switch to the next thread path
+            hasNext = true;
 
-                    this.threadPathIdx += 1;
-                    this.dotIdx = 0;
+        } else if (threadPaths > this.threadPathIdx + 1) {
+            // switch to the next thread path
 
-                    const nextThreadPath = this.pattern.stitch[this.threadPathIdx];
-                    this.crosslyCanvas.useThread(nextThreadPath.name, nextThreadPath.color, nextThreadPath.width);
-                }
-            }
+            this.threadPathIdx += 1;
+            this.dotIdx = 0;
 
-            return true;
+            const nextThreadPath = this.pattern.stitch[this.threadPathIdx];
+            this.crosslyCanvas.useThread(nextThreadPath.name, nextThreadPath.color, nextThreadPath.width);
+
+            hasNext = true;
         }
+
+        return hasNext;
     }
 
     private manualPrevCore(): boolean {
@@ -106,12 +101,10 @@ export class CrosslyCanvasAnimation implements IAnimation {
 
     private startAnimateCore(speed: number): void {
         this.timerId = setInterval(() => {
-
             const hasNext = this.manualNextCore();
             if (!hasNext) {
                 this.stopAnimate();
             }
-
         }, speed);
     }
 
