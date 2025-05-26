@@ -2,6 +2,8 @@ import { IAnimation } from "./types.js";
 import assert from "../asserts/assert.js";
 import { CrosslyCanvasPattern, ICrosslyCanvasFacade } from "../canvas/types.js";
 
+// TODO: front and back inputs must be completely disabled!!!
+
 // TODO: move the canvas so that animation is always visible!!!
 // this functionality probably should be in the canvas itself
 export class CrosslyCanvasAnimation implements IAnimation {
@@ -11,7 +13,6 @@ export class CrosslyCanvasAnimation implements IAnimation {
     private threadPathIdx: number;
     private dotIdx: number;
 
-    // TODO:
     private timerId?: number;
 
     constructor(crosslyCanvas: ICrosslyCanvasFacade, pattern: CrosslyCanvasPattern) {
@@ -22,18 +23,50 @@ export class CrosslyCanvasAnimation implements IAnimation {
         this.dotIdx = 0;
 
         assert.greaterThanZero(pattern.stitch.length, "thread paths must be more than 0");
+
         const firstThreadPath = this.pattern.stitch[this.threadPathIdx];
         this.crosslyCanvas.useThread(firstThreadPath.name, firstThreadPath.color, firstThreadPath.width);
     }
 
-    public jumpTo(percent: number): Promise<void> {
+    public jumpTo(percent: number): void {
+        this.stopAnimate();
+        this.jumpToCore(percent);
+    }
+
+    public manualNext(): void {
+        this.stopAnimate();
+        this.manualNextCore();
+    }
+
+    public manualPrev(): void {
+        this.stopAnimate();
+        this.manualPrevCore();
+    }
+
+    public startAnimate(speed: number): void {
+        this.stopAnimate();
+        this.startAnimateCore(speed);
+    }
+
+    public stopAnimate(): void {
+        if (this.timerId) {
+            this.stopAnimateCore(this.timerId);
+            this.timerId = undefined;
+        }
+    }
+
+    private jumpToCore(percent: number): void {
         throw new Error("Method not implemented.");
     }
 
-    public manualNext(): Promise<void> {
+    private manualNextCore(): boolean {
+        // TODO: simplify this algorithm!!!
+
         const threadPaths = this.pattern.stitch.length;
 
-        if (threadPaths > this.threadPathIdx) {
+        if (threadPaths <= this.threadPathIdx) {
+            return false;
+        } else {
             const currentThreadPath = this.pattern.stitch[this.threadPathIdx];
             assert.defined(currentThreadPath, "currentThreadPath");
 
@@ -49,40 +82,40 @@ export class CrosslyCanvasAnimation implements IAnimation {
                 this.crosslyCanvas.clickDot(dotIdx);
                 this.dotIdx += 1;
 
-            } else if (threadPaths > this.threadPathIdx + 1) {
-                // switch to the next thread path
+            } else {
+                if (threadPaths <= this.threadPathIdx + 1) {
+                    return false;
+                } else {
+                    // switch to the next thread path
 
-                this.threadPathIdx += 1;
-                this.dotIdx = 0;
+                    this.threadPathIdx += 1;
+                    this.dotIdx = 0;
 
-                const nextThreadPath = this.pattern.stitch[this.threadPathIdx];
-                this.crosslyCanvas.useThread(nextThreadPath.name, nextThreadPath.color, nextThreadPath.width);
+                    const nextThreadPath = this.pattern.stitch[this.threadPathIdx];
+                    this.crosslyCanvas.useThread(nextThreadPath.name, nextThreadPath.color, nextThreadPath.width);
+                }
             }
-        }
 
-        // TODO: will change when dealing with interruption of animate methods
-        return Promise.resolve();
+            return true;
+        }
     }
 
-    public manualPrev(): Promise<void> {
+    private manualPrevCore(): boolean {
         throw new Error("Method not implemented.");
     }
 
-    public startAnimate(speed: number): Promise<void> {
+    private startAnimateCore(speed: number): void {
         this.timerId = setInterval(() => {
-            this.manualNext();
-        }, speed);
 
-        // TODO: will change when dealing with interruption of animate methods
-        return Promise.resolve();
+            const hasNext = this.manualNextCore();
+            if (!hasNext) {
+                this.stopAnimate();
+            }
+
+        }, speed);
     }
 
-    public stopAnimate(): Promise<void> {
-        if (this.timerId) {
-            clearInterval(this.timerId);
-        }
-
-        // TODO: will change when dealing with interruption of animate methods
-        return Promise.resolve();
+    private stopAnimateCore(timerId: number): void {
+        clearInterval(timerId);
     }
 }

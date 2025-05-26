@@ -1,9 +1,9 @@
 export interface IAnimation {
-    jumpTo(percent: number): Promise<void>; // Different name than percent
+    jumpTo(percent: number): void; // Different name than percent
 
-    manualNext(): Promise<void>;
-    manualPrev(): Promise<void>;
+    manualNext(): void;
+    manualPrev(): void;
 
-    startAnimate(speed: number): Promise<void>;
-    stopAnimate(): Promise<void>;
+    startAnimate(speed: number): void;
+    stopAnimate(): void;
 }
