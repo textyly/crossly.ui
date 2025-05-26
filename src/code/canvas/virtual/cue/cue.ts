@@ -279,7 +279,7 @@ export abstract class CueCanvas extends CueCanvasBase {
                 this.clickedDotIdx = lastDotIdx;
 
                 if (this.hoveredDotIdx) {
-                    const dotPos = this.calculateDotPosition(this.hoveredDotIdx);
+                    const dotPos = this.calculateDotPosition(this.clickedDotIdx);
                     const event = { position: dotPos };
                     this.handlePointerMove(event);
                 }
@@ -297,7 +297,7 @@ export abstract class CueCanvas extends CueCanvasBase {
                     this.currentSide = previousThread.length % 2 === 0 ? CanvasSide.Back : CanvasSide.Front;
 
                     if (this.hoveredDotIdx) {
-                        const dotPos = this.calculateDotPosition(this.hoveredDotIdx);
+                        const dotPos = this.calculateDotPosition(this.clickedDotIdx);
                         const event = { position: dotPos };
                         this.handlePointerMove(event);
                     }
@@ -329,8 +329,8 @@ export abstract class CueCanvas extends CueCanvasBase {
             this.currentSide = CanvasSide.Back;
         }
 
-        if (this.hoveredDotIdx) {
-            const dotPos = this.calculateDotPosition(this.hoveredDotIdx);
+        if (this.hoveredDotIdx && this.clickedDotIdx) {
+            const dotPos = this.calculateDotPosition(this.clickedDotIdx);
             const event = { position: dotPos };
             this.handlePointerMove(event);
         }
