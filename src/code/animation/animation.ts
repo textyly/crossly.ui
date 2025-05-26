@@ -3,25 +3,18 @@ import assert from "../asserts/assert.js";
 import { IStitchThreadPath } from "../canvas/utilities/arrays/types.js";
 import { CrosslyCanvasPattern, ICrosslyCanvasFacade, StitchPattern } from "../canvas/types.js";
 
-// TODO: front and back inputs must be completely disabled!!!
-
-// TODO: move the canvas so that animation is always visible!!!
-// this functionality probably should be in the canvas itself
 export class CrosslyCanvasAnimation implements IAnimation {
     private readonly crosslyCanvas: ICrosslyCanvasFacade;
     private readonly pattern: CrosslyCanvasPattern;
 
-    private threadPathIdx: number;
-    private dotIdx: number;
+    private threadPathIdx!: number;
+    private dotIdx!: number;
 
     private timerId?: number;
 
     constructor(crosslyCanvas: ICrosslyCanvasFacade, pattern: CrosslyCanvasPattern) {
         this.pattern = pattern;
         this.crosslyCanvas = crosslyCanvas;
-
-        this.threadPathIdx = 0;
-        this.dotIdx = 0;
 
         this.addFirstThread(this.pattern.stitch);
     }
@@ -69,7 +62,15 @@ export class CrosslyCanvasAnimation implements IAnimation {
     }
 
     private jumpToCore(percent: number): void {
-        throw new Error("Method not implemented.");
+        // TODO: create a new animation (a new crossly canvas as well) and jump to the given percentage
+
+        const stitchPattern = this.pattern.stitch;
+        const patternLength = this.calculatePatternLength(stitchPattern);
+
+        const dot = this.calculatePercentage(percent, patternLength);
+        for (let index = 0; index < dot; index++) {
+            this.manualNext(); // TODO: add the part of the pattern (corresponding on the given percentage) directly using load method
+        }
     }
 
     private manualNextCore(stitchPattern: StitchPattern, currentThreadPath: IStitchThreadPath): boolean {
@@ -155,6 +156,9 @@ export class CrosslyCanvasAnimation implements IAnimation {
     private addFirstThread(stitchPattern: StitchPattern): void {
         assert.greaterThanZero(stitchPattern.length, "stitch thread paths must be more than 0");
 
+        this.threadPathIdx = 0;
+        this.dotIdx = 0;
+
         const firstThreadPath = stitchPattern[this.threadPathIdx];
         this.crosslyCanvas.useThread(firstThreadPath.name, firstThreadPath.color, firstThreadPath.width);
     }
@@ -179,5 +183,21 @@ export class CrosslyCanvasAnimation implements IAnimation {
 
     private unuseCurrentThread(): void {
         this.crosslyCanvas.undo();
+    }
+
+    private calculatePatternLength(stitchPattern: StitchPattern): number {
+        let length = 0;
+
+        stitchPattern.forEach((threadPath) => {
+            const dots = threadPath.length + 1; // add 1 for adding a thread
+            length += dots;
+        });
+
+        return length;
+    }
+
+    private calculatePercentage(percent: number, total: number): number {
+        const percentage = (percent / 100) * total;
+        return Math.floor(percentage);
     }
 }
