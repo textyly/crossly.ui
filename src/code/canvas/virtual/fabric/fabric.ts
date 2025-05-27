@@ -1,8 +1,8 @@
 import { FabricCanvasBase } from "./base.js";
 import assert from "../../../asserts/assert.js";
 import { IInputCanvas } from "../../input/types.js";
-import { DotArray } from "../../utilities/arrays/dot/dot.js";
 import { FabricCanvasConfig } from "../../../config/types.js";
+import { FabricDotArray } from "../../utilities/arrays/dot/dot.js";
 import { FabricThreadArray } from "../../utilities/arrays/thread/fabric.js";
 
 export abstract class FabricCanvas extends FabricCanvasBase {
@@ -100,7 +100,7 @@ export abstract class FabricCanvas extends FabricCanvasBase {
         // CPU, GPU, memory and GC intensive code
         // Do not create types/classes for dot (objects are extremely slow and memory/GC consuming)
 
-        const dots = new DotArray(this._dotsColor, this.dotRadius);
+        const dots = new FabricDotArray(this._dotsColor, this.dotRadius);
 
         for (let dotYIdx = startIndexY; dotYIdx <= endIndexY; dotYIdx += 2) {
             for (let dotXIdX = startIndexX; dotXIdX <= endIndexX; dotXIdX += 2) {

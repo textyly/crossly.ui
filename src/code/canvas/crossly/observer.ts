@@ -1,4 +1,4 @@
-import { Base } from "../../base.js";
+import { Base } from "../../general/base.js";
 import { VoidUnsubscribe } from "../../types.js";
 import { Messaging1 } from "../../messaging/impl.js";
 import { IMessaging1 } from "../../messaging/types.js";

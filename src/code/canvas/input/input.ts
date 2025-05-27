@@ -62,11 +62,11 @@ export class InputCanvas extends InputCanvasBase {
     public override dispose(): void {
         super.ensureAlive();
 
+        super.dispose();
+
         this.unsubscribe();
         this.moveInput.dispose();
         this.touchInput.dispose();
-
-        super.dispose();
     }
 
     private handleZoomIn(event: ZoomInEvent): void {
@@ -147,10 +147,16 @@ export class InputCanvas extends InputCanvasBase {
     private handleKeyDown(event: KeyboardEvent): void {
         super.ensureAlive();
 
-        const keyZ = "KeyZ";
+        if (event.ctrlKey) {
 
-        if (event.ctrlKey && event.code == keyZ) {
-            super.invokeUndo();
+            const keyZ = "KeyZ";
+            const keyY = "KeyY";
+
+            if (event.code == keyZ) {
+                super.invokeUndo();
+            } else if (event.code == keyY) {
+                super.invokeRedo();
+            }
         }
     }
 

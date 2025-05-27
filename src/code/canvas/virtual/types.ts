@@ -1,4 +1,4 @@
-import { IDotArray } from "../utilities/arrays/types.js";
+import { IFabricDotArray } from "../utilities/arrays/types.js";
 import { FabricThreadArray } from "../utilities/arrays/thread/fabric.js";
 import { Listener, VoidListener, VoidUnsubscribe } from "../../types.js";
 import {
@@ -10,6 +10,7 @@ import {
     StitchPattern,
     StitchSegment,
     FabricPattern,
+    DotIndex,
 } from "../types.js";
 
 export interface IVirtualCanvas extends ICanvas {
@@ -52,7 +53,12 @@ export interface IStitchCanvasFacade extends IStitchCanvas {
 
     draw(): void;
     load(pattern: StitchPattern): void;
+
+    clickDot(dotIdx: DotIndex): void;
     useThread(name: string, color: string, width: number): void;
+
+    undo(): void;
+    redo(): void;
 }
 
 export interface ICueCanvasFacade extends ICueCanvas {
@@ -60,13 +66,18 @@ export interface ICueCanvasFacade extends ICueCanvas {
 
     draw(): void;
     load(pattern: StitchPattern): void;
+
+    clickDot(dotIdx: DotIndex): void;
     useThread(name: string, color: string, width: number): void;
+
+    undo(): void;
+    redo(): void;
 }
 
 export type ChangeFabricEvent = { pattern: FabricPattern; };
 export type ChangeFabricListener = Listener<ChangeFabricEvent>;
 
-export type DrawFabricDotsEvent = { dots: IDotArray; };
+export type DrawFabricDotsEvent = { dots: IFabricDotArray; };
 export type DrawFabricDotsListener = Listener<DrawFabricDotsEvent>;
 
 export type DrawFabricThreadsEvent = { threads: FabricThreadArray; };

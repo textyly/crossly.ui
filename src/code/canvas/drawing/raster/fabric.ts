@@ -1,6 +1,6 @@
 import { RasterDrawingCanvas } from "./raster.js";
 import { IFabricRasterDrawingCanvas } from "../types.js";
-import { IDotArray } from "../../utilities/arrays/types.js";
+import { IFabricDotArray } from "../../utilities/arrays/types.js";
 import { FabricThreadArray } from "../../utilities/arrays/thread/fabric.js";
 
 export class FabricRasterDrawingCanvas extends RasterDrawingCanvas implements IFabricRasterDrawingCanvas {
@@ -12,7 +12,7 @@ export class FabricRasterDrawingCanvas extends RasterDrawingCanvas implements IF
         this.endAngle = Math.PI * 2;
     }
 
-    public drawDots(dots: IDotArray): void {
+    public drawDots(dots: IFabricDotArray): void {
         super.ensureAlive();
 
         this.drawDotsCore(dots);
@@ -24,7 +24,7 @@ export class FabricRasterDrawingCanvas extends RasterDrawingCanvas implements IF
         this.drawLinesCore(threads);
     }
 
-    private drawDotsCore(dots: IDotArray): void {
+    private drawDotsCore(dots: IFabricDotArray): void {
         // CPU, GPU, memory and GC intensive code, do not extract logic in multiple methods!!!
         const dotsX = dots.positionsX;
         const dotsY = dots.positionsY;

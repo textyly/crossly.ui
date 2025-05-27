@@ -1,7 +1,7 @@
 import { CanvasBase } from "../base.js";
-import { Messaging7 } from "../../messaging/impl.js";
-import { IMessaging7 } from "../../messaging/types.js";
-import { VoidListener, VoidUnsubscribe } from "../../types.js";
+import { Messaging8 } from "../../messaging/impl.js";
+import { IMessaging8 } from "../../messaging/types.js";
+import { VoidEvent, VoidListener, VoidUnsubscribe } from "../../types.js";
 import {
     MoveEvent,
     ZoomInEvent,
@@ -22,15 +22,19 @@ import {
 
 
 export abstract class InputCanvasBase extends CanvasBase implements IInputCanvas {
-    private readonly messaging: IMessaging7<ZoomInEvent, ZoomOutEvent, PointerMoveEvent, PointerUpEvent, MoveStartEvent, MoveEvent, MoveStopEvent>;
+    private readonly messaging: IMessaging8<ZoomInEvent, ZoomOutEvent, PointerMoveEvent, PointerUpEvent, MoveStartEvent, MoveEvent, MoveStopEvent, VoidEvent>;
 
     constructor(className: string) {
         super(className);
-        this.messaging = new Messaging7();
+        this.messaging = new Messaging8();
     }
 
     public onUndo(listener: VoidListener): VoidUnsubscribe {
         return this.messaging.listenOnChannel0(listener);
+    }
+
+    public onRedo(listener: VoidListener): VoidUnsubscribe {
+        return this.messaging.listenOnChannel8(listener);
     }
 
     public onZoomIn(listener: ZoomInListener): VoidUnsubscribe {
@@ -69,6 +73,10 @@ export abstract class InputCanvasBase extends CanvasBase implements IInputCanvas
 
     protected invokeUndo(): void {
         this.messaging.sendToChannel0();
+    }
+
+    protected invokeRedo(): void {
+        this.messaging.sendToChannel8({});
     }
 
     protected invokeZoomIn(event: ZoomInEvent): void {

@@ -3,14 +3,22 @@ import assert from "../../../asserts/assert.js";
 import { DotsUtility } from "../../utilities/dots.js";
 import { IdGenerator } from "../../utilities/generator.js";
 import { CueCanvasConfig } from "../../../config/types.js";
-import { CueThreadArray } from "../../utilities/arrays/thread/cue.js";
-import { CanvasSide, Id, CueSegment, CueDot, Dot, DotIndex } from "../../types.js";
+import patternCloning from "../../utilities/arrays/cloning.js";
+import { ICueThreadPath } from "../../utilities/arrays/types.js";
+import { CueThreadPath } from "../../utilities/arrays/thread/cue.js";
 import { Position, IInputCanvas, PointerUpEvent, PointerMoveEvent } from "../../input/types.js";
+import { CanvasSide, Id, CueSegment, CueDot, Dot, DotIndex, StitchPattern } from "../../types.js";
 
+// TODO: there is common logic between CueCanvas and StitchCanvas, and therefore:
+// 1. when features are added code must be duplicated with some small differences
+// 2. bug fixes must be present in both classes
+// Common logic must be extracted in a base class
+// This can be done once a good amount of unit/integration tests are written
 export abstract class CueCanvas extends CueCanvasBase {
     private readonly ids: IdGenerator;
     private readonly dotsUtility: DotsUtility<Dot>;
-    protected _pattern: Array<CueThreadArray>;
+    protected _pattern: Array<CueThreadPath>;
+    protected _redoPattern: Array<ICueThreadPath> | undefined;
 
     private dotColor: string;
     private dotRadius: number;
@@ -38,7 +46,7 @@ export abstract class CueCanvas extends CueCanvasBase {
         this.minDotRadius = dotConfig.minRadius;
         this.dotRadiusZoomStep = dotConfig.radiusZoomStep;
 
-        this._pattern = new Array<CueThreadArray>();
+        this._pattern = new Array<CueThreadPath>();
         this.createThread(threadConfig.color, threadConfig.width);
 
         this.minThreadWidth = threadConfig.minWidth;
@@ -51,6 +59,16 @@ export abstract class CueCanvas extends CueCanvasBase {
 
         this.startListening();
     }
+
+    public override dispose(): void {
+        super.ensureAlive();
+
+        this._pattern.forEach((threadArray) => threadArray.clear());
+        this._pattern = [];
+
+        super.dispose();
+    }
+
 
     protected override zoomIn(): void {
         this.zooms += 1;
@@ -68,27 +86,109 @@ export abstract class CueCanvas extends CueCanvasBase {
         }
     }
 
+    protected loadPattern(pattern: StitchPattern): void {
+        this._pattern = new Array<CueThreadPath>;
+        this._redoPattern = undefined;
+        let lastDotIdx: DotIndex | undefined = undefined;
+
+        pattern.forEach((threadPath) => {
+            this.useNewThread("", threadPath.color, threadPath.width);
+
+            const thread = this.getCurrentThread();
+            for (let index = 0; index < threadPath.length; index++) {
+                const indexX = threadPath.indexesX[index];
+                const indexY = threadPath.indexesY[index];
+                thread.pushDotIndex(indexX, indexY);
+
+                this.changeCanvasSide();
+                lastDotIdx = { dotX: indexX, dotY: indexY };
+            }
+        });
+
+        this.clickedDotIdx = lastDotIdx;
+    }
+
     protected createThread(color: string, width: number): void {
-        const thread = new CueThreadArray(color, width);
+        const thread = new CueThreadPath(color, width);
         this._pattern.push(thread);
     }
 
     protected useNewThread(name: string, color: string, width: number): void {
-        this.removeThread();
+        this.clickedDotIdx = undefined;
+        this.currentSide = CanvasSide.Back;
+        this._redoPattern = undefined;
+
         this.createThread(color, width);
         this.draw();
     }
 
-    protected getCurrentThread(): CueThreadArray | undefined {
+    protected getCurrentThread(): CueThreadPath {
         const length = this._pattern.length;
         const array = this._pattern.slice(length - 1, length);
 
-        return array.length === 0 ? undefined : array[0];
+        const thread = array.length === 0 ? undefined : array[0];
+        assert.defined(thread, "thread");
+
+        return thread;
     }
 
-    protected removeThread(): void {
-        this.clickedDotIdx = undefined;
-        this.currentSide = CanvasSide.Back;
+    protected undoClickDot(): void {
+        super.ensureAlive();
+
+        const threadsCount = this._pattern.length;
+        assert.greaterThanZero(threadsCount, "threadsCount");
+
+        const currentThread = this.getCurrentThread();
+        assert.defined(currentThread, "currentThread");
+
+        this.undoClickDotCore();
+        this.draw();
+    }
+
+    protected redoClickDot(): void {
+        const threadsCount = this._pattern.length;
+        assert.greaterThanZero(threadsCount, "threadsCount");
+
+        const currentThread = this.getCurrentThread();
+        assert.defined(currentThread, "currentThread");
+
+        if (this._redoPattern) {
+            const errorMsg = "redo pattern cannot have less thread paths than the current one (on which undo operations have been performed)";
+            assert.that(this._pattern.length <= this._redoPattern.length, errorMsg);
+
+            this.redoClickDotCore(this._pattern, this._redoPattern);
+
+            this.draw();
+        }
+    }
+
+    protected clickDotIndex(dotIdx: DotIndex): void {
+        const clickedDotPos = this.calculateDotPosition(dotIdx);
+        const previouslyClickedDotIdx = this.clickedDotIdx;
+
+        if (!previouslyClickedDotIdx) {
+            this.changeSide(clickedDotPos, dotIdx);
+
+            const currentThread = this.getCurrentThread();
+
+            currentThread.pushDotIndex(dotIdx.dotX, dotIdx.dotY);
+            this._redoPattern = undefined;
+
+        } else {
+            const previouslyClickedDotPos = this.calculateDotPosition(previouslyClickedDotIdx);
+            const areIdenticalClicks = this.dotsUtility.areDotsEqual(clickedDotPos, previouslyClickedDotPos);
+
+            if (!areIdenticalClicks) {
+                this.changeSide(clickedDotPos, dotIdx);
+
+                const currentThread = this.getCurrentThread();
+
+                currentThread.pushDotIndex(dotIdx.dotX, dotIdx.dotY);
+                this._redoPattern = undefined;
+            }
+        }
+
+        this.clickedDotIdx = dotIdx;
     }
 
     private redrawWhileMoving(): void {
@@ -142,57 +242,36 @@ export abstract class CueCanvas extends CueCanvasBase {
 
         const inBounds = this.inBounds(position);
         if (inBounds) {
-            this.clickDot(position);
+            this.clickDotPosition(position);
             this.removeSegment();
         }
     }
 
+    private handleRedo(): void {
+        super.ensureAlive();
+        this.redoClickDot();
+    }
+
     private handleUndo(): void {
         super.ensureAlive();
+        this.undoClickDot();
+    }
 
-        const threadsCount = this._pattern.length;
-        assert.greaterThanZero(threadsCount, "threadsCount");
-
+    private undoClickDotCore(): void {
         const currentThread = this.getCurrentThread();
-        assert.defined(currentThread, "currentThread");
+        this._redoPattern = this._redoPattern ?? patternCloning.cloneCuePattern(this._pattern);
 
-        const dotsCount = currentThread.length;
-        if (dotsCount === 0) {
-            // thread is just created without crossing any hole (state immediately following `use new thread` operation)
-            if (threadsCount === 1) {
-                // there is only 1 thread which has not crossed any hole
-                // cannot undo any more
-            } else {
-                // remove current thread
-                this._pattern.pop();
+        const currentThreadDots = currentThread.length;
 
-                const previousThread = this.getCurrentThread();
-                assert.defined(previousThread, "previousThread");
-
-                const previousThreadDotsCount = previousThread.length;
-                if (previousThreadDotsCount === 0) {
-                    // previous thread have not crossed any dots as well, just remove it
-                } else {
-                    this.currentSide = previousThreadDotsCount % 2 === 0 ? CanvasSide.Back : CanvasSide.Front;
-
-                    const lastDotIdx = previousThread.lastDotIndex()!;
-                    this.clickedDotIdx = lastDotIdx;
-
-                    if (this.hoveredDotIdx) {
-                        const dotPos = this.calculateDotPosition(this.hoveredDotIdx);
-                        const event = { position: dotPos };
-                        this.handlePointerMove(event);
-                    }
-                }
-            }
-        } else {
-            // thread has crossed at leas one hole
-            if (dotsCount === 1) {
+        if (currentThreadDots > 0) {
+            // thread has crossed at least one hole
+            if (currentThreadDots === 1) {
                 // remove last dot
                 currentThread.popDotIndex();
-                this.removeThread();
+
+                this.clickedDotIdx = undefined;
+                this.currentSide = CanvasSide.Back;
             } else {
-                // remove last dot
                 currentThread.popDotIndex();
                 this.changeCanvasSide();
 
@@ -200,14 +279,61 @@ export abstract class CueCanvas extends CueCanvasBase {
                 this.clickedDotIdx = lastDotIdx;
 
                 if (this.hoveredDotIdx) {
-                    const dotPos = this.calculateDotPosition(this.hoveredDotIdx);
+                    const dotPos = this.calculateDotPosition(this.clickedDotIdx);
                     const event = { position: dotPos };
                     this.handlePointerMove(event);
                 }
             }
+        } else {
+            const threads = this._pattern.length;
+            if (threads > 1) {
+                // remove current thread
+                this._pattern.pop();
+                const previousThread = this.getCurrentThread();
+
+                if (previousThread.length > 0) {
+                    const lastDotIdx = previousThread.lastDotIndex()!;
+                    this.clickedDotIdx = lastDotIdx;
+                    this.currentSide = previousThread.length % 2 === 0 ? CanvasSide.Back : CanvasSide.Front;
+
+                    if (this.hoveredDotIdx) {
+                        const dotPos = this.calculateDotPosition(this.clickedDotIdx);
+                        const event = { position: dotPos };
+                        this.handlePointerMove(event);
+                    }
+                }
+            }
+        }
+    }
+
+    private redoClickDotCore(currentPattern: Array<CueThreadPath>, redoPattern: Array<ICueThreadPath>): void {
+        const currentThreadPathIndex = currentPattern.length - 1;
+        const redoThreadPath = redoPattern[currentThreadPathIndex];
+        const currentThreadPath = currentPattern[currentThreadPathIndex];
+
+        if (redoThreadPath.length > currentThreadPath.length) {
+            const redoDotIndex = currentThreadPath.length;
+            const indexX = redoThreadPath.indexesX[redoDotIndex];
+            const indexY = redoThreadPath.indexesY[redoDotIndex];
+            currentThreadPath.pushDotIndex(indexX, indexY);
+
+            this.clickedDotIdx = { dotX: indexX, dotY: indexY };
+            this.changeCanvasSide();
+
+        } else if (redoPattern.length > currentPattern.length) {
+            const nextRedoThreadPath = redoPattern[currentPattern.length];
+            const newCurrentThreadPath = new CueThreadPath(nextRedoThreadPath.color, nextRedoThreadPath.width);
+            currentPattern.push(newCurrentThreadPath);
+
+            this.clickedDotIdx = undefined;
+            this.currentSide = CanvasSide.Back;
         }
 
-        this.draw();
+        if (this.hoveredDotIdx && this.clickedDotIdx) {
+            const dotPos = this.calculateDotPosition(this.clickedDotIdx);
+            const event = { position: dotPos };
+            this.handlePointerMove(event);
+        }
     }
 
     private moveDot(position: Position): void {
@@ -222,34 +348,9 @@ export abstract class CueCanvas extends CueCanvasBase {
         this.hoverDot(dotPos, dotIdx);
     }
 
-    private clickDot(position: Position): void {
-        const clickedDotIdx = this.calculateDotIndex(position);
-        const clickedDotPos = this.calculateDotPosition(clickedDotIdx);
-        const previouslyClickedDotIdx = this.clickedDotIdx;
-
-        if (!previouslyClickedDotIdx) {
-            this.changeSide(clickedDotPos, clickedDotIdx);
-
-            const currentThread = this.getCurrentThread();
-            assert.defined(currentThread, "currentThread");
-
-            currentThread.pushDotIndex(clickedDotIdx.dotX, clickedDotIdx.dotY);
-
-        } else {
-            const previouslyClickedDotPos = this.calculateDotPosition(previouslyClickedDotIdx);
-            const areIdenticalClicks = this.dotsUtility.areDotsEqual(clickedDotPos, previouslyClickedDotPos);
-
-            if (!areIdenticalClicks) {
-                this.changeSide(clickedDotPos, clickedDotIdx);
-
-                const currentThread = this.getCurrentThread();
-                assert.defined(currentThread, "currentThread");
-
-                currentThread.pushDotIndex(clickedDotIdx.dotX, clickedDotIdx.dotY);
-            }
-        }
-
-        this.clickedDotIdx = clickedDotIdx;
+    private clickDotPosition(position: Position): void {
+        const dotIdx = this.calculateDotIndex(position);
+        this.clickDotIndex(dotIdx);
     }
 
     private changeSide(clickedDotPos: Position, clickedDotIdx: DotIndex): void {
@@ -322,7 +423,6 @@ export abstract class CueCanvas extends CueCanvasBase {
 
     private createSegment(id: number, previouslyClickedDotPos: Position, clickedDotPos: Position): CueSegment {
         const currentThread = this.getCurrentThread();
-        assert.defined(currentThread, "currentThread");
 
         const color = currentThread.color;
         const width = this.calculateZoomedThreadWidth(currentThread.width);
@@ -346,6 +446,9 @@ export abstract class CueCanvas extends CueCanvasBase {
 
         const undoUn = this.inputCanvas.onUndo(this.handleUndo.bind(this));
         super.registerUn(undoUn);
+
+        const redoUn = this.inputCanvas.onRedo(this.handleRedo.bind(this));
+        super.registerUn(redoUn);
     }
 
     private validateConfig(config: CueCanvasConfig): void {

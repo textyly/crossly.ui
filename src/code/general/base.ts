@@ -1,5 +1,5 @@
-import assert from "./asserts/assert.js";
-import { IDisposable, VoidUnsubscribe } from "./types.js";
+import assert from "../asserts/assert.js";
+import { IDisposable, VoidUnsubscribe } from "../types.js";
 
 export abstract class Base implements IDisposable {
     private readonly className: string;

@@ -1,7 +1,7 @@
 import { ArrayBase } from "../base.js";
-import { IDotArray } from "../types.js";
+import { IFabricDotArray } from "../types.js";
 
-export class DotArray extends ArrayBase implements IDotArray {
+export class FabricDotArray extends ArrayBase implements IFabricDotArray {
     private readonly _color: string;
     private readonly _radius: number;
 
@@ -39,6 +39,11 @@ export class DotArray extends ArrayBase implements IDotArray {
 
         this._positionsX[this.index] = x;
         this._positionsY[this.index] = y;
+    }
+
+    public clear(): void {
+        this._positionsX = new Int32Array(0);
+        this._positionsY = new Int32Array(0);
     }
 
     protected override expand(): void {

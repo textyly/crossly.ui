@@ -1,8 +1,8 @@
 import { ArrayBase } from "../base.js";
 import { DotIndex } from "../../../types.js";
-import { ICueThreadArray } from "../types.js";
+import { ICueThreadPath } from "../types.js";
 
-export class CueThreadArray extends ArrayBase implements ICueThreadArray {
+export class CueThreadPath extends ArrayBase implements ICueThreadPath {
     private readonly _color: string;
     private readonly _width: number;
 
@@ -61,6 +61,11 @@ export class CueThreadArray extends ArrayBase implements ICueThreadArray {
             const dotIdx = { dotX: indexX, dotY: indexY };
             return dotIdx;
         }
+    }
+
+    public clear(): void {
+        this._indexesX = new Int16Array(0);
+        this._indexesY = new Int16Array(0);
     }
 
     protected override expand(): void {

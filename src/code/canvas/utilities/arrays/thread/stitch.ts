@@ -1,8 +1,8 @@
-import { ThreadBase } from "./thread.js";
-import { IThreadPath } from "../types.js";
+import { ThreadBase } from "./base.js";
+import { IStitchThreadPath } from "../types.js";
 import { Dot, DotIndex } from "../../../types.js";
 
-export class ThreadPath extends ThreadBase implements IThreadPath {
+export class StitchThreadPath extends ThreadBase implements IStitchThreadPath {
     private _name: string;
     private _zoomedWidth: number;
 
@@ -85,6 +85,12 @@ export class ThreadPath extends ThreadBase implements IThreadPath {
             const dot = { dotX: indexX, dotY: indexY, ...pos };
             return dot;
         }
+    }
+
+    public override clear(): void {
+        super.clear();
+        this._indexesX = new Int16Array(0);
+        this._indexesY = new Int16Array(0);
     }
 
     protected override expand(): void {
