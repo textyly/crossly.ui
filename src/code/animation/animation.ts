@@ -1,6 +1,7 @@
 import { IAnimation } from "./types.js";
 import assert from "../asserts/assert.js";
 import { IStitchThreadPath } from "../canvas/utilities/arrays/types.js";
+import { StitchThreadPath } from "../canvas/utilities/arrays/thread/stitch.js";
 import { CrosslyCanvasPattern, ICrosslyCanvasFacade, StitchPattern } from "../canvas/types.js";
 
 export class CrosslyCanvasAnimation implements IAnimation {
@@ -9,52 +10,53 @@ export class CrosslyCanvasAnimation implements IAnimation {
 
     private threadPathIdx!: number;
     private dotIdx!: number;
-
     private timerId?: number;
 
     constructor(crosslyCanvas: ICrosslyCanvasFacade, pattern: CrosslyCanvasPattern) {
         this.pattern = pattern;
         this.crosslyCanvas = crosslyCanvas;
-
         this.addFirstThread(this.pattern.stitch);
     }
 
     public jumpTo(percent: number): void {
-        this.stopAnimate();
+        assert.greaterThanZero(percent, "percent");
+        assert.that(percent <= 100, "percent must be less than or equal to 100.");
+
+        this.assertValidState();
+        this.stopAnimating();
         this.jumpToCore(percent);
     }
 
     public manualNext(): void {
-        this.stopAnimate();
-
-        const stitchPattern = this.pattern.stitch;
-        const currentThreadPath = stitchPattern[this.threadPathIdx];
-        assert.defined(currentThreadPath, "currentThreadPath");
-
-        this.manualNextCore(stitchPattern, currentThreadPath);
+        this.assertValidState();
+        this.stopAnimating();
+        this.manualNextCore();
     }
 
     public manualPrev(): void {
-        this.stopAnimate();
-
-        const stitchPattern = this.pattern.stitch;
-        const currentThreadPath = stitchPattern[this.threadPathIdx];
-        assert.defined(currentThreadPath, "currentThreadPath");
-
-        this.manualPrevCore(stitchPattern);
+        this.assertValidState();
+        this.stopAnimating();
+        this.manualPrevCore();
     }
 
-    public startForwardAnimate(speed: number): void {
-        this.stopAnimate();
-        this.startForwardAnimateCore(speed);
+    public startAnimatingForward(speed: number): void {
+        assert.greaterThanZero(speed, "speed");
+
+        this.assertValidState();
+        this.stopAnimating();
+        this.startAnimatingForwardCore(speed);
     }
 
-    public startBackwardAnimate(speed: number): void {
-        this.stopAnimate();
-        this.startBackwardAnimateCore(speed);
+    public startAnimatingBackward(speed: number): void {
+        assert.greaterThanZero(speed, "speed");
+
+        this.assertValidState();
+        this.stopAnimating();
+        this.startAnimatingBackwardCore(speed);
     }
 
-    public stopAnimate(): void {
+    public stopAnimating(): void {
+        this.assertValidState();
         if (this.timerId) {
             this.stopAnimateCore(this.timerId);
             this.timerId = undefined;
@@ -62,19 +64,56 @@ export class CrosslyCanvasAnimation implements IAnimation {
     }
 
     private jumpToCore(percent: number): void {
-        // TODO: create a new animation (a new crossly canvas as well) and jump to the given percentage
-
         const stitchPattern = this.pattern.stitch;
         const patternLength = this.calculatePatternLength(stitchPattern);
+        const lastDot = this.calculatePercentage(percent, patternLength);
 
-        const dot = this.calculatePercentage(percent, patternLength);
-        for (let index = 0; index < dot; index++) {
-            this.manualNext(); // TODO: add the part of the pattern (corresponding on the given percentage) directly using load method
+        const partialStitchPattern = new Array<IStitchThreadPath>();
+
+        let index = 0;
+        this.dotIdx = 0;
+        this.threadPathIdx = 0;
+
+        for (let threadPathIdx = 0; threadPathIdx < stitchPattern.length; threadPathIdx++) {
+
+            if (index > lastDot) {
+                break;
+            }
+
+            const threadPath = stitchPattern[threadPathIdx];
+            const newThreadPath = new StitchThreadPath(threadPath.name, threadPath.color, threadPath.width);
+            partialStitchPattern.push(newThreadPath);
+            index += 1;
+
+            const indexesX = threadPath.indexesX;
+            const indexesY = threadPath.indexesY;
+
+            for (let dotIdx = 0; dotIdx < threadPath.length; dotIdx++) {
+
+                if (index > lastDot) {
+                    break;
+                }
+
+                const indexX = indexesX[dotIdx];
+                const indexY = indexesY[dotIdx];
+
+                newThreadPath.pushDotIndex(indexX, indexY);
+                index += 1;
+            }
         }
+
+        const partialCanvasPattern = { name: this.pattern.name, fabric: this.pattern.fabric, stitch: partialStitchPattern };
+        this.crosslyCanvas.load(partialCanvasPattern);
+        this.crosslyCanvas.draw();
+
+        this.threadPathIdx = partialStitchPattern.length - 1;
+        this.dotIdx = partialStitchPattern[this.threadPathIdx].length - 1;
     }
 
-    private manualNextCore(stitchPattern: StitchPattern, currentThreadPath: IStitchThreadPath): boolean {
+    private manualNextCore(): boolean {
         let hasNext = false;
+        const stitchPattern = this.pattern.stitch;
+        const currentThreadPath = stitchPattern[this.threadPathIdx];
         const threadPaths = stitchPattern.length;
         const threadPathDots = currentThreadPath.length;
 
@@ -97,7 +136,7 @@ export class CrosslyCanvasAnimation implements IAnimation {
         return hasNext;
     }
 
-    private manualPrevCore(stitchPattern: StitchPattern): boolean {
+    private manualPrevCore(): boolean {
         let hasNext = false;
 
         if (this.dotIdx > 0) {
@@ -112,7 +151,7 @@ export class CrosslyCanvasAnimation implements IAnimation {
             this.unuseCurrentThread();
 
             this.threadPathIdx -= 1;
-            const previousThreadPath = stitchPattern[this.threadPathIdx];
+            const previousThreadPath = this.pattern.stitch[this.threadPathIdx];
 
             this.dotIdx = previousThreadPath.length;
             hasNext = true;
@@ -121,31 +160,25 @@ export class CrosslyCanvasAnimation implements IAnimation {
         return hasNext;
     }
 
-    private startForwardAnimateCore(speed: number): void {
+    private startAnimatingForwardCore(speed: number): void {
         this.timerId = setInterval(() => {
-            const stitchPattern = this.pattern.stitch;
 
-            const currentThreadPath = stitchPattern[this.threadPathIdx];
-            assert.defined(currentThreadPath, "currentThreadPath");
-
-            const hasNext = this.manualNextCore(stitchPattern, currentThreadPath);
+            const hasNext = this.manualNextCore();
             if (!hasNext) {
-                this.stopAnimate();
+                this.stopAnimating();
+
             }
         }, speed);
     }
 
-    private startBackwardAnimateCore(speed: number): void {
+    private startAnimatingBackwardCore(speed: number): void {
         this.timerId = setInterval(() => {
-            const stitchPattern = this.pattern.stitch;
 
-            const currentThreadPath = stitchPattern[this.threadPathIdx];
-            assert.defined(currentThreadPath, "currentThreadPath");
-
-            const hasNext = this.manualPrevCore(stitchPattern);
+            const hasNext = this.manualPrevCore();
             if (!hasNext) {
-                this.stopAnimate();
+                this.stopAnimating();
             }
+
         }, speed);
     }
 
@@ -189,7 +222,9 @@ export class CrosslyCanvasAnimation implements IAnimation {
         let length = 0;
 
         stitchPattern.forEach((threadPath) => {
-            const dots = threadPath.length + 1; // add 1 for adding a thread
+            length += 1; // add 1 to reflect the given thread
+
+            const dots = threadPath.length;
             length += dots;
         });
 
@@ -199,5 +234,11 @@ export class CrosslyCanvasAnimation implements IAnimation {
     private calculatePercentage(percent: number, total: number): number {
         const percentage = (percent / 100) * total;
         return Math.floor(percentage);
+    }
+
+    private assertValidState(): void {
+        const stitchPattern = this.pattern.stitch;
+        const currentThreadPath = stitchPattern[this.threadPathIdx];
+        assert.defined(currentThreadPath, "currentThreadPath");
     }
 }

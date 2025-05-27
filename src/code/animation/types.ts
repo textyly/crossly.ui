@@ -1,10 +1,10 @@
 export interface IAnimation {
-    jumpTo(percent: number): void; // Different name than percent
+    jumpTo(percent: number): void;
 
     manualNext(): void;
     manualPrev(): void;
 
-    startForwardAnimate(speed: number): void;
-    startBackwardAnimate(speed: number): void;
-    stopAnimate(): void;
+    startAnimatingForward(speed: number): void;
+    startAnimatingBackward(speed: number): void;
+    stopAnimating(): void;
 }
