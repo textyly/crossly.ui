@@ -16,6 +16,7 @@ export interface IInputCanvas extends ICanvas {
     onPointerMove(listener: PointerMoveListener): VoidUnsubscribe;
 
     onUndo(listener: VoidListener): VoidUnsubscribe;
+    onRedo(listener: VoidListener): VoidUnsubscribe;
 }
 
 export interface ITouchInput extends ICanvas {

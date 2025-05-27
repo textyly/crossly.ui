@@ -1,4 +1,4 @@
-import { Base } from "../../base.js";
+import { Base } from "../../general/base.js";
 import { IRepository } from "../../repository/types.js";
 import { CrosslyCanvasChangeEvent, ICrosslyCanvasObserver } from "../types.js";
 

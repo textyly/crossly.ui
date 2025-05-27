@@ -5,7 +5,7 @@ import { IInputCanvas } from "../../input/types.js";
 import { CanvasConfig } from "../../../config/types.js";
 import { Messaging3 } from "../../../messaging/impl.js";
 import { IMessaging3 } from "../../../messaging/types.js";
-import { IDotArray } from "../../utilities/arrays/types.js";
+import { IFabricDotArray } from "../../utilities/arrays/types.js";
 import { FabricThreadArray } from "../../utilities/arrays/thread/fabric.js";
 import {
     IFabricCanvas,
@@ -48,7 +48,7 @@ export abstract class FabricCanvasBase extends VirtualCanvasBase implements IFab
         this.messaging.sendToChannel1(event);
     }
 
-    protected invokeDrawDots(dots: IDotArray): void {
+    protected invokeDrawDots(dots: IFabricDotArray): void {
         const event = { dots };
         this.messaging.sendToChannel2(event);
     }

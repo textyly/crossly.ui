@@ -1,4 +1,4 @@
-import { Base } from "../base.js";
+import { Base } from "../general/base.js";
 import assert from "../asserts/assert.js";
 import { Unsubscribe } from "../types.js";
 import { Channel, ChannelData, ChannelListener, ChannelListeners, IMessaging } from "./types.js";
@@ -14,7 +14,6 @@ export abstract class MessagingBase extends Base implements IMessaging {
     public create(channel: Channel): void {
         super.ensureAlive();
 
-        assert.defined(channel, "channel");
         assert.greaterThanZero(channel.length, "channel.length");
 
         const hasChannel = this.channels.has(channel);
@@ -26,9 +25,6 @@ export abstract class MessagingBase extends Base implements IMessaging {
     public on(channel: Channel, listener: ChannelListener): Unsubscribe<ChannelListener> {
         super.ensureAlive();
 
-        assert.defined(channel, "channel");
-        assert.defined(listener, "listener");
-
         const listeners = this.channels.get(channel);
         assert.defined(listeners, `channel ${channel} does not exist.`);
 
@@ -38,9 +34,6 @@ export abstract class MessagingBase extends Base implements IMessaging {
 
     public send(channel: Channel, data: ChannelData): void {
         super.ensureAlive();
-
-        assert.defined(channel, "channel");
-        assert.defined(data, "data");
 
         const listeners = this.channels.get(channel);
         assert.defined(listeners, `channel ${channel} does not exist.`);

@@ -38,8 +38,8 @@ export class MoveInput extends MoveInputBase implements IMoveInput {
 
     public override dispose(): void {
         super.ensureAlive();
-        this.unsubscribe();
         super.dispose();
+        this.unsubscribe();
     }
 
     private handlePointerDown(event: PointerEvent): void {
