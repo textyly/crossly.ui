@@ -21,42 +21,45 @@ export class CrosslyCanvasAnimation implements IAnimation {
     public jumpTo(percent: number): void {
         assert.greaterThanZero(percent, "percent");
         assert.that(percent <= 100, "percent must be less than or equal to 100.");
-
         this.assertValidState();
+
         this.stopAnimating();
         this.jumpToCore(percent);
     }
 
     public manualNext(): void {
         this.assertValidState();
+
         this.stopAnimating();
         this.manualNextCore();
     }
 
     public manualPrev(): void {
         this.assertValidState();
+
         this.stopAnimating();
         this.manualPrevCore();
     }
 
     public startAnimatingForward(speed: number): void {
         assert.greaterThanZero(speed, "speed");
-
         this.assertValidState();
+
         this.stopAnimating();
         this.startAnimatingForwardCore(speed);
     }
 
     public startAnimatingBackward(speed: number): void {
         assert.greaterThanZero(speed, "speed");
-
         this.assertValidState();
+
         this.stopAnimating();
         this.startAnimatingBackwardCore(speed);
     }
 
     public stopAnimating(): void {
         this.assertValidState();
+
         if (this.timerId) {
             this.stopAnimateCore(this.timerId);
             this.timerId = undefined;
@@ -168,6 +171,7 @@ export class CrosslyCanvasAnimation implements IAnimation {
                 this.stopAnimating();
 
             }
+
         }, speed);
     }
 
