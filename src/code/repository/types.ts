@@ -4,6 +4,7 @@ import { CrosslyCanvasPattern } from "../canvas/types.js";
 export type Id = string;
 export type DataModel = Uint8Array;
 export type DataModelStream = ReadableStream<Uint8Array>;
+export type CrosslyCanvasPatternEx = CrosslyCanvasPattern & { name: string };
 
 export interface ICompressor {
     compress(dataModel: CrosslyDataModel): Promise<Uint8Array>;
@@ -23,11 +24,11 @@ export interface IPersistence {
 
 export interface IRepository {
     getAll(): Promise<Array<Id>>;
-    getByName(name: string): Promise<CrosslyCanvasPattern & { name: string }>;
-    getById(id: Id): Promise<CrosslyCanvasPattern & { name: string }>;
+    getByName(name: string): Promise<CrosslyCanvasPatternEx>;
+    getById(id: Id): Promise<CrosslyCanvasPatternEx>;
 
     delete(id: string): Promise<boolean>;
     rename(oldName: string, newName: string): Promise<boolean>;
-    save(name: string, pattern: CrosslyCanvasPattern): Promise<Id>;
-    replace(id: string, pattern: CrosslyCanvasPattern): Promise<boolean>;
+    save(pattern: CrosslyCanvasPatternEx): Promise<Id>;
+    replace(id: string, pattern: CrosslyCanvasPatternEx): Promise<boolean>;
 }

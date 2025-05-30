@@ -20,10 +20,9 @@ export class CrosslyCanvasWatcher extends Base {
 
         const canvasData = event.pattern;
 
-        const name = ""; // TODO: ???
-        const id = await this.repository.save(name, canvasData);
-
-        console.log(`${name} has been saved, id: ${id}`); // TODO: delete
+        // TODO: !!!
+        // const id = await this.repository.save(canvasData);
+        // console.log(`${name} has been saved, id: ${id}`); // TODO: delete
     }
 
     private subscribe(): void {

@@ -1,5 +1,4 @@
-import { Id, IRepository } from "./types.js";
-import { CrosslyCanvasPattern } from "../canvas/types.js";
+import { CrosslyCanvasPatternEx, Id, IRepository } from "./types.js";
 
 // TODO: must be done in a queue so that save and get requests are ordered
 // TODO: must save periodically and all middle updates must be filtered out
@@ -14,11 +13,11 @@ export class RepositoryThrottler implements IRepository {
         return this.repository.getAll();
     }
 
-    public getByName(name: string): Promise<CrosslyCanvasPattern & { name: string }> {
+    public getByName(name: string): Promise<CrosslyCanvasPatternEx> {
         return this.repository.getByName(name);
     }
 
-    public getById(id: Id): Promise<CrosslyCanvasPattern & { name: string }> {
+    public getById(id: Id): Promise<CrosslyCanvasPatternEx> {
         return this.repository.getById(id);
     }
 
@@ -30,11 +29,11 @@ export class RepositoryThrottler implements IRepository {
         return this.repository.rename(oldName, newName);
     }
 
-    public save(name: string, canvasData: CrosslyCanvasPattern): Promise<Id> {
-        return this.repository.save(name, canvasData);
+    public save(canvasData: CrosslyCanvasPatternEx): Promise<Id> {
+        return this.repository.save(canvasData);
     }
 
-    public replace(id: string, pattern: CrosslyCanvasPattern): Promise<boolean> {
+    public replace(id: string, pattern: CrosslyCanvasPatternEx): Promise<boolean> {
         return this.repository.replace(id, pattern);
     }
 }

@@ -1,6 +1,5 @@
-import { CrosslyCanvasPattern } from "../canvas/types.js";
-import { ICompressor, Id, IRepository, IPersistence } from "./types.js";
 import { CrosslyDataModel, IConverter, IValidator } from "../data-model/types.js";
+import { ICompressor, Id, IRepository, IPersistence, CrosslyCanvasPatternEx } from "./types.js";
 
 export class Repository implements IRepository {
     private readonly validator: IValidator;
@@ -24,7 +23,7 @@ export class Repository implements IRepository {
         return this.persistence.getAll();
     }
 
-    public async getByName(name: string): Promise<CrosslyCanvasPattern & { name: string }> {
+    public async getByName(name: string): Promise<CrosslyCanvasPatternEx> {
         const dataModel = await this.getByNameDataModel(name);
 
         const pattern = this.converter.convertToCrosslyPattern(dataModel);
@@ -34,7 +33,7 @@ export class Repository implements IRepository {
         return result;
     }
 
-    public async getById(id: Id): Promise<CrosslyCanvasPattern & { name: string }> {
+    public async getById(id: Id): Promise<CrosslyCanvasPatternEx> {
         const dataModel = await this.getByIdDataModel(id);
 
         const pattern = this.converter.convertToCrosslyPattern(dataModel);
@@ -45,29 +44,38 @@ export class Repository implements IRepository {
     }
 
     public delete(id: string): Promise<boolean> {
-        throw new Error("Method not implemented.");
+        return this.persistence.delete(id);
     }
 
     public rename(oldName: string, newName: string): Promise<boolean> {
-        throw new Error("Method not implemented.");
+        return this.persistence.rename(oldName, newName);
     }
 
-    public async save(name: string, pattern: CrosslyCanvasPattern): Promise<Id> {
-        const dataModel = this.converter.convertToDataModel(name, pattern);
+    public async save(pattern: CrosslyCanvasPatternEx): Promise<Id> {
+        const dataModel = this.converter.convertToDataModel(pattern.name, pattern);
         this.validator.validateDataModel(dataModel);
 
         const id = await this.saveDataModel(dataModel);
         return id
     }
 
-    public replace(id: string, pattern: CrosslyCanvasPattern): Promise<boolean> {
-        throw new Error("Method not implemented.");
+    public replace(id: string, pattern: CrosslyCanvasPatternEx): Promise<boolean> {
+        const dataModel = this.converter.convertToDataModel(pattern.name, pattern);
+        this.validator.validateDataModel(dataModel);
+
+        return this.replaceDataModel(id, dataModel);
     }
 
     private async saveDataModel(dataModel: CrosslyDataModel): Promise<Id> {
         const compressedDataModel = await this.compressor.compress(dataModel);
         const id = await this.persistence.save(compressedDataModel);
         return id;
+    }
+
+    private async replaceDataModel(id: string, dataModel: CrosslyDataModel): Promise<boolean> {
+        const compressedDataModel = await this.compressor.compress(dataModel);
+        const success = await this.persistence.replace(id, compressedDataModel);
+        return success;
     }
 
     private async getByIdDataModel(id: Id): Promise<CrosslyDataModel> {
