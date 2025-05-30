@@ -11,13 +11,19 @@ export interface ICompressor {
 }
 
 export interface IPersistence {
+    getAll(): Promise<Array<Id>>;
+    getByName(name: string): Promise<DataModelStream>;
+    getById(id: Id): Promise<DataModelStream>;
+
+    delete(id: string): Promise<boolean>;
+    rename(oldName: string, newName: string): Promise<boolean>;
     save(dataModel: DataModel): Promise<Id>;
-    get(id: Id): Promise<DataModelStream>;
+    replace(id: string, dataModel: DataModel): Promise<boolean>;
 }
 
 export interface IRepository {
     getAll(): Promise<Array<Id>>;
-    getByName(name: string): Promise<Id>;
+    getByName(name: string): Promise<CrosslyCanvasPattern>;
     getById(id: Id): Promise<CrosslyCanvasPattern>;
 
     delete(id: string): Promise<boolean>;

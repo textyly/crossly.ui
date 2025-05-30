@@ -24,12 +24,17 @@ export class Repository implements IRepository {
         throw new Error("Method not implemented.");
     }
 
-    public getByName(name: string): Promise<Id> {
-        throw new Error("Method not implemented.");
+    public async getByName(name: string): Promise<CrosslyCanvasPattern> {
+        const dataModel = await this.getByNameDataModel(name);
+
+        const pattern = this.converter.convertToCrosslyPattern(dataModel);
+        this.validator.validatePattern(pattern);
+
+        return pattern;
     }
 
     public async getById(id: Id): Promise<CrosslyCanvasPattern> {
-        const dataModel = await this.getDataModel(id);
+        const dataModel = await this.getByIdDataModel(id);
 
         const pattern = this.converter.convertToCrosslyPattern(dataModel);
         this.validator.validatePattern(pattern);
@@ -63,8 +68,14 @@ export class Repository implements IRepository {
         return id;
     }
 
-    private async getDataModel(id: Id): Promise<CrosslyDataModel> {
-        const dataModelStream = await this.persistence.get(id);
+    private async getByIdDataModel(id: Id): Promise<CrosslyDataModel> {
+        const dataModelStream = await this.persistence.getById(id);
+        const decompressedDataModel = await this.compressor.decompress(dataModelStream);
+        return decompressedDataModel;
+    }
+
+    private async getByNameDataModel(name: string): Promise<CrosslyDataModel> {
+        const dataModelStream = await this.persistence.getByName(name);
         const decompressedDataModel = await this.compressor.decompress(dataModelStream);
         return decompressedDataModel;
     }

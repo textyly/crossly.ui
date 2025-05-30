@@ -14,7 +14,7 @@ export class RepositoryThrottler implements IRepository {
         return this.repository.getAll();
     }
 
-    public getByName(name: string): Promise<Id> {
+    public getByName(name: string): Promise<CrosslyCanvasPattern> {
         return this.repository.getByName(name);
     }
 
