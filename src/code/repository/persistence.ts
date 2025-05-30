@@ -11,6 +11,8 @@ export class Persistence implements IPersistence {
 	private readonly saveEndPoint: string;
 	private readonly saveOptions: RequestInit;
 
+	private readonly replaceEndPoint: string;
+	private readonly replaceOptions: RequestInit;
 
 	constructor() {
 		this.endPointRoot = "http://localhost:5026";
@@ -22,6 +24,15 @@ export class Persistence implements IPersistence {
 		this.saveEndPoint = this.endPointRoot + "/save";
 		this.saveOptions = {
 			method: "POST",
+			headers: {
+				'Content-Type': 'application/json',
+				'Content-Encoding': 'gzip'
+			}
+		};
+
+		this.replaceEndPoint = this.endPointRoot + "/replace?id=";
+		this.replaceOptions = {
+			method: "PUT",
 			headers: {
 				'Content-Type': 'application/json',
 				'Content-Encoding': 'gzip'
@@ -71,7 +82,19 @@ export class Persistence implements IPersistence {
 	}
 
 	public async replace(id: string, dataModel: DataModel): Promise<boolean> {
-		throw new Error("Method not implemented.");
+		const body = dataModel;
+		const options = { ...this.replaceOptions, body };
+
+		const encodedId = encodeURIComponent(id);
+		const endpoint = this.replaceEndPoint + encodedId;
+		const result = await fetch(endpoint, options);
+
+		const resultData = await result.json();
+		const success = resultData.success as boolean;
+
+		assert.defined(success, "success");
+
+		return success;
 	}
 
 	private async getBy(getByEndpoint: string, value: string): Promise<DataModelStream> {
