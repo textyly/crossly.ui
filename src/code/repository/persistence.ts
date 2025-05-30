@@ -3,6 +3,8 @@ import { DataModel, Id, DataModelStream, IPersistence } from "./types.js";
 
 export class Persistence implements IPersistence {
 	private readonly endPointRoot: string;
+
+	private readonly getAllEndPoint: string;
 	private readonly getByIdEndPoint: string;
 	private readonly getByNameEndPoint: string;
 
@@ -12,6 +14,8 @@ export class Persistence implements IPersistence {
 
 	constructor() {
 		this.endPointRoot = "http://localhost:5026";
+
+		this.getAllEndPoint = this.endPointRoot + "/get/all";
 		this.getByIdEndPoint = this.endPointRoot + "/get/by-id?id=";
 		this.getByNameEndPoint = this.endPointRoot + "/get/by-name?name=";
 
@@ -25,7 +29,13 @@ export class Persistence implements IPersistence {
 		};
 	}
 	public async getAll(): Promise<Array<Id>> {
-		throw new Error("Method not implemented.");
+		const response = await fetch(this.getAllEndPoint);
+		const result = await response.json();
+
+		const ids = result.ids as Array<Id>;
+		assert.defined(ids, "ids");
+
+		return ids;
 	}
 
 	public async getByName(name: string): Promise<DataModelStream> {

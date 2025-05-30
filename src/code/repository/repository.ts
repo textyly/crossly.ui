@@ -21,7 +21,8 @@ export class Repository implements IRepository {
     }
 
     public getAll(): Promise<Array<Id>> {
-        throw new Error("Method not implemented.");
+        // TODO: validate
+        return this.persistence.getAll();
     }
 
     public async getByName(name: string): Promise<CrosslyCanvasPattern> {
