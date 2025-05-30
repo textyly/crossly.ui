@@ -16,6 +16,12 @@ export interface IPersistence {
 }
 
 export interface IRepository {
-    save(pattern: CrosslyCanvasPattern): Promise<Id>;
-    get(id: Id): Promise<CrosslyCanvasPattern>;
+    getAll(): Promise<Array<Id>>;
+    getByName(name: string): Promise<Id>;
+    getById(id: Id): Promise<CrosslyCanvasPattern>;
+
+    delete(id: string): Promise<boolean>;
+    rename(oldName: string, newName: string): Promise<boolean>;
+    save(name: string, pattern: CrosslyCanvasPattern): Promise<Id>;
+    replace(id: string, pattern: CrosslyCanvasPattern): Promise<boolean>;
 }

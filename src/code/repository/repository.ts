@@ -20,21 +20,41 @@ export class Repository implements IRepository {
         this.persistence = persistence;
     }
 
-    public async save(pattern: CrosslyCanvasPattern): Promise<Id> {
-        const dataModel = this.converter.convertToDataModel(pattern);
-        this.validator.validateDataModel(dataModel);
-
-        const id = await this.saveDataModel(dataModel);
-        return id
+    public getAll(): Promise<Array<Id>> {
+        throw new Error("Method not implemented.");
     }
 
-    public async get(id: Id): Promise<CrosslyCanvasPattern> {
+    public getByName(name: string): Promise<Id> {
+        throw new Error("Method not implemented.");
+    }
+
+    public async getById(id: Id): Promise<CrosslyCanvasPattern> {
         const dataModel = await this.getDataModel(id);
 
         const pattern = this.converter.convertToCrosslyPattern(dataModel);
         this.validator.validatePattern(pattern);
 
         return pattern;
+    }
+
+    public delete(id: string): Promise<boolean> {
+        throw new Error("Method not implemented.");
+    }
+
+    public rename(oldName: string, newName: string): Promise<boolean> {
+        throw new Error("Method not implemented.");
+    }
+
+    public async save(name: string, pattern: CrosslyCanvasPattern): Promise<Id> {
+        const dataModel = this.converter.convertToDataModel(name, pattern);
+        this.validator.validateDataModel(dataModel);
+
+        const id = await this.saveDataModel(dataModel);
+        return id
+    }
+
+    public replace(id: string, pattern: CrosslyCanvasPattern): Promise<boolean> {
+        throw new Error("Method not implemented.");
     }
 
     private async saveDataModel(dataModel: CrosslyDataModel): Promise<Id> {

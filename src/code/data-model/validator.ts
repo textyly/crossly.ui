@@ -5,15 +5,14 @@ import { CrosslyDataModel, FabricDataModel, IValidator, PatternDataModel } from 
 export class Validator implements IValidator {
 
     public validateDataModel(dataModel: CrosslyDataModel): void {
-        this.validate(dataModel.name, dataModel.fabric, dataModel.pattern);
+        this.validate(dataModel.fabric, dataModel.pattern);
     }
 
     public validatePattern(canvasData: CrosslyCanvasPattern): void {
-        this.validate(canvasData.name, canvasData.fabric, canvasData.stitch);
+        this.validate(canvasData.fabric, canvasData.stitch);
     }
 
-    private validate(name: string, fabric: FabricDataModel | FabricPattern, stitchPattern: PatternDataModel | StitchPattern): void {
-        assert.greaterThanZero(name.length, "name.length");
+    private validate(fabric: FabricDataModel | FabricPattern, stitchPattern: PatternDataModel | StitchPattern): void {
         assert.greaterThanZero(fabric.name.length, "fabric.name.length");
         assert.greaterThanZero(fabric.columns, "fabric.columns");
         assert.greaterThanZero(fabric.rows, "fabric.rows");

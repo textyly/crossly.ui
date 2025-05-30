@@ -10,11 +10,31 @@ export class RepositoryThrottler implements IRepository {
         this.repository = repository;
     }
 
-    public save(canvasData: CrosslyCanvasPattern): Promise<Id> {
-        return this.repository.save(canvasData);
+    public getAll(): Promise<Array<Id>> {
+        return this.repository.getAll();
     }
 
-    public get(id: Id): Promise<CrosslyCanvasPattern> {
-        return this.repository.get(id);
+    public getByName(name: string): Promise<Id> {
+        return this.repository.getByName(name);
+    }
+
+    public getById(id: Id): Promise<CrosslyCanvasPattern> {
+        return this.repository.getById(id);
+    }
+
+    public delete(id: string): Promise<boolean> {
+        return this.repository.delete(id);
+    }
+
+    public rename(oldName: string, newName: string): Promise<boolean> {
+        return this.repository.rename(oldName, newName);
+    }
+
+    public save(name: string, canvasData: CrosslyCanvasPattern): Promise<Id> {
+        return this.repository.save(name, canvasData);
+    }
+
+    public replace(id: string, pattern: CrosslyCanvasPattern): Promise<boolean> {
+        return this.repository.replace(id, pattern);
     }
 }

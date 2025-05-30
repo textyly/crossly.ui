@@ -13,8 +13,7 @@ import {
 
 export class Converter implements IConverter {
 
-    public convertToDataModel(pattern: CrosslyCanvasPattern): CrosslyDataModel {
-        const name = pattern.name;
+    public convertToDataModel(name: string, pattern: CrosslyCanvasPattern): CrosslyDataModel {
         const fabricPattern = pattern.fabric;
         const stitchPattern = pattern.stitch;
 
@@ -33,7 +32,6 @@ export class Converter implements IConverter {
     }
 
     public convertToCrosslyPattern(dataModel: CrosslyDataModel): CrosslyCanvasPattern {
-        const name = dataModel.name;
         const fabricDataModel = dataModel.fabric;
         const threadsDataModel = dataModel.threads;
         const patternDataModel = dataModel.pattern;
@@ -41,7 +39,7 @@ export class Converter implements IConverter {
         const fabric = this.convertToFabricPattern(fabricDataModel);
         const stitch = this.convertToStitchPattern(patternDataModel, threadsDataModel);
 
-        const pattern = { name, fabric, stitch };
+        const pattern = { fabric, stitch };
         return pattern;
     }
 

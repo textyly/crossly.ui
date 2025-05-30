@@ -47,6 +47,6 @@ export interface IValidator {
 };
 
 export interface IConverter {
-    convertToDataModel(canvasData: CrosslyCanvasPattern): CrosslyDataModel;
+    convertToDataModel(name: string, canvasData: CrosslyCanvasPattern): CrosslyDataModel;
     convertToCrosslyPattern(dataModel: CrosslyDataModel): CrosslyCanvasPattern;
 };

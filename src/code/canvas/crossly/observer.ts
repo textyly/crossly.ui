@@ -1,15 +1,10 @@
 import { Base } from "../../general/base.js";
 import { VoidUnsubscribe } from "../../types.js";
+import { ICrosslyCanvasFacade } from "../types.js";
 import { Messaging1 } from "../../messaging/impl.js";
 import { IMessaging1 } from "../../messaging/types.js";
-import { ChangeNameEvent, ICrosslyCanvasFacade } from "../types.js";
 import { ChangeFabricEvent, ChangeStitchPatternEvent } from "../virtual/types.js";
-import {
-    CrosslyCanvasPattern,
-    ICrosslyCanvasObserver,
-    CrosslyCanvasChangeEvent,
-    CrosslyCanvasChangeListener,
-} from "../types.js";
+import { CrosslyCanvasPattern, ICrosslyCanvasObserver, CrosslyCanvasChangeEvent, CrosslyCanvasChangeListener } from "../types.js";
 
 export class CrosslyCanvasObserver extends Base implements ICrosslyCanvasObserver {
     private readonly canvasFacade: ICrosslyCanvasFacade;
@@ -23,10 +18,9 @@ export class CrosslyCanvasObserver extends Base implements ICrosslyCanvasObserve
         this.messaging = new Messaging1();
 
         this.canvasFacade = canvas;
-        const name = this.canvasFacade.name;
         const pattern = this.canvasFacade.pattern;
 
-        this.data = { name, fabric: pattern.fabric, stitch: pattern.stitch };
+        this.data = { fabric: pattern.fabric, stitch: pattern.stitch };
 
         this.subscribe();
     }
@@ -35,13 +29,6 @@ export class CrosslyCanvasObserver extends Base implements ICrosslyCanvasObserve
         super.ensureAlive();
 
         return this.messaging.listenOnChannel1(listener);
-    }
-
-    private handleChangeName(event: ChangeNameEvent): void {
-        super.ensureAlive();
-
-        this.data.name = event.name;
-        this.invokeDataChange(this.data);
     }
 
     private handleChangeFabric(event: ChangeFabricEvent): void {
@@ -64,9 +51,6 @@ export class CrosslyCanvasObserver extends Base implements ICrosslyCanvasObserve
     }
 
     private subscribe() {
-        const unChangeName = this.canvasFacade.onChangeName(this.handleChangeName.bind(this));
-        super.registerUn(unChangeName);
-
         const unChangeFabric = this.canvasFacade.onChangeFabric(this.handleChangeFabric.bind(this));
         super.registerUn(unChangeFabric);
 
