@@ -39,7 +39,7 @@ export class Converter implements IConverter {
         const fabric = this.convertToFabricPattern(fabricDataModel);
         const stitch = this.convertToStitchPattern(patternDataModel, threadsDataModel);
 
-        const pattern = { fabric, stitch };
+        const pattern = { name: dataModel.name, fabric, stitch };
         return pattern;
     }
 

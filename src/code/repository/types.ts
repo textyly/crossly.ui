@@ -23,8 +23,8 @@ export interface IPersistence {
 
 export interface IRepository {
     getAll(): Promise<Array<Id>>;
-    getByName(name: string): Promise<CrosslyCanvasPattern>;
-    getById(id: Id): Promise<CrosslyCanvasPattern>;
+    getByName(name: string): Promise<CrosslyCanvasPattern & { name: string }>;
+    getById(id: Id): Promise<CrosslyCanvasPattern & { name: string }>;
 
     delete(id: string): Promise<boolean>;
     rename(oldName: string, newName: string): Promise<boolean>;

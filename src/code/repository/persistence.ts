@@ -35,6 +35,8 @@ export class Persistence implements IPersistence {
 		const ids = result.ids as Array<Id>;
 		assert.defined(ids, "ids");
 
+		ids.forEach((id) => assert.greaterThanZero(id.length, "id.length"));
+
 		return ids;
 	}
 

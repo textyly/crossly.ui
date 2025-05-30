@@ -20,6 +20,7 @@ export class CrosslyCanvasObserver extends Base implements ICrosslyCanvasObserve
         this.canvasFacade = canvas;
         const pattern = this.canvasFacade.pattern;
 
+        // TODO
         this.data = { fabric: pattern.fabric, stitch: pattern.stitch };
 
         this.subscribe();

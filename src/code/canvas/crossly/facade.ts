@@ -7,7 +7,6 @@ import { IFabricRasterDrawingCanvas, IStitchRasterDrawingCanvas, IVectorDrawingC
 
 export class CrosslyCanvasFacade extends CrosslyCanvas implements ICrosslyCanvasFacade {
     constructor(
-        name: string,
         config: CrosslyCanvasConfig,
         inputCanvas: IInputCanvas,
         frontFabricRasterDrawing: IFabricRasterDrawingCanvas,

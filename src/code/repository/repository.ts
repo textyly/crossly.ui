@@ -21,26 +21,27 @@ export class Repository implements IRepository {
     }
 
     public getAll(): Promise<Array<Id>> {
-        // TODO: validate
         return this.persistence.getAll();
     }
 
-    public async getByName(name: string): Promise<CrosslyCanvasPattern> {
+    public async getByName(name: string): Promise<CrosslyCanvasPattern & { name: string }> {
         const dataModel = await this.getByNameDataModel(name);
 
         const pattern = this.converter.convertToCrosslyPattern(dataModel);
         this.validator.validatePattern(pattern);
 
-        return pattern;
+        const result = { ...pattern, name: dataModel.name };
+        return result;
     }
 
-    public async getById(id: Id): Promise<CrosslyCanvasPattern> {
+    public async getById(id: Id): Promise<CrosslyCanvasPattern & { name: string }> {
         const dataModel = await this.getByIdDataModel(id);
 
         const pattern = this.converter.convertToCrosslyPattern(dataModel);
         this.validator.validatePattern(pattern);
 
-        return pattern;
+        const result = { ...pattern, name: dataModel.name };
+        return result;
     }
 
     public delete(id: string): Promise<boolean> {

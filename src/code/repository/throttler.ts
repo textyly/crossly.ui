@@ -14,11 +14,11 @@ export class RepositoryThrottler implements IRepository {
         return this.repository.getAll();
     }
 
-    public getByName(name: string): Promise<CrosslyCanvasPattern> {
+    public getByName(name: string): Promise<CrosslyCanvasPattern & { name: string }> {
         return this.repository.getByName(name);
     }
 
-    public getById(id: Id): Promise<CrosslyCanvasPattern> {
+    public getById(id: Id): Promise<CrosslyCanvasPattern & { name: string }> {
         return this.repository.getById(id);
     }
 
