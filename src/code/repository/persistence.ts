@@ -57,6 +57,7 @@ export class Persistence implements IPersistence {
 
 	public async getById(id: Id): Promise<DataModelStream> {
 		const idEndpoint = this.getIdEndpoint(id);
+
 		const result = await fetch(idEndpoint);
 		const dataModel = result.body;
 
@@ -67,8 +68,8 @@ export class Persistence implements IPersistence {
 
 	public async delete(id: string): Promise<boolean> {
 		const idEndpoint = this.getIdEndpoint(id);
-		const result = await fetch(idEndpoint, this.deleteOptions);
 
+		const result = await fetch(idEndpoint, this.deleteOptions);
 		const resultData = await result.json();
 		const success = resultData.success as boolean;
 
@@ -78,12 +79,10 @@ export class Persistence implements IPersistence {
 	}
 
 	public async create(dataModel: DataModel): Promise<Id> {
-		const body = dataModel;
-		const options = { ...this.createOptions, body };
-
 		const endpoint = this.getEndpoint();
-		const result = await fetch(endpoint, options);
+		const options = { ...this.createOptions, body: dataModel };
 
+		const result = await fetch(endpoint, options);
 		const resultData = await result.json();
 		const id = resultData.id as string;
 
@@ -96,8 +95,8 @@ export class Persistence implements IPersistence {
 	public async rename(id: string, newName: string): Promise<boolean> {
 		const renameEndpoint = this.getRenameEndpoint(id);
 		const options = { ...this.renameOptions, body: JSON.stringify({ newName }) };
-		const result = await fetch(renameEndpoint, options);
 
+		const result = await fetch(renameEndpoint, options);
 		const resultData = await result.json();
 		const success = resultData.success as boolean;
 
@@ -109,8 +108,8 @@ export class Persistence implements IPersistence {
 	public async replace(id: string, dataModel: DataModel): Promise<boolean> {
 		const replaceEndpoint = this.getIdEndpoint(id);
 		const options = { ...this.replaceOptions, body: dataModel };
-		const result = await fetch(replaceEndpoint, options);
 
+		const result = await fetch(replaceEndpoint, options);
 		const resultData = await result.json();
 		const success = resultData.success as boolean;
 
