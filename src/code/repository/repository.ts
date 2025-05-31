@@ -47,8 +47,8 @@ export class Repository implements IRepository {
         return this.persistence.delete(id);
     }
 
-    public rename(oldName: string, newName: string): Promise<boolean> {
-        return this.persistence.rename(oldName, newName);
+    public rename(id: string, newName: string): Promise<boolean> {
+        return this.persistence.rename(id, newName);
     }
 
     public async save(pattern: CrosslyCanvasPatternEx): Promise<Id> {

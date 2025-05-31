@@ -25,8 +25,8 @@ export class RepositoryThrottler implements IRepository {
         return this.repository.delete(id);
     }
 
-    public rename(oldName: string, newName: string): Promise<boolean> {
-        return this.repository.rename(oldName, newName);
+    public rename(id: string, newName: string): Promise<boolean> {
+        return this.repository.rename(id, newName);
     }
 
     public save(canvasData: CrosslyCanvasPatternEx): Promise<Id> {

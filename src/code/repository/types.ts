@@ -17,7 +17,7 @@ export interface IPersistence {
     getById(id: Id): Promise<DataModelStream>;
 
     delete(id: string): Promise<boolean>;
-    rename(oldName: string, newName: string): Promise<boolean>;
+    rename(id: string, newName: string): Promise<boolean>;
     save(dataModel: DataModel): Promise<Id>;
     replace(id: string, dataModel: DataModel): Promise<boolean>;
 }
@@ -28,7 +28,7 @@ export interface IRepository {
     getById(id: Id): Promise<CrosslyCanvasPatternEx>;
 
     delete(id: string): Promise<boolean>;
-    rename(oldName: string, newName: string): Promise<boolean>;
+    rename(id: string, newName: string): Promise<boolean>;
     save(pattern: CrosslyCanvasPatternEx): Promise<Id>;
     replace(id: string, pattern: CrosslyCanvasPatternEx): Promise<boolean>;
 }

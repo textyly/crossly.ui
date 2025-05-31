@@ -2,26 +2,29 @@ import assert from "../asserts/assert.js";
 import { DataModel, Id, DataModelStream, IPersistence } from "./types.js";
 
 export class Persistence implements IPersistence {
-	private readonly endPointRoot: string;
+	private readonly endpointRoot: string;
 
-	private readonly getAllEndPoint: string;
-	private readonly getByIdEndPoint: string;
-	private readonly getByNameEndPoint: string;
+	private readonly getAllEndpoint: string;
+	private readonly getByIdEndpoint: string;
+	private readonly getByNameEndpoint: string;
 
-	private readonly saveEndPoint: string;
+	private readonly saveEndpoint: string;
 	private readonly saveOptions: RequestInit;
 
-	private readonly replaceEndPoint: string;
+	private readonly replaceEndpoint: string;
 	private readonly replaceOptions: RequestInit;
 
+	private readonly renameEndpoint: string;
+	private readonly renameOptions: RequestInit;
+
 	constructor() {
-		this.endPointRoot = "http://localhost:5026";
+		this.endpointRoot = "http://localhost:5026";
 
-		this.getAllEndPoint = this.endPointRoot + "/get/all";
-		this.getByIdEndPoint = this.endPointRoot + "/get/by-id?id=";
-		this.getByNameEndPoint = this.endPointRoot + "/get/by-name?name=";
+		this.getAllEndpoint = `${this.endpointRoot}/get/all`;
+		this.getByIdEndpoint = `${this.endpointRoot}/get/by-id`;
+		this.getByNameEndpoint = `${this.endpointRoot}/get/by-name`;
 
-		this.saveEndPoint = this.endPointRoot + "/save";
+		this.saveEndpoint = `${this.endpointRoot}/save`;
 		this.saveOptions = {
 			method: "POST",
 			headers: {
@@ -30,7 +33,7 @@ export class Persistence implements IPersistence {
 			}
 		};
 
-		this.replaceEndPoint = this.endPointRoot + "/replace?id=";
+		this.replaceEndpoint = `${this.endpointRoot}/replace`;
 		this.replaceOptions = {
 			method: "PUT",
 			headers: {
@@ -38,9 +41,15 @@ export class Persistence implements IPersistence {
 				'Content-Encoding': 'gzip'
 			}
 		};
+
+		this.renameEndpoint = `${this.endpointRoot}/rename`;
+		this.renameOptions = {
+			method: "PATCH"
+		};
 	}
+
 	public async getAll(): Promise<Array<Id>> {
-		const response = await fetch(this.getAllEndPoint);
+		const response = await fetch(this.getAllEndpoint);
 		const result = await response.json();
 
 		const ids = result.ids as Array<Id>;
@@ -52,11 +61,13 @@ export class Persistence implements IPersistence {
 	}
 
 	public async getByName(name: string): Promise<DataModelStream> {
-		return this.getBy(this.getByNameEndPoint, name);
+		const endpoint = `${this.getByNameEndpoint}?name=`;
+		return this.getBy(endpoint, name);
 	}
 
 	public async getById(id: Id): Promise<DataModelStream> {
-		return this.getBy(this.getByIdEndPoint, id);
+		const endpoint = `${this.getByIdEndpoint}?id=`;
+		return this.getBy(endpoint, id);
 	}
 
 	public async delete(id: string): Promise<boolean> {
@@ -66,7 +77,7 @@ export class Persistence implements IPersistence {
 	public async save(dataModel: DataModel): Promise<Id> {
 		const body = dataModel;
 		const options = { ...this.saveOptions, body };
-		const result = await fetch(this.saveEndPoint, options);
+		const result = await fetch(this.saveEndpoint, options);
 
 		const resultData = await result.json();
 		const id = resultData.id as string;
@@ -77,8 +88,19 @@ export class Persistence implements IPersistence {
 		return id;
 	}
 
-	public async rename(oldName: string, newName: string): Promise<boolean> {
-		throw new Error("Method not implemented.");
+	public async rename(id: string, newName: string): Promise<boolean> {
+		const encodedId = encodeURIComponent(id);
+		const encodedNewName = encodeURIComponent(newName);
+
+		const endpoint = `${this.renameEndpoint}?id = ${encodedId}& newName=${encodedNewName} `;
+		const result = await fetch(endpoint, this.renameOptions);
+
+		const resultData = await result.json();
+		const success = resultData.success as boolean;
+
+		assert.defined(success, "success");
+
+		return success;
 	}
 
 	public async replace(id: string, dataModel: DataModel): Promise<boolean> {
@@ -86,7 +108,7 @@ export class Persistence implements IPersistence {
 		const options = { ...this.replaceOptions, body };
 
 		const encodedId = encodeURIComponent(id);
-		const endpoint = this.replaceEndPoint + encodedId;
+		const endpoint = `${this.replaceEndpoint}?id=${encodedId}`;
 		const result = await fetch(endpoint, options);
 
 		const resultData = await result.json();
@@ -97,10 +119,10 @@ export class Persistence implements IPersistence {
 		return success;
 	}
 
-	private async getBy(getByEndpoint: string, value: string): Promise<DataModelStream> {
-		const encodedId = encodeURIComponent(value);
+	private async getBy(getByEndpoint: string, field: string): Promise<DataModelStream> {
+		const encodedField = encodeURIComponent(field);
 
-		const endpoint = getByEndpoint + encodedId;
+		const endpoint = `${getByEndpoint}${encodedField}`;
 		const response = await fetch(endpoint);
 		const dataModel = response.body;
 
