@@ -23,16 +23,6 @@ export class Repository implements IRepository {
         return this.persistence.getAll();
     }
 
-    public async getByName(name: string): Promise<CrosslyCanvasPatternEx> {
-        const dataModel = await this.getByNameDataModel(name);
-
-        const pattern = this.converter.convertToCrosslyPattern(dataModel);
-        this.validator.validatePattern(pattern);
-
-        const result = { ...pattern, name: dataModel.name };
-        return result;
-    }
-
     public async getById(id: Id): Promise<CrosslyCanvasPatternEx> {
         const dataModel = await this.getByIdDataModel(id);
 
@@ -51,7 +41,7 @@ export class Repository implements IRepository {
         return this.persistence.rename(id, newName);
     }
 
-    public async save(pattern: CrosslyCanvasPatternEx): Promise<Id> {
+    public async create(pattern: CrosslyCanvasPatternEx): Promise<Id> {
         const dataModel = this.converter.convertToDataModel(pattern.name, pattern);
         this.validator.validateDataModel(dataModel);
 
@@ -68,7 +58,7 @@ export class Repository implements IRepository {
 
     private async saveDataModel(dataModel: CrosslyDataModel): Promise<Id> {
         const compressedDataModel = await this.compressor.compress(dataModel);
-        const id = await this.persistence.save(compressedDataModel);
+        const id = await this.persistence.create(compressedDataModel);
         return id;
     }
 
@@ -80,12 +70,6 @@ export class Repository implements IRepository {
 
     private async getByIdDataModel(id: Id): Promise<CrosslyDataModel> {
         const dataModelStream = await this.persistence.getById(id);
-        const decompressedDataModel = await this.compressor.decompress(dataModelStream);
-        return decompressedDataModel;
-    }
-
-    private async getByNameDataModel(name: string): Promise<CrosslyDataModel> {
-        const dataModelStream = await this.persistence.getByName(name);
         const decompressedDataModel = await this.compressor.decompress(dataModelStream);
         return decompressedDataModel;
     }

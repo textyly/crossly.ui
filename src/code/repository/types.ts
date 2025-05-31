@@ -13,22 +13,20 @@ export interface ICompressor {
 
 export interface IPersistence {
     getAll(): Promise<Array<Id>>;
-    getByName(name: string): Promise<DataModelStream>;
     getById(id: Id): Promise<DataModelStream>;
 
     delete(id: string): Promise<boolean>;
+    create(dataModel: DataModel): Promise<Id>;
     rename(id: string, newName: string): Promise<boolean>;
-    save(dataModel: DataModel): Promise<Id>;
     replace(id: string, dataModel: DataModel): Promise<boolean>;
 }
 
 export interface IRepository {
     getAll(): Promise<Array<Id>>;
-    getByName(name: string): Promise<CrosslyCanvasPatternEx>;
     getById(id: Id): Promise<CrosslyCanvasPatternEx>;
 
     delete(id: string): Promise<boolean>;
+    create(pattern: CrosslyCanvasPatternEx): Promise<Id>;
     rename(id: string, newName: string): Promise<boolean>;
-    save(pattern: CrosslyCanvasPatternEx): Promise<Id>;
     replace(id: string, pattern: CrosslyCanvasPatternEx): Promise<boolean>;
 }

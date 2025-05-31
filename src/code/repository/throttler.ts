@@ -13,10 +13,6 @@ export class RepositoryThrottler implements IRepository {
         return this.repository.getAll();
     }
 
-    public getByName(name: string): Promise<CrosslyCanvasPatternEx> {
-        return this.repository.getByName(name);
-    }
-
     public getById(id: Id): Promise<CrosslyCanvasPatternEx> {
         return this.repository.getById(id);
     }
@@ -29,8 +25,8 @@ export class RepositoryThrottler implements IRepository {
         return this.repository.rename(id, newName);
     }
 
-    public save(canvasData: CrosslyCanvasPatternEx): Promise<Id> {
-        return this.repository.save(canvasData);
+    public create(canvasData: CrosslyCanvasPatternEx): Promise<Id> {
+        return this.repository.create(canvasData);
     }
 
     public replace(id: string, pattern: CrosslyCanvasPatternEx): Promise<boolean> {
