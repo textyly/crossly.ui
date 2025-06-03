@@ -12,7 +12,7 @@ export class Persistence implements IPersistence {
 
 	constructor() {
 		this.endpoint = "http://localhost:5026";
-		this.endpointCommonPath = "/api/patterns";
+		this.endpointCommonPath = "/api/v1/patterns";
 
 		this.createOptions = {
 			method: "POST",
@@ -68,13 +68,9 @@ export class Persistence implements IPersistence {
 
 	public async delete(id: string): Promise<boolean> {
 		const idEndpoint = this.getIdEndpoint(id);
-
 		const result = await fetch(idEndpoint, this.deleteOptions);
-		const resultData = await result.json();
-		const success = resultData.success as boolean;
 
-		assert.defined(success, "success");
-
+		const success = result.status === 204;
 		return success;
 	}
 
@@ -97,10 +93,7 @@ export class Persistence implements IPersistence {
 		const options = { ...this.renameOptions, body: JSON.stringify({ newName }) };
 
 		const result = await fetch(renameEndpoint, options);
-		const resultData = await result.json();
-		const success = resultData.success as boolean;
-
-		assert.defined(success, "success");
+		const success = result.status === 200;
 
 		return success;
 	}
@@ -110,10 +103,7 @@ export class Persistence implements IPersistence {
 		const options = { ...this.replaceOptions, body: dataModel };
 
 		const result = await fetch(replaceEndpoint, options);
-		const resultData = await result.json();
-		const success = resultData.success as boolean;
-
-		assert.defined(success, "success");
+		const success = result.status === 200;
 
 		return success;
 	}
