@@ -102,7 +102,6 @@ export class Converter implements IConverter {
         return patternDataModel;
     }
 
-    // TODO: this method has not been tested!!!
     private convertToFabricPattern(fabricDataModel: FabricDataModel): FabricPattern {
         const name = fabricDataModel.name;
         const color = fabricDataModel.color;

@@ -1,7 +1,7 @@
 import { CrosslyDataModel } from "../data-model/types.js";
 import { CrosslyCanvasPattern } from "../canvas/types.js";
 
-export type Id = string;
+export type DataModelId = string;
 export type DataModel = Uint8Array;
 export type DataModelStream = ReadableStream<Uint8Array>;
 export type CrosslyCanvasPatternEx = CrosslyCanvasPattern & { name: string };
@@ -12,21 +12,21 @@ export interface ICompressor {
 }
 
 export interface IPersistence {
-    getAll(): Promise<Array<Id>>;
-    getById(id: Id): Promise<DataModelStream>;
+    getAll(): Promise<Array<DataModelId>>;
+    getById(id: DataModelId): Promise<DataModelStream>;
 
-    delete(id: string): Promise<boolean>;
-    create(dataModel: DataModel): Promise<Id>;
-    rename(id: string, newName: string): Promise<boolean>;
-    replace(id: string, dataModel: DataModel): Promise<boolean>;
+    create(dataModel: DataModel): Promise<DataModelId>;
+    replace(id: DataModelId, dataModel: DataModel): Promise<boolean>;
+    rename(id: DataModelId, newName: string): Promise<boolean>;
+    delete(id: DataModelId): Promise<boolean>;
 }
 
 export interface IRepository {
-    getAll(): Promise<Array<Id>>;
-    getById(id: Id): Promise<CrosslyCanvasPatternEx>;
+    getAll(): Promise<Array<DataModelId>>;
+    getById(id: DataModelId): Promise<CrosslyCanvasPatternEx>;
 
-    delete(id: string): Promise<boolean>;
-    create(pattern: CrosslyCanvasPatternEx): Promise<Id>;
-    rename(id: string, newName: string): Promise<boolean>;
-    replace(id: string, pattern: CrosslyCanvasPatternEx): Promise<boolean>;
+    create(pattern: CrosslyCanvasPatternEx): Promise<DataModelId>;
+    replace(id: DataModelId, pattern: CrosslyCanvasPatternEx): Promise<boolean>;
+    rename(id: DataModelId, newName: string): Promise<boolean>;
+    delete(id: DataModelId): Promise<boolean>;
 }

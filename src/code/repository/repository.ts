@@ -1,5 +1,6 @@
-import { CrosslyDataModel, IConverter, IValidator } from "../data-model/types.js";
-import { ICompressor, Id, IRepository, IPersistence, CrosslyCanvasPatternEx } from "./types.js";
+import assert from "../asserts/assert.js";
+import { IConverter, IValidator } from "../data-model/types.js";
+import { ICompressor, DataModelId, IRepository, IPersistence, CrosslyCanvasPatternEx } from "./types.js";
 
 export class Repository implements IRepository {
     private readonly validator: IValidator;
@@ -19,58 +20,64 @@ export class Repository implements IRepository {
         this.persistence = persistence;
     }
 
-    public getAll(): Promise<Array<Id>> {
-        return this.persistence.getAll();
+    public async getAll(): Promise<Array<DataModelId>> {
+        const all = await this.persistence.getAll();
+        return all;
     }
 
-    public async getById(id: Id): Promise<CrosslyCanvasPatternEx> {
-        const dataModel = await this.getByIdDataModel(id);
+    public async getById(id: DataModelId): Promise<CrosslyCanvasPatternEx> {
+        const dataModelStream = await this.persistence.getById(id);
 
-        const pattern = this.converter.convertToCrosslyPattern(dataModel);
+        // it is possible that decompression might throw some kind of error
+        const decompressedDataModel = await this.compressor.decompress(dataModelStream);
+        this.validator.validateDataModel(decompressedDataModel);
+
+        const name = decompressedDataModel.name;
+        assert.defined(name, "name");
+        assert.greaterThanZero(name.length, "name.length");
+
+        const pattern = this.converter.convertToCrosslyPattern(decompressedDataModel);
         this.validator.validatePattern(pattern);
 
-        const result = { ...pattern, name: dataModel.name };
+        const result = { ...pattern, name };
         return result;
     }
 
-    public delete(id: string): Promise<boolean> {
-        return this.persistence.delete(id);
+    public async delete(id: DataModelId): Promise<boolean> {
+        return await this.persistence.delete(id);
     }
 
-    public rename(id: string, newName: string): Promise<boolean> {
-        return this.persistence.rename(id, newName);
+    public async rename(id: DataModelId, newName: string): Promise<boolean> {
+        return await this.persistence.rename(id, newName);
     }
 
-    public async create(pattern: CrosslyCanvasPatternEx): Promise<Id> {
+    public async create(pattern: CrosslyCanvasPatternEx): Promise<DataModelId> {
+        assert.defined(pattern, "pattern");
+        assert.defined(pattern.name, "pattern.name");
+        assert.greaterThanZero(pattern.name.length, "pattern.name.length");
+
+        this.validator.validatePattern(pattern);
+
         const dataModel = this.converter.convertToDataModel(pattern.name, pattern);
         this.validator.validateDataModel(dataModel);
 
-        const id = await this.saveDataModel(dataModel);
-        return id
-    }
-
-    public replace(id: string, pattern: CrosslyCanvasPatternEx): Promise<boolean> {
-        const dataModel = this.converter.convertToDataModel(pattern.name, pattern);
-        this.validator.validateDataModel(dataModel);
-
-        return this.replaceDataModel(id, dataModel);
-    }
-
-    private async saveDataModel(dataModel: CrosslyDataModel): Promise<Id> {
         const compressedDataModel = await this.compressor.compress(dataModel);
         const id = await this.persistence.create(compressedDataModel);
         return id;
     }
 
-    private async replaceDataModel(id: string, dataModel: CrosslyDataModel): Promise<boolean> {
+    public async replace(id: DataModelId, pattern: CrosslyCanvasPatternEx): Promise<boolean> {
+        assert.defined(pattern, "pattern");
+        assert.defined(pattern.name, "pattern.name");
+        assert.greaterThanZero(pattern.name.length, "pattern.name.length");
+
+        this.validator.validatePattern(pattern);
+
+        const dataModel = this.converter.convertToDataModel(pattern.name, pattern);
+        this.validator.validateDataModel(dataModel);
+
         const compressedDataModel = await this.compressor.compress(dataModel);
         const success = await this.persistence.replace(id, compressedDataModel);
         return success;
-    }
-
-    private async getByIdDataModel(id: Id): Promise<CrosslyDataModel> {
-        const dataModelStream = await this.persistence.getById(id);
-        const decompressedDataModel = await this.compressor.decompress(dataModelStream);
-        return decompressedDataModel;
     }
 }
