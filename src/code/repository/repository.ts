@@ -1,6 +1,6 @@
 import assert from "../asserts/assert.js";
 import { IConverter, IValidator } from "../data-model/types.js";
-import { ICompressor, DataModelId, IRepository, IPersistence, CrosslyCanvasPatternEx } from "./types.js";
+import { ICompressor, IRepository, IPersistence, CrosslyCanvasPatternEx, Links, Link } from "./types.js";
 
 export class Repository implements IRepository {
     private readonly validator: IValidator;
@@ -20,13 +20,13 @@ export class Repository implements IRepository {
         this.persistence = persistence;
     }
 
-    public async getAll(): Promise<Array<DataModelId>> {
+    public async getAll(): Promise<Links> {
         const all = await this.persistence.getAll();
         return all;
     }
 
-    public async getById(id: DataModelId): Promise<CrosslyCanvasPatternEx> {
-        const dataModelStream = await this.persistence.getById(id);
+    public async getById(path: string): Promise<CrosslyCanvasPatternEx> {
+        const dataModelStream = await this.persistence.getById(path);
 
         // it is possible that decompression might throw some kind of error
         const decompressedDataModel = await this.compressor.decompress(dataModelStream);
@@ -43,15 +43,7 @@ export class Repository implements IRepository {
         return result;
     }
 
-    public async delete(id: DataModelId): Promise<boolean> {
-        return await this.persistence.delete(id);
-    }
-
-    public async rename(id: DataModelId, newName: string): Promise<boolean> {
-        return await this.persistence.rename(id, newName);
-    }
-
-    public async create(pattern: CrosslyCanvasPatternEx): Promise<DataModelId> {
+    public async create(pattern: CrosslyCanvasPatternEx): Promise<Link> {
         assert.defined(pattern, "pattern");
         assert.defined(pattern.name, "pattern.name");
         assert.greaterThanZero(pattern.name.length, "pattern.name.length");
@@ -66,7 +58,7 @@ export class Repository implements IRepository {
         return id;
     }
 
-    public async replace(id: DataModelId, pattern: CrosslyCanvasPatternEx): Promise<boolean> {
+    public async replace(path: string, pattern: CrosslyCanvasPatternEx): Promise<boolean> {
         assert.defined(pattern, "pattern");
         assert.defined(pattern.name, "pattern.name");
         assert.greaterThanZero(pattern.name.length, "pattern.name.length");
@@ -77,7 +69,15 @@ export class Repository implements IRepository {
         this.validator.validateDataModel(dataModel);
 
         const compressedDataModel = await this.compressor.compress(dataModel);
-        const success = await this.persistence.replace(id, compressedDataModel);
+        const success = await this.persistence.replace(path, compressedDataModel);
         return success;
+    }
+
+    public async rename(path: string, newName: string): Promise<boolean> {
+        return await this.persistence.rename(path, newName);
+    }
+
+    public async delete(path: string): Promise<boolean> {
+        return await this.persistence.delete(path);
     }
 }
