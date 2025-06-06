@@ -57,8 +57,7 @@ export class Persistence implements IPersistence {
 
 	public async getById(path: string): Promise<DataModelStream> {
 		// validate id first
-		assert.defined(path, "path");
-		assert.greaterThanZero(path.length, "path.length");
+		assert.greaterThanZero(path?.length, "path.length");
 
 		// then get a data model stream
 		const endpoint = this.baseEndpoint + path;
@@ -88,8 +87,7 @@ export class Persistence implements IPersistence {
 
 	public async replace(path: string, dataModel: DataModel): Promise<boolean> {
 		// validate id and dataModel first
-		assert.defined(path, "path");
-		assert.greaterThanZero(path.length, "path.length");
+		assert.greaterThanZero(path?.length, "path.length");
 
 		assert.defined(dataModel, "dataModel");
 
@@ -105,11 +103,8 @@ export class Persistence implements IPersistence {
 
 	public async rename(path: string, newName: string): Promise<boolean> {
 		// validate id and newName first
-		assert.defined(path, "path");
-		assert.greaterThanZero(path.length, "path.length");
-
-		assert.defined(newName, "newName");
-		assert.greaterThanZero(newName.length, "newName.length");
+		assert.greaterThanZero(path?.length, "path.length");
+		assert.greaterThanZero(newName?.length, "newName.length");
 
 		// then rename a data model
 		const endpoint = this.baseEndpoint + path;
@@ -123,8 +118,7 @@ export class Persistence implements IPersistence {
 
 	public async delete(path: string): Promise<boolean> {
 		// validate id first
-		assert.defined(path, "path");
-		assert.greaterThanZero(path.length, "path.length");
+		assert.greaterThanZero(path?.length, "path.length");
 
 		// then delete data model
 		const endpoint = this.baseEndpoint + path;
@@ -159,18 +153,9 @@ export class Persistence implements IPersistence {
 	}
 
 	private assertLink(link: Link): void {
-		assert.defined(link, "link");
-
-		assert.defined(link.getById, "link.getById");
-		assert.greaterThanZero(link.getById.length, "link.getById.length");
-
-		assert.defined(link.replace, "link.replace");
-		assert.greaterThanZero(link.replace.length, "link.replace.length");
-
-		assert.defined(link.rename, "link.rename");
-		assert.greaterThanZero(link.rename.length, "link.rename.length");
-
-		assert.defined(link.delete, "link.delete");
-		assert.greaterThanZero(link.delete.length, "link.delete.length");
+		assert.greaterThanZero(link?.getById?.length, "link.getById.length");
+		assert.greaterThanZero(link?.replace?.length, "link.replace.length");
+		assert.greaterThanZero(link?.rename?.length, "link.rename.length");
+		assert.greaterThanZero(link?.delete?.length, "link.delete.length");
 	}
 }

@@ -33,22 +33,19 @@ export class Repository implements IRepository {
         this.validator.validateDataModel(decompressedDataModel);
 
         const name = decompressedDataModel.name;
-        assert.defined(name, "name");
-        assert.greaterThanZero(name.length, "name.length");
+        assert.greaterThanZero(name?.length, "name.length");
 
         const pattern = this.converter.convertToCrosslyPattern(decompressedDataModel);
-        this.validator.validatePattern(pattern);
+        this.validator.validateCrosslyPattern(pattern);
 
         const result = { ...pattern, name };
         return result;
     }
 
     public async create(pattern: CrosslyCanvasPatternEx): Promise<Link> {
-        assert.defined(pattern, "pattern");
-        assert.defined(pattern.name, "pattern.name");
-        assert.greaterThanZero(pattern.name.length, "pattern.name.length");
+        assert.greaterThanZero(pattern?.name?.length, "pattern.name.length");
 
-        this.validator.validatePattern(pattern);
+        this.validator.validateCrosslyPattern(pattern);
 
         const dataModel = this.converter.convertToDataModel(pattern.name, pattern);
         this.validator.validateDataModel(dataModel);
@@ -59,11 +56,9 @@ export class Repository implements IRepository {
     }
 
     public async replace(path: string, pattern: CrosslyCanvasPatternEx): Promise<boolean> {
-        assert.defined(pattern, "pattern");
-        assert.defined(pattern.name, "pattern.name");
-        assert.greaterThanZero(pattern.name.length, "pattern.name.length");
+        assert.greaterThanZero(pattern?.name?.length, "pattern.name.length");
 
-        this.validator.validatePattern(pattern);
+        this.validator.validateCrosslyPattern(pattern);
 
         const dataModel = this.converter.convertToDataModel(pattern.name, pattern);
         this.validator.validateDataModel(dataModel);

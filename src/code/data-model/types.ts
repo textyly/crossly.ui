@@ -1,6 +1,7 @@
 import { CrosslyCanvasPattern } from "../canvas/types.js";
 
 export type CrosslyDataModel = {
+    version: string;
     name: string;
     fabric: FabricDataModel;
     threads: ThreadsDataModel;
@@ -42,11 +43,15 @@ export type ThreadPathDataModel = {
 export type PatternDataModel = Array<ThreadPathDataModel>;
 
 export interface IValidator {
+    get version(): string;
+
     validateDataModel(dataModel: CrosslyDataModel): void;
-    validatePattern(pattern: CrosslyCanvasPattern): void;
+    validateCrosslyPattern(pattern: CrosslyCanvasPattern): void;
 };
 
 export interface IConverter {
+    get version(): string;
+
     convertToDataModel(name: string, pattern: CrosslyCanvasPattern): CrosslyDataModel;
     convertToCrosslyPattern(dataModel: CrosslyDataModel): CrosslyCanvasPattern;
 };

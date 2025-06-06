@@ -3,11 +3,15 @@ import assertMsg from "./messages.js";
 export class Assert {
 
     public positive(propValue: number, propName: string): void {
+        this.defined(propValue, propName);
+
         const message = assertMsg.positive(propValue, propName);
         this.that(propValue >= 0, message);
     }
 
     public greaterThanZero(propValue: number, propName: string): void {
+        this.defined(propValue, propName);
+
         const message = assertMsg.graterThanZero(propValue, propName);
         this.that(propValue > 0, message);
     }

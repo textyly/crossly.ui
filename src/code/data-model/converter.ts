@@ -13,6 +13,11 @@ import {
 
 export class Converter implements IConverter {
 
+    public get version(): string {
+        // increase on breaking change and keep in sync with data model's version!!!
+        return "0.0.0.1";
+    }
+
     public convertToDataModel(name: string, pattern: CrosslyCanvasPattern): CrosslyDataModel {
         const fabricPattern = pattern.fabric;
         const stitchPattern = pattern.stitch;
@@ -22,6 +27,7 @@ export class Converter implements IConverter {
         const patternDataModel = this.convertToPatternDataModel(stitchPattern, threadsDataModel);
 
         const dataModel = {
+            version: this.version,
             name,
             fabric: fabricDataModel,
             threads: threadsDataModel,
@@ -32,6 +38,10 @@ export class Converter implements IConverter {
     }
 
     public convertToCrosslyPattern(dataModel: CrosslyDataModel): CrosslyCanvasPattern {
+        if (this.version !== dataModel.version) {
+            throw new Error(`version mismatch, converter version is ${this.version} whereas data mode version is ${dataModel.version}`);
+        }
+
         const fabricDataModel = dataModel.fabric;
         const threadsDataModel = dataModel.threads;
         const patternDataModel = dataModel.pattern;
