@@ -9,13 +9,7 @@ import { FabricCanvasFacade } from "../virtual/fabric/facade.js";
 import { StitchCanvasFacade } from "../virtual/stitch/facade.js";
 import { FabricDrawingCanvas } from "../drawing/fabric/fabric.js";
 import { StitchDrawingCanvas } from "../drawing/stitch/stitch.js";
-import {
-    ICueCanvasFacade,
-    ChangeFabricEvent,
-    IFabricCanvasFacade,
-    IStitchCanvasFacade,
-    ChangeStitchPatternEvent,
-} from "../virtual/types.js";
+import { ICueCanvasFacade, ChangeFabricEvent, IFabricCanvasFacade, IStitchCanvasFacade, ChangeStitchPatternEvent } from "../virtual/types.js";
 import {
     ICueDrawingCanvas,
     IFabricDrawingCanvas,
@@ -47,10 +41,7 @@ export abstract class CrosslyCanvas extends CrosslyCanvasBase implements ICrossl
     private frontCueVectorDrawing!: IVectorDrawingCanvas;
     private backCueVectorDrawing!: IVectorDrawingCanvas;
 
-    protected _name: string;
-
     constructor(
-        name: string,
         config: CrosslyCanvasConfig,
         inputCanvas: IInputCanvas,
         frontFabricRasterDrawing: IFabricRasterDrawingCanvas,
@@ -62,7 +53,6 @@ export abstract class CrosslyCanvas extends CrosslyCanvasBase implements ICrossl
 
         super(CrosslyCanvas.name);
 
-        this._name = name;
         this.configuration = config;
         this.inputCanvas = inputCanvas;
 

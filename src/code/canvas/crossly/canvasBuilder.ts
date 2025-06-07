@@ -8,7 +8,6 @@ import { FabricRasterDrawingCanvas } from "../drawing/raster/fabric.js";
 import { StitchRasterDrawingCanvas } from "../drawing/raster/stitch.js";
 
 export class CrosslyCanvasBuilder {
-    private name: string;
     private config!: CrosslyCanvasConfig;
 
     private frontInputHtmlElement!: HTMLElement;
@@ -21,7 +20,6 @@ export class CrosslyCanvasBuilder {
     private backCueHtmlElement!: HTMLElement;
 
     constructor() {
-        this.name = "Untitled1"; // TODO: remove this hardcoded name
     }
 
     public build(): ICrosslyCanvasFacade {
@@ -94,7 +92,6 @@ export class CrosslyCanvasBuilder {
         const backCueVectorDrawing = new VectorDrawingCanvas(this.backCueHtmlElement);
 
         const crosslyCanvasFacade = new CrosslyCanvasFacade(
-            this.name,
             this.config,
             inputCanvas,
             frontFabricRasterDrawing,

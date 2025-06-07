@@ -13,8 +13,12 @@ import {
 
 export class Converter implements IConverter {
 
-    public convertToDataModel(pattern: CrosslyCanvasPattern): CrosslyDataModel {
-        const name = pattern.name;
+    public get version(): string {
+        // increase on breaking change and keep in sync with data model's version!!!
+        return "0.0.0.1";
+    }
+
+    public convertToDataModel(name: string, pattern: CrosslyCanvasPattern): CrosslyDataModel {
         const fabricPattern = pattern.fabric;
         const stitchPattern = pattern.stitch;
 
@@ -23,6 +27,7 @@ export class Converter implements IConverter {
         const patternDataModel = this.convertToPatternDataModel(stitchPattern, threadsDataModel);
 
         const dataModel = {
+            version: this.version,
             name,
             fabric: fabricDataModel,
             threads: threadsDataModel,
@@ -33,7 +38,10 @@ export class Converter implements IConverter {
     }
 
     public convertToCrosslyPattern(dataModel: CrosslyDataModel): CrosslyCanvasPattern {
-        const name = dataModel.name;
+        if (this.version !== dataModel.version) {
+            throw new Error(`version mismatch, converter version is ${this.version} whereas data mode version is ${dataModel.version}`);
+        }
+
         const fabricDataModel = dataModel.fabric;
         const threadsDataModel = dataModel.threads;
         const patternDataModel = dataModel.pattern;
@@ -41,7 +49,7 @@ export class Converter implements IConverter {
         const fabric = this.convertToFabricPattern(fabricDataModel);
         const stitch = this.convertToStitchPattern(patternDataModel, threadsDataModel);
 
-        const pattern = { name, fabric, stitch };
+        const pattern = { name: dataModel.name, fabric, stitch };
         return pattern;
     }
 
@@ -104,7 +112,6 @@ export class Converter implements IConverter {
         return patternDataModel;
     }
 
-    // TODO: this method has not been tested!!!
     private convertToFabricPattern(fabricDataModel: FabricDataModel): FabricPattern {
         const name = fabricDataModel.name;
         const color = fabricDataModel.color;
