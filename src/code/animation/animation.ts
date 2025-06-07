@@ -105,7 +105,7 @@ export class CrosslyCanvasAnimation implements IAnimation {
             }
         }
 
-        const partialCanvasPattern = { name: this.pattern.name, fabric: this.pattern.fabric, stitch: partialStitchPattern };
+        const partialCanvasPattern = { fabric: this.pattern.fabric, stitch: partialStitchPattern };
         this.crosslyCanvas.load(partialCanvasPattern);
         this.crosslyCanvas.draw();
 

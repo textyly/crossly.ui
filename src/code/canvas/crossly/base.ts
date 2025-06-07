@@ -1,27 +1,16 @@
 import { CanvasBase } from "../base.js";
 import { VoidUnsubscribe } from "../../types.js";
-import { Messaging3 } from "../../messaging/impl.js";
-import { IMessaging3 } from "../../messaging/types.js";
-import {
-    FabricPattern,
-    StitchPattern,
-    ICrosslyCanvas,
-    ChangeNameEvent,
-    ChangeNameListener,
-} from "../types.js";
-import {
-    ChangeFabricEvent,
-    ChangeFabricListener,
-    ChangeStitchPatternEvent,
-    ChangeStitchPatternListener,
-} from "../virtual/types.js";
+import { Messaging2 } from "../../messaging/impl.js";
+import { IMessaging2 } from "../../messaging/types.js";
+import { FabricPattern, StitchPattern, ICrosslyCanvas } from "../types.js";
+import { ChangeFabricEvent, ChangeFabricListener, ChangeStitchPatternEvent, ChangeStitchPatternListener } from "../virtual/types.js";
 
 export abstract class CrosslyCanvasBase extends CanvasBase implements ICrosslyCanvas {
-    private readonly messaging: IMessaging3<ChangeFabricEvent, ChangeStitchPatternEvent, ChangeNameEvent>;
+    private readonly messaging: IMessaging2<ChangeFabricEvent, ChangeStitchPatternEvent>;
 
     constructor(className: string) {
         super(className);
-        this.messaging = new Messaging3();
+        this.messaging = new Messaging2();
     }
 
     public onChangeFabric(listener: ChangeFabricListener): VoidUnsubscribe {
@@ -32,10 +21,6 @@ export abstract class CrosslyCanvasBase extends CanvasBase implements ICrosslyCa
         return this.messaging.listenOnChannel2(listener);
     }
 
-    public onChangeName(listener: ChangeNameListener): VoidUnsubscribe {
-        return this.messaging.listenOnChannel3(listener);
-    }
-
     protected invokeChangeFabric(pattern: FabricPattern): void {
         const event = { pattern };
         this.messaging.sendToChannel1(event);
@@ -44,10 +29,5 @@ export abstract class CrosslyCanvasBase extends CanvasBase implements ICrosslyCa
     protected invokeChangeStitchPattern(pattern: StitchPattern): void {
         const event = { pattern };
         this.messaging.sendToChannel2(event);
-    }
-
-    protected invokeChangeName(name: string): void {
-        const event = { name };
-        this.messaging.sendToChannel3(event);
     }
 }

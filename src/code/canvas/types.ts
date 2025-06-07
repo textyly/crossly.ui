@@ -34,13 +34,11 @@ export interface ICanvas extends IDisposable {
 }
 
 export interface ICrosslyCanvas extends ICanvas {
-    onChangeName(listener: ChangeNameListener): VoidUnsubscribe;
     onChangeFabric(listener: ChangeFabricListener): VoidUnsubscribe;
     onChangeStitchPattern(listener: ChangeStitchPatternListener): VoidUnsubscribe;
 }
 
 export interface ICrosslyCanvasFacade extends ICrosslyCanvas {
-    get name(): string;
     get pattern(): CrosslyCanvasPattern;
 
     draw(): void;
@@ -70,9 +68,6 @@ export enum Visibility {
 export type BoundsChangeEvent = { bounds: Bounds };
 export type BoundsChangeListener = Listener<BoundsChangeEvent>;
 
-export type ChangeNameEvent = { name: string; };
-export type ChangeNameListener = Listener<ChangeNameEvent>;
-
-export type CrosslyCanvasPattern = { name: string; fabric: FabricPattern; stitch: StitchPattern; };
+export type CrosslyCanvasPattern = { fabric: FabricPattern; stitch: StitchPattern; };
 export type CrosslyCanvasChangeEvent = { pattern: CrosslyCanvasPattern; }
 export type CrosslyCanvasChangeListener = Listener<CrosslyCanvasChangeEvent>;

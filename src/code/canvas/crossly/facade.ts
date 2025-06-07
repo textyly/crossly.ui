@@ -7,7 +7,6 @@ import { IFabricRasterDrawingCanvas, IStitchRasterDrawingCanvas, IVectorDrawingC
 
 export class CrosslyCanvasFacade extends CrosslyCanvas implements ICrosslyCanvasFacade {
     constructor(
-        name: string,
         config: CrosslyCanvasConfig,
         inputCanvas: IInputCanvas,
         frontFabricRasterDrawing: IFabricRasterDrawingCanvas,
@@ -18,7 +17,6 @@ export class CrosslyCanvasFacade extends CrosslyCanvas implements ICrosslyCanvas
         backCueVectorDrawing: IVectorDrawingCanvas) {
 
         super(
-            name,
             config,
             inputCanvas,
             frontFabricRasterDrawing,
@@ -34,23 +32,10 @@ export class CrosslyCanvasFacade extends CrosslyCanvas implements ICrosslyCanvas
         return this.configuration;
     }
 
-    public get name(): string {
-        this.ensureAlive();
-        return this._name;
-    }
-
-    public set name(value: string) {
-        this.ensureAlive();
-
-        this._name = value;
-        super.invokeChangeName(this._name);
-    }
-
     public get pattern(): CrosslyCanvasPattern {
         this.ensureAlive();
 
         return {
-            name: this.name,
             fabric: this.fabricCanvasFacade.pattern,
             stitch: this.stitchCanvasFacade.pattern
         };
