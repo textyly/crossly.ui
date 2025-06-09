@@ -5,26 +5,11 @@ import { IVectorDrawingCanvas, SvgDot, SvgLine } from "../types.js";
 
 export class VectorDrawingCanvas extends CanvasBase implements IVectorDrawingCanvas {
     private readonly svgCanvas: HTMLElement;
-    protected readonly offset: number;
 
     constructor(svgCanvas: HTMLElement) {
         super(VectorDrawingCanvas.name);
 
         this.svgCanvas = svgCanvas;
-        this.offset = 5;
-    }
-
-    public override get bounds(): Bounds {
-        return super.bounds;
-    }
-
-    public override set bounds(bounds: Bounds) {
-        const copy = { ...bounds };
-        copy.left -= this.offset;
-        copy.top -= this.offset;
-        copy.width += (this.offset * 2);
-        copy.height += (this.offset * 2);
-        super.bounds = copy;
     }
 
     public drawDot(dot: Dot, radius: number, color: string): SvgDot {
