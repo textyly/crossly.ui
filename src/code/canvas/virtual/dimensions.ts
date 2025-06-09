@@ -179,17 +179,18 @@ export abstract class VirtualCanvasDimensions extends CanvasBase {
         return boundsIndexes;
     }
 
-    private calculateVirtualBounds(diffX: number, diffY: number): Bounds {
-        const left = (this.virtualBounds.left + diffX);
-        const top = (this.virtualBounds.top + diffY);
+    protected calculateDrawingCenter(): Position {
+        const leftTopPos = this.calculateLeftTopPosition();
+        const width = this.calculateWidth();
+        const height = this.calculateHeight();
 
-        const width = (this.allDotsX - 1) * this.currentDotsSpace;
-        const height = (this.allDotsY - 1) * this.currentDotsSpace;
+        const x = leftTopPos.x + (width / 2);
+        const y = leftTopPos.y + (height / 2);
 
-        return { left, top, width, height };
+        return { x, y };
     }
 
-    private calculateDrawingBounds(): Bounds {
+    protected calculateDrawingBounds(): Bounds {
         const leftTopPos = this.calculateLeftTopPosition();
         const width = this.calculateWidth();
         const height = this.calculateHeight();
@@ -202,6 +203,16 @@ export abstract class VirtualCanvasDimensions extends CanvasBase {
         };
 
         return bounds;
+    }
+
+    private calculateVirtualBounds(diffX: number, diffY: number): Bounds {
+        const left = (this.virtualBounds.left + diffX);
+        const top = (this.virtualBounds.top + diffY);
+
+        const width = (this.allDotsX - 1) * this.currentDotsSpace;
+        const height = (this.allDotsY - 1) * this.currentDotsSpace;
+
+        return { left, top, width, height };
     }
 
     private calculateMovingBounds(position: Position): Bounds {

@@ -46,6 +46,9 @@ export interface IFabricCanvasFacade extends IFabricCanvas {
 
     draw(): void;
     load(pattern: FabricPattern): void;
+
+    zoomIn(): void;
+    zoomOut(): void;
 }
 
 export interface IStitchCanvasFacade extends IStitchCanvas {
@@ -59,6 +62,9 @@ export interface IStitchCanvasFacade extends IStitchCanvas {
 
     undo(): void;
     redo(): void;
+
+    zoomIn(): void;
+    zoomOut(): void;
 }
 
 export interface ICueCanvasFacade extends ICueCanvas {
@@ -72,6 +78,9 @@ export interface ICueCanvasFacade extends ICueCanvas {
 
     undo(): void;
     redo(): void;
+
+    zoomIn(): void;
+    zoomOut(): void;
 }
 
 export type ChangeFabricEvent = { pattern: FabricPattern; };

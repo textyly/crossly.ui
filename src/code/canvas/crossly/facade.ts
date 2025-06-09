@@ -86,10 +86,22 @@ export class CrosslyCanvasFacade extends CrosslyCanvas implements ICrosslyCanvas
     }
 
     public zoomIn(): void {
-        
+        this.ensureAlive();
+
+        this.fabricCanvasFacade.zoomIn();
+        this.stitchCanvasFacade.zoomIn();
+        this.cueCanvasFacade.zoomIn();
+
+        this.draw();
     }
 
     public zoomOut(): void {
-        
+        this.ensureAlive();
+
+        this.fabricCanvasFacade.zoomOut();
+        this.stitchCanvasFacade.zoomOut();
+        this.cueCanvasFacade.zoomOut();
+
+        this.draw();
     }
 } 

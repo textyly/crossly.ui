@@ -42,21 +42,31 @@ export abstract class VirtualCanvasBase extends VirtualCanvasDimensions implemen
         this.redraw();
     }
 
+    public zoomIn(): void {
+        const center = super.calculateDrawingCenter();
+        this.handleZoomIn({ currentPosition: center });
+    }
+
+    public zoomOut(): void {
+        const center = super.calculateDrawingCenter();
+        this.handleZoomOut({ currentPosition: center });
+    }
+
     public override dispose(): void {
         super.ensureAlive();
         this.virtualMessaging.dispose();
         super.dispose();
     }
 
-    public abstract zoomIn(): void;
-    public abstract zoomOut(): void;
+    protected abstract zoomInCore(): void;
+    protected abstract zoomOutCore(): void;
     protected abstract redraw(): void;
 
     protected changeCanvasSide(): void {
         this.currentSide = this.currentSide === CanvasSide.Front ? CanvasSide.Back : CanvasSide.Front;
     }
 
-    private handleVisibleBoundsChange(event: BoundsChangeEvent): void {
+    protected handleVisibleBoundsChange(event: BoundsChangeEvent): void {
         super.ensureAlive();
 
         this.draw();
@@ -72,7 +82,7 @@ export abstract class VirtualCanvasBase extends VirtualCanvasDimensions implemen
         const inBounds = this.inBounds(currentPosition);
         if (inBounds) {
             this.zoomInCanvas(currentPosition);
-            this.zoomIn();
+            this.zoomInCore();
             this.draw();
         }
     }
@@ -89,7 +99,7 @@ export abstract class VirtualCanvasBase extends VirtualCanvasDimensions implemen
 
         if (inBounds && (this.currentDotsSpace > minSpace)) {
             this.zoomOutCanvas(currentPosition);
-            this.zoomOut();
+            this.zoomOutCore();
             this.draw();
         }
     }

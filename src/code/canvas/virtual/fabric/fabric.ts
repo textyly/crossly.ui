@@ -41,12 +41,16 @@ export abstract class FabricCanvas extends FabricCanvasBase {
         this.threadWidthZoomStep = threadConfig.widthZoomStep;
     }
 
-    public override zoomIn(): void {
+    protected override zoomInCore(): void {
+        super.ensureAlive();
+
         this.dotRadius += this.dotRadiusZoomStep;
         this.threadWidth += this.threadWidthZoomStep;
     }
 
-    public override zoomOut(): void {
+    protected override zoomOutCore(): void {
+        super.ensureAlive();
+
         this.dotRadius -= this.dotRadiusZoomStep;
         this.threadWidth -= this.threadWidthZoomStep;
     }
