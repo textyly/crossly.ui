@@ -1,80 +1,128 @@
-html,
-body {
-  background-color: darkgray;
-  overflow: hidden;
+/* ===== Reset / page ==================================================== */
+html, body {
   margin: 0;
   padding: 0;
   width: 100%;
   height: 100%;
+  background-color: darkgray;
+  overflow: hidden;
 }
 
-#crossly {
+#app-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
   overflow: hidden;
+}
+
+/* ===== Main split view ================================================= */
+#crossly {
   display: flex;
   width: 100%;
   height: 100%;
   gap: 0.5rem;
 }
 
-#front-input {
-  flex: 1;
+.side-container {
   position: relative;
-  overflow: hidden;
-  border: none;
-  outline: none;
+  flex: 1;
   margin: 0.5rem;
-  z-index: 4;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
-#front-fabric {
-  background-color: #fff8dc;
-  left: 5px;
-  top: 5px;
+/* ===== Shared button style ============================================ */
+.top-floating-menu button,
+.left-floating-menu button,
+.bottom-floating-menu button {
+  padding: 0.4rem 0.6rem;
+  background-color: #eee;
+  border: 1px solid #aaa;
+  border-radius: 5px;
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+.top-floating-menu button:hover,
+.left-floating-menu button:hover,
+.bottom-floating-menu button:hover {
+  background-color: #ddd;
+}
+
+/* ===== Top floating menu ============================================== */
+.top-floating-menu {
   position: absolute;
-  z-index: 1;
+  top: 0.5rem;
+  left: 0.5rem;
+  z-index: 10;
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.4rem 0.6rem;
+  background-color: rgba(255, 255, 255, 0.9);
+  border-radius: 0.5rem;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  pointer-events: auto;
 }
 
-#front-stitch {
+/* ===== Left floating (vertical) menu ================================== */
+.left-floating-menu {
   position: absolute;
-  left: 5px;
-  top: 5px;
-  z-index: 2;
+  top: 50%;
+  left: 0.5rem;
+  transform: translateY(-50%);
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  background-color: rgba(255, 255, 255, 0.95);
+  border-radius: 0.5rem;
+  box-shadow: 2px 2px 6px rgba(0,0,0,0.15);
+  pointer-events: auto;
 }
 
-#front-cue {
+/* ===== Bottom-right floating menu (HORIZONTAL now) ==================== */
+.bottom-floating-menu {
   position: absolute;
-  left: 5px;
-  top: 5px;
-  z-index: 3;
+  right: 0.5rem;
+  bottom: 0.5rem;
+  z-index: 10;
+  display: flex;
+  flex-direction: row; /* CHANGED from column to row */
+  gap: 0.5rem;
+  padding: 0.6rem;
+  background-color: rgba(255, 255, 255, 0.95);
+  border-radius: 0.5rem;
+  box-shadow: 2px 2px 6px rgba(0,0,0,0.2);
+  pointer-events: auto;
 }
 
+/* ===== Canvas stacks =================================================== */
+#front-input,
 #back-input {
-  flex: 1;
   position: relative;
+  flex: 1;
   overflow: hidden;
   border: none;
   outline: none;
-  margin: 0.5rem;
 }
 
-#back-fabric {
-  background-color: #fff8dc;
+/* fabric layer */
+#front-fabric, #back-fabric {
   position: absolute;
-  left: 5px;
-  top: 5px;
+  left: 5px; top: 5px;
+  background-color: #fff8dc;
   z-index: 1;
 }
-
-#back-stitch {
+/* stitch layer */
+#front-stitch, #back-stitch {
   position: absolute;
-  left: 5px;
-  top: 5px;
+  left: 5px; top: 5px;
   z-index: 2;
 }
-
-#back-cue {
+/* cue layer */
+#front-cue, #back-cue {
   position: absolute;
-  left: 5px;
-  top: 5px;
+  left: 5px; top: 5px;
   z-index: 3;
 }

@@ -1,26 +1,76 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en-US">
 
 <head>
-    <meta charset="utf-8" />
-    <title>Canvas tutorial</title>
-    <link rel="shortcut icon" href="./assets/favicon.ico" type="image/x-icon">
-    <link rel="stylesheet" href="./styles/styles.css">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Crossly Pattern Editor</title>
+
+    <!-- Favicon & Styles -->
+    <link rel="shortcut icon" href="./assets/favicon.ico" type="image/x-icon" />
+    <link rel="stylesheet" href="./styles/styles.css" />
 </head>
 
 <body>
-    <div id="crossly">
-        <div id="front-input" tabindex="0">
-            <canvas id="front-fabric"></canvas>
-            <canvas id="front-stitch"></canvas>
-            <svg id="front-cue" xmlns="http://www.w3.org/2000/svg"> </svg>
-        </div>
-        <div id="back-input">
-            <canvas id="back-fabric"></canvas>
-            <canvas id="back-stitch"></canvas>
-            <svg id="back-cue" xmlns="http://www.w3.org/2000/svg"></svg>
+    <div id="app-container">
+        <div id="crossly">
+            <!-- FRONT SIDE ------------------------------------------------------->
+            <div class="side-container">
+                <!-- Top menu -->
+                <div class="top-floating-menu">
+                    <button>Front A</button>
+                    <button>Front B</button>
+                </div>
+                <!-- Left vertical menu -->
+                <div class="left-floating-menu">
+                    <button>Color A</button>
+                    <button>Color B</button>
+                    <button>Color C</button>
+                </div>
+                <!-- Bottom-right menu -->
+                <div class="bottom-floating-menu">
+                    <button>Zoom</button>
+                    <button>Feedback</button>
+                </div>
+
+                <!-- Canvas stack -->
+                <div id="front-input" tabindex="0">
+                    <canvas id="front-fabric"></canvas>
+                    <canvas id="front-stitch"></canvas>
+                    <svg id="front-cue" xmlns="http://www.w3.org/2000/svg"></svg>
+                </div>
+            </div>
+
+            <!-- BACK SIDE ---------------------------------------------------------->
+            <div class="side-container">
+                <!-- Top menu -->
+                <!-- <div class="top-floating-menu">
+                    <button>Back A</button>
+                    <button>Back B</button>
+                </div> -->
+                <!-- Left vertical menu -->
+                <!-- <div class="left-floating-menu">
+                    <button>Color A</button>
+                    <button>Color B</button>
+                    <button>Color C</button>
+                </div> -->
+                <!-- Bottom-right menu -->
+                <!-- <div class="bottom-floating-menu">
+                    <button>Zoom</button>
+                    <button>Feedback</button>
+                </div> -->
+
+                <!-- Canvas stack -->
+                <div id="back-input">
+                    <canvas id="back-fabric"></canvas>
+                    <canvas id="back-stitch"></canvas>
+                    <svg id="back-cue" xmlns="http://www.w3.org/2000/svg"></svg>
+                </div>
+            </div>
         </div>
     </div>
+
+    <!-- Your JS entry point -->
     <script type="module" src="./code/main.js"></script>
 </body>
 
