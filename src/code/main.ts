@@ -10,15 +10,15 @@ const canvas = canvasFactory.create();
 canvas.draw();
 
 // TODO: delete everything below !!! It is used for testing purpose only
-const repositoryFactory = new RepositoryFactory();
-const repository = repositoryFactory.create();
-
-const animationFactory = new CrosslyCanvasAnimationFactory();
-
 const w = window as any;
 w.crosslyCanvas = canvas;
 w.crosslyCanvasFactory = canvasFactory;
+
+const repositoryFactory = new RepositoryFactory();
+const repository = repositoryFactory.create();
 w.crosslyRepository = repository;
+
+const animationFactory = new CrosslyCanvasAnimationFactory();
 w.crosslyAnimationFactory = animationFactory;
 
 // const observer = new CrosslyCanvasObserver(canvasFacade);
