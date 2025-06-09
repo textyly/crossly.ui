@@ -53,11 +53,11 @@ export abstract class StitchCanvas extends StitchCanvasBase {
         super.dispose();
     }
 
-    protected override zoomIn(): void {
+    public override zoomIn(): void {
         this.zooms += 1;
     }
 
-    protected override zoomOut(): void {
+    public override zoomOut(): void {
         this.zooms -= 1;
     }
 

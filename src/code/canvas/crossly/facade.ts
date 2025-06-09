@@ -84,4 +84,12 @@ export class CrosslyCanvasFacade extends CrosslyCanvas implements ICrosslyCanvas
 
         assert.that(stitchRedo === cueRedo, "redo misbehave");
     }
+
+    public zoomIn(): void {
+        
+    }
+
+    public zoomOut(): void {
+        
+    }
 } 

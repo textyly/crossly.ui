@@ -48,9 +48,9 @@ export abstract class VirtualCanvasBase extends VirtualCanvasDimensions implemen
         super.dispose();
     }
 
+    public abstract zoomIn(): void;
+    public abstract zoomOut(): void;
     protected abstract redraw(): void;
-    protected abstract zoomIn(): void;
-    protected abstract zoomOut(): void;
 
     protected changeCanvasSide(): void {
         this.currentSide = this.currentSide === CanvasSide.Front ? CanvasSide.Back : CanvasSide.Front;

@@ -1,6 +1,6 @@
+import { IUiCanvasBroker } from "./types.js";
 import { ICrosslyCanvasFacade } from "../canvas/types.js";
 import { VoidListener, VoidUnsubscribe } from "../types.js";
-import { IUiCanvasBroker } from "./types.js";
 
 export class UiCanvasBroker implements IUiCanvasBroker {
     private canvas: ICrosslyCanvasFacade;
@@ -18,19 +18,19 @@ export class UiCanvasBroker implements IUiCanvasBroker {
     }
 
     public undo(): void {
-        throw new Error("Method not implemented.");
+        this.canvas.undo();
     }
 
     public redo(): void {
-        throw new Error("Method not implemented.");
+        this.canvas.redo();
     }
 
     public zoomIn(): void {
-        throw new Error("Method not implemented.");
+        this.canvas.zoomIn();
     }
 
     public zoomOut(): void {
-        throw new Error("Method not implemented.");
+        this.canvas.zoomOut();
     }
 
     public onLoadPattern(listener: VoidListener): VoidUnsubscribe {

@@ -70,11 +70,11 @@ export abstract class CueCanvas extends CueCanvasBase {
     }
 
 
-    protected override zoomIn(): void {
+    public override zoomIn(): void {
         this.zooms += 1;
     }
 
-    protected override zoomOut(): void {
+    public override zoomOut(): void {
         this.zooms -= 1;
     }
 

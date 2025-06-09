@@ -49,6 +49,9 @@ export interface ICrosslyCanvasFacade extends ICrosslyCanvas {
 
     undo(): void;
     redo(): void;
+
+    zoomIn(): void;
+    zoomOut(): void;
 }
 
 export interface ICrosslyCanvasObserver {
