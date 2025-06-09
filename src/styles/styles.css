@@ -1,6 +1,4 @@
-/* ===== Reset / page ==================================================== */
-html,
-body {
+html, body {
   margin: 0;
   padding: 0;
   width: 100%;
@@ -16,7 +14,6 @@ body {
   overflow: hidden;
 }
 
-/* ===== Main split view ================================================= */
 #crossly {
   display: flex;
   width: 100%;
@@ -33,7 +30,7 @@ body {
   flex-direction: column;
 }
 
-/* ===== Shared button style ============================================ */
+/* === Shared Button Style === */
 .top-floating-menu button,
 .left-floating-menu button,
 .bottom-floating-menu button {
@@ -44,14 +41,13 @@ body {
   font-size: 0.95rem;
   cursor: pointer;
 }
-
 .top-floating-menu button:hover,
 .left-floating-menu button:hover,
 .bottom-floating-menu button:hover {
   background-color: #ddd;
 }
 
-/* ===== Top floating menu ============================================== */
+/* === Top Floating Menu === */
 .top-floating-menu {
   position: absolute;
   top: 0.5rem;
@@ -65,8 +61,12 @@ body {
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
   pointer-events: auto;
 }
+.top-floating-menu.right {
+  left: auto;
+  right: 0.5rem;
+}
 
-/* ===== Left floating (vertical) menu ================================== */
+/* === Left Floating (Vertical) Menu === */
 .left-floating-menu {
   position: absolute;
   top: 50%;
@@ -83,7 +83,7 @@ body {
   pointer-events: auto;
 }
 
-/* ===== Bottom-right floating menu (HORIZONTAL now) ==================== */
+/* === Bottom-Right Floating Menu (Horizontal) === */
 .bottom-floating-menu {
   position: absolute;
   right: 0.5rem;
@@ -91,7 +91,6 @@ body {
   z-index: 10;
   display: flex;
   flex-direction: row;
-  /* CHANGED from column to row */
   gap: 0.5rem;
   padding: 0.6rem;
   background-color: rgba(255, 255, 255, 0.95);
@@ -100,7 +99,7 @@ body {
   pointer-events: auto;
 }
 
-/* ===== Canvas stacks =================================================== */
+/* === Canvas Stack Layers === */
 #front-input,
 #back-input {
   position: relative;
@@ -110,7 +109,6 @@ body {
   outline: none;
 }
 
-/* fabric layer */
 #front-fabric,
 #back-fabric {
   position: absolute;
@@ -120,7 +118,6 @@ body {
   z-index: 1;
 }
 
-/* stitch layer */
 #front-stitch,
 #back-stitch {
   position: absolute;
@@ -129,7 +126,6 @@ body {
   z-index: 2;
 }
 
-/* cue layer */
 #front-cue,
 #back-cue {
   position: absolute;

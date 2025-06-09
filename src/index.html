@@ -5,8 +5,6 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Crossly Pattern Editor</title>
-
-    <!-- Favicon & Styles -->
     <link rel="shortcut icon" href="./assets/favicon.ico" type="image/x-icon" />
     <link rel="stylesheet" href="./styles/styles.css" />
 </head>
@@ -14,14 +12,19 @@
 <body>
     <div id="crossly-container">
         <div id="crossly">
-            <!-- FRONT SIDE ------------------------------------------------------->
+            <!-- FRONT SIDE -->
             <div class="side-container">
-                <!-- Top menu -->
+                <!-- Top-left menu -->
                 <div class="top-floating-menu">
                     <button>Front A</button>
                     <button>Front B</button>
                 </div>
-                <!-- Left vertical menu -->
+                <!-- Top-right menu -->
+                <div class="top-floating-menu right">
+                    <button>Tool A</button>
+                    <button>Tool B</button>
+                </div>
+                <!-- Left menu -->
                 <div class="left-floating-menu">
                     <button>Color A</button>
                     <button>Color B</button>
@@ -33,7 +36,7 @@
                     <button>Feedback</button>
                 </div>
 
-                <!-- Canvas stack -->
+                <!-- Canvases -->
                 <div id="front-input" tabindex="0">
                     <canvas id="front-fabric"></canvas>
                     <canvas id="front-stitch"></canvas>
@@ -41,26 +44,11 @@
                 </div>
             </div>
 
-            <!-- BACK SIDE ---------------------------------------------------------->
+            <!-- BACK SIDE -->
             <div class="side-container">
-                <!-- Top menu -->
-                <!-- <div class="top-floating-menu">
-                    <button>Back A</button>
-                    <button>Back B</button>
-                </div> -->
-                <!-- Left vertical menu -->
-                <!-- <div class="left-floating-menu">
-                    <button>Color A</button>
-                    <button>Color B</button>
-                    <button>Color C</button>
-                </div> -->
-                <!-- Bottom-right menu -->
-                <!-- <div class="bottom-floating-menu">
-                    <button>Zoom</button>
-                    <button>Feedback</button>
-                </div> -->
+                <!-- 4 menus can be enabled by just copy/paste from the 'FRONT SIDE' html (above) -->
 
-                <!-- Canvas stack -->
+                <!-- Canvases -->
                 <div id="back-input">
                     <canvas id="back-fabric"></canvas>
                     <canvas id="back-stitch"></canvas>
@@ -69,8 +57,6 @@
             </div>
         </div>
     </div>
-
-    <!-- Your JS entry point -->
     <script type="module" src="./code/main.js"></script>
 </body>
 
