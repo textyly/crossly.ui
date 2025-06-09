@@ -2,7 +2,7 @@ import { VoidListener, VoidUnsubscribe } from "../types.js";
 
 export interface IUiCanvasBroker {
     load(): void; //pattern
-    change(): void; // thread
+    change(color: string): void; // thread
     undo(): void;
     redo(): void;
     zoomIn(): void;

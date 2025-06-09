@@ -4,6 +4,8 @@ import { CrosslyCanvasObserver } from "./canvas/crossly/observer.js";
 import { CrosslyCanvasAnimation } from "./animation/animation.js";
 import { CrosslyCanvasAnimationFactory } from "./animation/factory.js";
 import { CrosslyCanvasFacadeFactory } from "./canvas/crossly/factory.js";
+import { UiCanvasBroker } from "./brokers/ui.js";
+import { MenuHandler } from "./menu/handler.js";
 
 const canvasFactory = new CrosslyCanvasFacadeFactory();
 const canvas = canvasFactory.create();
@@ -13,6 +15,10 @@ canvas.draw();
 const w = window as any;
 w.crosslyCanvas = canvas;
 w.crosslyCanvasFactory = canvasFactory;
+
+const uiCanvasBroker = new UiCanvasBroker(canvas);
+const menuHandler = new MenuHandler(uiCanvasBroker);
+w.menuHandler = menuHandler;
 
 const repositoryFactory = new RepositoryFactory();
 const repository = repositoryFactory.create();
