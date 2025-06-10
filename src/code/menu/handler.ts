@@ -2,17 +2,17 @@ import { IMenuHandler } from "./types.js";
 import { IUiCanvasBroker } from "../brokers/types.js";
 
 export class MenuHandler implements IMenuHandler {
-    private broker: IUiCanvasBroker;
+    private uiCanvasBroker: IUiCanvasBroker;
 
-    constructor(broker: IUiCanvasBroker) {
-        this.broker = broker;
+    constructor(uiCanvasBroker: IUiCanvasBroker) {
+        this.uiCanvasBroker = uiCanvasBroker;
 
         // TODO: refactor!!!
         document.querySelectorAll('.color-button').forEach(button => {
             button.addEventListener('click', (event: any) => {
 
                 const color = event.currentTarget.dataset.color;
-                this.broker.change(color);
+                this.clickColor(color);
 
             });
         });
@@ -20,20 +20,19 @@ export class MenuHandler implements IMenuHandler {
         document.querySelectorAll('.action-button').forEach(button => {
             button.addEventListener('click', (event: any) => {
 
-                const action = event.currentTarget.dataset.action
-                    ;
+                const action = event.currentTarget.dataset.action;
                 switch (action) {
                     case 'undo':
-                        this.onClickUndo();
+                        this.clickUndo();
                         break;
                     case 'redo':
-                        this.onClickRedo();
+                        this.clickRedo();
                         break;
                     case 'zoom-in':
-                        this.onClickZoomIn();
+                        this.clickZoomIn();
                         break;
                     case 'zoom-out':
-                        this.onClickZoomOut();
+                        this.clickZoomOut();
                         break;
                 }
 
@@ -41,23 +40,23 @@ export class MenuHandler implements IMenuHandler {
         });
     }
 
-    public onClickColor(color: string): void {
-        this.broker.change(color);
+    public clickColor(color: string): void {
+        this.uiCanvasBroker.change(color);
     }
 
-    public onClickUndo(): void {
-        this.broker.undo();
+    public clickUndo(): void {
+        this.uiCanvasBroker.undo();
     }
 
-    public onClickRedo(): void {
-        this.broker.redo();
+    public clickRedo(): void {
+        this.uiCanvasBroker.redo();
     }
 
-    public onClickZoomIn(): void {
-        this.broker.zoomIn();
+    public clickZoomIn(): void {
+        this.uiCanvasBroker.zoomIn();
     }
 
-    public onClickZoomOut(): void {
-        this.broker.zoomOut();
+    public clickZoomOut(): void {
+        this.uiCanvasBroker.zoomOut();
     }
 }

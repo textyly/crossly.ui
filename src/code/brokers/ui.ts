@@ -14,7 +14,7 @@ export class UiCanvasBroker implements IUiCanvasBroker {
     }
 
     public change(color: string): void {
-        this.canvas.useThread("test", color, 10);
+        this.canvas.useThread("test", color, 10); // TODO: current thread width!!!
     }
 
     public undo(): void {

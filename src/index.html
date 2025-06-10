@@ -16,28 +16,95 @@
             <div class="side-container">
                 <!-- Top-left menu -->
                 <div class="top-floating-menu">
-                    <button>Home</button>
-                    <button>User</button>
-                    <button>Current Pattern</button>
+                    <button title="Home">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#5f5f5f" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M3 9l9-7 9 7"></path>
+                            <path d="M9 22V12h6v10"></path>
+                        </svg>
+                    </button>
+                    <button title="User">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#5f5f5f" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M20 21v-2a4 4 0 0 0-3-3.87"></path>
+                            <path d="M4 21v-2a4 4 0 0 1 3-3.87"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                    </button>
+                    <label>flower</label>
                 </div>
+
                 <!-- Top-right menu -->
                 <div class="top-floating-menu right">
-                    <button class="action-button" data-action="undo">Undo</button>
-                    <button class="action-button" data-action="redo">Redo</button>
-                    <button>Full Screen</button>
+                    <button class="action-button" data-action="undo" title="Undo">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#5f5f5f" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M3 12h18"></path>
+                            <path d="M3 12l6 6"></path>
+                            <path d="M3 12l6-6"></path>
+                        </svg>
+                    </button>
+                    <button class="action-button" data-action="redo" title="Redo">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#5f5f5f" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 12H3"></path>
+                            <path d="M21 12l-6-6"></path>
+                            <path d="M21 12l-6 6"></path>
+                        </svg>
+                    </button>
+                    <button title="Full Screen">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#5f5f5f" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M8 3H5a2 2 0 0 0-2 2v3"></path>
+                            <path d="M16 3h3a2 2 0 0 1 2 2v3"></path>
+                            <path d="M8 21H5a2 2 0 0 1-2-2v-3"></path>
+                            <path d="M16 21h3a2 2 0 0 0 2-2v-3"></path>
+                        </svg>
+                    </button>
                 </div>
+
                 <!-- Left menu -->
                 <div class="left-floating-menu">
-                    <button class="color-button" data-color="green">Green</button>
-                    <button class="color-button" data-color="red">Red</button>
-                    <button class="color-button" data-color="blue">Blue</button>
-                    <button>Palette</button>
+                    <button class="color-button" data-color="green" title="Green">Green</button>
+                    <button class="color-button" data-color="red" title="Red">Red</button>
+                    <button class="color-button" data-color="blue" title="Blue">Blue</button>
+                    <button title="Palette">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#5f5f5f" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 3C7.03 3 3 7.03 3 12c0 3.87 3.13 7 7 7h1v-3h-1a4 4 0 1 1 0-8h1V3z"></path>
+                            <circle cx="12" cy="8" r="1"></circle>
+                            <circle cx="16" cy="12" r="1"></circle>
+                            <circle cx="8" cy="12" r="1"></circle>
+                        </svg>
+                    </button>
                 </div>
+
                 <!-- Bottom-right menu -->
                 <div class="bottom-floating-menu">
-                    <button class="action-button" data-action="zoom-in">ZoomIn</button>
-                    <button class="action-button" data-action="zoom-out">ZoomOut</button>
-                    <button>Feedback</button>
+                    <button class="action-button" data-action="zoom-in" title="Zoom In">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#5f5f5f" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="11" y1="8" x2="11" y2="14"></line>
+                            <line x1="8" y1="11" x2="14" y2="11"></line>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                    </button>
+                    <label>80%</label>
+                    <button class="action-button" data-action="zoom-out" title="Zoom Out">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#5f5f5f" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="8" y1="11" x2="14" y2="11"></line>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                    </button>
+                    <button title="Feedback">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#5f5f5f" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                        </svg>
+                    </button>
                 </div>
 
                 <!-- Canvases -->
@@ -50,9 +117,7 @@
 
             <!-- BACK SIDE -->
             <div class="side-container">
-                <!-- 4 menus can be enabled by just copy/paste from the 'FRONT SIDE' html (above) -->
-
-                <!-- Canvases -->
+                <!-- Copy menus if needed -->
                 <div id="back-input">
                     <canvas id="back-fabric"></canvas>
                     <canvas id="back-stitch"></canvas>
