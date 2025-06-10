@@ -3,9 +3,18 @@ import { IUiCanvasBroker } from "../brokers/types.js";
 
 export class MenuHandler implements IMenuHandler {
     private uiCanvasBroker: IUiCanvasBroker;
+    private zoom = 100;
 
     constructor(uiCanvasBroker: IUiCanvasBroker) {
         this.uiCanvasBroker = uiCanvasBroker;
+
+        // uiCanvasBroker.onChangeZoomIn(() => {
+        //     this.zoom += 10;
+        // });
+
+        // uiCanvasBroker.onChangeZoomIn(() => {
+        //     this.zoom -= 10;
+        // });
 
         // TODO: refactor!!!
         document.querySelectorAll('.color-button').forEach(button => {

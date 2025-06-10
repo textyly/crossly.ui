@@ -11,7 +11,8 @@ export interface IUiCanvasBroker {
     onLoadPattern(listener: VoidListener): VoidUnsubscribe;
     onChangePattern(listener: VoidListener): VoidUnsubscribe;
     onChangeThread(listener: VoidListener): VoidUnsubscribe;
-    onChangeZoom(listener: VoidListener): VoidUnsubscribe;
+    onChangeZoomIn(listener: VoidListener): VoidUnsubscribe;
+    onChangeZoomOut(listener: VoidListener): VoidUnsubscribe;
 }
 
 export interface IUiRepositoryBroker {
