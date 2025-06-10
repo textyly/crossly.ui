@@ -52,13 +52,10 @@ export class CrosslyCanvasFacade extends CrosslyCanvas implements ICrosslyCanvas
     public load(pattern: CrosslyCanvasPattern): void {
         this.ensureAlive();
 
-        // not supported yet!!!
-        assert.that(pattern.fabric.columns === this.fabricCanvasFacade.pattern.columns, "cannot load fabric with different number of columns");
-        assert.that(pattern.fabric.rows === this.fabricCanvasFacade.pattern.rows, "cannot load fabric with different number of row");
-
+        const newFabric = pattern.fabric;
         this.fabricCanvasFacade.load(pattern.fabric);
-        this.stitchCanvasFacade.load(pattern.stitch);
-        this.cueCanvasFacade.load(pattern.stitch);
+        this.stitchCanvasFacade.load(newFabric.columns, newFabric.rows, pattern.stitch);
+        this.cueCanvasFacade.load(newFabric.columns, newFabric.rows, pattern.stitch);
     }
 
     public clickDot(dotIdx: DotIndex): void {
@@ -86,7 +83,7 @@ export class CrosslyCanvasFacade extends CrosslyCanvas implements ICrosslyCanvas
 
     public redo(): void {
         this.ensureAlive();
-        
+
         const stitchRedo = this.stitchCanvasFacade.redo();
         const cueRedo = this.cueCanvasFacade.redo();
 

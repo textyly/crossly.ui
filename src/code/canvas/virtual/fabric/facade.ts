@@ -55,12 +55,6 @@ export class FabricCanvasFacade extends FabricCanvas implements IFabricCanvasFac
 
     public load(pattern: FabricPattern): void {
         super.ensureAlive();
-
-        this._name = pattern.name;
-        this._color = pattern.color;
-        this._rows = pattern.rows;
-        this._columns = pattern.columns;
-        this._dotsColor = pattern.dots.color;
-        this._threadsColor = pattern.threads.color;
+        super.loadPattern(pattern);
     }
 }

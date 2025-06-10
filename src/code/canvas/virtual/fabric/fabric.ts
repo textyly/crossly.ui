@@ -4,6 +4,7 @@ import { IInputCanvas } from "../../input/types.js";
 import { FabricCanvasConfig } from "../../../config/types.js";
 import { FabricDotArray } from "../../utilities/arrays/dot/dot.js";
 import { FabricThreadArray } from "../../utilities/arrays/thread/fabric.js";
+import { FabricPattern } from "../../types.js";
 
 export abstract class FabricCanvas extends FabricCanvasBase {
     protected _name: string;
@@ -42,17 +43,22 @@ export abstract class FabricCanvas extends FabricCanvasBase {
     }
 
     protected override zoomInCore(): void {
-        super.ensureAlive();
-
         this.dotRadius += this.dotRadiusZoomStep;
         this.threadWidth += this.threadWidthZoomStep;
     }
 
     protected override zoomOutCore(): void {
-        super.ensureAlive();
-
         this.dotRadius -= this.dotRadiusZoomStep;
         this.threadWidth -= this.threadWidthZoomStep;
+    }
+
+    protected loadPattern(pattern: FabricPattern): void {
+        this._name = pattern.name;
+        this._color = pattern.color;
+        this._rows = pattern.rows;
+        this._columns = pattern.columns;
+        this._dotsColor = pattern.dots.color;
+        this._threadsColor = pattern.threads.color;
     }
 
     protected override redraw(): void {

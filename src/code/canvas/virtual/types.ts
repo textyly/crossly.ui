@@ -57,7 +57,7 @@ export interface IStitchCanvasFacade extends IStitchCanvas {
     get pattern(): StitchPattern;
 
     draw(): void;
-    load(pattern: StitchPattern): void;
+    load(columns: number, rows: number, pattern: StitchPattern): void;
 
     clickDot(dotIdx: DotIndex): void;
     useThread(name: string, color: string, width: number): void;
@@ -73,7 +73,7 @@ export interface ICueCanvasFacade extends ICueCanvas {
     get pattern(): CuePattern;
 
     draw(): void;
-    load(pattern: StitchPattern): void;
+    load(columns: number, rows: number, pattern: StitchPattern): void;
 
     clickDot(dotIdx: DotIndex): void;
     useThread(name: string, color: string, width: number): void;

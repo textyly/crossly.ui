@@ -88,7 +88,9 @@ export abstract class CueCanvas extends CueCanvasBase {
         }
     }
 
-    protected loadPattern(pattern: StitchPattern): void {
+    protected loadPattern(columns: number, rows: number, pattern: StitchPattern): void {
+        this._columns = columns;
+        this._rows = rows;
         this._pattern = new Array<CueThreadPath>;
         this._redoPattern = undefined;
         let lastDotIdx: DotIndex | undefined = undefined;
