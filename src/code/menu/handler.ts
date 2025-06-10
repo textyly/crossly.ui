@@ -10,10 +10,6 @@ export class MenuHandler implements IMenuHandler {
         // TODO: refactor!!!
         this.uiCanvasBroker = uiCanvasBroker;
 
-        const backSideContainer = document.getElementById("back-side-container");
-        assert.defined(backSideContainer?.style?.display, "");
-        backSideContainer.style.display = "none";
-
         const zoomLevel = document.getElementById("zoom-level");
         zoomLevel!.innerHTML = `${this.zoom}%`;
 

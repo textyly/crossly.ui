@@ -26,8 +26,15 @@ body {
   flex: 1;
   margin: 0.15rem;
   overflow: hidden;
-  display: flex;
   flex-direction: column;
+}
+
+.side-container.front {
+  display: flex;
+}
+
+.side-container.back {
+  display: none;
 }
 
 /* === Canvas Stack Layers === */
