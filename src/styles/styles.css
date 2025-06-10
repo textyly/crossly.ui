@@ -43,7 +43,7 @@ body {
 .top-floating-menu button,
 .left-floating-menu button,
 .bottom-floating-menu button {
-  padding: 0.4rem 0.6rem;
+  padding: 0.2rem 0.6rem;
   background-color: white;
   border: 1px solid #cfcfcf;
   border-radius: 5px;
