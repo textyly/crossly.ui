@@ -37,37 +37,6 @@ body {
   display: none;
 }
 
-/* === Canvas Stack Layers === */
-#front-input,
-#back-input {
-  position: relative;
-  background-color: #c7c6c6;
-  flex: 1;
-  overflow: hidden;
-  border: none;
-  outline: none;
-  z-index: 4;
-}
-
-#front-fabric,
-#back-fabric {
-  position: absolute;
-  background-color: #f2f2f2;
-  z-index: 1;
-}
-
-#front-stitch,
-#back-stitch {
-  position: absolute;
-  z-index: 2;
-}
-
-#front-cue,
-#back-cue {
-  position: absolute;
-  z-index: 3;
-}
-
 /* === Shared Button Style === */
 .top-floating-menu label,
 .left-floating-menu label,
@@ -150,4 +119,35 @@ body {
   background-color: rgba(255, 255, 255, 0.95);
   border-radius: 0.5rem;
   pointer-events: auto;
+}
+
+/* === Canvas Stack Layers === */
+#front-input,
+#back-input {
+  position: relative;
+  background-color: #c7c6c6;
+  flex: 1;
+  overflow: hidden;
+  border: none;
+  outline: none;
+  z-index: 4;
+}
+
+#front-fabric,
+#back-fabric {
+  position: absolute;
+  background-color: #f2f2f2;
+  z-index: 1;
+}
+
+#front-stitch,
+#back-stitch {
+  position: absolute;
+  z-index: 2;
+}
+
+#front-cue,
+#back-cue {
+  position: absolute;
+  z-index: 3;
 }
