@@ -45,11 +45,11 @@ export class UiCanvasBroker implements IUiCanvasBroker {
         throw new Error("Method not implemented.");
     }
 
-    public onChangeZoomIn(listener: VoidListener): VoidUnsubscribe {
-        throw new Error("Method not implemented.");
+    public onZoomIn(listener: VoidListener): VoidUnsubscribe {
+        return this.canvas.onZoomIn(listener);
     }
 
-    public onChangeZoomOut(listener: VoidListener): VoidUnsubscribe {
-        throw new Error("Method not implemented.");
+    public onZoomOut(listener: VoidListener): VoidUnsubscribe {
+        return this.canvas.onZoomOut(listener);
     }
 }

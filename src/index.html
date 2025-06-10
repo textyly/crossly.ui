@@ -13,7 +13,7 @@
     <div id="crossly-container">
         <div id="crossly">
             <!-- FRONT SIDE -->
-            <div class="side-container">
+            <div id="front-side-container" class="side-container">
                 <!-- Top-left menu -->
                 <div class="top-floating-menu">
                     <button class="action-button" data-action="open-home">
@@ -31,7 +31,7 @@
                             <circle cx="12" cy="7" r="4"></circle>
                         </svg>
                     </button>
-                    <label>flower</label>
+                    <label id="pattern">flower</label>
                 </div>
 
                 <!-- Top-right menu -->
@@ -67,7 +67,7 @@
                             </g>
                         </svg>
                     </button>
-                    <button  class="action-button" data-action="maximize">
+                    <!-- <button  class="action-button" data-action="maximize">
                         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#5f5f5f" stroke-width="2"
                             stroke-linecap="round" stroke-linejoin="round">
                             <path d="M8 3H5a2 2 0 0 0-2 2v3"></path>
@@ -75,7 +75,7 @@
                             <path d="M8 21H5a2 2 0 0 1-2-2v-3"></path>
                             <path d="M16 21h3a2 2 0 0 0 2-2v-3"></path>
                         </svg>
-                    </button>
+                    </button> -->
                 </div>
 
                 <!-- Left menu -->
@@ -110,7 +110,7 @@
                             <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                         </svg>
                     </button>
-                    <label>80%</label>
+                    <label id="zoom-level">80%</label>
                     <button class="action-button" data-action="zoom-out">
                         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#5f5f5f" stroke-width="2"
                             stroke-linecap="round" stroke-linejoin="round">
@@ -136,7 +136,7 @@
             </div>
 
             <!-- BACK SIDE -->
-            <div class="side-container">
+            <div id="back-side-container" class="side-container">
                 <div class="top-floating-menu right">
                     <button class="action-button" data-action="close">
                         <svg width="22" height="22" viewBox="0 0 24 24" fill="none">

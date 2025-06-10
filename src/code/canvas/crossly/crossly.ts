@@ -116,12 +116,30 @@ export abstract class CrosslyCanvas extends CrosslyCanvasBase implements ICrossl
         super.invokeChangeStitchPattern(event.pattern);
     }
 
+    private handleZoomIn(): void {
+        this.ensureAlive();
+
+        super.invokeZoomIn();
+    }
+
+    private handleZoomOut(): void {
+        this.ensureAlive();
+
+        super.invokeZoomOut();
+    }
+
     private subscribe() {
         const unChangeFabric = this.fabricCanvasFacade.onChange(this.handleChangeFabric.bind(this));
         super.registerUn(unChangeFabric);
 
         const unChangeStitchPattern = this.stitchCanvasFacade.onChange(this.handleChangeStitchPattern.bind(this));
         super.registerUn(unChangeStitchPattern);
+
+        const unZoomIn = this.stitchCanvasFacade.onZoomIn(this.handleZoomIn.bind(this));
+        super.registerUn(unZoomIn);
+
+        const unZoomOut = this.stitchCanvasFacade.onZoomOut(this.handleZoomOut.bind(this));
+        super.registerUn(unZoomOut);
     }
 
     private disposeCueCanvas(): void {

@@ -1,5 +1,5 @@
 import { Position } from "./input/types.js";
-import { IDisposable, Listener, VoidUnsubscribe } from "../types";
+import { IDisposable, Listener, VoidListener, VoidUnsubscribe } from "../types";
 import { ICueThreadPath, IStitchThreadPath } from "./utilities/arrays/types.js";
 import { ChangeFabricListener, ChangeStitchPatternListener } from "./virtual/types.js";
 
@@ -36,6 +36,8 @@ export interface ICanvas extends IDisposable {
 export interface ICrosslyCanvas extends ICanvas {
     onChangeFabric(listener: ChangeFabricListener): VoidUnsubscribe;
     onChangeStitchPattern(listener: ChangeStitchPatternListener): VoidUnsubscribe;
+    onZoomIn(listener: VoidListener): VoidUnsubscribe;
+    onZoomOut(listener: VoidListener): VoidUnsubscribe;
 }
 
 export interface ICrosslyCanvasFacade extends ICrosslyCanvas {

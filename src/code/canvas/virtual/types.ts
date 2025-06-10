@@ -5,18 +5,20 @@ import {
     Id,
     CueDot,
     ICanvas,
+    DotIndex,
     CuePattern,
     CueSegment,
     StitchPattern,
     StitchSegment,
     FabricPattern,
-    DotIndex,
 } from "../types.js";
 
 export interface IVirtualCanvas extends ICanvas {
     onRedraw(listener: VoidListener): VoidUnsubscribe;
     onMoveStart(listener: VoidListener): VoidUnsubscribe;
     onMoveStop(listener: VoidListener): VoidUnsubscribe;
+    onZoomIn(listener: VoidListener): VoidUnsubscribe;
+    onZoomOut(listener: VoidListener): VoidUnsubscribe;
 }
 
 export interface IFabricCanvas extends IVirtualCanvas {

@@ -1,22 +1,22 @@
 import { IVirtualCanvas } from "./types.js";
 import assert from "../../asserts/assert.js";
 import { CanvasConfig } from "../../config/types.js";
-import { Messaging2 } from "../../messaging/impl.js";
-import { IMessaging2 } from "../../messaging/types.js";
+import { Messaging4 } from "../../messaging/impl.js";
+import { IMessaging4 } from "../../messaging/types.js";
 import { VirtualCanvasDimensions } from "./dimensions.js";
 import { BoundsChangeEvent, CanvasSide } from "../types.js";
 import { VoidEvent, VoidListener, VoidUnsubscribe } from "../../types.js";
 import { IInputCanvas, MoveEvent, MoveStartEvent, MoveStopEvent, ZoomInEvent, ZoomOutEvent } from "../input/types.js";
 
 export abstract class VirtualCanvasBase extends VirtualCanvasDimensions implements IVirtualCanvas {
-    private readonly virtualMessaging: IMessaging2<VoidEvent, VoidEvent>;
+    private readonly virtualMessaging: IMessaging4<VoidEvent, VoidEvent, VoidEvent, VoidEvent>;
 
     protected currentSide: CanvasSide;
 
     constructor(className: string, config: CanvasConfig, inputCanvas: IInputCanvas) {
         super(className, config, inputCanvas);
 
-        this.virtualMessaging = new Messaging2();
+        this.virtualMessaging = new Messaging4();
         this.currentSide = CanvasSide.Back;
 
         this.subscribe();
@@ -32,6 +32,14 @@ export abstract class VirtualCanvasBase extends VirtualCanvasDimensions implemen
 
     public onMoveStop(listener: VoidListener): VoidUnsubscribe {
         return this.virtualMessaging.listenOnChannel2(listener);
+    }
+
+    public onZoomIn(listener: VoidListener): VoidUnsubscribe {
+        return this.virtualMessaging.listenOnChannel3(listener);
+    }
+
+    public onZoomOut(listener: VoidListener): VoidUnsubscribe {
+        return this.virtualMessaging.listenOnChannel4(listener);
     }
 
     public draw(): void {
@@ -84,6 +92,7 @@ export abstract class VirtualCanvasBase extends VirtualCanvasDimensions implemen
             this.zoomInCanvas(currentPosition);
             this.zoomInCore();
             this.draw();
+            this.invokeZoomIn();
         }
     }
 
@@ -101,6 +110,7 @@ export abstract class VirtualCanvasBase extends VirtualCanvasDimensions implemen
             this.zoomOutCanvas(currentPosition);
             this.zoomOutCore();
             this.draw();
+            this.invokeZoomOut();
         }
     }
 
@@ -163,6 +173,16 @@ export abstract class VirtualCanvasBase extends VirtualCanvasDimensions implemen
     private invokeMoveStop(): void {
         const event: VoidEvent = {};
         this.virtualMessaging.sendToChannel2(event);
+    }
+
+    private invokeZoomIn(): void {
+        const event: VoidEvent = {};
+        this.virtualMessaging.sendToChannel3(event);
+    }
+
+    private invokeZoomOut(): void {
+        const event: VoidEvent = {};
+        this.virtualMessaging.sendToChannel4(event);
     }
 
     private subscribe(): void {

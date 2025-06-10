@@ -1,22 +1,32 @@
 import { IMenuHandler } from "./types.js";
 import { IUiCanvasBroker } from "../brokers/types.js";
+import assert from "../asserts/assert.js";
 
 export class MenuHandler implements IMenuHandler {
     private uiCanvasBroker: IUiCanvasBroker;
-    private zoom = 100;
+    private zoom = 120;
 
     constructor(uiCanvasBroker: IUiCanvasBroker) {
+        // TODO: refactor!!!
         this.uiCanvasBroker = uiCanvasBroker;
 
-        // uiCanvasBroker.onChangeZoomIn(() => {
-        //     this.zoom += 10;
-        // });
+        const zoomLevel = document.getElementById("zoom-level");
+        zoomLevel!.innerHTML = `${this.zoom}%`;
 
-        // uiCanvasBroker.onChangeZoomIn(() => {
-        //     this.zoom -= 10;
-        // });
+        uiCanvasBroker.onZoomIn(() => {
+            this.zoom += 10;
 
-        // TODO: refactor!!!
+            const zoomLevel = document.getElementById("zoom-level");
+            zoomLevel!.innerHTML = `${this.zoom}%`;
+        });
+
+        uiCanvasBroker.onZoomOut(() => {
+            this.zoom -= 10;
+
+            const zoomLevel = document.getElementById("zoom-level");
+            zoomLevel!.innerHTML = `${this.zoom}%`;
+        });
+
         document.querySelectorAll('.color-button').forEach(button => {
             button.addEventListener('click', (event: any) => {
 
@@ -42,6 +52,12 @@ export class MenuHandler implements IMenuHandler {
                         break;
                     case 'zoom-out':
                         this.clickZoomOut();
+                        break;
+                    case 'split':
+                    case 'close':
+                        const backSideContainer = document.getElementById("back-side-container");
+                        assert.defined(backSideContainer?.style?.display, "");
+                        backSideContainer.style.display = backSideContainer.style.display === "flex" || backSideContainer.style.display === "" ? "none" : "flex";
                         break;
                 }
 
