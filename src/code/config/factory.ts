@@ -70,7 +70,7 @@ export class ConfigFactory {
             columns, rows, dotsSpacing,
             threads: {
                 name: "DMC 321",
-                color: "gray",
+                color: "#111e6a",
                 width: 12,
                 minWidth: 1,
                 widthZoomStep: 1
@@ -90,7 +90,7 @@ export class ConfigFactory {
             },
             threads: {
                 name: "DMC 321",
-                color: "gray",
+                color: "#111e6a",
                 width: 12,
                 minWidth: 1,
                 widthZoomStep: 1
