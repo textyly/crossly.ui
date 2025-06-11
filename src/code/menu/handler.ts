@@ -75,16 +75,20 @@ export class MenuHandler extends Base implements IMenuHandler {
                 break;
             case "split":
             case "close": {
-                const backSideContainer = this.menuItemProvider.backSideContainer;
-                const display = backSideContainer.style.display;
-
-                backSideContainer.style.display = (display === "flex") ? "none" : "flex";
+                this.toggleSplitView();
                 break;
             }
             default: {
                 throw new Error("unknown action.");
             }
         }
+    }
+
+    private toggleSplitView(): void {
+        const backSideContainer = this.menuItemProvider.backSideContainer;
+        const display = backSideContainer.style.display;
+
+        backSideContainer.style.display = (display === "flex") ? "none" : "flex";
     }
 
     private subscribe(): void {
@@ -96,6 +100,14 @@ export class MenuHandler extends Base implements IMenuHandler {
 
         this.subscribeColorButtons();
         this.subscribeActionButtons();
+
+        // TODO:
+        document.addEventListener("keydown", (event) => {
+            const toggleSplitViewCode = "Backslash";
+            if (event.ctrlKey && event.code === toggleSplitViewCode) {
+                this.toggleSplitView();
+            }
+        });
     }
 
     private subscribeColorButtons(): void {
