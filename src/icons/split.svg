@@ -1,0 +1,8 @@
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#5f5f5f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
+    <!-- Left panel -->
+    <rect x="2" y="4" width="9" height="16" />
+    <!-- Right panel -->
+    <rect x="13" y="4" width="9" height="16" />
+    <!-- Separator line -->
+    <line x1="12" y1="4" x2="12" y2="20" />
+</svg>
