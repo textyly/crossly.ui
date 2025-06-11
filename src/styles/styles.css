@@ -62,13 +62,13 @@ body {
 .top-floating-menu button:hover,
 .left-floating-menu button:hover,
 .bottom-floating-menu button:hover {
-   border: 1px solid #acabab;
+   border: 1px solid #707070;
 }
 
 .top-floating-menu button:active,
 .left-floating-menu button:active,
 .bottom-floating-menu button:active {
-  border: 1px solid #444444;
+  border: 1px solid #cfcfcf;
 }
 
 /* === Top Floating Menu === */
@@ -125,25 +125,22 @@ body {
   opacity: 0;
   max-height: 0;
   overflow: hidden;
-  transition: opacity 0.8s ease, max-height 0.8s ease;
+  transition: opacity 0.9s ease, max-height 0.9s ease;
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
 }
 
-/* Expand on hovering the whole left menu */
 .left-floating-menu:hover .color-button-group {
   opacity: 1;
-  max-height: 200px; /* enough to show all buttons */
+  max-height: 200px;
 }
 
-/* Color buttons style */
 .color-button {
   height: 1.2rem;
   cursor: pointer;
 }
 
-/* Fill buttons by their data-color */
 .color-button[data-color="1"] { background-color: #111e6a; }
 .color-button[data-color="2"] { background-color: #a9cdd6; }
 .color-button[data-color="3"] { background-color: #355f0d; }
