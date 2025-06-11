@@ -11,6 +11,7 @@ export class MenuHandler extends Base implements IMenuHandler {
 
     private readonly changeColorListeners: Array<(event: Event) => void>;
     private readonly actionListeners: Array<(event: Event) => void>;
+    private keyboardListener: (event: KeyboardEvent) => void;
 
     constructor(menuCanvasBroker: IMenuCanvasBroker, menuElementProvider: IMenuElementProvider) {
         super(MenuHandler.name);
@@ -22,6 +23,7 @@ export class MenuHandler extends Base implements IMenuHandler {
 
         this.changeColorListeners = [];
         this.actionListeners = [];
+        this.keyboardListener = () => { };
 
         this.subscribe();
     }
@@ -79,8 +81,15 @@ export class MenuHandler extends Base implements IMenuHandler {
                 break;
             }
             default: {
-                throw new Error("unknown action.");
+                // TODO: throw new Error("unknown action.");
             }
+        }
+    }
+
+    private handleKeyDown(event: KeyboardEvent): void {
+        const toggleSplitViewCode = "Backslash";
+        if (event.ctrlKey && event.code === toggleSplitViewCode) {
+            this.toggleSplitView();
         }
     }
 
@@ -100,14 +109,7 @@ export class MenuHandler extends Base implements IMenuHandler {
 
         this.subscribeColorButtons();
         this.subscribeActionButtons();
-
-        // TODO:
-        document.addEventListener("keydown", (event) => {
-            const toggleSplitViewCode = "Backslash";
-            if (event.ctrlKey && event.code === toggleSplitViewCode) {
-                this.toggleSplitView();
-            }
-        });
+        this.subscribeKeyboardEvents();
     }
 
     private subscribeColorButtons(): void {
@@ -126,9 +128,15 @@ export class MenuHandler extends Base implements IMenuHandler {
         });
     }
 
+    private subscribeKeyboardEvents(): void {
+        this.keyboardListener = this.handleKeyDown.bind(this);
+        document.addEventListener("keydown", this.keyboardListener);
+    }
+
     private unsubscribe(): void {
         this.unsubscribeColorButtons();
         this.unsubscribeActionButtons();
+        this.unsubscribeKeyboardEvents();
     }
 
     private unsubscribeColorButtons(): void {
@@ -155,5 +163,9 @@ export class MenuHandler extends Base implements IMenuHandler {
             const listener = this.actionListeners[index];
             button.removeEventListener("click", listener);
         }
+    }
+
+    private unsubscribeKeyboardEvents(): void {
+        document.removeEventListener("keydown", this.keyboardListener);
     }
 }
