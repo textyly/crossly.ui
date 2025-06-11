@@ -50,7 +50,7 @@ export class MenuHandler extends Base implements IMenuHandler {
         const target = event.currentTarget as any;
         assert.defined(target, "target");
 
-        const color = target.dataset.color;
+        const color = getComputedStyle(target).backgroundColor;
         this.menuCanvasBroker.change(color);
     }
 
