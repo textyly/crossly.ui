@@ -1,6 +1,6 @@
 import { VoidListener, VoidUnsubscribe } from "../types.js";
 
-export interface IUiCanvasBroker {
+export interface IMenuCanvasBroker {
     load(): void; //pattern
     change(color: string): void; // thread
     undo(): void;
@@ -15,7 +15,7 @@ export interface IUiCanvasBroker {
     onZoomOut(listener: VoidListener): VoidUnsubscribe;
 }
 
-export interface IUiRepositoryBroker {
+export interface IMenuRepositoryBroker {
     save(): void; //pattern
     get(): void; // pattern
     getAll(): void; // patterns

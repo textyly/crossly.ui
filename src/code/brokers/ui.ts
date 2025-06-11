@@ -1,8 +1,8 @@
-import { IUiCanvasBroker } from "./types.js";
+import { IMenuCanvasBroker } from "./types.js";
 import { ICrosslyCanvasFacade } from "../canvas/types.js";
 import { VoidListener, VoidUnsubscribe } from "../types.js";
 
-export class UiCanvasBroker implements IUiCanvasBroker {
+export class UiCanvasBroker implements IMenuCanvasBroker {
     private canvas: ICrosslyCanvasFacade;
 
     constructor(canvas: ICrosslyCanvasFacade) {
