@@ -1,6 +1,7 @@
 import { IMenuCanvasBroker } from "./types.js";
 import { ICrosslyCanvasFacade } from "../canvas/types.js";
 import { VoidListener, VoidUnsubscribe } from "../types.js";
+import { ChangeStitchPatternListener } from "../canvas/virtual/types.js";
 
 export class UiCanvasBroker implements IMenuCanvasBroker {
     private canvas: ICrosslyCanvasFacade;
@@ -33,16 +34,8 @@ export class UiCanvasBroker implements IMenuCanvasBroker {
         this.canvas.zoomOut();
     }
 
-    public onLoadPattern(listener: VoidListener): VoidUnsubscribe {
-        throw new Error("Method not implemented.");
-    }
-
-    public onChangePattern(listener: VoidListener): VoidUnsubscribe {
-        throw new Error("Method not implemented.");
-    }
-
-    public onChangeThread(listener: VoidListener): VoidUnsubscribe {
-        throw new Error("Method not implemented.");
+    public onChangePattern(listener: ChangeStitchPatternListener): VoidUnsubscribe {
+        return this.canvas.onChangeStitchPattern(listener);
     }
 
     public onZoomIn(listener: VoidListener): VoidUnsubscribe {

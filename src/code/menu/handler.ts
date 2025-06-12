@@ -2,12 +2,13 @@ import assert from "../asserts/assert.js";
 import { Base } from "../general/base.js";
 import { IMenuCanvasBroker } from "../brokers/types.js";
 import { IMenuHandler, IMenuElementProvider } from "./types.js";
+import { ChangeStitchPatternEvent } from "../canvas/virtual/types.js";
 
 export class MenuHandler extends Base implements IMenuHandler {
     private currentZoomLevel = 120;
 
     private readonly menuCanvasBroker: IMenuCanvasBroker;
-    private readonly menuItemProvider: IMenuElementProvider;
+    private readonly menuElementProvider: IMenuElementProvider;
 
     private readonly changeColorListeners: Array<(event: Event) => void>;
     private readonly actionListeners: Array<(event: Event) => void>;
@@ -17,7 +18,7 @@ export class MenuHandler extends Base implements IMenuHandler {
         super(MenuHandler.name);
 
         this.menuCanvasBroker = menuCanvasBroker;
-        this.menuItemProvider = menuElementProvider;
+        this.menuElementProvider = menuElementProvider;
 
         this.zoomElement = this.currentZoomLevel;
 
@@ -34,7 +35,7 @@ export class MenuHandler extends Base implements IMenuHandler {
     }
 
     private set zoomElement(value: number) {
-        const element = this.menuItemProvider.zoomLevel;
+        const element = this.menuElementProvider.zoomLevel;
         element.innerHTML = `${value}%`;
     }
 
@@ -49,10 +50,10 @@ export class MenuHandler extends Base implements IMenuHandler {
     }
 
     private handleChangeColor(event: Event): void {
-        const target = event.currentTarget as any;
-        assert.defined(target, "target");
+        const element = event.currentTarget as Element;
+        assert.defined(element, "target");
 
-        const color = getComputedStyle(target).backgroundColor;
+        const color = this.getElementColor(element);
         this.menuCanvasBroker.change(color);
     }
 
@@ -93,11 +94,30 @@ export class MenuHandler extends Base implements IMenuHandler {
         }
     }
 
+    private handleChangeStitchPattern(event: ChangeStitchPatternEvent): void {
+        const pattern = event.pattern;
+        const colorButtons = this.menuElementProvider.colorButtons;
+        const length = Math.min(pattern.length, colorButtons.length);
+
+
+        // TODO: incorrect algorithms!!!
+        for (let index = length - 1; index > 0; index--) {
+            const threadPath = pattern[index];
+            const colorButton = colorButtons[(length - 1) - index];
+
+            colorButton.style.backgroundColor = threadPath.color;
+        }
+    }
+
     private toggleSplitView(): void {
-        const backSideContainer = this.menuItemProvider.backSideContainer;
+        const backSideContainer = this.menuElementProvider.backSideContainer;
         const display = backSideContainer.style.display;
 
         backSideContainer.style.display = (display === "flex") ? "none" : "flex";
+    }
+
+    private getElementColor(element: Element): string {
+        return getComputedStyle(element).backgroundColor;
     }
 
     private subscribe(): void {
@@ -107,13 +127,16 @@ export class MenuHandler extends Base implements IMenuHandler {
         const zoomOutUn = this.menuCanvasBroker.onZoomOut(this.handleZoomOut.bind(this));
         super.registerUn(zoomOutUn);
 
+        const loadPatternUn = this.menuCanvasBroker.onChangePattern(this.handleChangeStitchPattern.bind(this));
+        super.registerUn(loadPatternUn);
+
         this.subscribeColorButtons();
         this.subscribeActionButtons();
         this.subscribeKeyboardEvents();
     }
 
     private subscribeColorButtons(): void {
-        this.menuItemProvider.colorButtons.forEach(button => {
+        this.menuElementProvider.colorButtons.forEach(button => {
             const handler = this.handleChangeColor.bind(this);
             button.addEventListener("click", handler);
             this.changeColorListeners.push(handler);
@@ -121,7 +144,7 @@ export class MenuHandler extends Base implements IMenuHandler {
     }
 
     private subscribeActionButtons(): void {
-        this.menuItemProvider.actionButtons.forEach(button => {
+        this.menuElementProvider.actionButtons.forEach(button => {
             const handler = this.handleAction.bind(this);
             button.addEventListener("click", handler);
             this.actionListeners.push(handler);
@@ -140,7 +163,7 @@ export class MenuHandler extends Base implements IMenuHandler {
     }
 
     private unsubscribeColorButtons(): void {
-        const colorButtons = this.menuItemProvider.colorButtons;
+        const colorButtons = this.menuElementProvider.colorButtons;
 
         assert.defined(colorButtons, "colorButtons");
         assert.defined(this.changeColorListeners, "changeColorListeners");
@@ -153,7 +176,7 @@ export class MenuHandler extends Base implements IMenuHandler {
     }
 
     private unsubscribeActionButtons(): void {
-        const actionButtons = this.menuItemProvider.actionButtons;
+        const actionButtons = this.menuElementProvider.actionButtons;
 
         assert.defined(actionButtons, "actionButtons");
         assert.defined(this.actionListeners, "actionListeners");

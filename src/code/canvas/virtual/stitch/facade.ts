@@ -19,6 +19,7 @@ export class StitchCanvasFacade extends StitchCanvas implements IStitchCanvasFac
     public load(columns: number, rows: number, pattern: StitchPattern): void {
         super.ensureAlive();
         super.loadPattern(columns, rows, pattern);
+        super.invokeChange(this.pattern);
     }
 
     public clickDot(dotIdx: DotIndex): void {

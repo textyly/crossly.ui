@@ -8,22 +8,22 @@ export class MenuElementProvider implements IMenuElementProvider {
         this.document = document;
     }
 
-    public get zoomLevel(): Element {
+    public get zoomLevel(): HTMLElement {
         const zoomLevel = this.document.getElementById("zoom-level");
         assert.defined(zoomLevel, "zoomLevelElement");
 
         return zoomLevel;
     }
 
-    public get actionButtons(): Array<Element> {
-        const actionButtons = this.document.querySelectorAll('.action-button');
+    public get actionButtons(): Array<HTMLElement> {
+        const actionButtons = this.document.querySelectorAll<HTMLElement>('.action-button');
         assert.defined(actionButtons, "actionButtons");
 
         return [...actionButtons];
     }
 
-    public get colorButtons(): Array<Element> {
-        const colorButtons = this.document.querySelectorAll('.color-button');
+    public get colorButtons(): Array<HTMLElement> {
+        const colorButtons = this.document.querySelectorAll<HTMLElement>('.color-button');
         assert.defined(colorButtons, "actionButtons");
 
         return [...colorButtons];

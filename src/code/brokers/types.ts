@@ -1,4 +1,5 @@
 import { VoidListener, VoidUnsubscribe } from "../types.js";
+import { ChangeStitchPatternListener } from "../canvas/virtual/types.js";
 
 export interface IMenuCanvasBroker {
     load(): void; //pattern
@@ -8,9 +9,7 @@ export interface IMenuCanvasBroker {
     zoomIn(): void;
     zoomOut(): void;
 
-    onLoadPattern(listener: VoidListener): VoidUnsubscribe;
-    onChangePattern(listener: VoidListener): VoidUnsubscribe;
-    onChangeThread(listener: VoidListener): VoidUnsubscribe;
+    onChangePattern(listener: ChangeStitchPatternListener): VoidUnsubscribe;
     onZoomIn(listener: VoidListener): VoidUnsubscribe;
     onZoomOut(listener: VoidListener): VoidUnsubscribe;
 }

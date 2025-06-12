@@ -2,8 +2,8 @@ export interface IMenuHandler {
 }
 
 export interface IMenuElementProvider {
-    get zoomLevel(): Element;
-    get actionButtons(): Array<Element>;
-    get colorButtons(): Array<Element>;
+    get zoomLevel(): HTMLElement;
+    get actionButtons(): Array<HTMLElement>;
+    get colorButtons(): Array<HTMLElement>;
     get backSideContainer(): HTMLElement;
 }
