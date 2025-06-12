@@ -19,6 +19,7 @@ export interface IRasterDrawingCanvas extends ICanvas {
 export interface IFabricRasterDrawingCanvas extends IRasterDrawingCanvas {
     drawDots(dots: IFabricDotArray): void;
     drawLines(threads: FabricThreadArray): void;
+    drawBackgroundColor(color: string): void;
 }
 
 export interface IStitchRasterDrawingCanvas extends IRasterDrawingCanvas {

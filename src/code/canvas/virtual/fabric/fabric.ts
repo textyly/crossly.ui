@@ -1,10 +1,10 @@
 import { FabricCanvasBase } from "./base.js";
+import { FabricPattern } from "../../types.js";
 import assert from "../../../asserts/assert.js";
 import { IInputCanvas } from "../../input/types.js";
 import { FabricCanvasConfig } from "../../../config/types.js";
 import { FabricDotArray } from "../../utilities/arrays/dot/dot.js";
 import { FabricThreadArray } from "../../utilities/arrays/thread/fabric.js";
-import { FabricPattern } from "../../types.js";
 
 export abstract class FabricCanvas extends FabricCanvasBase {
     protected _name: string;
@@ -72,6 +72,8 @@ export abstract class FabricCanvas extends FabricCanvasBase {
 
         const endIndexX = boundsIndexes.rightTop.dotX;
         const endIndexY = boundsIndexes.leftBottom.dotY;
+
+        super.invokeDrawBackground(this._color);
 
         const canRedrawThreads = (this.threadWidth >= this.threadMinWidth);
         if (canRedrawThreads) {

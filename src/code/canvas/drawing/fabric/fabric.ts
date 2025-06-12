@@ -2,7 +2,7 @@ import { CanvasBase } from "../../base.js";
 import assert from "../../../asserts/assert.js";
 import { BoundsChangeEvent } from "../../types.js";
 import { IFabricDrawingCanvas, IFabricRasterDrawingCanvas } from "../types.js";
-import { DrawFabricDotsEvent, DrawFabricThreadsEvent, IFabricCanvas } from "../../virtual/types.js";
+import { DrawFabricBackgroundEvent, DrawFabricDotsEvent, DrawFabricThreadsEvent, IFabricCanvas } from "../../virtual/types.js";
 
 export class FabricDrawingCanvas extends CanvasBase implements IFabricDrawingCanvas {
     private readonly fabricCanvas: IFabricCanvas;
@@ -33,6 +33,12 @@ export class FabricDrawingCanvas extends CanvasBase implements IFabricDrawingCan
         this.ensureAlive();
 
         this.rasterDrawing.drawLines(event.threads);
+    }
+
+    private handleDrawBackground(event: DrawFabricBackgroundEvent): void {
+        this.ensureAlive();
+
+        this.rasterDrawing.drawBackgroundColor(event.color);
     }
 
     private handleRedraw(): void {
@@ -75,6 +81,9 @@ export class FabricDrawingCanvas extends CanvasBase implements IFabricDrawingCan
 
         const drawThreadsUn = this.fabricCanvas.onDrawThreads(this.handleDrawThreads.bind(this));
         super.registerUn(drawThreadsUn);
+
+        const drawBackgroundUn = this.fabricCanvas.onDrawBackground(this.handleDrawBackground.bind(this));
+        super.registerUn(drawBackgroundUn);
 
         const redrawUn = this.fabricCanvas.onRedraw(this.handleRedraw.bind(this));
         super.registerUn(redrawUn);

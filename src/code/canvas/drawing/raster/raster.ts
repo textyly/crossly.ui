@@ -29,10 +29,16 @@ export abstract class RasterDrawingCanvas extends CanvasBase {
         this.drawBitMapCore(bitmap, this.rasterCanvasContext);
     }
 
+    public drawBackgroundColor(color: string): void {
+        super.ensureAlive();
+
+        this.rasterCanvasContext.fillStyle = color;
+        this.rasterCanvasContext.fillRect(0, 0, this.bounds.width, this.bounds.height);
+    }
+
     public clear(): void {
         super.ensureAlive();
-        const bounds = this.bounds;
-        this.rasterCanvasContext.clearRect(0, 0, bounds.width, bounds.height);
+        this.rasterCanvasContext.clearRect(0, 0, this.bounds.width, this.bounds.height);
     }
 
     protected override invokeBoundsChange(bounds: Bounds): void {
@@ -52,8 +58,7 @@ export abstract class RasterDrawingCanvas extends CanvasBase {
     private drawBitMapCore(bitmap: ImageBitmap, canvasContext: CanvasRenderingContext2D): void {
         super.ensureAlive();
 
-        const bounds = this.bounds;
-        canvasContext.drawImage(bitmap, 0, 0, bounds.width, bounds.height);
+        canvasContext.drawImage(bitmap, 0, 0, this.bounds.width, this.bounds.height);
     }
 
     private invokeBoundsChangeCore(bounds: Bounds): void {

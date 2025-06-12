@@ -44,7 +44,7 @@ export class ConfigFactory {
         const fabricConfig = {
             name: "Aida 14",
             columns, rows, dotsSpacing,
-            color: "white", // TODO: implement
+            color: "#f2f2f2",
             dots: {
                 color: "#9fa19f",
                 radius: 1.4,

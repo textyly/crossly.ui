@@ -3,8 +3,8 @@ import { FabricPattern } from "../../types.js";
 import { VoidUnsubscribe } from "../../../types.js";
 import { IInputCanvas } from "../../input/types.js";
 import { CanvasConfig } from "../../../config/types.js";
-import { Messaging3 } from "../../../messaging/impl.js";
-import { IMessaging3 } from "../../../messaging/types.js";
+import { Messaging4 } from "../../../messaging/impl.js";
+import { IMessaging4 } from "../../../messaging/types.js";
 import { IFabricDotArray } from "../../utilities/arrays/types.js";
 import { FabricThreadArray } from "../../utilities/arrays/thread/fabric.js";
 import {
@@ -15,14 +15,16 @@ import {
     DrawFabricDotsListener,
     DrawFabricThreadsEvent,
     DrawFabricThreadsListener,
+    DrawFabricBackgroundEvent,
+    DrawFabricBackgroundListener,
 } from "../types.js";
 
 export abstract class FabricCanvasBase extends VirtualCanvasBase implements IFabricCanvas {
-    private readonly messaging: IMessaging3<ChangeFabricEvent, DrawFabricDotsEvent, DrawFabricThreadsEvent>;
+    private readonly messaging: IMessaging4<ChangeFabricEvent, DrawFabricDotsEvent, DrawFabricThreadsEvent, DrawFabricBackgroundEvent>;
 
     constructor(className: string, config: CanvasConfig, input: IInputCanvas) {
         super(className, config, input);
-        this.messaging = new Messaging3();
+        this.messaging = new Messaging4();
     }
 
     public onChange(listener: ChangeFabricListener): VoidUnsubscribe {
@@ -35,6 +37,10 @@ export abstract class FabricCanvasBase extends VirtualCanvasBase implements IFab
 
     public onDrawThreads(listener: DrawFabricThreadsListener): VoidUnsubscribe {
         return this.messaging.listenOnChannel3(listener);
+    }
+
+    public onDrawBackground(listener:  DrawFabricBackgroundListener): VoidUnsubscribe {
+        return this.messaging.listenOnChannel4(listener);
     }
 
     public override dispose(): void {
@@ -56,5 +62,10 @@ export abstract class FabricCanvasBase extends VirtualCanvasBase implements IFab
     protected invokeDrawThreads(threads: FabricThreadArray): void {
         const event = { threads };
         this.messaging.sendToChannel3(event);
+    }
+
+    protected invokeDrawBackground(color: string): void {
+        const event = { color };
+        this.messaging.sendToChannel4(event);
     }
 } 

@@ -162,7 +162,6 @@ body {
 #front-fabric,
 #back-fabric {
   position: absolute;
-  background-color: #f2f2f2;
   z-index: 1;
 }
 
