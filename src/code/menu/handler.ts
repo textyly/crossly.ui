@@ -1,23 +1,27 @@
 import assert from "../asserts/assert.js";
 import { Base } from "../general/base.js";
-import { IMenuCanvasBroker } from "../brokers/types.js";
+import { ColorPalette } from "./components/palette.js";
+import { ICrosslyCanvasFacade } from "../canvas/types.js";
 import { IMenuHandler, IMenuElementProvider } from "./types.js";
 import { ChangeStitchPatternEvent } from "../canvas/virtual/types.js";
 
 export class MenuHandler extends Base implements IMenuHandler {
     private currentZoomLevel = 120;
 
-    private readonly menuCanvasBroker: IMenuCanvasBroker;
+    private readonly canvas: ICrosslyCanvasFacade;
     private readonly menuElementProvider: IMenuElementProvider;
 
     private readonly changeColorListeners: Array<(event: Event) => void>;
     private readonly actionListeners: Array<(event: Event) => void>;
     private keyboardListener: (event: KeyboardEvent) => void;
 
-    constructor(menuCanvasBroker: IMenuCanvasBroker, menuElementProvider: IMenuElementProvider) {
+    private colorPalette: ColorPalette;
+
+    //TODO: IMenuComponentProvider
+    constructor(canvas: ICrosslyCanvasFacade, menuElementProvider: IMenuElementProvider) {
         super(MenuHandler.name);
 
-        this.menuCanvasBroker = menuCanvasBroker;
+        this.canvas = canvas;
         this.menuElementProvider = menuElementProvider;
 
         this.zoomElement = this.currentZoomLevel;
@@ -25,6 +29,8 @@ export class MenuHandler extends Base implements IMenuHandler {
         this.changeColorListeners = [];
         this.actionListeners = [];
         this.keyboardListener = () => { };
+
+        this.colorPalette = new ColorPalette(this.menuElementProvider.colorButtons);
 
         this.subscribe();
     }
@@ -54,7 +60,7 @@ export class MenuHandler extends Base implements IMenuHandler {
         assert.defined(element, "target");
 
         const color = this.getElementColor(element);
-        this.menuCanvasBroker.change(color);
+        this.canvas.useThread("test", color, 12); // TODO: !!!
     }
 
     private handleAction(event: Event): void {
@@ -65,16 +71,16 @@ export class MenuHandler extends Base implements IMenuHandler {
 
         switch (action) {
             case "undo":
-                this.menuCanvasBroker.undo();
+                this.canvas.undo();
                 break;
             case "redo":
-                this.menuCanvasBroker.redo();
+                this.canvas.redo();
                 break;
             case "zoom-in":
-                this.menuCanvasBroker.zoomIn();
+                this.canvas.zoomIn();
                 break;
             case "zoom-out":
-                this.menuCanvasBroker.zoomOut();
+                this.canvas.zoomOut();
                 break;
             case "split":
             case "close": {
@@ -95,18 +101,11 @@ export class MenuHandler extends Base implements IMenuHandler {
     }
 
     private handleChangeStitchPattern(event: ChangeStitchPatternEvent): void {
-        const pattern = event.pattern;
-        const colorButtons = this.menuElementProvider.colorButtons;
-        const length = Math.min(pattern.length, colorButtons.length);
+        const colors = event.pattern
+            .filter((threadPath) => threadPath.length > 0)
+            .map((threadPath) => threadPath.color);
 
-
-        // TODO: incorrect algorithms!!!
-        for (let index = length - 1; index > 0; index--) {
-            const threadPath = pattern[index];
-            const colorButton = colorButtons[(length - 1) - index];
-
-            colorButton.style.backgroundColor = threadPath.color;
-        }
+        this.colorPalette.insert(colors);
     }
 
     private toggleSplitView(): void {
@@ -121,13 +120,13 @@ export class MenuHandler extends Base implements IMenuHandler {
     }
 
     private subscribe(): void {
-        const zoomInUn = this.menuCanvasBroker.onZoomIn(this.handleZoomIn.bind(this));
+        const zoomInUn = this.canvas.onZoomIn(this.handleZoomIn.bind(this));
         super.registerUn(zoomInUn);
 
-        const zoomOutUn = this.menuCanvasBroker.onZoomOut(this.handleZoomOut.bind(this));
+        const zoomOutUn = this.canvas.onZoomOut(this.handleZoomOut.bind(this));
         super.registerUn(zoomOutUn);
 
-        const loadPatternUn = this.menuCanvasBroker.onChangePattern(this.handleChangeStitchPattern.bind(this));
+        const loadPatternUn = this.canvas.onChangeStitchPattern(this.handleChangeStitchPattern.bind(this));
         super.registerUn(loadPatternUn);
 
         this.subscribeColorButtons();
