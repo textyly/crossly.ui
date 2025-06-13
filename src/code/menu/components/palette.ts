@@ -1,8 +1,8 @@
 import assert from "../../asserts/assert.js";
 import { Base } from "../../general/base.js";
+import { VoidUnsubscribe } from "../../types.js";
 import { Messaging1 } from "../../messaging/impl.js";
 import { IMessaging1 } from "../../messaging/types.js";
-import { VoidUnsubscribe } from "../../types.js";
 import { ChangeThreadEvent, ChangeThreadListener, Color, Colors, IColorPalette } from "../types.js";
 
 export class ColorPalette extends Base implements IColorPalette {
@@ -16,6 +16,7 @@ export class ColorPalette extends Base implements IColorPalette {
     // default colors provided by config
     constructor(buttons: Array<HTMLElement>) {
         super(ColorPalette.name);
+
         assert.greaterThanZero(buttons?.length, "buttons.length");
 
         this.buttons = buttons;
