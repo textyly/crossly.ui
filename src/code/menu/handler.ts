@@ -1,36 +1,30 @@
 import assert from "../asserts/assert.js";
 import { Base } from "../general/base.js";
-import { ColorPalette } from "./components/palette.js";
 import { ICrosslyCanvasFacade } from "../canvas/types.js";
-import { IMenuHandler, IMenuElementProvider } from "./types.js";
+import { IMenuHandler, IMenuProvider } from "./types.js";
 import { ChangeStitchPatternEvent } from "../canvas/virtual/types.js";
 
 export class MenuHandler extends Base implements IMenuHandler {
     private currentZoomLevel = 120;
 
     private readonly canvas: ICrosslyCanvasFacade;
-    private readonly menuElementProvider: IMenuElementProvider;
+    private readonly menuProvider: IMenuProvider;
 
     private readonly changeColorListeners: Array<(event: Event) => void>;
     private readonly actionListeners: Array<(event: Event) => void>;
     private keyboardListener: (event: KeyboardEvent) => void;
 
-    private colorPalette: ColorPalette;
-
-    //TODO: IMenuComponentProvider
-    constructor(canvas: ICrosslyCanvasFacade, menuElementProvider: IMenuElementProvider) {
+    constructor(canvas: ICrosslyCanvasFacade, menuProvider: IMenuProvider) {
         super(MenuHandler.name);
 
         this.canvas = canvas;
-        this.menuElementProvider = menuElementProvider;
+        this.menuProvider = menuProvider;
 
         this.zoomElement = this.currentZoomLevel;
 
         this.changeColorListeners = [];
         this.actionListeners = [];
         this.keyboardListener = () => { };
-
-        this.colorPalette = new ColorPalette(this.menuElementProvider.colorButtons);
 
         this.subscribe();
     }
@@ -41,7 +35,7 @@ export class MenuHandler extends Base implements IMenuHandler {
     }
 
     private set zoomElement(value: number) {
-        const element = this.menuElementProvider.zoomLevel;
+        const element = this.menuProvider.zoomLevel;
         element.innerHTML = `${value}%`;
     }
 
@@ -105,11 +99,11 @@ export class MenuHandler extends Base implements IMenuHandler {
             .filter((threadPath) => threadPath.length > 0)
             .map((threadPath) => threadPath.color);
 
-        this.colorPalette.insert(colors);
+        this.menuProvider.colorPalette.insert(colors);
     }
 
     private toggleSplitView(): void {
-        const backSideContainer = this.menuElementProvider.backSideContainer;
+        const backSideContainer = this.menuProvider.backSideContainer;
         const display = backSideContainer.style.display;
 
         backSideContainer.style.display = (display === "flex") ? "none" : "flex";
@@ -135,7 +129,7 @@ export class MenuHandler extends Base implements IMenuHandler {
     }
 
     private subscribeColorButtons(): void {
-        this.menuElementProvider.colorButtons.forEach(button => {
+        this.menuProvider.colorPalette.buttons.forEach(button => {
             const handler = this.handleChangeColor.bind(this);
             button.addEventListener("click", handler);
             this.changeColorListeners.push(handler);
@@ -143,7 +137,7 @@ export class MenuHandler extends Base implements IMenuHandler {
     }
 
     private subscribeActionButtons(): void {
-        this.menuElementProvider.actionButtons.forEach(button => {
+        this.menuProvider.actionButtons.forEach(button => {
             const handler = this.handleAction.bind(this);
             button.addEventListener("click", handler);
             this.actionListeners.push(handler);
@@ -162,7 +156,7 @@ export class MenuHandler extends Base implements IMenuHandler {
     }
 
     private unsubscribeColorButtons(): void {
-        const colorButtons = this.menuElementProvider.colorButtons;
+        const colorButtons = this.menuProvider.colorPalette.buttons;
 
         assert.defined(colorButtons, "colorButtons");
         assert.defined(this.changeColorListeners, "changeColorListeners");
@@ -175,7 +169,7 @@ export class MenuHandler extends Base implements IMenuHandler {
     }
 
     private unsubscribeActionButtons(): void {
-        const actionButtons = this.menuElementProvider.actionButtons;
+        const actionButtons = this.menuProvider.actionButtons;
 
         assert.defined(actionButtons, "actionButtons");
         assert.defined(this.actionListeners, "actionListeners");
