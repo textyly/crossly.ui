@@ -1,21 +1,34 @@
 import assert from "../../asserts/assert.js";
 import { Base } from "../../general/base.js";
-import { Colors, IColorPalette } from "../types.js";
+import { Messaging1 } from "../../messaging/impl.js";
+import { IMessaging1 } from "../../messaging/types.js";
+import { VoidUnsubscribe } from "../../types.js";
+import { ChangeThreadEvent, ChangeThreadListener, Color, Colors, IColorPalette } from "../types.js";
 
 export class ColorPalette extends Base implements IColorPalette {
-    private _buttons: Array<HTMLElement>;
+    private messaging: IMessaging1<ChangeThreadEvent>;
+
+    private buttons: Array<HTMLElement>;
     private activeColors: Array<string>;
 
+    private readonly changeColorListeners: Array<(event: Event) => void>;
+
+    // default colors provided by config
     constructor(buttons: Array<HTMLElement>) {
         super(ColorPalette.name);
         assert.greaterThanZero(buttons?.length, "buttons.length");
 
-        this._buttons = buttons;
-        this.activeColors = this._buttons.map((button) => this.getButtonColor(button)).map((color) => this.normalizeColor(color));
+        this.buttons = buttons;
+        this.activeColors = this.buttons.map((button) => this.getButtonColor(button)).map((color) => this.normalizeColor(color));
+
+        this.changeColorListeners = [];
+        this.messaging = new Messaging1();
+
+        this.subscribeButtons();
     }
 
-    public get buttons(): Array<HTMLElement> {
-        return this._buttons;
+    public onChangeThread(listener: ChangeThreadListener): VoidUnsubscribe {
+        return this.messaging.listenOnChannel1(listener);
     }
 
     public insert(colors: Colors): void {
@@ -34,16 +47,16 @@ export class ColorPalette extends Base implements IColorPalette {
             }
         });
 
-        const colorsToInsert = Math.min(uniqueColors.length, this._buttons.length);
+        const colorsToInsert = Math.min(uniqueColors.length, this.buttons.length);
 
         for (let index = 0; index < colorsToInsert; index++) {
             const colorToInsert = uniqueColors[index];
             this.activeColors = [colorToInsert, ...this.activeColors];
         }
 
-        for (let index = 0; index < this._buttons.length; index++) {
+        for (let index = 0; index < this.buttons.length; index++) {
             const color = this.activeColors[index];
-            const button = this._buttons[index];
+            const button = this.buttons[index];
             button.style.backgroundColor = color;
         }
 
@@ -75,5 +88,42 @@ export class ColorPalette extends Base implements IColorPalette {
         const computedColor = getComputedStyle(temp).color;
         document.body.removeChild(temp);
         return computedColor;
+    }
+
+    private handleChangeColor(event: Event): void {
+        const element = event.currentTarget as Element;
+        assert.defined(element, "target");
+
+        const color = this.getElementColor(element);
+        this.invokeChangeThread(color);
+    }
+
+    private getElementColor(element: Element): string {
+        return getComputedStyle(element).backgroundColor;
+    }
+
+    private subscribeButtons(): void {
+        this.buttons.forEach(button => {
+            const handler = this.handleChangeColor.bind(this);
+            button.addEventListener("click", handler);
+            this.changeColorListeners.push(handler);
+        });
+    }
+
+    private unsubscribeButtons(): void {
+
+        assert.defined(this.buttons, "colorButtons");
+        assert.defined(this.changeColorListeners, "changeColorListeners");
+
+        for (let index = 0; index < this.buttons.length; index++) {
+            const button = this.buttons[index];
+            const listener = this.changeColorListeners[index];
+            button.removeEventListener("click", listener);
+        }
+    }
+
+    private invokeChangeThread(color: Color): void {
+        const event = { name: "test", color, width: 12 }; // TODO: 
+        this.messaging.sendToChannel1(event);
     }
 }

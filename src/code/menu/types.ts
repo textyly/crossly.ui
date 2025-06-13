@@ -1,3 +1,5 @@
+import { Listener, VoidUnsubscribe } from "../types.js";
+
 export type Color = string;
 export type Colors = Array<Color>;
 
@@ -12,7 +14,10 @@ export interface IMenuProvider {
 }
 
 export interface IColorPalette {
-    get buttons(): Array<HTMLElement>;
-
     insert(colors: Colors): void;
+
+    onChangeThread(listener: ChangeThreadListener): VoidUnsubscribe;
 }
+
+export type ChangeThreadEvent = { name: string, color: Color, width: number };
+export type ChangeThreadListener = Listener<ChangeThreadEvent>; 

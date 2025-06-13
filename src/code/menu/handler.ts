@@ -10,7 +10,6 @@ export class MenuHandler extends Base implements IMenuHandler {
     private readonly canvas: ICrosslyCanvasFacade;
     private readonly menuProvider: IMenuProvider;
 
-    private readonly changeColorListeners: Array<(event: Event) => void>;
     private readonly actionListeners: Array<(event: Event) => void>;
     private keyboardListener: (event: KeyboardEvent) => void;
 
@@ -22,7 +21,6 @@ export class MenuHandler extends Base implements IMenuHandler {
 
         this.zoomElement = this.currentZoomLevel;
 
-        this.changeColorListeners = [];
         this.actionListeners = [];
         this.keyboardListener = () => { };
 
@@ -47,14 +45,6 @@ export class MenuHandler extends Base implements IMenuHandler {
     private handleZoomOut(): void {
         this.currentZoomLevel -= 10;
         this.zoomElement = this.currentZoomLevel;
-    }
-
-    private handleChangeColor(event: Event): void {
-        const element = event.currentTarget as Element;
-        assert.defined(element, "target");
-
-        const color = this.getElementColor(element);
-        this.canvas.useThread("test", color, 12); // TODO: !!!
     }
 
     private handleAction(event: Event): void {
@@ -109,10 +99,6 @@ export class MenuHandler extends Base implements IMenuHandler {
         backSideContainer.style.display = (display === "flex") ? "none" : "flex";
     }
 
-    private getElementColor(element: Element): string {
-        return getComputedStyle(element).backgroundColor;
-    }
-
     private subscribe(): void {
         const zoomInUn = this.canvas.onZoomIn(this.handleZoomIn.bind(this));
         super.registerUn(zoomInUn);
@@ -120,20 +106,14 @@ export class MenuHandler extends Base implements IMenuHandler {
         const zoomOutUn = this.canvas.onZoomOut(this.handleZoomOut.bind(this));
         super.registerUn(zoomOutUn);
 
+        const changeThread = this.menuProvider.colorPalette.onChangeThread((event) => this.canvas.useThread(event.name, event.color, event.width)); // TODO: 
+        super.registerUn(changeThread);
+
         const loadPatternUn = this.canvas.onChangeStitchPattern(this.handleChangeStitchPattern.bind(this));
         super.registerUn(loadPatternUn);
 
-        this.subscribeColorButtons();
         this.subscribeActionButtons();
         this.subscribeKeyboardEvents();
-    }
-
-    private subscribeColorButtons(): void {
-        this.menuProvider.colorPalette.buttons.forEach(button => {
-            const handler = this.handleChangeColor.bind(this);
-            button.addEventListener("click", handler);
-            this.changeColorListeners.push(handler);
-        });
     }
 
     private subscribeActionButtons(): void {
@@ -150,22 +130,8 @@ export class MenuHandler extends Base implements IMenuHandler {
     }
 
     private unsubscribe(): void {
-        this.unsubscribeColorButtons();
         this.unsubscribeActionButtons();
         this.unsubscribeKeyboardEvents();
-    }
-
-    private unsubscribeColorButtons(): void {
-        const colorButtons = this.menuProvider.colorPalette.buttons;
-
-        assert.defined(colorButtons, "colorButtons");
-        assert.defined(this.changeColorListeners, "changeColorListeners");
-
-        for (let index = 0; index < colorButtons.length; index++) {
-            const button = colorButtons[index];
-            const listener = this.changeColorListeners[index];
-            button.removeEventListener("click", listener);
-        }
     }
 
     private unsubscribeActionButtons(): void {
