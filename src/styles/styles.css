@@ -106,6 +106,13 @@ body {
   pointer-events: auto;
 }
 
+.left-floating-menu > div > img {
+  height: 1.8rem;  /* close to button height */
+  width: auto;
+  display: block;
+  margin: 0 auto;  /* center horizontally */
+}
+
 /* === Bottom-Right Floating Menu (Horizontal) === */
 .bottom-floating-menu {
   position: absolute;
