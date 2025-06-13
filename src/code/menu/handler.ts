@@ -89,7 +89,9 @@ export class MenuHandler extends Base implements IMenuHandler {
             .filter((threadPath) => threadPath.length > 0)
             .map((threadPath) => threadPath.color);
 
-        this.menuProvider.colorPalette.insert(colors);
+        if (colors.length > 0) {
+            this.menuProvider.colorPalette.insert(colors);
+        }
     }
 
     private toggleSplitView(): void {

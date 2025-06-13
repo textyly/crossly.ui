@@ -107,10 +107,10 @@ body {
 }
 
 .left-floating-menu > div > img {
-  height: 1.8rem;  /* close to button height */
+  height: 1.8rem;  
   width: auto;
   display: block;
-  margin: 0 auto;  /* center horizontally */
+  margin: 0 auto;
 }
 
 /* === Bottom-Right Floating Menu (Horizontal) === */
@@ -144,8 +144,12 @@ body {
 }
 
 .color-button {
-  height: 1.2rem;
-  cursor: pointer;
+  padding: 0.2rem 0.4rem;
+  height: auto;
+  min-height: 1.4rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .color-button[data-color="1"] { background-color: #111e6a; }
