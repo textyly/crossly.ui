@@ -13,7 +13,7 @@ export class ColorPalette extends Base implements IColorPalette {
 
     private readonly changeColorListeners: Array<(event: Event) => void>;
 
-    // default colors provided by config
+    // default colors provided by config 
     constructor(buttons: Array<HTMLElement>) {
         super(ColorPalette.name);
 
