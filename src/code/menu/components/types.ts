@@ -4,14 +4,10 @@ import { IDisposable, Listener, VoidListener, VoidUnsubscribe } from "../../type
 export type Color = string;
 export type Colors = Array<Color>;
 
-export interface IComponentsProvider extends IDisposable {
-    get paletteComponent(): IPaletteComponent;
-    get undoComponent(): IUndoComponent;
-    get zoomComponent(): IZoomComponent;
-
-    get zoomLevel(): HTMLElement;
-    get actionButtons(): Array<HTMLElement>;
-    get backSideContainer(): HTMLElement;
+export interface IComponents extends IDisposable {
+    get palette(): IPaletteComponent;
+    get undo(): IUndoComponent;
+    get zoom(): IZoomComponent;
 }
 
 export interface IPaletteComponent extends IDisposable {

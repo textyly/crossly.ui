@@ -7,69 +7,64 @@ import {
     IUndoComponent,
     IZoomComponent,
     IPaletteComponent,
-    IComponentsProvider,
+    IComponents,
 } from "./types.js";
 
-export class ComponentsProvider extends Base implements IComponentsProvider {
+export class Components extends Base implements IComponents {
     private document: Document;
 
-    private palette: IPaletteComponent;
-    private undo: IUndoComponent;
-    private zoom: IZoomComponent;
+    private paletteComponent: IPaletteComponent;
+    private undoComponent: IUndoComponent;
+    private zoomComponent: IZoomComponent;
 
     constructor(document: Document) {
-        super(ComponentsProvider.name);
+        super(Components.name);
 
         this.document = document;
 
         const paletteContainer = document.querySelector('.color-button-group');
         assert.defined(paletteContainer, "paletteContainer");
-        this.palette = new PaletteComponent(paletteContainer);
+        this.paletteComponent = new PaletteComponent(paletteContainer);
 
         const undoContainer = document.querySelector('.top-floating-menu.right');
         assert.defined(undoContainer, "undoContainer");
-        this.undo = new UndoComponent(undoContainer);
+        this.undoComponent = new UndoComponent(undoContainer);
 
         const zoomContainer = document.querySelector('.bottom-floating-menu');
         assert.defined(zoomContainer, "zoomContainer");
-        this.zoom = new ZoomComponent(zoomContainer);
+        this.zoomComponent = new ZoomComponent(zoomContainer);
     }
 
-    public get paletteComponent(): IPaletteComponent {
-        return this.palette;
+    public get palette(): IPaletteComponent {
+        return this.paletteComponent;
     }
 
-    public get undoComponent(): IUndoComponent {
-        return this.undo;
+    public get undo(): IUndoComponent {
+        return this.undoComponent;
     }
 
-    public get zoomComponent(): IZoomComponent {
-        return this.zoom;
+    public get zoom(): IZoomComponent {
+        return this.zoomComponent;
     }
 
-    public get zoomLevel(): HTMLElement {
-        const zoomLevel = this.document.getElementById("zoom-level");
-        assert.defined(zoomLevel, "zoomLevelElement");
+    // public get actionButtons(): Array<HTMLElement> {
+    //     const actionButtons = this.document.querySelectorAll<HTMLElement>('.action-button');
+    //     assert.defined(actionButtons, "actionButtons");
 
-        return zoomLevel;
-    }
+    //     return [...actionButtons];
+    // }
 
-    public get actionButtons(): Array<HTMLElement> {
-        const actionButtons = this.document.querySelectorAll<HTMLElement>('.action-button');
-        assert.defined(actionButtons, "actionButtons");
+    // public get backSideContainer(): HTMLElement {
+    //     const backSideContainer = document.getElementById("back-side-container");
+    //     assert.defined(backSideContainer, "backSideContainer");
 
-        return [...actionButtons];
-    }
-
-    public get backSideContainer(): HTMLElement {
-        const backSideContainer = document.getElementById("back-side-container");
-        assert.defined(backSideContainer, "backSideContainer");
-
-        return backSideContainer;
-    }
+    //     return backSideContainer;
+    // }
 
     public override dispose(): void {
         this.palette.dispose();
+        this.undo.dispose();
+        this.zoom.dispose();
 
         super.dispose();
     }
