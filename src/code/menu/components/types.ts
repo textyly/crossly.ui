@@ -1,15 +1,26 @@
-import { IDisposable, Listener, VoidUnsubscribe } from "../../types.js";
+import { IDisposable, Listener, VoidListener, VoidUnsubscribe } from "../../types.js";
 
 // TODO: change to thread type
 export type Color = string;
 export type Colors = Array<Color>;
+
+export interface IComponentsProvider extends IDisposable {
+    get paletteComponent(): IPaletteComponent;
+    get undoComponent(): IUndoComponent;
+
+    get zoomLevel(): HTMLElement;
+    get actionButtons(): Array<HTMLElement>;
+    get backSideContainer(): HTMLElement;
+}
 
 export interface IPaletteComponent extends IDisposable {
     add(threads: Colors): void;
     onChangeThread(listener: ChangeThreadListener): VoidUnsubscribe;
 }
 
-export interface IUndo extends IDisposable {
+export interface IUndoComponent extends IDisposable {
+    onUndo(listener: VoidListener): VoidUnsubscribe;
+    onRedo(listener: VoidListener): VoidUnsubscribe;
 }
 
 // TODO: create thread type

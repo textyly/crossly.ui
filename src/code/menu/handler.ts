@@ -1,23 +1,24 @@
 import assert from "../asserts/assert.js";
 import { Base } from "../general/base.js";
+import { IMenuHandler } from "./types.js";
 import { ICrosslyCanvasFacade } from "../canvas/types.js";
-import { IMenuHandler, IMenuProvider } from "./types.js";
+import { ChangeThreadEvent, IComponentsProvider } from "./components/types.js";
 import { ChangeStitchPatternEvent } from "../canvas/virtual/types.js";
 
 export class MenuHandler extends Base implements IMenuHandler {
     private currentZoomLevel = 120;
 
     private readonly canvas: ICrosslyCanvasFacade;
-    private readonly menuProvider: IMenuProvider;
+    private readonly menuProvider: IComponentsProvider;
 
     private readonly actionListeners: Array<(event: Event) => void>;
     private keyboardListener: (event: KeyboardEvent) => void;
 
-    constructor(canvas: ICrosslyCanvasFacade, menuProvider: IMenuProvider) {
+    constructor(componentsProvider: IComponentsProvider, canvas: ICrosslyCanvasFacade) {
         super(MenuHandler.name);
 
         this.canvas = canvas;
-        this.menuProvider = menuProvider;
+        this.menuProvider = componentsProvider;
 
         this.zoomElement = this.currentZoomLevel;
 
@@ -54,12 +55,6 @@ export class MenuHandler extends Base implements IMenuHandler {
         const action = target.dataset.action;
 
         switch (action) {
-            case "undo":
-                this.canvas.undo();
-                break;
-            case "redo":
-                this.canvas.redo();
-                break;
             case "zoom-in":
                 this.canvas.zoomIn();
                 break;
@@ -94,6 +89,18 @@ export class MenuHandler extends Base implements IMenuHandler {
         }
     }
 
+    private handleChangeThread(event: ChangeThreadEvent): void {
+        this.canvas.useThread(event.name, event.color, event.width);
+    }
+
+    private handleUndo(): void {
+        this.canvas.undo();
+    }
+
+    private handleRedo(): void {
+        this.canvas.redo();
+    }
+
     private toggleSplitView(): void {
         const backSideContainer = this.menuProvider.backSideContainer;
         const display = backSideContainer.style.display;
@@ -118,10 +125,16 @@ export class MenuHandler extends Base implements IMenuHandler {
     }
 
     private subscribeMenu(): void {
-        const changeThread = this.menuProvider.paletteComponent.onChangeThread((event) => {
-            this.canvas.useThread(event.name, event.color, event.width);
-        });
-        super.registerUn(changeThread);
+        const paletteComponent = this.menuProvider.paletteComponent;
+        const changeThreadUn = paletteComponent.onChangeThread(this.handleChangeThread.bind(this));
+        super.registerUn(changeThreadUn);
+
+        const undoComponent = this.menuProvider.undoComponent;
+        const undoUn = undoComponent.onUndo(this.handleUndo.bind(this));
+        super.registerUn(undoUn);
+
+        const redoUn = undoComponent.onRedo(this.handleRedo.bind(this));
+        super.registerUn(redoUn);
 
         this.subscribeActionButtons();
         this.subscribeKeyboardEvents();

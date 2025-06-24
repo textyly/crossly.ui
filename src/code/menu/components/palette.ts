@@ -8,21 +8,21 @@ import { ChangeThreadEvent, ChangeThreadListener, Color, Colors, IPaletteCompone
 export class PaletteComponent extends Base implements IPaletteComponent {
     private messaging: IMessaging1<ChangeThreadEvent>;
 
-    private readonly palette: Element;
+    private readonly container: Element;
     private readonly activeColors: Array<Color>;
     private readonly changeColorListeners: Array<(event: Event) => void>;
 
     // default colors provided by config 
-    constructor(palette: Element) {
+    constructor(container: Element) {
         super(PaletteComponent.name);
 
-        this.palette = palette;
+        this.container = container;
 
         this.changeColorListeners = [];
         this.messaging = new Messaging1();
 
-        const htmlButtons = this.palette.querySelectorAll("button");
-        const buttons = [...htmlButtons].slice(0, htmlButtons.length - 1); // filter out + button
+        const elements = this.container.querySelectorAll(".color-button");
+        const buttons = [...elements];
 
         assert.defined(buttons, "buttons");
         assert.greaterThanZero(buttons?.length, "buttons.length");
@@ -50,9 +50,9 @@ export class PaletteComponent extends Base implements IPaletteComponent {
                 this.activeColors.push(normalized);
 
                 const button = this.createButton(normalized);
-                const buttons = this.palette.querySelectorAll("button");
+                const buttons = this.container.querySelectorAll("button");
 
-                this.palette.insertBefore(button, buttons[buttons.length - 1]);
+                this.container.insertBefore(button, buttons[buttons.length - 1]); // insert before + button
                 this.subscribeButton(button);
             }
         });
@@ -105,18 +105,18 @@ export class PaletteComponent extends Base implements IPaletteComponent {
         return getComputedStyle(element).backgroundColor;
     }
 
-    private subscribeButtons(buttons: Array<HTMLButtonElement>): void {
+    private subscribeButtons(buttons: Array<Element>): void {
         buttons.forEach(button => this.subscribeButton(button));
     }
 
-    private subscribeButton(button: HTMLButtonElement): void {
+    private subscribeButton(button: Element): void {
         const handler = this.handleChangeColor.bind(this);
         button.addEventListener("click", handler);
         this.changeColorListeners.push(handler);
     }
 
     private unsubscribeButtons(): void {
-        const buttons = this.palette.querySelectorAll("button");
+        const buttons = this.container.querySelectorAll("button");
 
         assert.defined(buttons, "buttons");
         assert.greaterThanZero(buttons?.length, "buttons.length");
