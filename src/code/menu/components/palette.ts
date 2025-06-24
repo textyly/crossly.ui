@@ -3,9 +3,9 @@ import { Base } from "../../general/base.js";
 import { VoidUnsubscribe } from "../../types.js";
 import { Messaging1 } from "../../messaging/impl.js";
 import { IMessaging1 } from "../../messaging/types.js";
-import { ChangeThreadEvent, ChangeThreadListener, Color, Colors, IThreadPalette } from "../types.js";
+import { ChangeThreadEvent, ChangeThreadListener, Color, Colors, IPaletteComponent } from "./types.js";
 
-export class ThreadPalette extends Base implements IThreadPalette {
+export class PaletteComponent extends Base implements IPaletteComponent {
     private messaging: IMessaging1<ChangeThreadEvent>;
 
     private readonly palette: Element;
@@ -14,20 +14,20 @@ export class ThreadPalette extends Base implements IThreadPalette {
 
     // default colors provided by config 
     constructor(palette: Element) {
-        super(ThreadPalette.name);
+        super(PaletteComponent.name);
 
         this.palette = palette;
 
         this.changeColorListeners = [];
         this.messaging = new Messaging1();
 
-        const buttons = this.palette.querySelectorAll("button");
+        const htmlButtons = this.palette.querySelectorAll("button");
+        const buttons = [...htmlButtons].slice(0, htmlButtons.length - 1); // filter out + button
 
         assert.defined(buttons, "buttons");
         assert.greaterThanZero(buttons?.length, "buttons.length");
 
         this.activeColors = [...buttons]
-            .slice(0, buttons.length - 1) // filter out + button
             .map((button) => this.getButtonColor(button))
             .map((color) => this.normalizeColor(color));
 
@@ -105,7 +105,7 @@ export class ThreadPalette extends Base implements IThreadPalette {
         return getComputedStyle(element).backgroundColor;
     }
 
-    private subscribeButtons(buttons: NodeListOf<HTMLButtonElement>): void {
+    private subscribeButtons(buttons: Array<HTMLButtonElement>): void {
         buttons.forEach(button => this.subscribeButton(button));
     }
 

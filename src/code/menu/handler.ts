@@ -90,7 +90,7 @@ export class MenuHandler extends Base implements IMenuHandler {
             .map((threadPath) => threadPath.color);
 
         if (colors.length > 0) {
-            this.menuProvider.threadPalette.add(colors);
+            this.menuProvider.paletteComponent.add(colors);
         }
     }
 
@@ -118,7 +118,7 @@ export class MenuHandler extends Base implements IMenuHandler {
     }
 
     private subscribeMenu(): void {
-        const changeThread = this.menuProvider.threadPalette.onChangeThread((event) => {
+        const changeThread = this.menuProvider.paletteComponent.onChangeThread((event) => {
             this.canvas.useThread(event.name, event.color, event.width);
         });
         super.registerUn(changeThread);
