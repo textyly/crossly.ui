@@ -1,4 +1,4 @@
-import { Listener, VoidUnsubscribe } from "../types.js";
+import { IDisposable, Listener, VoidUnsubscribe } from "../types.js";
 
 // TODO: change to thread type
 export type Color = string;
@@ -7,14 +7,15 @@ export type Colors = Array<Color>;
 export interface IMenuHandler {
 }
 
-export interface IMenuProvider {
+export interface IMenuProvider extends IDisposable {
+    get threadPalette(): IThreadPalette;
+
     get zoomLevel(): HTMLElement;
     get actionButtons(): Array<HTMLElement>;
-    get colorPalette(): IThreadPalette;
     get backSideContainer(): HTMLElement;
 }
 
-export interface IThreadPalette {
+export interface IThreadPalette extends IDisposable {
     add(threads: Colors): void;
     onChangeThread(listener: ChangeThreadListener): VoidUnsubscribe;
 }

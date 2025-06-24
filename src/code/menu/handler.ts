@@ -90,7 +90,7 @@ export class MenuHandler extends Base implements IMenuHandler {
             .map((threadPath) => threadPath.color);
 
         if (colors.length > 0) {
-            this.menuProvider.colorPalette.add(colors);
+            this.menuProvider.threadPalette.add(colors);
         }
     }
 
@@ -102,17 +102,26 @@ export class MenuHandler extends Base implements IMenuHandler {
     }
 
     private subscribe(): void {
+        this.subscribeCanvas();
+        this.subscribeMenu();
+    }
+
+    private subscribeCanvas(): void {
         const zoomInUn = this.canvas.onZoomIn(this.handleZoomIn.bind(this));
         super.registerUn(zoomInUn);
 
         const zoomOutUn = this.canvas.onZoomOut(this.handleZoomOut.bind(this));
         super.registerUn(zoomOutUn);
 
-        const changeThread = this.menuProvider.colorPalette.onChangeThread((event) => this.canvas.useThread(event.name, event.color, event.width)); // TODO: 
-        super.registerUn(changeThread);
-
         const loadPatternUn = this.canvas.onChangeStitchPattern(this.handleChangeStitchPattern.bind(this));
         super.registerUn(loadPatternUn);
+    }
+
+    private subscribeMenu(): void {
+        const changeThread = this.menuProvider.threadPalette.onChangeThread((event) => {
+            this.canvas.useThread(event.name, event.color, event.width);
+        });
+        super.registerUn(changeThread);
 
         this.subscribeActionButtons();
         this.subscribeKeyboardEvents();
@@ -132,6 +141,11 @@ export class MenuHandler extends Base implements IMenuHandler {
     }
 
     private unsubscribe(): void {
+        // no need to unsubscribe canvas
+        this.unsubscribeMenu();
+    }
+
+    private unsubscribeMenu(): void {
         this.unsubscribeActionButtons();
         this.unsubscribeKeyboardEvents();
     }

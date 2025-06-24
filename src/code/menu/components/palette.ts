@@ -5,7 +5,7 @@ import { Messaging1 } from "../../messaging/impl.js";
 import { IMessaging1 } from "../../messaging/types.js";
 import { ChangeThreadEvent, ChangeThreadListener, Color, Colors, IThreadPalette } from "../types.js";
 
-export class ColorPalette extends Base implements IThreadPalette {
+export class ThreadPalette extends Base implements IThreadPalette {
     private messaging: IMessaging1<ChangeThreadEvent>;
 
     private readonly palette: Element;
@@ -14,7 +14,7 @@ export class ColorPalette extends Base implements IThreadPalette {
 
     // default colors provided by config 
     constructor(palette: Element) {
-        super(ColorPalette.name);
+        super(ThreadPalette.name);
 
         this.palette = palette;
 
