@@ -6,8 +6,6 @@ import { ChangeThreadEvent, IComponentsProvider } from "./components/types.js";
 import { ChangeStitchPatternEvent } from "../canvas/virtual/types.js";
 
 export class MenuHandler extends Base implements IMenuHandler {
-    private currentZoomLevel = 120;
-
     private readonly canvas: ICrosslyCanvasFacade;
     private readonly menuProvider: IComponentsProvider;
 
@@ -20,8 +18,6 @@ export class MenuHandler extends Base implements IMenuHandler {
         this.canvas = canvas;
         this.menuProvider = componentsProvider;
 
-        this.zoomElement = this.currentZoomLevel;
-
         this.actionListeners = [];
         this.keyboardListener = () => { };
 
@@ -33,20 +29,6 @@ export class MenuHandler extends Base implements IMenuHandler {
         super.dispose();
     }
 
-    private set zoomElement(value: number) {
-        const element = this.menuProvider.zoomLevel;
-        element.innerHTML = `${value}%`;
-    }
-
-    private handleZoomIn(): void {
-        this.currentZoomLevel += 10;
-        this.zoomElement = this.currentZoomLevel;
-    }
-
-    private handleZoomOut(): void {
-        this.currentZoomLevel -= 10;
-        this.zoomElement = this.currentZoomLevel;
-    }
 
     private handleAction(event: Event): void {
         const target = event.currentTarget as any;
@@ -55,12 +37,6 @@ export class MenuHandler extends Base implements IMenuHandler {
         const action = target.dataset.action;
 
         switch (action) {
-            case "zoom-in":
-                this.canvas.zoomIn();
-                break;
-            case "zoom-out":
-                this.canvas.zoomOut();
-                break;
             case "split":
             case "close": {
                 this.toggleSplitView();
@@ -101,6 +77,22 @@ export class MenuHandler extends Base implements IMenuHandler {
         this.canvas.redo();
     }
 
+    private handleCanvasZoomIn(): void {
+        this.menuProvider.zoomComponent.zoomIn();
+    }
+
+    private handleCanvasZoomOut(): void {
+        this.menuProvider.zoomComponent.zoomOut();
+    }
+
+    private handleButtonZoomIn(): void {
+        this.canvas.zoomIn();
+    }
+
+    private handleButtonZoomOut(): void {
+        this.canvas.zoomOut();
+    }
+
     private toggleSplitView(): void {
         const backSideContainer = this.menuProvider.backSideContainer;
         const display = backSideContainer.style.display;
@@ -114,10 +106,10 @@ export class MenuHandler extends Base implements IMenuHandler {
     }
 
     private subscribeCanvas(): void {
-        const zoomInUn = this.canvas.onZoomIn(this.handleZoomIn.bind(this));
+        const zoomInUn = this.canvas.onZoomIn(this.handleCanvasZoomIn.bind(this));
         super.registerUn(zoomInUn);
 
-        const zoomOutUn = this.canvas.onZoomOut(this.handleZoomOut.bind(this));
+        const zoomOutUn = this.canvas.onZoomOut(this.handleCanvasZoomOut.bind(this));
         super.registerUn(zoomOutUn);
 
         const loadPatternUn = this.canvas.onChangeStitchPattern(this.handleChangeStitchPattern.bind(this));
@@ -135,6 +127,13 @@ export class MenuHandler extends Base implements IMenuHandler {
 
         const redoUn = undoComponent.onRedo(this.handleRedo.bind(this));
         super.registerUn(redoUn);
+
+        const zoomComponent = this.menuProvider.zoomComponent;
+        const zoominUn = zoomComponent.onZoomIn(this.handleButtonZoomIn.bind(this));
+        super.registerUn(zoominUn);
+
+        const zoomoutUn = zoomComponent.onZoomOut(this.handleButtonZoomOut.bind(this));
+        super.registerUn(zoomoutUn);
 
         this.subscribeActionButtons();
         this.subscribeKeyboardEvents();

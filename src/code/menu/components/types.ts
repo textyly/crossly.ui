@@ -7,6 +7,7 @@ export type Colors = Array<Color>;
 export interface IComponentsProvider extends IDisposable {
     get paletteComponent(): IPaletteComponent;
     get undoComponent(): IUndoComponent;
+    get zoomComponent(): IZoomComponent;
 
     get zoomLevel(): HTMLElement;
     get actionButtons(): Array<HTMLElement>;
@@ -21,6 +22,14 @@ export interface IPaletteComponent extends IDisposable {
 export interface IUndoComponent extends IDisposable {
     onUndo(listener: VoidListener): VoidUnsubscribe;
     onRedo(listener: VoidListener): VoidUnsubscribe;
+}
+
+export interface IZoomComponent extends IDisposable {
+    zoomIn(): void;
+    zoomOut(): void;
+
+    onZoomIn(listener: VoidListener): VoidUnsubscribe;
+    onZoomOut(listener: VoidListener): VoidUnsubscribe;
 }
 
 // TODO: create thread type
