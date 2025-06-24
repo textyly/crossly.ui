@@ -3,64 +3,75 @@ import { Base } from "../../general/base.js";
 import { VoidUnsubscribe } from "../../types.js";
 import { Messaging1 } from "../../messaging/impl.js";
 import { IMessaging1 } from "../../messaging/types.js";
-import { ChangeThreadEvent, ChangeThreadListener, Color, Colors, IColorPalette } from "../types.js";
+import { ChangeThreadEvent, ChangeThreadListener, Color, Colors, IThreadPalette } from "../types.js";
 
-export class ColorPalette extends Base implements IColorPalette {
+export class ColorPalette extends Base implements IThreadPalette {
     private messaging: IMessaging1<ChangeThreadEvent>;
 
-    private buttons: Array<HTMLElement>;
-    private activeColors: Array<string>;
-
+    private readonly palette: Element;
+    private readonly activeColors: Array<Color>;
     private readonly changeColorListeners: Array<(event: Event) => void>;
 
     // default colors provided by config 
-    constructor(buttons: Array<HTMLElement>) {
+    constructor(palette: Element) {
         super(ColorPalette.name);
 
-        assert.greaterThanZero(buttons?.length, "buttons.length");
-
-        this.buttons = buttons;
-        this.activeColors = this.buttons.map((button) => this.getButtonColor(button)).map((color) => this.normalizeColor(color));
+        this.palette = palette;
 
         this.changeColorListeners = [];
         this.messaging = new Messaging1();
 
-        this.subscribeButtons();
+        const buttons = this.palette.querySelectorAll("button");
+
+        assert.defined(buttons, "buttons");
+        assert.greaterThanZero(buttons?.length, "buttons.length");
+
+        this.activeColors = [...buttons]
+            .slice(0, buttons.length - 1) // filter out + button
+            .map((button) => this.getButtonColor(button))
+            .map((color) => this.normalizeColor(color));
+
+        this.subscribeButtons(buttons);
     }
 
     public onChangeThread(listener: ChangeThreadListener): VoidUnsubscribe {
         return this.messaging.listenOnChannel1(listener);
     }
 
-    public insert(colors: Colors): void {
+    public add(colors: Colors): void {
         assert.greaterThanZero(colors?.length, "colors.length");
 
         let uniqueColors = this.getUniqueColors(colors);
         assert.greaterThanZero(uniqueColors.length, "uniqueColors.length");
 
-        // TODO: incorrect algorithm!!!
-        uniqueColors = uniqueColors.map((color) => this.normalizeColor(color));
-
         uniqueColors.forEach((color) => {
-            const index = this.activeColors.indexOf(color);
-            if (index > -1) {
-                this.activeColors.splice(index, 1);
+            let normalized = this.normalizeColor(color);
+            if (!this.activeColors.find((ac) => ac === normalized)) {
+                this.activeColors.push(normalized);
+
+                const button = this.createButton(normalized);
+                const buttons = this.palette.querySelectorAll("button");
+
+                this.palette.insertBefore(button, buttons[buttons.length - 1]);
+                this.subscribeButton(button);
             }
         });
+    }
 
-        const colorsToInsert = Math.min(uniqueColors.length, this.buttons.length);
+    public override dispose(): void {
+        this.unsubscribeButtons();
+        super.dispose();
+    }
 
-        for (let index = 0; index < colorsToInsert; index++) {
-            const colorToInsert = uniqueColors[index];
-            this.activeColors = [colorToInsert, ...this.activeColors];
-        }
+    private createButton(color: Color): HTMLButtonElement {
+        const button = document.createElement("button");
 
-        for (let index = 0; index < this.buttons.length; index++) {
-            const color = this.activeColors[index];
-            const button = this.buttons[index];
-            button.style.backgroundColor = color;
-        }
+        // TODO:  color-button must be extracted from the existing buttons
+        button.classList.add("color-button");
 
+        button.style.backgroundColor = color;
+
+        return button;
     }
 
     private getUniqueColors(colors: Array<string>): Array<string> {
@@ -80,7 +91,6 @@ export class ColorPalette extends Base implements IColorPalette {
         return getComputedStyle(element).backgroundColor;
     }
 
-    // TODO: this method must be invoked very rarely
     private normalizeColor(color: string) {
         const temp = document.createElement("div");
         temp.style.color = color;
@@ -91,36 +101,41 @@ export class ColorPalette extends Base implements IColorPalette {
         return computedColor;
     }
 
+    private getElementColor(element: Element): string {
+        return getComputedStyle(element).backgroundColor;
+    }
+
+    private subscribeButtons(buttons: NodeListOf<HTMLButtonElement>): void {
+        buttons.forEach(button => this.subscribeButton(button));
+    }
+
+    private subscribeButton(button: HTMLButtonElement): void {
+        const handler = this.handleChangeColor.bind(this);
+        button.addEventListener("click", handler);
+        this.changeColorListeners.push(handler);
+    }
+
+    private unsubscribeButtons(): void {
+        const buttons = this.palette.querySelectorAll("button");
+
+        assert.defined(buttons, "buttons");
+        assert.greaterThanZero(buttons?.length, "buttons.length");
+
+        assert.defined(this.changeColorListeners, "changeColorListeners");
+
+        for (let index = 0; index < buttons.length; index++) {
+            const button = buttons[index];
+            const listener = this.changeColorListeners[index];
+            button.removeEventListener("click", listener);
+        }
+    }
+
     private handleChangeColor(event: Event): void {
         const element = event.currentTarget as Element;
         assert.defined(element, "target");
 
         const color = this.getElementColor(element);
         this.invokeChangeThread(color);
-    }
-
-    private getElementColor(element: Element): string {
-        return getComputedStyle(element).backgroundColor;
-    }
-
-    private subscribeButtons(): void {
-        this.buttons.forEach(button => {
-            const handler = this.handleChangeColor.bind(this);
-            button.addEventListener("click", handler);
-            this.changeColorListeners.push(handler);
-        });
-    }
-
-    private unsubscribeButtons(): void {
-
-        assert.defined(this.buttons, "colorButtons");
-        assert.defined(this.changeColorListeners, "changeColorListeners");
-
-        for (let index = 0; index < this.buttons.length; index++) {
-            const button = this.buttons[index];
-            const listener = this.changeColorListeners[index];
-            button.removeEventListener("click", listener);
-        }
     }
 
     private invokeChangeThread(color: Color): void {

@@ -90,7 +90,7 @@ export class MenuHandler extends Base implements IMenuHandler {
             .map((threadPath) => threadPath.color);
 
         if (colors.length > 0) {
-            this.menuProvider.colorPalette.insert(colors);
+            this.menuProvider.colorPalette.add(colors);
         }
     }
 

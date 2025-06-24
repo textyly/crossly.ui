@@ -132,7 +132,7 @@ body {
   opacity: 0;
   max-height: 0;
   overflow: hidden;
-  transition: opacity 0.9s ease, max-height 0.9s ease;
+  transition: opacity 1.4s ease, max-height 1.4s ease;
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
@@ -140,7 +140,7 @@ body {
 
 .left-floating-menu:hover .color-button-group {
   opacity: 1;
-  max-height: 200px;
+  max-height: 1000px;
 }
 
 .color-button {

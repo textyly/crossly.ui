@@ -1,19 +1,19 @@
 import assert from "../asserts/assert.js";
 import { ColorPalette } from "./components/palette.js";
-import { IColorPalette, IMenuProvider } from "./types.js";
+import { IThreadPalette, IMenuProvider } from "./types.js";
 
 export class MenuProvider implements IMenuProvider {
     private document: Document;
 
-    private palette: IColorPalette;
+    private palette: IThreadPalette;
 
     constructor(document: Document) {
         this.document = document;
 
-        const colorButtons = this.document.querySelectorAll<HTMLElement>('.color-button');
-        assert.defined(colorButtons, "actionButtons");
+        const colorPaletteDiv = document.querySelector('.color-button-group');
+        assert.defined(colorPaletteDiv, "colorPaletteDiv");
 
-        this.palette = new ColorPalette([...colorButtons]);
+        this.palette = new ColorPalette(colorPaletteDiv);
     }
 
     public get zoomLevel(): HTMLElement {
@@ -30,7 +30,7 @@ export class MenuProvider implements IMenuProvider {
         return [...actionButtons];
     }
 
-    public get colorPalette(): IColorPalette {
+    public get colorPalette(): IThreadPalette {
         return this.palette;
     }
 
