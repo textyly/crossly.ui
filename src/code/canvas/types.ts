@@ -34,10 +34,10 @@ export interface ICanvas extends IDisposable {
 }
 
 export interface ICrosslyCanvas extends ICanvas {
-    onChangeFabric(listener: ChangeFabricListener): VoidUnsubscribe;
-    onChangeStitchPattern(listener: ChangeStitchPatternListener): VoidUnsubscribe;
     onZoomIn(listener: VoidListener): VoidUnsubscribe;
     onZoomOut(listener: VoidListener): VoidUnsubscribe;
+    onChangeFabric(listener: ChangeFabricListener): VoidUnsubscribe;
+    onChangeStitchPattern(listener: ChangeStitchPatternListener): VoidUnsubscribe;
 }
 
 export interface ICrosslyCanvasFacade extends ICrosslyCanvas {
@@ -54,6 +54,8 @@ export interface ICrosslyCanvasFacade extends ICrosslyCanvas {
 
     zoomIn(): void;
     zoomOut(): void;
+
+    // TODO: toggleSplitView
 }
 
 export interface ICrosslyCanvasObserver {

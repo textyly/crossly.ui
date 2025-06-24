@@ -86,6 +86,10 @@ export class MenuHandler extends Base implements IMenuHandler {
         this.canvas.zoomOut();
     }
 
+    private handleSplit(): void {
+        // this.canvas.toggleSplit();
+    }
+
     // private toggleSplitView(): void {
     //     const backSideContainer = this.components.backSideContainer;
     //     const display = backSideContainer.style.display;
@@ -127,6 +131,10 @@ export class MenuHandler extends Base implements IMenuHandler {
 
         const zoomoutUn = zoomComponent.onZoomOut(this.handleButtonZoomOut.bind(this));
         super.registerUn(zoomoutUn);
+
+        const splitViewComponent = this.components.splitView;
+        const splitUn = splitViewComponent.onToggleSplitView(this.handleSplit.bind(this));
+        super.registerUn(splitUn);
 
         // this.subscribeActionButtons();
         // this.subscribeKeyboardEvents();

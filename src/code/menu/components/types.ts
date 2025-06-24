@@ -5,9 +5,10 @@ export type Color = string;
 export type Colors = Array<Color>;
 
 export interface IComponents extends IDisposable {
-    get palette(): IPaletteComponent;
     get undo(): IUndoComponent;
     get zoom(): IZoomComponent;
+    get palette(): IPaletteComponent;
+    get splitView(): ISplitViewComponent;
 }
 
 export interface IPaletteComponent extends IDisposable {
@@ -26,6 +27,10 @@ export interface IZoomComponent extends IDisposable {
 
     onZoomIn(listener: VoidListener): VoidUnsubscribe;
     onZoomOut(listener: VoidListener): VoidUnsubscribe;
+}
+
+export interface ISplitViewComponent extends IDisposable {
+    onToggleSplitView(listener: VoidListener): VoidUnsubscribe;
 }
 
 // TODO: create thread type

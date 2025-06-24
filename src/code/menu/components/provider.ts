@@ -8,14 +8,17 @@ import {
     IZoomComponent,
     IPaletteComponent,
     IComponents,
+    ISplitViewComponent,
 } from "./types.js";
+import { SplitViewComponent } from "./split.js";
 
 export class Components extends Base implements IComponents {
     private document: Document;
 
-    private paletteComponent: IPaletteComponent;
     private undoComponent: IUndoComponent;
     private zoomComponent: IZoomComponent;
+    private paletteComponent: IPaletteComponent;
+    private splitViewComponent: ISplitViewComponent;
 
     constructor(document: Document) {
         super(Components.name);
@@ -26,17 +29,14 @@ export class Components extends Base implements IComponents {
         assert.defined(paletteContainer, "paletteContainer");
         this.paletteComponent = new PaletteComponent(paletteContainer);
 
-        const undoContainer = document.querySelector('.top-floating-menu.right');
-        assert.defined(undoContainer, "undoContainer");
-        this.undoComponent = new UndoComponent(undoContainer);
+        const topRightMenu = document.querySelector('.top-floating-menu.right');
+        assert.defined(topRightMenu, "topRightMenu");
+        this.undoComponent = new UndoComponent(topRightMenu);
+        this.splitViewComponent = new SplitViewComponent(topRightMenu);
 
-        const zoomContainer = document.querySelector('.bottom-floating-menu');
-        assert.defined(zoomContainer, "zoomContainer");
-        this.zoomComponent = new ZoomComponent(zoomContainer);
-    }
-
-    public get palette(): IPaletteComponent {
-        return this.paletteComponent;
+        const bottomMenu = document.querySelector('.bottom-floating-menu');
+        assert.defined(bottomMenu, "bottomMenu");
+        this.zoomComponent = new ZoomComponent(bottomMenu);
     }
 
     public get undo(): IUndoComponent {
@@ -45,6 +45,14 @@ export class Components extends Base implements IComponents {
 
     public get zoom(): IZoomComponent {
         return this.zoomComponent;
+    }
+
+    public get palette(): IPaletteComponent {
+        return this.paletteComponent;
+    }
+
+    public get splitView(): ISplitViewComponent {
+       return this.splitViewComponent;
     }
 
     // public get actionButtons(): Array<HTMLElement> {

@@ -1,4 +1,3 @@
-import assert from "../../asserts/assert.js";
 import { CrosslyCanvas } from "./crossly.js";
 import { IInputCanvas } from "../input/types.js";
 import { CrosslyCanvasConfig } from "../../config/types.js";
@@ -74,20 +73,14 @@ export class CrosslyCanvasFacade extends CrosslyCanvas implements ICrosslyCanvas
 
     public undo(): void {
         this.ensureAlive();
-
-        const stitchUndo = this.stitchCanvasFacade.undo();
-        const cueUndo = this.cueCanvasFacade.undo();
-
-        assert.that(stitchUndo === cueUndo, "undo misbehave");
+        this.stitchCanvasFacade.undo();
+        this.cueCanvasFacade.undo();
     }
 
     public redo(): void {
         this.ensureAlive();
-
-        const stitchRedo = this.stitchCanvasFacade.redo();
-        const cueRedo = this.cueCanvasFacade.redo();
-
-        assert.that(stitchRedo === cueRedo, "redo misbehave");
+        this.stitchCanvasFacade.redo();
+        this.cueCanvasFacade.redo();
     }
 
     public zoomIn(): void {
