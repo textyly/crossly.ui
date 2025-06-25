@@ -1,4 +1,4 @@
-import { Colors } from "../components/types.js";
+import { Colors } from "../menus/types.js";
 
 export type MenuConfig = {
     palette: ColorPaletteConfig;

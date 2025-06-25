@@ -1,10 +1,10 @@
 import assert from "../asserts/assert.js";
 import { Base } from "../general/base.js";
-import { UndoMenu } from "./components/undo.js";
-import { ZoomMenu } from "./components/zoom.js";
-import { CloseMenu } from "./components/close.js";
-import { PaletteMenu } from "./components/palette.js";
-import { SplitViewMenu } from "./components/split.js";
+import { UndoMenu } from "./menus/undo.js";
+import { ZoomMenu } from "./menus/zoom.js";
+import { CloseMenu } from "./menus/close.js";
+import { PaletteMenu } from "./menus/palette.js";
+import { SplitViewMenu } from "./menus/split.js";
 import {
     IMenu,
     IUndoMenu,
@@ -12,7 +12,7 @@ import {
     ICloseMenu,
     IPaletteMenu,
     ISplitViewMenu,
-} from "./components/types.js";
+} from "./menus/types.js";
 
 export class Menu extends Base implements IMenu {
     private document: Document;

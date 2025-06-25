@@ -8,14 +8,12 @@ import { VoidListener, VoidUnsubscribe } from "../../types.js";
 export class SplitViewMenu extends Base implements ISplitViewMenu {
     private readonly messaging: IVoidMessaging;
 
-    private readonly container: Element;
     private readonly splitButton: Element;
     private splitListener: (event: Event) => void;
 
     constructor(container: Element) {
         super(SplitViewMenu.name);
 
-        this.container = container;
         this.messaging = new VoidMessaging();
 
         const splitElement = container.querySelector('#toggle-split-view');

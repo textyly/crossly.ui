@@ -8,7 +8,6 @@ import { VoidEvent, VoidListener, VoidUnsubscribe } from "../../types.js";
 export class ZoomMenu extends Base implements IZoomMenu {
     private messaging: IMessaging1<VoidEvent>;
 
-    private readonly container: Element;
     private readonly zoominButton: Element;
     private readonly zoomoutButton: Element;
 
@@ -21,7 +20,6 @@ export class ZoomMenu extends Base implements IZoomMenu {
     constructor(container: Element) {
         super(ZoomMenu.name);
 
-        this.container = container;
         this.messaging = new Messaging1();
 
         const zoomLevel = container.querySelector("#zoom-level");

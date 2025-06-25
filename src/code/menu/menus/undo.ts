@@ -8,7 +8,6 @@ import { VoidEvent, VoidListener, VoidUnsubscribe } from "../../types.js";
 export class UndoMenu extends Base implements IUndoMenu {
     private messaging: IMessaging1<VoidEvent>;
 
-    private readonly container: Element;
     private readonly undoButton: Element;
     private readonly redoButton: Element;
 
@@ -18,7 +17,6 @@ export class UndoMenu extends Base implements IUndoMenu {
     constructor(container: Element) {
         super(UndoMenu.name);
 
-        this.container = container;
         this.messaging = new Messaging1();
 
         const undoElement = container.querySelector('#undo');

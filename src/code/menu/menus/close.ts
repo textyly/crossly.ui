@@ -7,16 +7,13 @@ import { VoidListener, VoidUnsubscribe } from "../../types.js";
 
 export class CloseMenu extends Base implements ICloseMenu {
     private messaging: IVoidMessaging;
-
-    private readonly container: Element;
     private readonly closeButton: Element;
 
     private closeListener: (event: Event) => void;
 
     constructor(container: Element) {
         super(CloseMenu.name);
-
-        this.container = container;
+        
         this.messaging = new VoidMessaging();
 
         const closeElement = container.querySelector('#close-back');
