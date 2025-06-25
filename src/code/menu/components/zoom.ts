@@ -1,11 +1,11 @@
-import { IZoomComponent } from "./types.js";
+import { IMenuZoomComponent } from "./types.js";
 import { Base } from "../../general/base.js";
 import assert from "../../asserts/assert.js";
 import { Messaging1 } from "../../messaging/impl.js";
 import { IMessaging1 } from "../../messaging/types.js";
 import { VoidEvent, VoidListener, VoidUnsubscribe } from "../../types.js";
 
-export class ZoomComponent extends Base implements IZoomComponent {
+export class MenuZoomComponent extends Base implements IMenuZoomComponent {
     private messaging: IMessaging1<VoidEvent>;
 
     private readonly container: Element;
@@ -19,7 +19,7 @@ export class ZoomComponent extends Base implements IZoomComponent {
     private zoomoutListener: (event: Event) => void;
 
     constructor(container: Element) {
-        super(ZoomComponent.name);
+        super(MenuZoomComponent.name);
 
         this.container = container;
         this.messaging = new Messaging1();

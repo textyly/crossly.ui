@@ -3,9 +3,9 @@ import { Base } from "../../general/base.js";
 import { VoidUnsubscribe } from "../../types.js";
 import { Messaging1 } from "../../messaging/impl.js";
 import { IMessaging1 } from "../../messaging/types.js";
-import { ChangeThreadEvent, ChangeThreadListener, Color, Colors, IPaletteComponent } from "./types.js";
+import { ChangeThreadEvent, ChangeThreadListener, Color, Colors, IMenuPaletteComponent } from "./types.js";
 
-export class PaletteComponent extends Base implements IPaletteComponent {
+export class MenuPaletteComponent extends Base implements IMenuPaletteComponent {
     private messaging: IMessaging1<ChangeThreadEvent>;
 
     private readonly container: Element;
@@ -14,7 +14,7 @@ export class PaletteComponent extends Base implements IPaletteComponent {
 
     // default colors provided by config 
     constructor(container: Element) {
-        super(PaletteComponent.name);
+        super(MenuPaletteComponent.name);
 
         this.container = container;
 

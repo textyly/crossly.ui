@@ -1,45 +1,45 @@
 import assert from "../asserts/assert.js";
 import { Base } from "../general/base.js";
-import { UndoComponent } from "./components/undo.js";
-import { ZoomComponent } from "./components/zoom.js";
-import { CloseComponent } from "./components/close.js";
-import { PaletteComponent } from "./components/palette.js";
-import { SplitViewComponent } from "./components/split.js";
+import { MenuUndoComponent } from "./components/undo.js";
+import { MenuZoomComponent } from "./components/zoom.js";
+import { MenuCloseComponent } from "./components/close.js";
+import { MenuPaletteComponent } from "./components/palette.js";
+import { MenuSplitViewComponent } from "./components/split.js";
 import {
-    IComponents,
-    IUndoComponent,
-    IZoomComponent,
-    ICloseComponent,
-    IPaletteComponent,
-    ISplitViewComponent,
+    IMenuComponents,
+    IMenuUndoComponent,
+    IMenuZoomComponent,
+    IMenuCloseComponent,
+    IMenuPaletteComponent,
+    IMenuSplitViewComponent,
 } from "./components/types.js";
 
-export class Components extends Base implements IComponents {
+export class MenuComponents extends Base implements IMenuComponents {
     private document: Document;
 
-    private undoComponent: IUndoComponent;
-    private zoomComponent: IZoomComponent;
-    private paletteComponent: IPaletteComponent;
-    private splitViewComponent: ISplitViewComponent;
-    private closeComponent: ICloseComponent;
+    private undoComponent: IMenuUndoComponent;
+    private zoomComponent: IMenuZoomComponent;
+    private paletteComponent: IMenuPaletteComponent;
+    private splitViewComponent: IMenuSplitViewComponent;
+    private closeComponent: IMenuCloseComponent;
 
     constructor(document: Document) {
-        super(Components.name);
+        super(MenuComponents.name);
 
         this.document = document;
 
         const paletteMenu = this.getPaletteMenu();
-        this.paletteComponent = new PaletteComponent(paletteMenu);
+        this.paletteComponent = new MenuPaletteComponent(paletteMenu);
 
         const topRightMenu = this.getTopRightMenu();
-        this.undoComponent = new UndoComponent(topRightMenu);
-        this.splitViewComponent = new SplitViewComponent(topRightMenu);
+        this.undoComponent = new MenuUndoComponent(topRightMenu);
+        this.splitViewComponent = new MenuSplitViewComponent(topRightMenu);
 
         const bottomMenu = this.getBottomMenu();
-        this.zoomComponent = new ZoomComponent(bottomMenu);
+        this.zoomComponent = new MenuZoomComponent(bottomMenu);
 
         const backSideTopRightMenu = this.getBackSideTopRightMenu();
-        this.closeComponent = new CloseComponent(backSideTopRightMenu);
+        this.closeComponent = new MenuCloseComponent(backSideTopRightMenu);
     }
 
     private getPaletteMenu(): Element {
@@ -70,23 +70,23 @@ export class Components extends Base implements IComponents {
         return backSideTopRightMenu;
     }
 
-    public get undo(): IUndoComponent {
+    public get undo(): IMenuUndoComponent {
         return this.undoComponent;
     }
 
-    public get zoom(): IZoomComponent {
+    public get zoom(): IMenuZoomComponent {
         return this.zoomComponent;
     }
 
-    public get palette(): IPaletteComponent {
+    public get palette(): IMenuPaletteComponent {
         return this.paletteComponent;
     }
 
-    public get splitView(): ISplitViewComponent {
+    public get splitView(): IMenuSplitViewComponent {
         return this.splitViewComponent;
     }
 
-    public get close(): ICloseComponent {
+    public get close(): IMenuCloseComponent {
         return this.closeComponent;
     }
 
