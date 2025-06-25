@@ -2,13 +2,15 @@ import assert from "../asserts/assert.js";
 import { Base } from "../general/base.js";
 import { UndoComponent } from "./components/undo.js";
 import { ZoomComponent } from "./components/zoom.js";
+import { CloseComponent } from "./components/close.js";
 import { PaletteComponent } from "./components/palette.js";
 import { SplitViewComponent } from "./components/split.js";
 import {
+    IComponents,
     IUndoComponent,
     IZoomComponent,
+    ICloseComponent,
     IPaletteComponent,
-    IComponents,
     ISplitViewComponent,
 } from "./components/types.js";
 
@@ -19,15 +21,17 @@ export class Components extends Base implements IComponents {
     private zoomComponent: IZoomComponent;
     private paletteComponent: IPaletteComponent;
     private splitViewComponent: ISplitViewComponent;
+    private closeComponent: ICloseComponent;
 
     constructor(document: Document) {
         super(Components.name);
 
         this.document = document;
 
-        const paletteContainer = document.querySelector('.color-button-group');
-        assert.defined(paletteContainer, "paletteContainer");
-        this.paletteComponent = new PaletteComponent(paletteContainer);
+        // TODO: add get methods
+        const paletteMenu = document.querySelector('.color-button-group');
+        assert.defined(paletteMenu, "paletteMenu");
+        this.paletteComponent = new PaletteComponent(paletteMenu);
 
         const topRightMenu = document.querySelector('.top-floating-menu.right');
         assert.defined(topRightMenu, "topRightMenu");
@@ -37,6 +41,13 @@ export class Components extends Base implements IComponents {
         const bottomMenu = document.querySelector('.bottom-floating-menu');
         assert.defined(bottomMenu, "bottomMenu");
         this.zoomComponent = new ZoomComponent(bottomMenu);
+
+        const backSideViewContainer = document.querySelector('.side-container.back');
+        assert.defined(backSideViewContainer, "backSideViewContainer");
+
+        const backSideTopRightMenu = backSideViewContainer.querySelector('.top-floating-menu.right');
+        assert.defined(backSideTopRightMenu, "backSideTopRightMenu");
+        this.closeComponent = new CloseComponent(backSideTopRightMenu);
     }
 
     public get undo(): IUndoComponent {
@@ -55,19 +66,9 @@ export class Components extends Base implements IComponents {
         return this.splitViewComponent;
     }
 
-    // public get actionButtons(): Array<HTMLElement> {
-    //     const actionButtons = this.document.querySelectorAll<HTMLElement>('.action-button');
-    //     assert.defined(actionButtons, "actionButtons");
-
-    //     return [...actionButtons];
-    // }
-
-    // public get backSideContainer(): HTMLElement {
-    //     const backSideContainer = document.getElementById("back-side-container");
-    //     assert.defined(backSideContainer, "backSideContainer");
-
-    //     return backSideContainer;
-    // }
+    public get close(): ICloseComponent {
+        return this.closeComponent;
+    }
 
     public override dispose(): void {
         this.palette.dispose();

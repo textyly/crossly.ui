@@ -9,6 +9,7 @@ export interface IComponents extends IDisposable {
     get zoom(): IZoomComponent;
     get palette(): IPaletteComponent;
     get splitView(): ISplitViewComponent;
+    get close(): ICloseComponent;
 }
 
 export interface IPaletteComponent extends IDisposable {
@@ -31,6 +32,10 @@ export interface IZoomComponent extends IDisposable {
 
 export interface ISplitViewComponent extends IDisposable {
     onToggleSplitView(listener: VoidListener): VoidUnsubscribe;
+}
+
+export interface ICloseComponent extends IDisposable {
+    onClose(listener: VoidListener): VoidUnsubscribe;
 }
 
 // TODO: create thread type

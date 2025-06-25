@@ -59,9 +59,14 @@ export class MenuHandler extends Base implements IMenuHandler {
         this.canvas.toggleSplitView();
     }
 
+    private handleClose(): void {
+        // close button is being clicked so back side view is visible, just toggle
+        this.canvas.toggleSplitView();
+    }
+
     private subscribe(): void {
         this.subscribeCanvas();
-        this.subscribeMenu();
+        this.subscribeComponents();
     }
 
     private subscribeCanvas(): void {
@@ -75,7 +80,7 @@ export class MenuHandler extends Base implements IMenuHandler {
         super.registerUn(loadPatternUn);
     }
 
-    private subscribeMenu(): void {
+    private subscribeComponents(): void {
         const paletteComponent = this.components.palette;
         const changeThreadUn = paletteComponent.onChangeThread(this.handleChangeThread.bind(this));
         super.registerUn(changeThreadUn);
@@ -97,5 +102,9 @@ export class MenuHandler extends Base implements IMenuHandler {
         const splitViewComponent = this.components.splitView;
         const splitUn = splitViewComponent.onToggleSplitView(this.handleSplit.bind(this));
         super.registerUn(splitUn);
+
+        const closeComponent = this.components.close;
+        const closeUn = closeComponent.onClose(this.handleClose.bind(this));
+        super.registerUn(closeUn);
     }
 }
