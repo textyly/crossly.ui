@@ -22,19 +22,12 @@ export class ZoomMenu extends Base implements IZoomMenu {
 
         this.messaging = new Messaging1();
 
-        const zoomLevel = container.querySelector("#zoom-level");
-        assert.defined(zoomLevel, "zoomLevel");
-        this.zoomLevelLabel = zoomLevel;
+        this.zoomLevelLabel = this.getZoomLevelLabel(container);
         this.currentZoomLevel = 120;
         this.updateZoomLevel(this.currentZoomLevel);
 
-        const zoominElement = container.querySelector("#zoom-in");
-        assert.defined(zoominElement, "zoominElement");
-        this.zoominButton = zoominElement;
-
-        const zoomoutElement = container.querySelector("#zoom-out");
-        assert.defined(zoomoutElement, "zoomoutElement");
-        this.zoomoutButton = zoomoutElement;
+        this.zoominButton = this.getZoomInButton(container);
+        this.zoomoutButton = this.getZoomOutButton(container);
 
         this.zoominListener = () => { };
         this.zoomoutListener = () => { };
@@ -64,6 +57,24 @@ export class ZoomMenu extends Base implements IZoomMenu {
         this.unsubscribe();
         this.messaging.dispose();
         super.dispose();
+    }
+
+    private getZoomLevelLabel(container: Element): Element {
+        const zoomLevelElement = container.querySelector("#zoom-level");
+        assert.defined(zoomLevelElement, "zoomLevelElement");
+        return zoomLevelElement;
+    }
+
+    private getZoomInButton(container: Element): Element {
+        const zoominElement = container.querySelector("#zoom-in");
+        assert.defined(zoominElement, "zoominElement");
+        return zoominElement;
+    }
+
+    private getZoomOutButton(container: Element): Element {
+        const zoomoutElement = container.querySelector("#zoom-out");
+        assert.defined(zoomoutElement, "zoomoutElement");
+        return zoomoutElement;
     }
 
     private updateZoomLevel(value: number) {

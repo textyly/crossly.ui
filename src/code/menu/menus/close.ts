@@ -1,5 +1,5 @@
-import { Base } from "../../general/base.js";
 import { ICloseMenu } from "./types.js";
+import { Base } from "../../general/base.js";
 import assert from "../../asserts/assert.js";
 import { VoidMessaging } from "../../messaging/impl.js";
 import { IVoidMessaging } from "../../messaging/types.js";
@@ -13,13 +13,10 @@ export class CloseMenu extends Base implements ICloseMenu {
 
     constructor(container: Element) {
         super(CloseMenu.name);
-        
+
         this.messaging = new VoidMessaging();
 
-        const closeElement = container.querySelector('#close-back');
-        assert.defined(closeElement, "closeElement");
-        this.closeButton = closeElement;
-
+        this.closeButton = this.getCloseButton(container);
         this.closeListener = () => { };
 
         this.subscribe();
@@ -33,6 +30,12 @@ export class CloseMenu extends Base implements ICloseMenu {
         this.unsubscribe();
         this.messaging.dispose();
         super.dispose();
+    }
+
+    private getCloseButton(container: Element): Element {
+        const closeElement = container.querySelector('#close-back');
+        assert.defined(closeElement, "closeElement");
+        return closeElement;
     }
 
     private subscribe(): void {

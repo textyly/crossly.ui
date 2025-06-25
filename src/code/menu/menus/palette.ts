@@ -10,27 +10,20 @@ export class PaletteMenu extends Base implements IPaletteMenu {
 
     private readonly container: Element;
     private readonly activeColors: Array<Color>;
-    private readonly changeColorListeners: Array<(event: Event) => void>;
+    private readonly colorButtonsListeners: Array<(event: Event) => void>;
 
-    // default colors provided by config 
     constructor(container: Element) {
         super(PaletteMenu.name);
 
         this.container = container;
 
-        this.changeColorListeners = [];
+        this.colorButtonsListeners = [];
         this.messaging = new Messaging1();
 
-        const paletteMenu = container.querySelector('.color-button-group');
-        assert.defined(paletteMenu, "paletteMenu");
+        const paletteMenu = this.getPaletteMenu(this.container);
+        const buttons = this.getColorButtons(paletteMenu);
 
-        const elements = this.container.querySelectorAll(".color-button");
-        const buttons = [...elements];
-
-        assert.defined(buttons, "buttons");
-        assert.greaterThanZero(buttons.length, "buttons.length");
-
-        this.activeColors = [...buttons]
+        this.activeColors = buttons
             .map((button) => this.getButtonColor(button))
             .map((color) => this.normalizeColor(color));
 
@@ -42,7 +35,7 @@ export class PaletteMenu extends Base implements IPaletteMenu {
     }
 
     public add(colors: Colors): void {
-        assert.greaterThanZero(colors?.length, "colors.length");
+        assert.greaterThanZero(colors.length, "colors.length");
 
         let uniqueColors = this.getUniqueColors(colors);
         assert.greaterThanZero(uniqueColors.length, "uniqueColors.length");
@@ -53,11 +46,12 @@ export class PaletteMenu extends Base implements IPaletteMenu {
             if (!this.activeColors.find((ac) => ac === normalized)) {
                 this.activeColors.push(normalized);
 
-                const button = this.createButton(normalized);
-                const buttons = this.container.querySelectorAll("button");
+                const newButton = this.createButton(normalized);
+                const addButton = this.getAddButton(this.container);
+                const paletteMenu = this.getPaletteMenu(this.container);
 
-                this.container.insertBefore(button, buttons[buttons.length - 1]); // insert before + button
-                this.subscribeButton(button);
+                paletteMenu.insertBefore(newButton, addButton);
+                this.subscribeButton(newButton);
             }
         });
     }
@@ -65,6 +59,24 @@ export class PaletteMenu extends Base implements IPaletteMenu {
     public override dispose(): void {
         this.unsubscribeButtons();
         super.dispose();
+    }
+
+    private getPaletteMenu(container: Element): Element {
+        const paletteElement = container.querySelector('#color-buttons');
+        assert.defined(paletteElement, "paletteElement");
+        return paletteElement;
+    }
+
+    private getAddButton(container: Element): Element {
+        const addElement = container.querySelector('#add-color');
+        assert.defined(addElement, "addElement");
+        return addElement;
+    }
+
+    private getColorButtons(container: Element): Array<Element> {
+        const elements = container.querySelectorAll(".color-button");
+        assert.greaterThanZero(elements.length, "buttons.length");
+        return [...elements];
     }
 
     private createButton(color: Color): HTMLButtonElement {
@@ -116,7 +128,7 @@ export class PaletteMenu extends Base implements IPaletteMenu {
     private subscribeButton(button: Element): void {
         const handler = this.handleChangeColor.bind(this);
         button.addEventListener("click", handler);
-        this.changeColorListeners.push(handler);
+        this.colorButtonsListeners.push(handler);
     }
 
     private unsubscribeButtons(): void {
@@ -125,11 +137,11 @@ export class PaletteMenu extends Base implements IPaletteMenu {
         assert.defined(buttons, "buttons");
         assert.greaterThanZero(buttons?.length, "buttons.length");
 
-        assert.defined(this.changeColorListeners, "changeColorListeners");
+        assert.defined(this.colorButtonsListeners, "changeColorListeners");
 
         for (let index = 0; index < buttons.length; index++) {
             const button = buttons[index];
-            const listener = this.changeColorListeners[index];
+            const listener = this.colorButtonsListeners[index];
             button.removeEventListener("click", listener);
         }
     }

@@ -19,13 +19,8 @@ export class UndoMenu extends Base implements IUndoMenu {
 
         this.messaging = new Messaging1();
 
-        const undoElement = container.querySelector('#undo');
-        assert.defined(undoElement, "undoElement");
-        this.undoButton = undoElement;
-
-        const redoElement = container.querySelector('#redo');
-        assert.defined(redoElement, "redoElement");
-        this.redoButton = redoElement;
+        this.undoButton = this.getUndoButton(container);
+        this.redoButton = this.getRedoButton(container);
 
         this.undoListener = () => { };
         this.redoListener = () => { };
@@ -45,6 +40,18 @@ export class UndoMenu extends Base implements IUndoMenu {
         this.unsubscribe();
         this.messaging.dispose();
         super.dispose();
+    }
+
+    private getUndoButton(container: Element): Element {
+        const undoElement = container.querySelector('#undo');
+        assert.defined(undoElement, "undoElement");
+        return undoElement;
+    }
+
+    private getRedoButton(container: Element): Element {
+        const redoElement = container.querySelector('#redo');
+        assert.defined(redoElement, "redoElement");
+        return redoElement;
     }
 
     private subscribe(): void {

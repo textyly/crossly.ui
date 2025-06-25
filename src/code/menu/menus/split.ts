@@ -16,9 +16,7 @@ export class SplitViewMenu extends Base implements ISplitViewMenu {
 
         this.messaging = new VoidMessaging();
 
-        const splitElement = container.querySelector('#toggle-split-view');
-        assert.defined(splitElement, "splitElement");
-        this.splitButton = splitElement;
+        this.splitButton = this.getSplitViewButton(container);
         this.splitListener = () => { };
 
         this.subscribe();
@@ -32,6 +30,12 @@ export class SplitViewMenu extends Base implements ISplitViewMenu {
         this.unsubscribe();
         this.messaging.dispose();
         super.dispose();
+    }
+
+    private getSplitViewButton(container: Element): Element {
+        const splitElement = container.querySelector('#toggle-split-view');
+        assert.defined(splitElement, "splitElement");
+        return splitElement;
     }
 
     private subscribe(): void {
