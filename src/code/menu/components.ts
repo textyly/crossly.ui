@@ -28,26 +28,46 @@ export class Components extends Base implements IComponents {
 
         this.document = document;
 
-        // TODO: add get methods
-        const paletteMenu = document.querySelector('.color-button-group');
-        assert.defined(paletteMenu, "paletteMenu");
+        const paletteMenu = this.getPaletteMenu();
         this.paletteComponent = new PaletteComponent(paletteMenu);
 
-        const topRightMenu = document.querySelector('.top-floating-menu.right');
-        assert.defined(topRightMenu, "topRightMenu");
+        const topRightMenu = this.getTopRightMenu();
         this.undoComponent = new UndoComponent(topRightMenu);
         this.splitViewComponent = new SplitViewComponent(topRightMenu);
 
-        const bottomMenu = document.querySelector('.bottom-floating-menu');
-        assert.defined(bottomMenu, "bottomMenu");
+        const bottomMenu = this.getBottomMenu();
         this.zoomComponent = new ZoomComponent(bottomMenu);
 
+        const backSideTopRightMenu = this.getBackSideTopRightMenu();
+        this.closeComponent = new CloseComponent(backSideTopRightMenu);
+    }
+
+    private getPaletteMenu(): Element {
+        const paletteMenu = document.querySelector('.color-button-group');
+        assert.defined(paletteMenu, "paletteMenu");
+        return paletteMenu;
+    }
+
+    private getTopRightMenu(): Element {
+        const topRightMenu = document.querySelector('.top-floating-menu.right');
+        assert.defined(topRightMenu, "topRightMenu");
+        return topRightMenu;
+    }
+
+    private getBottomMenu(): Element {
+        const bottomMenu = document.querySelector('.bottom-floating-menu');
+        assert.defined(bottomMenu, "bottomMenu");
+        return bottomMenu;
+    }
+
+    private getBackSideTopRightMenu(): Element {
         const backSideViewContainer = document.querySelector('.side-container.back');
         assert.defined(backSideViewContainer, "backSideViewContainer");
 
         const backSideTopRightMenu = backSideViewContainer.querySelector('.top-floating-menu.right');
         assert.defined(backSideTopRightMenu, "backSideTopRightMenu");
-        this.closeComponent = new CloseComponent(backSideTopRightMenu);
+
+        return backSideTopRightMenu;
     }
 
     public get undo(): IUndoComponent {
@@ -71,9 +91,11 @@ export class Components extends Base implements IComponents {
     }
 
     public override dispose(): void {
-        this.palette.dispose();
         this.undo.dispose();
         this.zoom.dispose();
+        this.palette.dispose();
+        this.splitView.dispose();
+        this.close.dispose();
 
         super.dispose();
     }
