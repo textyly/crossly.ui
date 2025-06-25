@@ -77,6 +77,11 @@ export enum Visibility {
     Hidden,
 }
 
+export enum DrawingMode {
+    Draw,
+    Suspend
+}
+
 export type BoundsChangeEvent = { bounds: Bounds };
 export type BoundsChangeListener = Listener<BoundsChangeEvent>;
 

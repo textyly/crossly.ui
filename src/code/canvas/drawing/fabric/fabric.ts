@@ -1,6 +1,6 @@
 import { CanvasBase } from "../../base.js";
 import assert from "../../../asserts/assert.js";
-import { BoundsChangeEvent } from "../../types.js";
+import { BoundsChangeEvent, DrawingMode } from "../../types.js";
 import { IFabricDrawingCanvas, IFabricRasterDrawingCanvas } from "../types.js";
 import { DrawFabricBackgroundEvent, DrawFabricDotsEvent, DrawFabricThreadsEvent, IFabricCanvas } from "../../virtual/types.js";
 
@@ -8,13 +8,24 @@ export class FabricDrawingCanvas extends CanvasBase implements IFabricDrawingCan
     private readonly fabricCanvas: IFabricCanvas;
     private readonly rasterDrawing: IFabricRasterDrawingCanvas;
 
-    constructor(fabricCanvas: IFabricCanvas, rasterDrawing: IFabricRasterDrawingCanvas) {
+    private drawingMode: DrawingMode;
+
+    constructor(fabricCanvas: IFabricCanvas, rasterDrawing: IFabricRasterDrawingCanvas, drawingMode: DrawingMode) {
         super(FabricDrawingCanvas.name);
 
         this.fabricCanvas = fabricCanvas;
         this.rasterDrawing = rasterDrawing;
+        this.drawingMode = drawingMode;
 
         this.subscribe();
+    }
+
+    public suspend(): void {
+        this.drawingMode = DrawingMode.Suspend;
+    }
+
+    public resume(): void {
+        this.drawingMode = DrawingMode.Draw;
     }
 
     public override dispose(): void {
@@ -26,24 +37,33 @@ export class FabricDrawingCanvas extends CanvasBase implements IFabricDrawingCan
     private handleDrawDots(event: DrawFabricDotsEvent): void {
         this.ensureAlive();
 
-        this.rasterDrawing.drawDots(event.dots);
+        if (this.drawingMode === DrawingMode.Draw) {
+            this.rasterDrawing.drawDots(event.dots);
+        }
     }
 
     private handleDrawThreads(event: DrawFabricThreadsEvent): void {
         this.ensureAlive();
 
-        this.rasterDrawing.drawLines(event.threads);
+        if (this.drawingMode === DrawingMode.Draw) {
+            this.rasterDrawing.drawLines(event.threads);
+        }
     }
 
     private handleDrawBackground(event: DrawFabricBackgroundEvent): void {
         this.ensureAlive();
 
-        this.rasterDrawing.drawBackgroundColor(event.color);
+        if (this.drawingMode === DrawingMode.Draw) {
+            this.rasterDrawing.drawBackgroundColor(event.color);
+        }
     }
 
     private handleRedraw(): void {
         this.ensureAlive();
-        this.clear();
+
+        if (this.drawingMode === DrawingMode.Draw) {
+            this.clear();
+        }
     }
 
     private handleBoundsChange(event: BoundsChangeEvent): void {
@@ -58,17 +78,23 @@ export class FabricDrawingCanvas extends CanvasBase implements IFabricDrawingCan
     private async handleMoveStart(): Promise<void> {
         this.ensureAlive();
 
-        const bitmap = await this.rasterDrawing.createBitMap();
-        assert.defined(bitmap, "bitmap");
+        if (this.drawingMode === DrawingMode.Draw) {
 
-        this.clear();
+            const bitmap = await this.rasterDrawing.createBitMap();
+            assert.defined(bitmap, "bitmap");
 
-        this.rasterDrawing.drawBitMap(bitmap);
+            this.clear();
+
+            this.rasterDrawing.drawBitMap(bitmap);
+        }
     }
 
     private handleMoveStop(): void {
         this.ensureAlive();
-        this.clear();
+
+        if (this.drawingMode === DrawingMode.Draw) {
+            this.clear();
+        }
     }
 
     private clear(): void {

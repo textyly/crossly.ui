@@ -1,6 +1,6 @@
 import { CanvasBase } from "../../base.js";
 import assert from "../../../asserts/assert.js";
-import { BoundsChangeEvent } from "../../types.js";
+import { BoundsChangeEvent, DrawingMode } from "../../types.js";
 import { IStitchDrawingCanvas, IStitchRasterDrawingCanvas } from "../types.js";
 import { DrawStitchPatternEvent, DrawStitchSegmentEvent, IStitchCanvas } from "../../virtual/types.js";
 
@@ -8,13 +8,24 @@ export class StitchDrawingCanvas extends CanvasBase implements IStitchDrawingCan
     private readonly stitchCanvas: IStitchCanvas;
     private readonly rasterDrawing: IStitchRasterDrawingCanvas;
 
-    constructor(stitchCanvas: IStitchCanvas, rasterDrawing: IStitchRasterDrawingCanvas) {
+    private drawingMode: DrawingMode;
+
+    constructor(stitchCanvas: IStitchCanvas, rasterDrawing: IStitchRasterDrawingCanvas, drawingMode: DrawingMode) {
         super(StitchDrawingCanvas.name);
 
         this.stitchCanvas = stitchCanvas;
         this.rasterDrawing = rasterDrawing;
+        this.drawingMode = drawingMode;
 
         this.subscribe();
+    }
+
+    public suspend(): void {
+        this.drawingMode = DrawingMode.Suspend;
+    }
+
+    public resume(): void {
+        this.drawingMode = DrawingMode.Draw;
     }
 
     public override dispose(): void {
@@ -26,23 +37,32 @@ export class StitchDrawingCanvas extends CanvasBase implements IStitchDrawingCan
     private handleDrawPattern(event: DrawStitchPatternEvent): void {
         this.ensureAlive();
 
-        const pattern = event.pattern;
-        if (pattern.length > 0) {
-            const density = event.density;
-            this.rasterDrawing.drawLines(pattern, density);
+        if (this.drawingMode === DrawingMode.Draw) {
+            const pattern = event.pattern;
+            if (pattern.length > 0) {
+                const density = event.density;
+                this.rasterDrawing.drawLines(pattern, density);
+            }
         }
     }
 
     private handleDrawSegment(event: DrawStitchSegmentEvent): void {
-        const segment = event.segment;
-        const density = event.density;
+        this.ensureAlive();
 
-        this.rasterDrawing.drawLine(segment, density);
+        if (this.drawingMode === DrawingMode.Draw) {
+            const segment = event.segment;
+            const density = event.density;
+
+            this.rasterDrawing.drawLine(segment, density);
+        }
     }
 
     private handleRedraw(): void {
         this.ensureAlive();
-        this.clear();
+
+        if (this.drawingMode === DrawingMode.Draw) {
+            this.clear();
+        }
     }
 
     private handleBoundsChange(event: BoundsChangeEvent): void {
@@ -56,17 +76,22 @@ export class StitchDrawingCanvas extends CanvasBase implements IStitchDrawingCan
     private async handleMoveStart(): Promise<void> {
         this.ensureAlive();
 
-        const bitmap = await this.rasterDrawing.createBitMap();
-        assert.defined(bitmap, "bitmap");
+        if (this.drawingMode === DrawingMode.Draw) {
+            const bitmap = await this.rasterDrawing.createBitMap();
+            assert.defined(bitmap, "bitmap");
 
-        this.clear();
+            this.clear();
 
-        this.rasterDrawing.drawBitMap(bitmap);
+            this.rasterDrawing.drawBitMap(bitmap);
+        }
     }
 
     private handleMoveStop(): void {
         this.ensureAlive();
-        this.clear();
+
+        if (this.drawingMode === DrawingMode.Draw) {
+            this.clear();
+        }
     }
 
     private clear(): void {

@@ -39,6 +39,8 @@ export interface IVectorDrawingCanvas extends ICanvas {
 }
 
 export interface IDrawingCanvas extends ICanvas {
+    suspend(): void;
+    resume(): void;
 }
 
 export interface IFabricDrawingCanvas extends IDrawingCanvas {
