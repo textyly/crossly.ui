@@ -1,11 +1,11 @@
 import assert from "../../asserts/assert.js";
 import { Base } from "../../general/base.js";
-import { IMenuSplitViewComponent } from "./types.js";
+import { ISplitViewMenu } from "./types.js";
 import { VoidMessaging } from "../../messaging/impl.js";
 import { IVoidMessaging } from "../../messaging/types.js";
 import { VoidListener, VoidUnsubscribe } from "../../types.js";
 
-export class MenuSplitViewComponent extends Base implements IMenuSplitViewComponent {
+export class SplitViewMenu extends Base implements ISplitViewMenu {
     private readonly messaging: IVoidMessaging;
 
     private readonly container: Element;
@@ -13,7 +13,7 @@ export class MenuSplitViewComponent extends Base implements IMenuSplitViewCompon
     private splitListener: (event: Event) => void;
 
     constructor(container: Element) {
-        super(MenuSplitViewComponent.name);
+        super(SplitViewMenu.name);
 
         this.container = container;
         this.messaging = new VoidMessaging();

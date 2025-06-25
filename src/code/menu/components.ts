@@ -1,55 +1,81 @@
 import assert from "../asserts/assert.js";
 import { Base } from "../general/base.js";
-import { MenuUndoComponent } from "./components/undo.js";
-import { MenuZoomComponent } from "./components/zoom.js";
-import { MenuCloseComponent } from "./components/close.js";
-import { MenuPaletteComponent } from "./components/palette.js";
-import { MenuSplitViewComponent } from "./components/split.js";
+import { UndoMenu } from "./components/undo.js";
+import { ZoomMenu } from "./components/zoom.js";
+import { CloseMenu } from "./components/close.js";
+import { PaletteMenu } from "./components/palette.js";
+import { SplitViewMenu } from "./components/split.js";
 import {
-    IMenuComponents,
-    IMenuUndoComponent,
-    IMenuZoomComponent,
-    IMenuCloseComponent,
-    IMenuPaletteComponent,
-    IMenuSplitViewComponent,
+    IMenu,
+    IUndoMenu,
+    IZoomMenu,
+    ICloseMenu,
+    IPaletteMenu,
+    ISplitViewMenu,
 } from "./components/types.js";
 
-export class MenuComponents extends Base implements IMenuComponents {
+export class Menu extends Base implements IMenu {
     private document: Document;
 
-    private undoComponent: IMenuUndoComponent;
-    private zoomComponent: IMenuZoomComponent;
-    private paletteComponent: IMenuPaletteComponent;
-    private splitViewComponent: IMenuSplitViewComponent;
-    private closeComponent: IMenuCloseComponent;
+    private undoComponent: IUndoMenu;
+    private zoomComponent: IZoomMenu;
+    private paletteComponent: IPaletteMenu;
+    private splitViewComponent: ISplitViewMenu;
+    private closeComponent: ICloseMenu;
 
     constructor(document: Document) {
-        super(MenuComponents.name);
+        super(Menu.name);
 
         this.document = document;
 
-        const paletteMenu = this.getPaletteMenu();
-        this.paletteComponent = new MenuPaletteComponent(paletteMenu);
+        const leftCenterMenu = this.getLeftCenterMenu();
+        this.paletteComponent = new PaletteMenu(leftCenterMenu);
 
         const topRightMenu = this.getTopRightMenu();
-        this.undoComponent = new MenuUndoComponent(topRightMenu);
-        this.splitViewComponent = new MenuSplitViewComponent(topRightMenu);
+        this.undoComponent = new UndoMenu(topRightMenu);
+        this.splitViewComponent = new SplitViewMenu(topRightMenu);
 
         const bottomMenu = this.getBottomRightMenu();
-        this.zoomComponent = new MenuZoomComponent(bottomMenu);
+        this.zoomComponent = new ZoomMenu(bottomMenu);
 
         const backSideTopRightMenu = this.getBackSideTopRightMenu();
-        this.closeComponent = new MenuCloseComponent(backSideTopRightMenu);
+        this.closeComponent = new CloseMenu(backSideTopRightMenu);
     }
 
-    private getPaletteMenu(): Element {
+    public get undo(): IUndoMenu {
+        return this.undoComponent;
+    }
+
+    public get zoom(): IZoomMenu {
+        return this.zoomComponent;
+    }
+
+    public get palette(): IPaletteMenu {
+        return this.paletteComponent;
+    }
+
+    public get splitView(): ISplitViewMenu {
+        return this.splitViewComponent;
+    }
+
+    public get close(): ICloseMenu {
+        return this.closeComponent;
+    }
+
+    public override dispose(): void {
+        this.undo.dispose();
+        this.zoom.dispose();
+        this.palette.dispose();
+        this.splitView.dispose();
+        this.close.dispose();
+
+        super.dispose();
+    }
+
+    private getLeftCenterMenu(): Element {
         const leftCenterMenu = this.document.querySelector('.left-floating-menu.center');
         assert.defined(leftCenterMenu, "leftCenterMenu");
-
-        const paletteMenu = leftCenterMenu.querySelector('.color-button-group');
-        assert.defined(paletteMenu, "paletteMenu");
-
-        return paletteMenu;
+        return leftCenterMenu;
     }
 
     private getTopRightMenu(): Element {
@@ -72,35 +98,5 @@ export class MenuComponents extends Base implements IMenuComponents {
         assert.defined(backSideTopRightMenu, "backSideTopRightMenu");
 
         return backSideTopRightMenu;
-    }
-
-    public get undo(): IMenuUndoComponent {
-        return this.undoComponent;
-    }
-
-    public get zoom(): IMenuZoomComponent {
-        return this.zoomComponent;
-    }
-
-    public get palette(): IMenuPaletteComponent {
-        return this.paletteComponent;
-    }
-
-    public get splitView(): IMenuSplitViewComponent {
-        return this.splitViewComponent;
-    }
-
-    public get close(): IMenuCloseComponent {
-        return this.closeComponent;
-    }
-
-    public override dispose(): void {
-        this.undo.dispose();
-        this.zoom.dispose();
-        this.palette.dispose();
-        this.splitView.dispose();
-        this.close.dispose();
-
-        super.dispose();
     }
 }

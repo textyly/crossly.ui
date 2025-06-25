@@ -2,13 +2,13 @@ import { Base } from "../general/base.js";
 import { IMenuHandler } from "./types.js";
 import { ICrosslyCanvasFacade } from "../canvas/types.js";
 import { ChangeStitchPatternEvent } from "../canvas/virtual/types.js";
-import { ChangeThreadEvent, IMenuComponents } from "./components/types.js";
+import { ChangeThreadEvent, IMenu } from "./components/types.js";
 
 export class MenuHandler extends Base implements IMenuHandler {
-    private readonly components: IMenuComponents;
+    private readonly components: IMenu;
     private readonly canvas: ICrosslyCanvasFacade;
 
-    constructor(components: IMenuComponents, canvas: ICrosslyCanvasFacade) {
+    constructor(components: IMenu, canvas: ICrosslyCanvasFacade) {
         super(MenuHandler.name);
 
         this.components = components;

@@ -37,7 +37,6 @@ body {
   display: none;
 }
 
-/* === Shared Button Style === */
 .top-floating-menu label,
 .left-floating-menu label,
 .bottom-floating-menu label {
@@ -71,7 +70,6 @@ body {
   border: 1px solid #cfcfcf;
 }
 
-/* === Top Floating Menu === */
 .top-floating-menu {
   position: absolute;
   top: 0.5rem;
@@ -90,7 +88,6 @@ body {
   right: 0.5rem;
 }
 
-/* === Left Floating (Vertical) Menu === */
 .left-floating-menu {
   position: absolute;
   top: 50%;
@@ -113,7 +110,6 @@ body {
   margin: 0 auto;
 }
 
-/* === Bottom-Right Floating Menu (Horizontal) === */
 .bottom-floating-menu {
   position: absolute;
   right: 0.5rem;

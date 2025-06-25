@@ -1,11 +1,11 @@
-import { IMenuUndoComponent } from "./types.js";
+import { IUndoMenu } from "./types.js";
 import { Base } from "../../general/base.js";
 import assert from "../../asserts/assert.js";
 import { Messaging1 } from "../../messaging/impl.js";
 import { IMessaging1 } from "../../messaging/types.js";
 import { VoidEvent, VoidListener, VoidUnsubscribe } from "../../types.js";
 
-export class MenuUndoComponent extends Base implements IMenuUndoComponent {
+export class UndoMenu extends Base implements IUndoMenu {
     private messaging: IMessaging1<VoidEvent>;
 
     private readonly container: Element;
@@ -16,7 +16,7 @@ export class MenuUndoComponent extends Base implements IMenuUndoComponent {
     private redoListener: (event: Event) => void;
 
     constructor(container: Element) {
-        super(MenuUndoComponent.name);
+        super(UndoMenu.name);
 
         this.container = container;
         this.messaging = new Messaging1();

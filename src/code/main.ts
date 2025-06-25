@@ -1,5 +1,5 @@
 import { MenuHandler } from "./menu/handler.js";
-import { MenuComponents } from "./menu/components.js";
+import { Menu } from "./menu/components.js";
 import { RepositoryFactory } from "./repository/factory.js";
 import { CrosslyCanvasAnimationFactory } from "./animation/factory.js";
 import { CrosslyCanvasFacadeFactory } from "./canvas/crossly/factory.js";
@@ -13,7 +13,7 @@ const w = window as any;
 w.crosslyCanvas = canvas;
 w.crosslyCanvasFactory = canvasFactory;
 
-const components = new MenuComponents(document);
+const components = new Menu(document);
 const menuHandler = new MenuHandler(components, canvas);
 w.menuHandler = menuHandler;
 

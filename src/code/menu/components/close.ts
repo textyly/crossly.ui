@@ -1,11 +1,11 @@
 import { Base } from "../../general/base.js";
-import { IMenuCloseComponent } from "./types.js";
+import { ICloseMenu } from "./types.js";
 import assert from "../../asserts/assert.js";
 import { VoidMessaging } from "../../messaging/impl.js";
 import { IVoidMessaging } from "../../messaging/types.js";
 import { VoidListener, VoidUnsubscribe } from "../../types.js";
 
-export class MenuCloseComponent extends Base implements IMenuCloseComponent {
+export class CloseMenu extends Base implements ICloseMenu {
     private messaging: IVoidMessaging;
 
     private readonly container: Element;
@@ -14,7 +14,7 @@ export class MenuCloseComponent extends Base implements IMenuCloseComponent {
     private closeListener: (event: Event) => void;
 
     constructor(container: Element) {
-        super(MenuCloseComponent.name);
+        super(CloseMenu.name);
 
         this.container = container;
         this.messaging = new VoidMessaging();

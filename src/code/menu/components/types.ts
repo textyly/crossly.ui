@@ -4,25 +4,25 @@ import { IDisposable, Listener, VoidListener, VoidUnsubscribe } from "../../type
 export type Color = string;
 export type Colors = Array<Color>;
 
-export interface IMenuComponents extends IDisposable {
-    get undo(): IMenuUndoComponent;
-    get zoom(): IMenuZoomComponent;
-    get palette(): IMenuPaletteComponent;
-    get splitView(): IMenuSplitViewComponent;
-    get close(): IMenuCloseComponent;
+export interface IMenu extends IDisposable {
+    get undo(): IUndoMenu;
+    get zoom(): IZoomMenu;
+    get palette(): IPaletteMenu;
+    get splitView(): ISplitViewMenu;
+    get close(): ICloseMenu;
 }
 
-export interface IMenuPaletteComponent extends IDisposable {
+export interface IPaletteMenu extends IDisposable {
     add(threads: Colors): void;
     onChangeThread(listener: ChangeThreadListener): VoidUnsubscribe;
 }
 
-export interface IMenuUndoComponent extends IDisposable {
+export interface IUndoMenu extends IDisposable {
     onUndo(listener: VoidListener): VoidUnsubscribe;
     onRedo(listener: VoidListener): VoidUnsubscribe;
 }
 
-export interface IMenuZoomComponent extends IDisposable {
+export interface IZoomMenu extends IDisposable {
     zoomIn(): void;
     zoomOut(): void;
 
@@ -30,11 +30,11 @@ export interface IMenuZoomComponent extends IDisposable {
     onZoomOut(listener: VoidListener): VoidUnsubscribe;
 }
 
-export interface IMenuSplitViewComponent extends IDisposable {
+export interface ISplitViewMenu extends IDisposable {
     onToggleSplitView(listener: VoidListener): VoidUnsubscribe;
 }
 
-export interface IMenuCloseComponent extends IDisposable {
+export interface ICloseMenu extends IDisposable {
     onClose(listener: VoidListener): VoidUnsubscribe;
 }
 
