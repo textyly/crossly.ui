@@ -1,16 +1,16 @@
-import { UndoComponent } from "./undo.js";
-import { ZoomComponent } from "./zoom.js";
-import assert from "../../asserts/assert.js";
-import { Base } from "../../general/base.js";
-import { PaletteComponent } from "./palette.js";
+import assert from "../asserts/assert.js";
+import { Base } from "../general/base.js";
+import { UndoComponent } from "./components/undo.js";
+import { ZoomComponent } from "./components/zoom.js";
+import { PaletteComponent } from "./components/palette.js";
+import { SplitViewComponent } from "./components/split.js";
 import {
     IUndoComponent,
     IZoomComponent,
     IPaletteComponent,
     IComponents,
     ISplitViewComponent,
-} from "./types.js";
-import { SplitViewComponent } from "./split.js";
+} from "./components/types.js";
 
 export class Components extends Base implements IComponents {
     private document: Document;
@@ -52,7 +52,7 @@ export class Components extends Base implements IComponents {
     }
 
     public get splitView(): ISplitViewComponent {
-       return this.splitViewComponent;
+        return this.splitViewComponent;
     }
 
     // public get actionButtons(): Array<HTMLElement> {

@@ -8,45 +8,14 @@ export class MenuHandler extends Base implements IMenuHandler {
     private readonly components: IComponents;
     private readonly canvas: ICrosslyCanvasFacade;
 
-    // private readonly actionListeners: Array<(event: Event) => void>;
-    // private keyboardListener: (event: KeyboardEvent) => void;
-
     constructor(components: IComponents, canvas: ICrosslyCanvasFacade) {
         super(MenuHandler.name);
 
         this.components = components;
         this.canvas = canvas;
 
-        // this.actionListeners = [];
-        // this.keyboardListener = () => { };
-
         this.subscribe();
     }
-
-    // private handleAction(event: Event): void {
-    //     const target = event.currentTarget as any;
-    //     assert.defined(target, "target");
-
-    //     const action = target.dataset.action;
-
-    //     switch (action) {
-    //         case "split":
-    //         case "close": {
-    //             this.toggleSplitView();
-    //             break;
-    //         }
-    //         default: {
-    //             // TODO: throw new Error("unknown action.");
-    //         }
-    //     }
-    // }
-
-    // private handleKeyDown(event: KeyboardEvent): void {
-    //     const toggleSplitViewCode = "Backslash";
-    //     if (event.ctrlKey && event.code === toggleSplitViewCode) {
-    //         this.toggleSplitView();
-    //     }
-    // }
 
     private handleChangeStitchPattern(event: ChangeStitchPatternEvent): void {
         const colors = event.pattern
@@ -87,15 +56,8 @@ export class MenuHandler extends Base implements IMenuHandler {
     }
 
     private handleSplit(): void {
-        // this.canvas.toggleSplit();
+        this.canvas.toggleSplitView();
     }
-
-    // private toggleSplitView(): void {
-    //     const backSideContainer = this.components.backSideContainer;
-    //     const display = backSideContainer.style.display;
-
-    //     backSideContainer.style.display = (display === "flex") ? "none" : "flex";
-    // }
 
     private subscribe(): void {
         this.subscribeCanvas();
@@ -135,48 +97,5 @@ export class MenuHandler extends Base implements IMenuHandler {
         const splitViewComponent = this.components.splitView;
         const splitUn = splitViewComponent.onToggleSplitView(this.handleSplit.bind(this));
         super.registerUn(splitUn);
-
-        // this.subscribeActionButtons();
-        // this.subscribeKeyboardEvents();
     }
-
-    // private subscribeActionButtons(): void {
-    //     this.components.actionButtons.forEach(button => {
-    //         const handler = this.handleAction.bind(this);
-    //         button.addEventListener("click", handler);
-    //         this.actionListeners.push(handler);
-    //     });
-    // }
-
-    // private subscribeKeyboardEvents(): void {
-    //     this.keyboardListener = this.handleKeyDown.bind(this);
-    //     document.addEventListener("keydown", this.keyboardListener);
-    // }
-
-    // private unsubscribe(): void {
-    //     // no need to unsubscribe canvas
-    //     this.unsubscribeMenu();
-    // }
-
-    // private unsubscribeMenu(): void {
-    //     this.unsubscribeActionButtons();
-    //     this.unsubscribeKeyboardEvents();
-    // }
-
-    // private unsubscribeActionButtons(): void {
-    //     const actionButtons = this.components.actionButtons;
-
-    //     assert.defined(actionButtons, "actionButtons");
-    //     assert.defined(this.actionListeners, "actionListeners");
-
-    //     for (let index = 0; index < actionButtons.length; index++) {
-    //         const button = actionButtons[index];
-    //         const listener = this.actionListeners[index];
-    //         button.removeEventListener("click", listener);
-    //     }
-    // }
-
-    // private unsubscribeKeyboardEvents(): void {
-    //     document.removeEventListener("keydown", this.keyboardListener);
-    // }
 }

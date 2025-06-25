@@ -1,4 +1,3 @@
-import { ICrosslyCanvas } from "../types.js";
 import { CrosslyCanvasBase } from "./base.js";
 import { IInputCanvas } from "../input/types.js";
 import { CueCanvasFacade } from "../virtual/cue/facade.js";
@@ -9,6 +8,7 @@ import { FabricCanvasFacade } from "../virtual/fabric/facade.js";
 import { StitchCanvasFacade } from "../virtual/stitch/facade.js";
 import { FabricDrawingCanvas } from "../drawing/fabric/fabric.js";
 import { StitchDrawingCanvas } from "../drawing/stitch/stitch.js";
+import { IBackSideView, ICrosslyCanvas, Visibility } from "../types.js";
 import { ICueCanvasFacade, ChangeFabricEvent, IFabricCanvasFacade, IStitchCanvasFacade, ChangeStitchPatternEvent } from "../virtual/types.js";
 import {
     ICueDrawingCanvas,
@@ -20,8 +20,9 @@ import {
 } from "../drawing/types.js";
 
 export abstract class CrosslyCanvas extends CrosslyCanvasBase implements ICrosslyCanvas {
-    private readonly inputCanvas: IInputCanvas;
     protected readonly configuration: CrosslyCanvasConfig;
+    private readonly inputCanvas: IInputCanvas;
+    protected readonly backSideView: IBackSideView;
 
     protected fabricCanvasFacade!: IFabricCanvasFacade;
     private frontFabricDrawingCanvas!: IFabricDrawingCanvas;
@@ -41,9 +42,12 @@ export abstract class CrosslyCanvas extends CrosslyCanvasBase implements ICrossl
     private frontCueVectorDrawing!: IVectorDrawingCanvas;
     private backCueVectorDrawing!: IVectorDrawingCanvas;
 
+    protected backSideViewVisibility: Visibility;
+
     constructor(
         config: CrosslyCanvasConfig,
         inputCanvas: IInputCanvas,
+        backSideView: IBackSideView,
         frontFabricRasterDrawing: IFabricRasterDrawingCanvas,
         backFabricRasterDrawing: IFabricRasterDrawingCanvas,
         frontStitchRasterDrawing: IStitchRasterDrawingCanvas,
@@ -55,10 +59,13 @@ export abstract class CrosslyCanvas extends CrosslyCanvasBase implements ICrossl
 
         this.configuration = config;
         this.inputCanvas = inputCanvas;
+        this.backSideView = backSideView;
 
         this.initializeFabricCanvas(frontFabricRasterDrawing, backFabricRasterDrawing);
         this.initializeStitchCanvas(frontStitchRasterDrawing, backStitchRasterDrawing);
         this.initializeCueCanvas(frontCueVectorDrawing, backCueVectorDrawing);
+
+        this.backSideViewVisibility = Visibility.Hidden;
 
         this.subscribe();
     }
@@ -72,6 +79,16 @@ export abstract class CrosslyCanvas extends CrosslyCanvasBase implements ICrossl
         this.disposeStitchCanvas();
         this.disposeFabricCanvas();
         this.disposeInputCanvas();
+    }
+
+    protected showBackSideView(): void {
+        this.backSideView.show();
+        this.backSideViewVisibility = Visibility.Visible;
+    }
+
+    protected hideBackSideView(): void {
+        this.backSideView.hide();
+        this.backSideViewVisibility = Visibility.Hidden;    
     }
 
     private initializeFabricCanvas(frontFabricRasterDrawing: IFabricRasterDrawingCanvas, backFabricRasterDrawing: IFabricRasterDrawingCanvas): void {

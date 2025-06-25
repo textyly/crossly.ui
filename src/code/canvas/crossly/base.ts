@@ -1,7 +1,7 @@
 import { CanvasBase } from "../base.js";
-import { VoidEvent, VoidListener, VoidUnsubscribe } from "../../types.js";
 import { Messaging4 } from "../../messaging/impl.js";
 import { IMessaging4 } from "../../messaging/types.js";
+import { VoidEvent, VoidListener, VoidUnsubscribe } from "../../types.js";
 import { FabricPattern, StitchPattern, ICrosslyCanvas } from "../types.js";
 import { ChangeFabricEvent, ChangeFabricListener, ChangeStitchPatternEvent, ChangeStitchPatternListener } from "../virtual/types.js";
 

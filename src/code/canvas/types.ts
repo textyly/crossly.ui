@@ -55,7 +55,12 @@ export interface ICrosslyCanvasFacade extends ICrosslyCanvas {
     zoomIn(): void;
     zoomOut(): void;
 
-    // TODO: toggleSplitView
+    toggleSplitView(): void;
+}
+
+export interface IBackSideView {
+    show(): void;
+    hide(): void;
 }
 
 export interface ICrosslyCanvasObserver {
@@ -69,7 +74,7 @@ export enum CanvasSide {
 
 export enum Visibility {
     Visible,
-    Invisible,
+    Hidden,
 }
 
 export type BoundsChangeEvent = { bounds: Bounds };

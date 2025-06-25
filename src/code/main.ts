@@ -1,5 +1,5 @@
 import { MenuHandler } from "./menu/handler.js";
-import { Components } from "./menu/components/provider.js";
+import { Components } from "./menu/components.js";
 import { RepositoryFactory } from "./repository/factory.js";
 import { CrosslyCanvasAnimationFactory } from "./animation/factory.js";
 import { CrosslyCanvasFacadeFactory } from "./canvas/crossly/factory.js";

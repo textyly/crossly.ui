@@ -1,13 +1,14 @@
 import { CrosslyCanvas } from "./crossly.js";
 import { IInputCanvas } from "../input/types.js";
 import { CrosslyCanvasConfig } from "../../config/types.js";
-import { CrosslyCanvasPattern, DotIndex, ICrosslyCanvasFacade } from "../types.js";
+import { CrosslyCanvasPattern, DotIndex, IBackSideView, ICrosslyCanvasFacade, Visibility } from "../types.js";
 import { IFabricRasterDrawingCanvas, IStitchRasterDrawingCanvas, IVectorDrawingCanvas } from "../drawing/types.js";
 
 export class CrosslyCanvasFacade extends CrosslyCanvas implements ICrosslyCanvasFacade {
     constructor(
         config: CrosslyCanvasConfig,
         inputCanvas: IInputCanvas,
+        backSideView: IBackSideView,
         frontFabricRasterDrawing: IFabricRasterDrawingCanvas,
         backFabricRasterDrawing: IFabricRasterDrawingCanvas,
         frontStitchRasterDrawing: IStitchRasterDrawingCanvas,
@@ -18,6 +19,7 @@ export class CrosslyCanvasFacade extends CrosslyCanvas implements ICrosslyCanvas
         super(
             config,
             inputCanvas,
+            backSideView,
             frontFabricRasterDrawing,
             backFabricRasterDrawing,
             frontStitchRasterDrawing,
@@ -101,5 +103,13 @@ export class CrosslyCanvasFacade extends CrosslyCanvas implements ICrosslyCanvas
         this.cueCanvasFacade.zoomOut();
 
         this.draw();
+    }
+
+    public toggleSplitView(): void {
+        this.ensureAlive();
+
+        this.backSideViewVisibility === Visibility.Visible
+            ? this.hideBackSideView()
+            : this.showBackSideView();
     }
 } 
