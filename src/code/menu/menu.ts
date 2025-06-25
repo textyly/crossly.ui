@@ -17,11 +17,11 @@ import {
 export class Menu extends Base implements IMenu {
     private document: Document;
 
-    private undoComponent: IUndoMenu;
-    private zoomComponent: IZoomMenu;
-    private paletteComponent: IPaletteMenu;
-    private splitViewComponent: ISplitViewMenu;
-    private closeComponent: ICloseMenu;
+    private undoMenu: IUndoMenu;
+    private zoomMenu: IZoomMenu;
+    private paletteMenu: IPaletteMenu;
+    private splitViewMenu: ISplitViewMenu;
+    private closeMenu: ICloseMenu;
 
     constructor(document: Document) {
         super(Menu.name);
@@ -29,37 +29,37 @@ export class Menu extends Base implements IMenu {
         this.document = document;
 
         const leftCenterMenu = this.getLeftCenterMenu();
-        this.paletteComponent = new PaletteMenu(leftCenterMenu);
+        this.paletteMenu = new PaletteMenu(leftCenterMenu);
 
         const topRightMenu = this.getTopRightMenu();
-        this.undoComponent = new UndoMenu(topRightMenu);
-        this.splitViewComponent = new SplitViewMenu(topRightMenu);
+        this.undoMenu = new UndoMenu(topRightMenu);
+        this.splitViewMenu = new SplitViewMenu(topRightMenu);
 
         const bottomMenu = this.getBottomRightMenu();
-        this.zoomComponent = new ZoomMenu(bottomMenu);
+        this.zoomMenu = new ZoomMenu(bottomMenu);
 
         const backSideTopRightMenu = this.getBackSideTopRightMenu();
-        this.closeComponent = new CloseMenu(backSideTopRightMenu);
+        this.closeMenu = new CloseMenu(backSideTopRightMenu);
     }
 
     public get undo(): IUndoMenu {
-        return this.undoComponent;
+        return this.undoMenu;
     }
 
     public get zoom(): IZoomMenu {
-        return this.zoomComponent;
+        return this.zoomMenu;
     }
 
     public get palette(): IPaletteMenu {
-        return this.paletteComponent;
+        return this.paletteMenu;
     }
 
     public get splitView(): ISplitViewMenu {
-        return this.splitViewComponent;
+        return this.splitViewMenu;
     }
 
     public get close(): ICloseMenu {
-        return this.closeComponent;
+        return this.closeMenu;
     }
 
     public override dispose(): void {
