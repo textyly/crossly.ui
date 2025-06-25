@@ -5,24 +5,27 @@ import {
     Id,
     CueDot,
     ICanvas,
+    DotIndex,
     CuePattern,
     CueSegment,
     StitchPattern,
     StitchSegment,
     FabricPattern,
-    DotIndex,
 } from "../types.js";
 
 export interface IVirtualCanvas extends ICanvas {
     onRedraw(listener: VoidListener): VoidUnsubscribe;
     onMoveStart(listener: VoidListener): VoidUnsubscribe;
     onMoveStop(listener: VoidListener): VoidUnsubscribe;
+    onZoomIn(listener: VoidListener): VoidUnsubscribe;
+    onZoomOut(listener: VoidListener): VoidUnsubscribe;
 }
 
 export interface IFabricCanvas extends IVirtualCanvas {
     onChange(listener: ChangeFabricListener): VoidUnsubscribe;
     onDrawDots(listener: DrawFabricDotsListener): VoidUnsubscribe;
     onDrawThreads(listener: DrawFabricThreadsListener): VoidUnsubscribe;
+    onDrawBackground(listener: DrawFabricBackgroundListener): VoidUnsubscribe;
 }
 
 export interface IStitchCanvas extends IVirtualCanvas {
@@ -46,32 +49,41 @@ export interface IFabricCanvasFacade extends IFabricCanvas {
 
     draw(): void;
     load(pattern: FabricPattern): void;
+
+    zoomIn(): void;
+    zoomOut(): void;
 }
 
 export interface IStitchCanvasFacade extends IStitchCanvas {
     get pattern(): StitchPattern;
 
     draw(): void;
-    load(pattern: StitchPattern): void;
+    load(columns: number, rows: number, pattern: StitchPattern): void;
 
     clickDot(dotIdx: DotIndex): void;
     useThread(name: string, color: string, width: number): void;
 
     undo(): void;
     redo(): void;
+
+    zoomIn(): void;
+    zoomOut(): void;
 }
 
 export interface ICueCanvasFacade extends ICueCanvas {
     get pattern(): CuePattern;
 
     draw(): void;
-    load(pattern: StitchPattern): void;
+    load(columns: number, rows: number, pattern: StitchPattern): void;
 
     clickDot(dotIdx: DotIndex): void;
     useThread(name: string, color: string, width: number): void;
 
     undo(): void;
     redo(): void;
+
+    zoomIn(): void;
+    zoomOut(): void;
 }
 
 export type ChangeFabricEvent = { pattern: FabricPattern; };
@@ -82,6 +94,9 @@ export type DrawFabricDotsListener = Listener<DrawFabricDotsEvent>;
 
 export type DrawFabricThreadsEvent = { threads: FabricThreadArray; };
 export type DrawFabricThreadsListener = Listener<DrawFabricThreadsEvent>;
+
+export type DrawFabricBackgroundEvent = { color: string; };
+export type DrawFabricBackgroundListener = Listener<DrawFabricBackgroundEvent>;
 
 export type DrawStitchSegmentEvent = { segment: StitchSegment; density: Density; };
 export type DrawStitchSegmentListener = Listener<DrawStitchSegmentEvent>;

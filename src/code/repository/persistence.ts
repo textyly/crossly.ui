@@ -11,8 +11,8 @@ export class Persistence implements IPersistence {
 	private readonly replaceOptions: RequestInit;
 
 	constructor() {
-		this.baseEndpoint = "http://localhost:5026";
-		this.endpoint = this.baseEndpoint + "/api/v1/patterns";
+		this.baseEndpoint = "http://localhost:5026"; // TODO: inject via constructor!!!
+		this.endpoint = this.baseEndpoint + "/api/v1/patterns"; // TODO: inject via constructor!!!
 
 		this.createOptions = {
 			method: "POST",

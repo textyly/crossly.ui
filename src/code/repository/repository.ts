@@ -8,12 +8,7 @@ export class Repository implements IRepository {
     private readonly compressor: ICompressor;
     private readonly persistence: IPersistence;
 
-    constructor(
-        validator: IValidator,
-        converter: IConverter,
-        compressor: ICompressor,
-        persistence: IPersistence,
-    ) {
+    constructor(validator: IValidator, converter: IConverter, compressor: ICompressor, persistence: IPersistence) {
         this.validator = validator;
         this.converter = converter;
         this.compressor = compressor;

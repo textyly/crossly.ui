@@ -1,4 +1,5 @@
 import { FabricCanvasBase } from "./base.js";
+import { FabricPattern } from "../../types.js";
 import assert from "../../../asserts/assert.js";
 import { IInputCanvas } from "../../input/types.js";
 import { FabricCanvasConfig } from "../../../config/types.js";
@@ -41,14 +42,23 @@ export abstract class FabricCanvas extends FabricCanvasBase {
         this.threadWidthZoomStep = threadConfig.widthZoomStep;
     }
 
-    protected override zoomIn(): void {
+    protected override zoomInCore(): void {
         this.dotRadius += this.dotRadiusZoomStep;
         this.threadWidth += this.threadWidthZoomStep;
     }
 
-    protected override zoomOut(): void {
+    protected override zoomOutCore(): void {
         this.dotRadius -= this.dotRadiusZoomStep;
         this.threadWidth -= this.threadWidthZoomStep;
+    }
+
+    protected loadPattern(pattern: FabricPattern): void {
+        this._name = pattern.name;
+        this._color = pattern.color;
+        this._rows = pattern.rows;
+        this._columns = pattern.columns;
+        this._dotsColor = pattern.dots.color;
+        this._threadsColor = pattern.threads.color;
     }
 
     protected override redraw(): void {
@@ -62,6 +72,8 @@ export abstract class FabricCanvas extends FabricCanvasBase {
 
         const endIndexX = boundsIndexes.rightTop.dotX;
         const endIndexY = boundsIndexes.leftBottom.dotY;
+
+        super.invokeDrawBackground(this._color);
 
         const canRedrawThreads = (this.threadWidth >= this.threadMinWidth);
         if (canRedrawThreads) {

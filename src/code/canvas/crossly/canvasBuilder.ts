@@ -6,6 +6,7 @@ import { CanvasSide, ICrosslyCanvasFacade } from "../types.js";
 import { VectorDrawingCanvas } from "../drawing/vector/vector.js";
 import { FabricRasterDrawingCanvas } from "../drawing/raster/fabric.js";
 import { StitchRasterDrawingCanvas } from "../drawing/raster/stitch.js";
+import { BackSideView } from "./back.js";
 
 export class CrosslyCanvasBuilder {
     private config!: CrosslyCanvasConfig;
@@ -19,8 +20,7 @@ export class CrosslyCanvasBuilder {
     private backStitchHtmlElement!: HTMLCanvasElement;
     private backCueHtmlElement!: HTMLElement;
 
-    constructor() {
-    }
+    private backSideViewHtmlElement!: HTMLElement;
 
     public build(): ICrosslyCanvasFacade {
         assert.defined(this.config, "CrosslyCanvasConfig");
@@ -33,6 +33,7 @@ export class CrosslyCanvasBuilder {
         assert.defined(this.backFabricHtmlElement, "backFabricHtmlElement");
         assert.defined(this.backStitchHtmlElement, "backStitchHtmlElement");
         assert.defined(this.backCueHtmlElement, "backCueHtmlElement");
+        assert.defined(this.backSideViewHtmlElement, "backSideViewHtmlElement");
 
         return this.buildCore();
     }
@@ -78,6 +79,11 @@ export class CrosslyCanvasBuilder {
         return this;
     }
 
+    public withBackSideView(backSideViewHtmlElement: HTMLElement): CrosslyCanvasBuilder {
+        this.backSideViewHtmlElement = backSideViewHtmlElement;
+        return this;
+    }
+
     private buildCore(): ICrosslyCanvasFacade {
 
         const inputCanvas = new InputCanvas(this.config.input, this.frontInputHtmlElement);
@@ -91,9 +97,12 @@ export class CrosslyCanvasBuilder {
         const frontCueVectorDrawing = new VectorDrawingCanvas(this.frontCueHtmlElement);
         const backCueVectorDrawing = new VectorDrawingCanvas(this.backCueHtmlElement);
 
+        const backSideView = new BackSideView(this.backSideViewHtmlElement);
+
         const crosslyCanvasFacade = new CrosslyCanvasFacade(
             this.config,
             inputCanvas,
+            backSideView,
             frontFabricRasterDrawing,
             backFabricRasterDrawing,
             frontStitchRasterDrawing,

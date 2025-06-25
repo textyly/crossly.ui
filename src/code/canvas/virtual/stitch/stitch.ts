@@ -53,11 +53,13 @@ export abstract class StitchCanvas extends StitchCanvasBase {
         super.dispose();
     }
 
-    protected override zoomIn(): void {
+    protected override zoomInCore(): void {
+        super.ensureAlive();
         this.zooms += 1;
     }
 
-    protected override zoomOut(): void {
+    protected override zoomOutCore(): void {
+        super.ensureAlive();
         this.zooms -= 1;
     }
 
@@ -103,7 +105,9 @@ export abstract class StitchCanvas extends StitchCanvasBase {
         super.invokeDrawPattern(this._pattern, density);
     }
 
-    protected loadPattern(pattern: StitchPattern): void {
+    protected loadPattern(columns: number, rows: number, pattern: StitchPattern): void {
+        this._columns = columns;
+        this._rows = rows;
         this._pattern = new Array<StitchThreadPath>();
         this._redoPattern = undefined;
         let lastDotIdx: DotIndex | undefined = undefined;

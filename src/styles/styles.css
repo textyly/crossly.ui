@@ -1,80 +1,185 @@
 html,
 body {
-  background-color: darkgray;
-  overflow: hidden;
   margin: 0;
   padding: 0;
   width: 100%;
   height: 100%;
+  background-color: #5f5f5f;
+  overflow: hidden;
+}
+
+#crossly-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
 }
 
 #crossly {
-  overflow: hidden;
   display: flex;
   width: 100%;
   height: 100%;
+}
+
+.side-container {
+  position: relative;
+  flex: 1;
+  margin: 0.15rem;
+  overflow: hidden;
+  flex-direction: column;
+}
+
+.side-container.front {
+  display: flex;
+}
+
+.side-container.back {
+  display: none;
+}
+
+.top-floating-menu label,
+.left-floating-menu label,
+.bottom-floating-menu label {
+  padding: 0.4rem 0.6rem;
+  background-color: rgba(255, 255, 255, 0.1);
+  font-size: 1.1rem;
+  color: #5f5f5f;
+}
+
+.top-floating-menu button,
+.left-floating-menu button,
+.bottom-floating-menu button {
+  padding: 0.2rem 0.6rem;
+  background-color: white;
+  border: 1px solid #cfcfcf;
+  border-radius: 5px;
+  font-size: 0.95rem;
+  cursor: pointer;
+  color: #5f5f5f;
+}
+
+.top-floating-menu button:hover,
+.left-floating-menu button:hover,
+.bottom-floating-menu button:hover {
+   border: 1px solid #707070;
+}
+
+.top-floating-menu button:active,
+.left-floating-menu button:active,
+.bottom-floating-menu button:active {
+  border: 1px solid #cfcfcf;
+}
+
+.top-floating-menu {
+  position: absolute;
+  top: 0.5rem;
+  left: 0.5rem;
+  z-index: 10;
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.4rem 0.6rem;
+  background-color: rgba(255, 255, 255, 0.95);
+  border-radius: 0.5rem;
+  pointer-events: auto;
+}
+
+.top-floating-menu.right {
+  left: auto;
+  right: 0.5rem;
+}
+
+.left-floating-menu {
+  position: absolute;
+  top: 50%;
+  left: 0.5rem;
+  transform: translateY(-50%);
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  background-color: rgba(255, 255, 255, 0.95);
+  border-radius: 0.5rem;
+  pointer-events: auto;
+}
+
+.left-floating-menu > div > img {
+  height: 1.8rem;  
+  width: auto;
+  display: block;
+  margin: 0 auto;
+}
+
+.bottom-floating-menu {
+  position: absolute;
+  right: 0.5rem;
+  bottom: 0.5rem;
+  z-index: 10;
+  display: flex;
+  flex-direction: row;
+  gap: 0.5rem;
+  padding: 0.6rem;
+  background-color: rgba(255, 255, 255, 0.95);
+  border-radius: 0.5rem;
+  pointer-events: auto;
+}
+
+.color-button-group {
+  opacity: 0;
+  max-height: 0;
+  overflow: hidden;
+  transition: opacity 1.4s ease, max-height 1.4s ease;
+  display: flex;
+  flex-direction: column;
   gap: 0.5rem;
 }
 
-#front-input {
-  flex: 1;
+.left-floating-menu:hover .color-button-group {
+  opacity: 1;
+  max-height: 1000px;
+}
+
+.color-button {
+  padding: 0.2rem 0.4rem;
+  height: auto;
+  min-height: 1.4rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.color-button[data-color="1"] { background-color: #111e6a; }
+.color-button[data-color="2"] { background-color: #a9cdd6; }
+.color-button[data-color="3"] { background-color: #355f0d; }
+.color-button[data-color="4"] { background-color: #cf0013; }
+.color-button[data-color="5"] { background-color: #f5e500; }
+
+/* === Canvas Stack Layers === */
+#front-input,
+#back-input {
   position: relative;
+  background-color: #c7c6c6;
+  flex: 1;
   overflow: hidden;
   border: none;
   outline: none;
-  margin: 0.5rem;
   z-index: 4;
 }
 
-#front-fabric {
-  background-color: #fff8dc;
-  left: 5px;
-  top: 5px;
-  position: absolute;
-  z-index: 1;
-}
-
-#front-stitch {
-  position: absolute;
-  left: 5px;
-  top: 5px;
-  z-index: 2;
-}
-
-#front-cue {
-  position: absolute;
-  left: 5px;
-  top: 5px;
-  z-index: 3;
-}
-
-#back-input {
-  flex: 1;
-  position: relative;
-  overflow: hidden;
-  border: none;
-  outline: none;
-  margin: 0.5rem;
-}
-
+#front-fabric,
 #back-fabric {
-  background-color: #fff8dc;
   position: absolute;
-  left: 5px;
-  top: 5px;
   z-index: 1;
 }
 
+#front-stitch,
 #back-stitch {
   position: absolute;
-  left: 5px;
-  top: 5px;
   z-index: 2;
 }
 
+#front-cue,
 #back-cue {
   position: absolute;
-  left: 5px;
-  top: 5px;
   z-index: 3;
 }
