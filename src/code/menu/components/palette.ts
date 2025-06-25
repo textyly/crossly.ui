@@ -25,7 +25,7 @@ export class MenuPaletteComponent extends Base implements IMenuPaletteComponent 
         const buttons = [...elements];
 
         assert.defined(buttons, "buttons");
-        assert.greaterThanZero(buttons?.length, "buttons.length");
+        assert.greaterThanZero(buttons.length, "buttons.length");
 
         this.activeColors = [...buttons]
             .map((button) => this.getButtonColor(button))
@@ -46,6 +46,7 @@ export class MenuPaletteComponent extends Base implements IMenuPaletteComponent 
 
         uniqueColors.forEach((color) => {
             let normalized = this.normalizeColor(color);
+
             if (!this.activeColors.find((ac) => ac === normalized)) {
                 this.activeColors.push(normalized);
 

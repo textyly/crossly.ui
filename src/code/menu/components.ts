@@ -35,7 +35,7 @@ export class MenuComponents extends Base implements IMenuComponents {
         this.undoComponent = new MenuUndoComponent(topRightMenu);
         this.splitViewComponent = new MenuSplitViewComponent(topRightMenu);
 
-        const bottomMenu = this.getBottomMenu();
+        const bottomMenu = this.getBottomRightMenu();
         this.zoomComponent = new MenuZoomComponent(bottomMenu);
 
         const backSideTopRightMenu = this.getBackSideTopRightMenu();
@@ -43,25 +43,29 @@ export class MenuComponents extends Base implements IMenuComponents {
     }
 
     private getPaletteMenu(): Element {
-        const paletteMenu = document.querySelector('.color-button-group');
+        const leftCenterMenu = this.document.querySelector('.left-floating-menu.center');
+        assert.defined(leftCenterMenu, "leftCenterMenu");
+
+        const paletteMenu = leftCenterMenu.querySelector('.color-button-group');
         assert.defined(paletteMenu, "paletteMenu");
+
         return paletteMenu;
     }
 
     private getTopRightMenu(): Element {
-        const topRightMenu = document.querySelector('.top-floating-menu.right');
+        const topRightMenu = this.document.querySelector('.top-floating-menu.right');
         assert.defined(topRightMenu, "topRightMenu");
         return topRightMenu;
     }
 
-    private getBottomMenu(): Element {
-        const bottomMenu = document.querySelector('.bottom-floating-menu');
-        assert.defined(bottomMenu, "bottomMenu");
-        return bottomMenu;
+    private getBottomRightMenu(): Element {
+        const bottomRightMenu = this.document.querySelector('.bottom-floating-menu.right');
+        assert.defined(bottomRightMenu, "bottomRightMenu");
+        return bottomRightMenu;
     }
 
     private getBackSideTopRightMenu(): Element {
-        const backSideViewContainer = document.querySelector('.side-container.back');
+        const backSideViewContainer = this.document.querySelector('.side-container.back');
         assert.defined(backSideViewContainer, "backSideViewContainer");
 
         const backSideTopRightMenu = backSideViewContainer.querySelector('.top-floating-menu.right');
