@@ -1,22 +1,22 @@
 import { IVirtualCanvas } from "./types.js";
 import assert from "../../asserts/assert.js";
 import { CanvasConfig } from "../../config/types.js";
-import { Messaging2 } from "../../messaging/impl.js";
-import { IMessaging2 } from "../../messaging/types.js";
+import { Messaging4 } from "../../messaging/impl.js";
+import { IMessaging4 } from "../../messaging/types.js";
 import { VirtualCanvasDimensions } from "./dimensions.js";
 import { BoundsChangeEvent, CanvasSide } from "../types.js";
 import { VoidEvent, VoidListener, VoidUnsubscribe } from "../../types.js";
 import { IInputCanvas, MoveEvent, MoveStartEvent, MoveStopEvent, ZoomInEvent, ZoomOutEvent } from "../input/types.js";
 
 export abstract class VirtualCanvasBase extends VirtualCanvasDimensions implements IVirtualCanvas {
-    private readonly virtualMessaging: IMessaging2<VoidEvent, VoidEvent>;
+    private readonly virtualMessaging: IMessaging4<VoidEvent, VoidEvent, VoidEvent, VoidEvent>;
 
     protected currentSide: CanvasSide;
 
     constructor(className: string, config: CanvasConfig, inputCanvas: IInputCanvas) {
         super(className, config, inputCanvas);
 
-        this.virtualMessaging = new Messaging2();
+        this.virtualMessaging = new Messaging4();
         this.currentSide = CanvasSide.Back;
 
         this.subscribe();
@@ -34,6 +34,14 @@ export abstract class VirtualCanvasBase extends VirtualCanvasDimensions implemen
         return this.virtualMessaging.listenOnChannel2(listener);
     }
 
+    public onZoomIn(listener: VoidListener): VoidUnsubscribe {
+        return this.virtualMessaging.listenOnChannel3(listener);
+    }
+
+    public onZoomOut(listener: VoidListener): VoidUnsubscribe {
+        return this.virtualMessaging.listenOnChannel4(listener);
+    }
+
     public draw(): void {
         super.ensureAlive();
 
@@ -42,21 +50,31 @@ export abstract class VirtualCanvasBase extends VirtualCanvasDimensions implemen
         this.redraw();
     }
 
+    public zoomIn(): void {
+        const center = super.calculateDrawingCenter();
+        this.handleZoomIn({ currentPosition: center });
+    }
+
+    public zoomOut(): void {
+        const center = super.calculateDrawingCenter();
+        this.handleZoomOut({ currentPosition: center });
+    }
+
     public override dispose(): void {
         super.ensureAlive();
         this.virtualMessaging.dispose();
         super.dispose();
     }
 
+    protected abstract zoomInCore(): void;
+    protected abstract zoomOutCore(): void;
     protected abstract redraw(): void;
-    protected abstract zoomIn(): void;
-    protected abstract zoomOut(): void;
 
     protected changeCanvasSide(): void {
         this.currentSide = this.currentSide === CanvasSide.Front ? CanvasSide.Back : CanvasSide.Front;
     }
 
-    private handleVisibleBoundsChange(event: BoundsChangeEvent): void {
+    protected handleVisibleBoundsChange(event: BoundsChangeEvent): void {
         super.ensureAlive();
 
         this.draw();
@@ -72,8 +90,9 @@ export abstract class VirtualCanvasBase extends VirtualCanvasDimensions implemen
         const inBounds = this.inBounds(currentPosition);
         if (inBounds) {
             this.zoomInCanvas(currentPosition);
-            this.zoomIn();
+            this.zoomInCore();
             this.draw();
+            this.invokeZoomIn();
         }
     }
 
@@ -89,8 +108,9 @@ export abstract class VirtualCanvasBase extends VirtualCanvasDimensions implemen
 
         if (inBounds && (this.currentDotsSpace > minSpace)) {
             this.zoomOutCanvas(currentPosition);
-            this.zoomOut();
+            this.zoomOutCore();
             this.draw();
+            this.invokeZoomOut();
         }
     }
 
@@ -153,6 +173,16 @@ export abstract class VirtualCanvasBase extends VirtualCanvasDimensions implemen
     private invokeMoveStop(): void {
         const event: VoidEvent = {};
         this.virtualMessaging.sendToChannel2(event);
+    }
+
+    private invokeZoomIn(): void {
+        const event: VoidEvent = {};
+        this.virtualMessaging.sendToChannel3(event);
+    }
+
+    private invokeZoomOut(): void {
+        const event: VoidEvent = {};
+        this.virtualMessaging.sendToChannel4(event);
     }
 
     private subscribe(): void {

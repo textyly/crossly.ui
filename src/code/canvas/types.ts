@@ -1,5 +1,5 @@
 import { Position } from "./input/types.js";
-import { IDisposable, Listener, VoidUnsubscribe } from "../types";
+import { IDisposable, Listener, VoidListener, VoidUnsubscribe } from "../types";
 import { ICueThreadPath, IStitchThreadPath } from "./utilities/arrays/types.js";
 import { ChangeFabricListener, ChangeStitchPatternListener } from "./virtual/types.js";
 
@@ -34,6 +34,8 @@ export interface ICanvas extends IDisposable {
 }
 
 export interface ICrosslyCanvas extends ICanvas {
+    onZoomIn(listener: VoidListener): VoidUnsubscribe;
+    onZoomOut(listener: VoidListener): VoidUnsubscribe;
     onChangeFabric(listener: ChangeFabricListener): VoidUnsubscribe;
     onChangeStitchPattern(listener: ChangeStitchPatternListener): VoidUnsubscribe;
 }
@@ -49,6 +51,16 @@ export interface ICrosslyCanvasFacade extends ICrosslyCanvas {
 
     undo(): void;
     redo(): void;
+
+    zoomIn(): void;
+    zoomOut(): void;
+
+    toggleSplitView(): void;
+}
+
+export interface IBackSideView {
+    show(): void;
+    hide(): void;
 }
 
 export interface ICrosslyCanvasObserver {
@@ -62,7 +74,12 @@ export enum CanvasSide {
 
 export enum Visibility {
     Visible,
-    Invisible,
+    Hidden,
+}
+
+export enum DrawingMode {
+    Draw,
+    Suspend
 }
 
 export type BoundsChangeEvent = { bounds: Bounds };

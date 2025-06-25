@@ -45,49 +45,58 @@ export class CrosslyCanvasFacadeBuilder {
         const backCueHtmlElement = this.buildBackCueHtmlElement();
         this.crosslyCanvasBuilder.withBackCueCanvas(backCueHtmlElement);
 
+        const backSideViewHtmlElement = this.buildBackSideView();
+        this.crosslyCanvasBuilder.withBackSideView(backSideViewHtmlElement);
+
         const crosslyCanvasFacade = this.crosslyCanvasBuilder.build();
         return crosslyCanvasFacade;
     }
 
     private buildFrontInputHtmlElement(): HTMLElement {
-        const frontInputHtmlElement = document.getElementById("front-input") as HTMLElement;
+        const frontInputHtmlElement = document.querySelector("#front-input") as HTMLElement;
         assert.defined(frontInputHtmlElement, "inputHtmlElement");
         return frontInputHtmlElement;
     }
 
     private buildFrontFabricHtmlElement(): HTMLCanvasElement {
-        const frontFabricHtmlElement = document.getElementById("front-fabric") as HTMLCanvasElement;
+        const frontFabricHtmlElement = document.querySelector("#front-fabric") as HTMLCanvasElement;
         assert.defined(frontFabricHtmlElement, "frontFabricHtmlElement");
         return frontFabricHtmlElement;
     }
 
     private buildFrontStitchHtmlElement(): HTMLCanvasElement {
-        const frontStitchHtmlElement = document.getElementById("front-stitch") as HTMLCanvasElement;
+        const frontStitchHtmlElement = document.querySelector("#front-stitch") as HTMLCanvasElement;
         assert.defined(frontStitchHtmlElement, "frontStitchHtmlElement");
         return frontStitchHtmlElement;
     }
 
     private buildFrontCueHtmlElement(): HTMLElement {
-        const frontCueHtmlElement = document.getElementById("front-cue") as HTMLElement;
+        const frontCueHtmlElement = document.querySelector("#front-cue") as HTMLElement;
         assert.defined(frontCueHtmlElement, "frontCueHtmlElement");
         return frontCueHtmlElement;
     }
 
     private buildBackFabricHtmlElement(): HTMLCanvasElement {
-        const backFabricHtmlElement = document.getElementById("back-fabric") as HTMLCanvasElement;
+        const backFabricHtmlElement = document.querySelector("#back-fabric") as HTMLCanvasElement;
         assert.defined(backFabricHtmlElement, "backFabricHtmlElement");
         return backFabricHtmlElement;
     }
 
     private buildBackStitchHtmlElement(): HTMLCanvasElement {
-        const backStitchHtmlElement = document.getElementById("back-stitch") as HTMLCanvasElement;
+        const backStitchHtmlElement = document.querySelector("#back-stitch") as HTMLCanvasElement;
         assert.defined(backStitchHtmlElement, "backStitchHtmlElement");
         return backStitchHtmlElement;
     }
 
     private buildBackCueHtmlElement(): HTMLElement {
-        const backCueHtmlElement = document.getElementById("back-cue") as HTMLElement;
+        const backCueHtmlElement = document.querySelector("#back-cue") as HTMLElement;
         assert.defined(backCueHtmlElement, "backCueHtmlElement");
         return backCueHtmlElement;
+    }
+
+    private buildBackSideView(): HTMLElement {
+        const backSideViewHtmlElement = document.querySelector("#back-side-container") as HTMLElement;
+        assert.defined(backSideViewHtmlElement, "backSideViewHtmlElement");
+        return backSideViewHtmlElement;
     }
 }

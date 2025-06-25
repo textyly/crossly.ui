@@ -9,8 +9,8 @@ import {
 
 export class ConfigFactory {
     public create(): CrosslyCanvasConfig {
-        const columns = 40;
-        const rows = 40;
+        const columns = 42;
+        const rows = 42;
 
         const input = this.createInputConfig();
         const dotsSpacing = this.createDotsSpacingConfig();
@@ -44,7 +44,7 @@ export class ConfigFactory {
         const fabricConfig = {
             name: "Aida 14",
             columns, rows, dotsSpacing,
-            color: "white", // TODO: implement
+            color: "#f2f2f2",
             dots: {
                 color: "#9fa19f",
                 radius: 1.4,
@@ -70,7 +70,7 @@ export class ConfigFactory {
             columns, rows, dotsSpacing,
             threads: {
                 name: "DMC 321",
-                color: "gray",
+                color: "#111e6a",
                 width: 12,
                 minWidth: 1,
                 widthZoomStep: 1
@@ -90,7 +90,7 @@ export class ConfigFactory {
             },
             threads: {
                 name: "DMC 321",
-                color: "gray",
+                color: "#111e6a",
                 width: 12,
                 minWidth: 1,
                 widthZoomStep: 1

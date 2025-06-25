@@ -1,24 +1,91 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en-US">
 
 <head>
-    <meta charset="utf-8" />
-    <title>Canvas tutorial</title>
-    <link rel="shortcut icon" href="./assets/favicon.ico" type="image/x-icon">
-    <link rel="stylesheet" href="./styles/styles.css">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Crossly Pattern Editor</title>
+    <link rel="shortcut icon" href="./assets/favicon.ico" type="image/x-icon" />
+    <link rel="stylesheet" href="./styles/styles.css" />
 </head>
 
 <body>
-    <div id="crossly">
-        <div id="front-input" tabindex="0">
-            <canvas id="front-fabric"></canvas>
-            <canvas id="front-stitch"></canvas>
-            <svg id="front-cue" xmlns="http://www.w3.org/2000/svg"> </svg>
-        </div>
-        <div id="back-input">
-            <canvas id="back-fabric"></canvas>
-            <canvas id="back-stitch"></canvas>
-            <svg id="back-cue" xmlns="http://www.w3.org/2000/svg"></svg>
+    <div id="crossly-container">
+        <div id="crossly">
+            <div id="front-side-container" class="side-container front">
+
+                <div class="top-floating-menu left">
+                    <button id="open-home" class="action-button">
+                        <img src="./icons/home.svg" />
+                    </button>
+                    <button id="open-user" class="action-button">
+                        <img src="./icons/user.svg" />
+                    </button>
+                    <label id="pattern">flower</label>
+                </div>
+
+                <div class="top-floating-menu right">
+                    <button id="undo" class="action-button">
+                        <img src="./icons/undo.svg" />
+                    </button>
+                    <button id="redo" class="action-button">
+                        <img src="./icons/redo.svg" />
+                    </button>
+                    <button id="toggle-split-view" class="action-button">
+                        <img src="./icons/split.svg" />
+                    </button>
+                </div>
+
+                <div class="left-floating-menu center">
+                    <div>
+                        <img src="./icons/palette.svg" />
+                    </div>
+                    <div id="color-buttons" class="color-button-group">
+                        <button class="color-button" data-color="1"></button>
+                        <button class="color-button" data-color="2"></button>
+                        <button class="color-button" data-color="3"></button>
+                        <button class="color-button" data-color="4"></button>
+                        <button class="color-button" data-color="5"></button>
+                        <button id="add-color" class="action-button">
+                            <img src="./icons/add.svg" />
+                        </button>
+                    </div>
+                </div>
+
+                <div class="bottom-floating-menu right">
+                    <button id="zoom-in" class="action-button">
+                        <img src="./icons/zoomin.svg" />
+                    </button>
+                    <label id="zoom-level"></label>
+                    <button id="zoom-out" class="action-button">
+                        <img src="./icons/zoomout.svg" />
+                    </button>
+                    <button id="open-feedback" class="action-button">
+                        <img src="./icons/feedback.svg" />
+                    </button>
+                </div>
+
+                <div id="front-input" tabindex="0">
+                    <canvas id="front-fabric"></canvas>
+                    <canvas id="front-stitch"></canvas>
+                    <svg id="front-cue" xmlns="http://www.w3.org/2000/svg"></svg>
+                </div>
+            </div>
+
+            <div id="back-side-container" class="side-container back">
+
+                <div class="top-floating-menu right">
+                    <button id="close-back" class="action-button">
+                        <img src="./icons/close.svg" />
+                    </button>
+                </div>
+
+                <div id="back-input">
+                    <canvas id="back-fabric"></canvas>
+                    <canvas id="back-stitch"></canvas>
+                    <svg id="back-cue" xmlns="http://www.w3.org/2000/svg"></svg>
+                </div>
+            </div>
         </div>
     </div>
     <script type="module" src="./code/main.js"></script>

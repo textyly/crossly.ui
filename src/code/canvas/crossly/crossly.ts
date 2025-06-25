@@ -1,4 +1,3 @@
-import { ICrosslyCanvas } from "../types.js";
 import { CrosslyCanvasBase } from "./base.js";
 import { IInputCanvas } from "../input/types.js";
 import { CueCanvasFacade } from "../virtual/cue/facade.js";
@@ -9,6 +8,7 @@ import { FabricCanvasFacade } from "../virtual/fabric/facade.js";
 import { StitchCanvasFacade } from "../virtual/stitch/facade.js";
 import { FabricDrawingCanvas } from "../drawing/fabric/fabric.js";
 import { StitchDrawingCanvas } from "../drawing/stitch/stitch.js";
+import { DrawingMode, IBackSideView, ICrosslyCanvas, Visibility } from "../types.js";
 import { ICueCanvasFacade, ChangeFabricEvent, IFabricCanvasFacade, IStitchCanvasFacade, ChangeStitchPatternEvent } from "../virtual/types.js";
 import {
     ICueDrawingCanvas,
@@ -20,8 +20,9 @@ import {
 } from "../drawing/types.js";
 
 export abstract class CrosslyCanvas extends CrosslyCanvasBase implements ICrosslyCanvas {
-    private readonly inputCanvas: IInputCanvas;
     protected readonly configuration: CrosslyCanvasConfig;
+    private readonly inputCanvas: IInputCanvas;
+    protected readonly backSideView: IBackSideView;
 
     protected fabricCanvasFacade!: IFabricCanvasFacade;
     private frontFabricDrawingCanvas!: IFabricDrawingCanvas;
@@ -41,9 +42,12 @@ export abstract class CrosslyCanvas extends CrosslyCanvasBase implements ICrossl
     private frontCueVectorDrawing!: IVectorDrawingCanvas;
     private backCueVectorDrawing!: IVectorDrawingCanvas;
 
+    protected backSideViewVisibility: Visibility;
+
     constructor(
         config: CrosslyCanvasConfig,
         inputCanvas: IInputCanvas,
+        backSideView: IBackSideView,
         frontFabricRasterDrawing: IFabricRasterDrawingCanvas,
         backFabricRasterDrawing: IFabricRasterDrawingCanvas,
         frontStitchRasterDrawing: IStitchRasterDrawingCanvas,
@@ -55,10 +59,13 @@ export abstract class CrosslyCanvas extends CrosslyCanvasBase implements ICrossl
 
         this.configuration = config;
         this.inputCanvas = inputCanvas;
+        this.backSideView = backSideView;
 
         this.initializeFabricCanvas(frontFabricRasterDrawing, backFabricRasterDrawing);
         this.initializeStitchCanvas(frontStitchRasterDrawing, backStitchRasterDrawing);
         this.initializeCueCanvas(frontCueVectorDrawing, backCueVectorDrawing);
+
+        this.backSideViewVisibility = Visibility.Hidden;
 
         this.subscribe();
     }
@@ -74,14 +81,32 @@ export abstract class CrosslyCanvas extends CrosslyCanvasBase implements ICrossl
         this.disposeInputCanvas();
     }
 
+    protected showBackSideView(): void {
+        this.backFabricDrawingCanvas.resume();
+        this.backStitchDrawingCanvas.resume();
+        this.backCueDrawingCanvas.resume();
+
+        this.backSideView.show();
+        this.backSideViewVisibility = Visibility.Visible;
+    }
+
+    protected hideBackSideView(): void {
+        this.backFabricDrawingCanvas.suspend();
+        this.backStitchDrawingCanvas.suspend();
+        this.backCueDrawingCanvas.suspend();
+
+        this.backSideView.hide();
+        this.backSideViewVisibility = Visibility.Hidden;
+    }
+
     private initializeFabricCanvas(frontFabricRasterDrawing: IFabricRasterDrawingCanvas, backFabricRasterDrawing: IFabricRasterDrawingCanvas): void {
         this.frontFabricRasterDrawing = frontFabricRasterDrawing;
         this.backFabricRasterDrawing = backFabricRasterDrawing;
 
         this.fabricCanvasFacade = new FabricCanvasFacade(this.configuration.fabric, this.inputCanvas);
 
-        this.frontFabricDrawingCanvas = new FabricDrawingCanvas(this.fabricCanvasFacade, this.frontFabricRasterDrawing);
-        this.backFabricDrawingCanvas = new FabricDrawingCanvas(this.fabricCanvasFacade, this.backFabricRasterDrawing);
+        this.frontFabricDrawingCanvas = new FabricDrawingCanvas(this.fabricCanvasFacade, this.frontFabricRasterDrawing, DrawingMode.Draw);
+        this.backFabricDrawingCanvas = new FabricDrawingCanvas(this.fabricCanvasFacade, this.backFabricRasterDrawing, DrawingMode.Suspend);
     }
 
     private initializeStitchCanvas(frontStitchRasterDrawing: IStitchRasterDrawingCanvas, backStitchRasterDrawing: IStitchRasterDrawingCanvas): void {
@@ -90,8 +115,8 @@ export abstract class CrosslyCanvas extends CrosslyCanvasBase implements ICrossl
 
         this.stitchCanvasFacade = new StitchCanvasFacade(this.configuration.stitch, this.inputCanvas);
 
-        this.frontStitchDrawingCanvas = new StitchDrawingCanvas(this.stitchCanvasFacade, this.frontStitchRasterDrawing);
-        this.backStitchDrawingCanvas = new StitchDrawingCanvas(this.stitchCanvasFacade, this.backStitchRasterDrawing);
+        this.frontStitchDrawingCanvas = new StitchDrawingCanvas(this.stitchCanvasFacade, this.frontStitchRasterDrawing, DrawingMode.Draw);
+        this.backStitchDrawingCanvas = new StitchDrawingCanvas(this.stitchCanvasFacade, this.backStitchRasterDrawing, DrawingMode.Suspend);
     }
 
     private initializeCueCanvas(frontCueVectorDrawing: IVectorDrawingCanvas, backCueVectorDrawing: IVectorDrawingCanvas): void {
@@ -100,8 +125,8 @@ export abstract class CrosslyCanvas extends CrosslyCanvasBase implements ICrossl
 
         this.cueCanvasFacade = new CueCanvasFacade(this.configuration.cue, this.inputCanvas);
 
-        this.frontCueDrawingCanvas = new FrontCueDrawingCanvas(this.cueCanvasFacade, this.frontCueVectorDrawing);
-        this.backCueDrawingCanvas = new BackCueDrawingCanvas(this.cueCanvasFacade, this.backCueVectorDrawing);
+        this.frontCueDrawingCanvas = new FrontCueDrawingCanvas(this.cueCanvasFacade, this.frontCueVectorDrawing, DrawingMode.Draw);
+        this.backCueDrawingCanvas = new BackCueDrawingCanvas(this.cueCanvasFacade, this.backCueVectorDrawing, DrawingMode.Suspend);
     }
 
     private handleChangeFabric(event: ChangeFabricEvent): void {
@@ -116,12 +141,30 @@ export abstract class CrosslyCanvas extends CrosslyCanvasBase implements ICrossl
         super.invokeChangeStitchPattern(event.pattern);
     }
 
+    private handleZoomIn(): void {
+        this.ensureAlive();
+
+        super.invokeZoomIn();
+    }
+
+    private handleZoomOut(): void {
+        this.ensureAlive();
+
+        super.invokeZoomOut();
+    }
+
     private subscribe() {
         const unChangeFabric = this.fabricCanvasFacade.onChange(this.handleChangeFabric.bind(this));
         super.registerUn(unChangeFabric);
 
         const unChangeStitchPattern = this.stitchCanvasFacade.onChange(this.handleChangeStitchPattern.bind(this));
         super.registerUn(unChangeStitchPattern);
+
+        const unZoomIn = this.stitchCanvasFacade.onZoomIn(this.handleZoomIn.bind(this));
+        super.registerUn(unZoomIn);
+
+        const unZoomOut = this.stitchCanvasFacade.onZoomOut(this.handleZoomOut.bind(this));
+        super.registerUn(unZoomOut);
     }
 
     private disposeCueCanvas(): void {

@@ -1,13 +1,13 @@
 import { CueDrawingCanvasBase } from "./base.js";
-import { CueSegment, Dot } from "../../types.js";
 import { ICueCanvas } from "../../virtual/types.js";
+import { CueSegment, Dot, DrawingMode } from "../../types.js";
 import { ICueDrawingCanvas, IVectorDrawingCanvas, SvgDot, SvgLine } from "../types.js";
 
 
 export class BackCueDrawingCanvas extends CueDrawingCanvasBase implements ICueDrawingCanvas {
 
-    constructor(cueCanvas: ICueCanvas, vectorDrawing: IVectorDrawingCanvas) {
-        super(BackCueDrawingCanvas.name, cueCanvas, vectorDrawing);
+    constructor(cueCanvas: ICueCanvas, vectorDrawing: IVectorDrawingCanvas, drawingMode: DrawingMode) {
+        super(BackCueDrawingCanvas.name, cueCanvas, vectorDrawing, drawingMode);
     }
 
     protected override drawDot(dot: Dot, radius: number, color: string): SvgDot {

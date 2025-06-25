@@ -6,8 +6,6 @@ export abstract class RasterDrawingCanvas extends CanvasBase {
     protected readonly rasterCanvas: HTMLCanvasElement;
     protected readonly rasterCanvasContext: CanvasRenderingContext2D;
 
-    protected readonly offset: number;
-
     constructor(
         className: string,
         rasterCanvas: HTMLCanvasElement) {
@@ -18,24 +16,6 @@ export abstract class RasterDrawingCanvas extends CanvasBase {
 
         this.rasterCanvasContext = this.rasterCanvas.getContext("2d")!;
         assert.defined(this.rasterCanvasContext, "rasterCanvasContext");
-
-        this.offset = 5; // TODO: remove this hardcoded value
-    }
-
-    public override get bounds(): Bounds {
-        super.ensureAlive();
-        return super.bounds;
-    }
-
-    public override set bounds(bounds: Bounds) {
-        super.ensureAlive();
-
-        const copy = { ...bounds };
-        copy.left -= this.offset;
-        copy.top -= this.offset;
-        copy.width += (this.offset * 2);
-        copy.height += (this.offset * 2);
-        super.bounds = copy;
     }
 
     public async createBitMap(): Promise<ImageBitmap> {
@@ -49,10 +29,16 @@ export abstract class RasterDrawingCanvas extends CanvasBase {
         this.drawBitMapCore(bitmap, this.rasterCanvasContext);
     }
 
+    public drawBackgroundColor(color: string): void {
+        super.ensureAlive();
+
+        this.rasterCanvasContext.fillStyle = color;
+        this.rasterCanvasContext.fillRect(0, 0, this.bounds.width, this.bounds.height);
+    }
+
     public clear(): void {
         super.ensureAlive();
-        const bounds = this.bounds;
-        this.rasterCanvasContext.clearRect(0, 0, bounds.width, bounds.height);
+        this.rasterCanvasContext.clearRect(0, 0, this.bounds.width, this.bounds.height);
     }
 
     protected override invokeBoundsChange(bounds: Bounds): void {
@@ -72,8 +58,7 @@ export abstract class RasterDrawingCanvas extends CanvasBase {
     private drawBitMapCore(bitmap: ImageBitmap, canvasContext: CanvasRenderingContext2D): void {
         super.ensureAlive();
 
-        const bounds = this.bounds;
-        canvasContext.drawImage(bitmap, 0, 0, bounds.width, bounds.height);
+        canvasContext.drawImage(bitmap, 0, 0, this.bounds.width, this.bounds.height);
     }
 
     private invokeBoundsChangeCore(bounds: Bounds): void {

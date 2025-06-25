@@ -4,10 +4,9 @@ try {
     console.log("start copying...");
 
     withIndexPage();
-
     withAssets();
-
     withStyles();
+    withIcons();
 
     console.log("copying succeed.");
 } catch (err) {
@@ -27,4 +26,9 @@ function withAssets() {
 function withStyles() {
     console.log("copying styles to dist...");
     fs.copySync("./src/styles", "./dist/styles");
+}
+
+function withIcons() {
+    console.log("copying styles to dist...");
+    fs.copySync("./src/icons", "./dist/icons");
 }
