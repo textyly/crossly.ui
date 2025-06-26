@@ -96,13 +96,13 @@ export class PaletteMenu extends Base implements IPaletteMenu {
     }
 
     private getPaletteMenu(container: Element): Element {
-        const paletteElement = container.querySelector('#color-buttons-container');
+        const paletteElement = container.querySelector("#color-buttons-container");
         assert.defined(paletteElement, "paletteElement");
         return paletteElement;
     }
 
     private getAddButton(container: Element): Element {
-        const addElement = container.querySelector('#add-color');
+        const addElement = container.querySelector("#add-color");
         assert.defined(addElement, "addElement");
         return addElement;
     }

@@ -33,7 +33,7 @@ export class CloseMenu extends Base implements ICloseMenu {
     }
 
     private getCloseButton(container: Element): Element {
-        const closeElement = container.querySelector('#close-back');
+        const closeElement = container.querySelector("#close-back");
         assert.defined(closeElement, "closeElement");
         return closeElement;
     }

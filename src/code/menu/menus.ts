@@ -62,28 +62,28 @@ export class Menus extends Base implements IMenus {
     }
 
     private getLeftCenterMenu(document: Document): Element {
-        const leftCenterMenu = document.querySelector('.left-floating-menu.center');
+        const leftCenterMenu = document.querySelector(".left-floating-menu.center");
         assert.defined(leftCenterMenu, "leftCenterMenu");
         return leftCenterMenu;
     }
 
     private getTopRightMenu(document: Document): Element {
-        const topRightMenu = document.querySelector('.top-floating-menu.right');
+        const topRightMenu = document.querySelector(".top-floating-menu.right");
         assert.defined(topRightMenu, "topRightMenu");
         return topRightMenu;
     }
 
     private getBottomRightMenu(document: Document): Element {
-        const bottomRightMenu = document.querySelector('.bottom-floating-menu.right');
+        const bottomRightMenu = document.querySelector(".bottom-floating-menu.right");
         assert.defined(bottomRightMenu, "bottomRightMenu");
         return bottomRightMenu;
     }
 
     private getBackSideTopRightMenu(document: Document): Element {
-        const backSideViewContainer = document.querySelector('.side-container.back');
+        const backSideViewContainer = document.querySelector(".side-container.back");
         assert.defined(backSideViewContainer, "backSideViewContainer");
 
-        const backSideTopRightMenu = backSideViewContainer.querySelector('.top-floating-menu.right');
+        const backSideTopRightMenu = backSideViewContainer.querySelector(".top-floating-menu.right");
         assert.defined(backSideTopRightMenu, "backSideTopRightMenu");
 
         return backSideTopRightMenu;

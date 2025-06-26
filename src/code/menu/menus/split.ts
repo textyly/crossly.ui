@@ -33,7 +33,7 @@ export class SplitViewMenu extends Base implements ISplitViewMenu {
     }
 
     private getSplitViewButton(container: Element): Element {
-        const splitElement = container.querySelector('#toggle-split-view');
+        const splitElement = container.querySelector("#toggle-split-view");
         assert.defined(splitElement, "splitElement");
         return splitElement;
     }

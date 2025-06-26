@@ -17,8 +17,8 @@ export class Dialogs extends Base implements IDialogs {
         return this.threadPicker;
     }
 
-    private getDialogOverlay(document: Document): Element {
-        const dialogOverlayElement = document.querySelector('#modal-overlay');
+    private getDialogOverlay(document: Document): HTMLElement {
+        const dialogOverlayElement = document.querySelector('#modal-overlay') as HTMLElement;
         assert.defined(dialogOverlayElement, "dialogOverlayElement");
         return dialogOverlayElement;
     } 
