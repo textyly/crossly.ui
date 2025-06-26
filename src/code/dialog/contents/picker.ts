@@ -27,7 +27,7 @@ export class ThreadPicker extends DialogContentBase implements IThreadPicker {
         assert.defined(threadPickerContent, "threadPickerContent");
 
         const cloned = threadPickerContent.cloneNode(true) as HTMLElement;
-        cloned.style.display = "block";
+        cloned.style.display = "flex";
 
         hiddenContents.removeChild(threadPickerContent);
 
