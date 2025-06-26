@@ -147,6 +147,14 @@ export class PaletteMenu extends Base implements IPaletteMenu {
 
         modalOverlay.style.display = "flex";
         modalDialog.style.display = "flex";
+
+        modalOverlay.addEventListener("click", (e) => {
+            // Only close if the user clicks outside the modal dialog
+            if (e.target === modalOverlay) {
+                modalOverlay.style.display = "none";
+                modalDialog.style.display = "none";
+            }
+        });
     }
 
     private subscribeColorButtons(): void {

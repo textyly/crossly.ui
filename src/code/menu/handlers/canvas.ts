@@ -1,15 +1,15 @@
-import { Base } from "../general/base.js";
-import { IMenuHandler } from "./types.js";
-import { ICrosslyCanvasFacade } from "../canvas/types.js";
-import { ChangeStitchPatternEvent } from "../canvas/virtual/types.js";
-import { ChangeThreadEvent, IMenu } from "./menus/types.js";
+import { Base } from "../../general/base.js";
+import { IMenuCanvasHandler } from "../types.js";
+import { ICrosslyCanvasFacade } from "../../canvas/types.js";
+import { ChangeThreadEvent, IMenu } from "../menus/types.js";
+import { ChangeStitchPatternEvent } from "../../canvas/virtual/types.js";
 
-export class MenuHandler extends Base implements IMenuHandler {
+export class MenuCanvasHandler extends Base implements IMenuCanvasHandler {
     private readonly menu: IMenu;
     private readonly canvas: ICrosslyCanvasFacade;
 
     constructor(menu: IMenu, canvas: ICrosslyCanvasFacade) {
-        super(MenuHandler.name);
+        super(MenuCanvasHandler.name);
 
         this.menu = menu;
         this.canvas = canvas;

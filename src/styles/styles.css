@@ -155,7 +155,7 @@ body {
   left: 0;
   width: 100vw;
   height: 100vh;
-  background-color: rgba(0, 0, 0, 0.4);
+  background-color: rgba(0, 0, 0, 0.5);
   display: none;
   align-items: center;
   justify-content: center;
@@ -166,9 +166,9 @@ body {
 #modal-dialog {
   width: 66vw;
   height: 66vh;
-  background-color: white;
+  background-color: #f2f2f2;
   border-radius: 1rem;
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
   padding: 1rem;
   position: relative;
   overflow: auto;

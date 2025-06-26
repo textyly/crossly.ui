@@ -1,4 +1,7 @@
 import { IDisposable } from "../types.js";
 
-export interface IMenuHandler extends IDisposable {
+export interface IMenuCanvasHandler extends IDisposable {
+}
+
+export interface IMenuPagesHandler extends IDisposable {
 }

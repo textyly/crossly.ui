@@ -1,4 +1,4 @@
-import { MenuHandler } from "./menu/handler.js";
+import { MenuCanvasHandler } from "./menu/handlers/canvas.js";
 import { Menu } from "./menu/menu.js";
 import { RepositoryFactory } from "./repository/factory.js";
 import { CrosslyCanvasAnimationFactory } from "./animation/factory.js";
@@ -14,7 +14,7 @@ w.crosslyCanvas = canvas;
 w.crosslyCanvasFactory = canvasFactory;
 
 const menu = new Menu(document);
-const menuHandler = new MenuHandler(menu, canvas);
+const menuHandler = new MenuCanvasHandler(menu, canvas);
 w.menuHandler = menuHandler;
 
 const repositoryFactory = new RepositoryFactory();
