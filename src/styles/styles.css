@@ -148,12 +148,6 @@ body {
   justify-content: center;
 }
 
-.color-button[data-color="1"] { background-color: #111e6a; }
-.color-button[data-color="2"] { background-color: #a9cdd6; }
-.color-button[data-color="3"] { background-color: #355f0d; }
-.color-button[data-color="4"] { background-color: #cf0013; }
-.color-button[data-color="5"] { background-color: #f5e500; }
-
 /* === Canvas Stack Layers === */
 #front-input,
 #back-input {
