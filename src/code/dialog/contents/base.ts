@@ -2,6 +2,7 @@ import assert from "../../asserts/assert.js";
 import { Base } from "../../general/base.js";
 import { IDialogContent } from "../types.js";
 import { Listener, VoidListener } from "../../types.js";
+import { Visibility } from "../../canvas/types.js";
 
 export abstract class DialogContentBase extends Base implements IDialogContent {
     protected dialogOverlay: HTMLElement;
@@ -11,6 +12,8 @@ export abstract class DialogContentBase extends Base implements IDialogContent {
     private dialogOverlayListener: Listener<Event>;
     private dialogCloseButtonListener: VoidListener;
 
+    private visibility: Visibility;
+
     constructor(className: string, dialogOverlay: HTMLElement) {
         super(className);
 
@@ -18,21 +21,28 @@ export abstract class DialogContentBase extends Base implements IDialogContent {
         this.dialog = this.getDialog(this.dialogOverlay);
         this.dialogCloseButton = this.getDialogCloseButton(this.dialog);
 
-
         this.dialogOverlayListener = () => { };
         this.dialogCloseButtonListener = () => { };;
+
+        this.visibility = Visibility.Hidden;
 
         this.subscribe();
     }
 
     public show(): void {
-        this.showDialog();
-        this.showContent();
+        if (this.visibility === Visibility.Hidden) {
+            this.showDialog();
+            this.showContent();
+            this.visibility = Visibility.Visible;
+        }
     }
 
     public hide(): void {
-        this.hideDialog();
-        this.hideContent();
+        if (this.visibility === Visibility.Visible) {
+            this.hideDialog();
+            this.hideContent();
+            this.visibility = Visibility.Hidden;
+        }
     }
 
     public override dispose(): void {
@@ -42,6 +52,26 @@ export abstract class DialogContentBase extends Base implements IDialogContent {
 
     protected abstract showContent(): void;
     protected abstract hideContent(): void;
+
+    protected getContent(container: Element, contentId: string): Element {
+        const hiddenContents = container.querySelector("#hidden-dialog-contents");
+        assert.defined(hiddenContents, "hiddenContents");
+
+        const content = container.querySelector(`#${contentId}`);
+        assert.defined(content, "content");
+
+        const cloned = content.cloneNode(true) as HTMLElement;
+        cloned.style.display = "flex";
+
+        hiddenContents.removeChild(content);
+
+        // TODO: 
+        // if (hiddenContents.children.length === 0) {
+        //     container.removeChild(hiddenContents);
+        // }
+
+        return cloned;
+    }
 
     private showDialog(): void {
         this.dialogOverlay.style.display = "flex";

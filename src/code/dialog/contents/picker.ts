@@ -1,14 +1,13 @@
-import { IThreadPicker } from "../types.js";
-import assert from "../../asserts/assert.js";
 import { DialogContentBase } from "./base.js";
+import { IThreadPickerContent } from "../types.js";
 
-export class ThreadPicker extends DialogContentBase implements IThreadPicker {
+export class ThreadPickerContent extends DialogContentBase implements IThreadPickerContent {
     private threadPickerContent: Element;
 
     constructor(container: HTMLElement) {
-        super(ThreadPicker.name, container);
+        super(ThreadPickerContent.name, container);
 
-        this.threadPickerContent = this.getThreadPickerContent(container);
+        this.threadPickerContent = this.getContent(container, "thread-picker-content");
     }
 
     protected override showContent(): void {
@@ -17,20 +16,5 @@ export class ThreadPicker extends DialogContentBase implements IThreadPicker {
 
     protected override hideContent(): void {
         this.dialog.removeChild(this.threadPickerContent);
-    }
-
-    private getThreadPickerContent(container: Element): Element {
-        const hiddenContents = container.querySelector("#hidden-dialog-contents");
-        assert.defined(hiddenContents, "hiddenContents");
-
-        const threadPickerContent = container.querySelector("#thread-picker-content");
-        assert.defined(threadPickerContent, "threadPickerContent");
-
-        const cloned = threadPickerContent.cloneNode(true) as HTMLElement;
-        cloned.style.display = "flex";
-
-        hiddenContents.removeChild(threadPickerContent);
-
-        return cloned;
     }
 }

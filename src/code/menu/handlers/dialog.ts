@@ -24,7 +24,7 @@ export class MenuDialogHandler extends Base implements IMenuDialogHandler {
     private handleOpenThreadPicker(): void {
         super.ensureAlive();
 
-        this.dialogs.picker.show();
+        this.dialogs.threadPicker.show();
     }
 
     private subscribeDialog(): void {
