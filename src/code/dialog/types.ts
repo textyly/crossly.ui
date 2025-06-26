@@ -1,8 +1,10 @@
 import { IDisposable } from "../types.js";
 
 export interface IDialogs {
+    home: IHomeContent;
     user: IUserContent;
     threadPicker: IThreadPickerContent;
+    feedback: IFeedbackContent;
 }
 
 export interface IDialogContent extends IDisposable {
