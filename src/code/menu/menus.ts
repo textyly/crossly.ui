@@ -5,16 +5,9 @@ import { ZoomMenu } from "./menus/zoom.js";
 import { CloseMenu } from "./menus/close.js";
 import { PaletteMenu } from "./menus/palette.js";
 import { SplitViewMenu } from "./menus/split.js";
-import {
-    IMenu,
-    IUndoMenu,
-    IZoomMenu,
-    ICloseMenu,
-    IPaletteMenu,
-    ISplitViewMenu,
-} from "./menus/types.js";
+import { IMenus, IUndoMenu, IZoomMenu, ICloseMenu, IPaletteMenu, ISplitViewMenu } from "./menus/types.js";
 
-export class Menu extends Base implements IMenu {
+export class Menus extends Base implements IMenus {
     private undoMenu: IUndoMenu;
     private zoomMenu: IZoomMenu;
     private paletteMenu: IPaletteMenu;
@@ -22,7 +15,7 @@ export class Menu extends Base implements IMenu {
     private closeMenu: ICloseMenu;
 
     constructor(document: Document) {
-        super(Menu.name);
+        super(Menus.name);
 
         const leftCenterMenu = this.getLeftCenterMenu(document);
         this.paletteMenu = new PaletteMenu(leftCenterMenu);

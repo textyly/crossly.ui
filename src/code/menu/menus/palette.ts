@@ -1,14 +1,14 @@
 import assert from "../../asserts/assert.js";
 import { Base } from "../../general/base.js";
-import { Messaging1 } from "../../messaging/impl.js";
-import { IMessaging1 } from "../../messaging/types.js";
-import { Listener, VoidUnsubscribe } from "../../types.js";
+import { Messaging2 } from "../../messaging/impl.js";
+import { IMessaging2 } from "../../messaging/types.js";
+import { Listener, VoidEvent, VoidListener, VoidUnsubscribe } from "../../types.js";
 import { ChangeThreadEvent, ChangeThreadListener, Color, Colors, IPaletteMenu } from "./types.js";
 
 export class PaletteMenu extends Base implements IPaletteMenu {
     private readonly buttonClassName = "color-button";
 
-    private readonly messaging: IMessaging1<ChangeThreadEvent>;
+    private readonly messaging: IMessaging2<ChangeThreadEvent, VoidEvent>;
     private readonly container: Element;
 
     private readonly colorButtons: Array<Element>;
@@ -23,7 +23,7 @@ export class PaletteMenu extends Base implements IPaletteMenu {
         this.container = container;
 
         this.colorButtonsListeners = [];
-        this.messaging = new Messaging1();
+        this.messaging = new Messaging2();
 
         let defaultColors = ["#111e6a", "#a9cdd6", "#355f0d", "#cf0013", "#f5e500"]; // TODO: retrieve from a service
         defaultColors = defaultColors.map((color) => this.normalizeColor(color));
@@ -38,6 +38,10 @@ export class PaletteMenu extends Base implements IPaletteMenu {
 
     public onChangeThread(listener: ChangeThreadListener): VoidUnsubscribe {
         return this.messaging.listenOnChannel1(listener);
+    }
+
+    public onOpenThreadPicker(listener: VoidListener): VoidUnsubscribe {
+        return this.messaging.listenOnChannel2(listener);
     }
 
     public add(colors: Colors): void {
@@ -139,22 +143,7 @@ export class PaletteMenu extends Base implements IPaletteMenu {
     }
 
     private handleOpenColorPicker(): void {
-        const modalOverlay = document.querySelector("#modal-overlay") as HTMLElement;
-        const modalDialog = document.querySelector("#modal-dialog") as HTMLElement;
-
-        assert.defined(modalOverlay, "modalOverlay");
-        assert.defined(modalDialog, "modalDialog");
-
-        modalOverlay.style.display = "flex";
-        modalDialog.style.display = "flex";
-
-        modalOverlay.addEventListener("click", (e) => {
-            // Only close if the user clicks outside the modal dialog
-            if (e.target === modalOverlay) {
-                modalOverlay.style.display = "none";
-                modalDialog.style.display = "none";
-            }
-        });
+        this.invokeOpenThreadPicker();
     }
 
     private subscribeColorButtons(): void {
@@ -188,5 +177,10 @@ export class PaletteMenu extends Base implements IPaletteMenu {
     private invokeChangeThread(color: Color): void {
         const event = { name: "test", color, width: 12 }; // TODO: !!!
         this.messaging.sendToChannel1(event);
+    }
+
+    private invokeOpenThreadPicker(): void {
+        const event = {};
+        this.messaging.sendToChannel2(event);
     }
 }

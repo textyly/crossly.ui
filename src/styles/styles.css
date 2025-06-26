@@ -175,11 +175,6 @@ body {
   display: none;
 }
 
-#modal-content {
-  font-size: 1.1rem;
-  color: #333;
-}
-
 /* === Canvas Stack Layers === */
 #front-input,
 #back-input {

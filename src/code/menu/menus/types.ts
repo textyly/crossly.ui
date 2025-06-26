@@ -4,7 +4,7 @@ import { IDisposable, Listener, VoidListener, VoidUnsubscribe } from "../../type
 export type Color = string;
 export type Colors = Array<Color>;
 
-export interface IMenu extends IDisposable {
+export interface IMenus extends IDisposable {
     get undo(): IUndoMenu;
     get zoom(): IZoomMenu;
     get palette(): IPaletteMenu;
@@ -14,7 +14,9 @@ export interface IMenu extends IDisposable {
 
 export interface IPaletteMenu extends IDisposable {
     add(threads: Colors): void;
+
     onChangeThread(listener: ChangeThreadListener): VoidUnsubscribe;
+    onOpenThreadPicker(listener: VoidListener): VoidUnsubscribe;
 }
 
 export interface IUndoMenu extends IDisposable {
