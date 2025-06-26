@@ -1,8 +1,8 @@
 import assert from "../../asserts/assert.js";
 import { Base } from "../../general/base.js";
-import { VoidUnsubscribe } from "../../types.js";
 import { Messaging1 } from "../../messaging/impl.js";
 import { IMessaging1 } from "../../messaging/types.js";
+import { Listener, VoidUnsubscribe } from "../../types.js";
 import { ChangeThreadEvent, ChangeThreadListener, Color, Colors, IPaletteMenu } from "./types.js";
 
 export class PaletteMenu extends Base implements IPaletteMenu {
@@ -11,23 +11,29 @@ export class PaletteMenu extends Base implements IPaletteMenu {
     private readonly messaging: IMessaging1<ChangeThreadEvent>;
     private readonly container: Element;
 
-    private readonly buttons: Array<Element>;
-    private readonly buttonsListeners: Array<(event: Event) => void>;
+    private readonly colorButtons: Array<Element>;
+    private readonly colorButtonsListeners: Array<Listener<Event>>;
+
+    private readonly addButton: Element;
+    private addButtonListener!: Listener<Event>;
 
     constructor(container: Element) {
         super(PaletteMenu.name);
 
         this.container = container;
 
-        this.buttonsListeners = [];
+        this.colorButtonsListeners = [];
         this.messaging = new Messaging1();
 
         let defaultColors = ["#111e6a", "#a9cdd6", "#355f0d", "#cf0013", "#f5e500"]; // TODO: retrieve from a service
         defaultColors = defaultColors.map((color) => this.normalizeColor(color));
 
-        this.buttons = this.createButtons(defaultColors);
-        this.insertButtons(container, this.buttons);
-        this.subscribeButtons(this.buttons);
+        this.colorButtons = this.createColorButtons(defaultColors);
+        this.insertColorButtons(container, this.colorButtons);
+        this.subscribeColorButtons();
+
+        this.addButton = this.getAddButton(container);
+        this.subscribeAddButton(this.addButton);
     }
 
     public onChangeThread(listener: ChangeThreadListener): VoidUnsubscribe {
@@ -42,42 +48,43 @@ export class PaletteMenu extends Base implements IPaletteMenu {
     }
 
     public override dispose(): void {
-        this.unsubscribeButtons();
+        this.unsubscribeColorButtons();
+        this.unsubscribeAddButton()
         super.dispose();
     }
 
     private addCore(colors: Colors): void {
         colors.forEach((color) => {
             const normalizedColor = this.normalizeColor(color);
-            const buttonsColors = this.buttons.map((button) => this.getElementColor(button));
+            const buttonsColors = this.colorButtons.map((button) => this.getElementColor(button));
 
             if (!buttonsColors.find((ac) => ac === normalizedColor)) {
-                const button = this.createButton(normalizedColor);
-                this.insertButtons(this.container, [button]);
-                this.subscribeButton(button);
-                this.buttons.push(button);
+                const button = this.createColorButton(normalizedColor);
+                this.insertColorButtons(this.container, [button]);
+                this.subscribeColorButton(button);
+                this.colorButtons.push(button);
             }
         });
     }
 
-    private insertButtons(container: Element, buttons: Array<Element>): void {
+    private insertColorButtons(container: Element, buttons: Array<Element>): void {
         const paletteMenu = this.getPaletteMenu(container);
         const addButton = this.getAddButton(container);
         buttons.forEach((b) => paletteMenu.insertBefore(b, addButton));
     }
 
-    private createButtons(colors: Colors): Array<Element> {
+    private createColorButtons(colors: Colors): Array<Element> {
         const buttons: Array<Element> = [];
 
         colors.forEach((color) => {
-            const button = this.createButton(color);
+            const button = this.createColorButton(color);
             buttons.push(button);
         });
 
         return buttons;
     }
 
-    private createButton(color: Color): Element {
+    private createColorButton(color: Color): Element {
         const button = document.createElement("button");
         button.classList.add(this.buttonClassName);
         button.style.backgroundColor = color;
@@ -131,22 +138,43 @@ export class PaletteMenu extends Base implements IPaletteMenu {
         this.invokeChangeThread(color);
     }
 
-    private subscribeButtons(buttons: Array<Element>): void {
-        buttons.forEach(button => this.subscribeButton(button));
+    private handleOpenColorPicker(): void {
+        const modalOverlay = document.querySelector("#modal-overlay") as HTMLElement;
+        const modalDialog = document.querySelector("#modal-dialog") as HTMLElement;
+
+        assert.defined(modalOverlay, "modalOverlay");
+        assert.defined(modalDialog, "modalDialog");
+
+        modalOverlay.style.display = "flex";
+        modalDialog.style.display = "flex";
     }
 
-    private subscribeButton(button: Element): void {
+    private subscribeColorButtons(): void {
+        this.colorButtons.forEach((button) => this.subscribeColorButton(button));
+    }
+
+    private subscribeColorButton(button: Element): void {
         const handler = this.handleChangeColor.bind(this);
         button.addEventListener("click", handler);
-        this.buttonsListeners.push(handler);
+        this.colorButtonsListeners.push(handler);
     }
 
-    private unsubscribeButtons(): void {
-        for (let index = 0; index < this.buttons.length; index++) {
-            const button = this.buttons[index];
-            const listener = this.buttonsListeners[index];
+    private subscribeAddButton(button: Element): void {
+        const handler = this.handleOpenColorPicker.bind(this);
+        button.addEventListener("click", handler);
+        this.addButtonListener = handler;
+    }
+
+    private unsubscribeColorButtons(): void {
+        for (let index = 0; index < this.colorButtons.length; index++) {
+            const button = this.colorButtons[index];
+            const listener = this.colorButtonsListeners[index];
             button.removeEventListener("click", listener);
         }
+    }
+
+    private unsubscribeAddButton(): void {
+        this.addButton.removeEventListener("click", this.addButtonListener);
     }
 
     private invokeChangeThread(color: Color): void {

@@ -148,6 +148,38 @@ body {
   justify-content: center;
 }
 
+/* Modal Overlay */
+#modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.4);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 999; /* Above everything else */
+}
+
+/* Dialog Box */
+#modal-dialog {
+  width: 66vw;
+  height: 66vh;
+  background-color: white;
+  border-radius: 1rem;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
+  padding: 1rem;
+  position: relative;
+  overflow: auto;
+  display: none;
+}
+
+#modal-content {
+  font-size: 1.1rem;
+  color: #333;
+}
+
 /* === Canvas Stack Layers === */
 #front-input,
 #back-input {
