@@ -123,7 +123,7 @@ export abstract class DialogContentBase extends Base implements IDialogContent {
         this.dialogOverlay.addEventListener("click", this.dialogOverlayListener);
 
         this.dialogCloseButtonListener = this.handleDialogClose.bind(this);
-        this.dialog.addEventListener("click", this.dialogCloseButtonListener);
+        this.dialogCloseButton.addEventListener("click", this.dialogCloseButtonListener);
 
         this.escapeKeyboardListener = this.handleEscape.bind(this);
         this.document.addEventListener("keydown", this.escapeKeyboardListener);
@@ -131,7 +131,7 @@ export abstract class DialogContentBase extends Base implements IDialogContent {
 
     private unsubscribe(): void {
         this.dialogOverlay.removeEventListener("click", this.dialogOverlayListener);
-        this.dialog.removeEventListener("click", this.dialogCloseButtonListener);
+        this.dialogCloseButton.removeEventListener("click", this.dialogCloseButtonListener);
         this.document.removeEventListener("keydown", this.escapeKeyboardListener);
     }
 }

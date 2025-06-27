@@ -181,6 +181,43 @@ body {
   margin: 0 auto;
 }
 
+.thread-picker-layout {
+  display: flex;
+  flex-direction: column;
+  align-items: center;         /* Center contents horizontally */
+  justify-content: center;     /* Center contents vertically */
+  height: 100%;
+  width: 100%;
+}
+
+.thread-picker-top-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 2rem;
+  width: 100%;
+}
+
+.thread-picker-colors,
+.thread-picker-palette {
+  width: 40%;
+  height: 100px;
+  background-color: #ddd;
+  text-align: center;
+  line-height: 100px;
+}
+
+.thread-picker-bottom-row {
+  width: 85%;
+  height: 80px;
+  background-color: #bbb;
+  text-align: center;
+  line-height: 80px;
+  margin-top: 1rem;
+}
+
+
+
 /* === Canvas Stack Layers === */
 #front-input,
 #back-input {
