@@ -184,8 +184,10 @@ body {
 .thread-picker-layout {
   display: flex;
   flex-direction: column;
-  align-items: center;         /* Center contents horizontally */
-  justify-content: center;     /* Center contents vertically */
+  align-items: center;
+  /* Center contents horizontally */
+  justify-content: center;
+  /* Center contents vertically */
   height: 100%;
   width: 100%;
 }
@@ -198,7 +200,6 @@ body {
   width: 100%;
 }
 
-.thread-picker-colors,
 .thread-picker-palette {
   width: 40%;
   height: 100px;
@@ -216,7 +217,53 @@ body {
   margin-top: 1rem;
 }
 
+.thread-picker-grid {
+  display: grid;
+  grid-template-columns: repeat(8, 30px);
+  grid-template-rows: repeat(8, 30px);
+  gap: 6px;
+}
 
+.thread-picker-swatch {
+  width: 30px;
+  height: 30px;
+  border-radius: 4px;
+  cursor: pointer;
+  border: 1px solid #999;
+}
+
+.thread-picker-selected-output {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-size: 1rem;
+}
+
+#thread-picker-color-preview {
+  width: 40px;
+  height: 40px;
+  border: 1px solid #000;
+  border-radius: 4px;
+}
+
+.thread-picker-palette {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  background-color: #f2f2f2;
+}
+
+#thread-picker-palette-canvas {
+  display: grid;
+  width: 80%;
+  cursor: crosshair;
+  border: 1px solid #ccc;
+}
+
+#hue-slider {
+  width: 80%;
+}
 
 /* === Canvas Stack Layers === */
 #front-input,
