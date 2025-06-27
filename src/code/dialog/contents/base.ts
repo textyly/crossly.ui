@@ -1,8 +1,8 @@
 import assert from "../../asserts/assert.js";
 import { Base } from "../../general/base.js";
 import { IDialogContent } from "../types.js";
-import { Listener, VoidListener } from "../../types.js";
 import { Visibility } from "../../canvas/types.js";
+import { Listener, VoidListener } from "../../types.js";
 
 export abstract class DialogContentBase extends Base implements IDialogContent {
     protected dialogOverlay: HTMLElement;
@@ -29,8 +29,12 @@ export abstract class DialogContentBase extends Base implements IDialogContent {
         this.subscribe();
     }
 
+    private get isVisible(): boolean {
+        return this.visibility === Visibility.Visible;
+    }
+
     public show(): void {
-        if (this.visibility === Visibility.Hidden) {
+        if (!this.isVisible) {
             this.showDialog();
             this.showContent();
             this.visibility = Visibility.Visible;
@@ -38,7 +42,7 @@ export abstract class DialogContentBase extends Base implements IDialogContent {
     }
 
     public hide(): void {
-        if (this.visibility === Visibility.Visible) {
+        if (this.isVisible) {
             this.hideDialog();
             this.hideContent();
             this.visibility = Visibility.Hidden;

@@ -1,10 +1,10 @@
 import assert from "../asserts/assert.js";
 import { Base } from "../general/base.js";
 import { UserContent } from "./contents/user.js";
-import { ThreadPickerContent } from "./contents/picker.js";
-import { IDialogs, IFeedbackContent, IHomeContent, IThreadPickerContent, IUserContent } from "./types.js";
 import { HomeContent } from "./contents/home.js";
 import { FeedbackContent } from "./contents/feedback.js";
+import { ThreadPickerContent } from "./contents/picker.js";
+import { IDialogs, IFeedbackContent, IHomeContent, IThreadPickerContent, IUserContent } from "./types.js";
 
 export class Dialogs extends Base implements IDialogs {
     private readonly homeContent: IHomeContent;

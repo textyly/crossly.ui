@@ -5,11 +5,22 @@ export type Color = string;
 export type Colors = Array<Color>;
 
 export interface IMenus extends IDisposable {
+    get home(): IHomeMenu;
+    //get user(): IUserMenu;
     get undo(): IUndoMenu;
     get zoom(): IZoomMenu;
     get palette(): IPaletteMenu;
     get splitView(): ISplitViewMenu;
     get close(): ICloseMenu;
+    //get feedback(): IFeedbackMenu;
+}
+
+export interface IHomeMenu extends IDisposable {
+    onOpenHome(listener: VoidListener): VoidUnsubscribe;
+}
+
+export interface IUserMenu extends IDisposable {
+    onOpenUser(listener: VoidListener): VoidUnsubscribe;
 }
 
 export interface IPaletteMenu extends IDisposable {
@@ -38,6 +49,10 @@ export interface ISplitViewMenu extends IDisposable {
 
 export interface ICloseMenu extends IDisposable {
     onClose(listener: VoidListener): VoidUnsubscribe;
+}
+
+export interface IFeedbackMenu extends IDisposable {
+    onFeedback(listener: VoidListener): VoidUnsubscribe;
 }
 
 // TODO: create thread type

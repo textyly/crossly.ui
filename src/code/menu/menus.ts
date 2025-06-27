@@ -2,12 +2,14 @@ import assert from "../asserts/assert.js";
 import { Base } from "../general/base.js";
 import { UndoMenu } from "./menus/undo.js";
 import { ZoomMenu } from "./menus/zoom.js";
+import { HomeMenu } from "./menus/home.js";
 import { CloseMenu } from "./menus/close.js";
 import { PaletteMenu } from "./menus/palette.js";
 import { SplitViewMenu } from "./menus/split.js";
-import { IMenus, IUndoMenu, IZoomMenu, ICloseMenu, IPaletteMenu, ISplitViewMenu } from "./menus/types.js";
+import { IMenus, IUndoMenu, IZoomMenu, ICloseMenu, IPaletteMenu, ISplitViewMenu, IHomeMenu } from "./menus/types.js";
 
 export class Menus extends Base implements IMenus {
+    private homeMenu: IHomeMenu;
     private undoMenu: IUndoMenu;
     private zoomMenu: IZoomMenu;
     private paletteMenu: IPaletteMenu;
@@ -16,6 +18,9 @@ export class Menus extends Base implements IMenus {
 
     constructor(document: Document) {
         super(Menus.name);
+
+        const topLeftMenu = this.getTopLeftMenu(document);
+        this.homeMenu = new HomeMenu(topLeftMenu);
 
         const leftCenterMenu = this.getLeftCenterMenu(document);
         this.paletteMenu = new PaletteMenu(leftCenterMenu);
@@ -29,6 +34,10 @@ export class Menus extends Base implements IMenus {
 
         const backSideTopRightMenu = this.getBackSideTopRightMenu(document);
         this.closeMenu = new CloseMenu(backSideTopRightMenu);
+    }
+
+    public get home(): IHomeMenu {
+        return this.homeMenu;
     }
 
     public get undo(): IUndoMenu {
@@ -61,31 +70,31 @@ export class Menus extends Base implements IMenus {
         super.dispose();
     }
 
+    private getTopLeftMenu(document: Document): Element {
+        return this.getElement(document, "top-floating-menu.left");
+    }
+
     private getLeftCenterMenu(document: Document): Element {
-        const leftCenterMenu = document.querySelector(".left-floating-menu.center");
-        assert.defined(leftCenterMenu, "leftCenterMenu");
-        return leftCenterMenu;
+        return this.getElement(document, "left-floating-menu.center");
     }
 
     private getTopRightMenu(document: Document): Element {
-        const topRightMenu = document.querySelector(".top-floating-menu.right");
-        assert.defined(topRightMenu, "topRightMenu");
-        return topRightMenu;
+        return this.getElement(document, "top-floating-menu.right");
     }
 
     private getBottomRightMenu(document: Document): Element {
-        const bottomRightMenu = document.querySelector(".bottom-floating-menu.right");
-        assert.defined(bottomRightMenu, "bottomRightMenu");
-        return bottomRightMenu;
+        return this.getElement(document, "bottom-floating-menu.right");
     }
 
     private getBackSideTopRightMenu(document: Document): Element {
-        const backSideViewContainer = document.querySelector(".side-container.back");
-        assert.defined(backSideViewContainer, "backSideViewContainer");
-
-        const backSideTopRightMenu = backSideViewContainer.querySelector(".top-floating-menu.right");
-        assert.defined(backSideTopRightMenu, "backSideTopRightMenu");
-
+        const backSideViewContainer = this.getElement(document, "side-container.back");
+        const backSideTopRightMenu = this.getElement(backSideViewContainer, "top-floating-menu.right");
         return backSideTopRightMenu;
+    }
+
+    private getElement(document: Document | Element, selector: string): Element {
+        const element = document.querySelector(`.${selector}`);
+        assert.defined(element, "element");
+        return element;
     }
 }

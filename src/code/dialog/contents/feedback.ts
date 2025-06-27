@@ -1,5 +1,5 @@
-import { IFeedbackContent } from "../types.js";
 import { DialogContentBase } from "./base.js";
+import { IFeedbackContent } from "../types.js";
 
 export class FeedbackContent extends DialogContentBase implements IFeedbackContent {
     private feedbackContent: Element;
