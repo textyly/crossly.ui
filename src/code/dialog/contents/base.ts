@@ -5,24 +5,28 @@ import { Visibility } from "../../canvas/types.js";
 import { Listener, VoidListener } from "../../types.js";
 
 export abstract class DialogContentBase extends Base implements IDialogContent {
+    protected document: Document;
     protected dialogOverlay: HTMLElement;
     protected dialog: HTMLElement;
     protected dialogCloseButton: HTMLElement;
 
     private dialogOverlayListener: Listener<Event>;
     private dialogCloseButtonListener: VoidListener;
+    private escapeKeyboardListener: Listener<KeyboardEvent>;
 
     private visibility: Visibility;
 
-    constructor(className: string, dialogOverlay: HTMLElement) {
+    constructor(className: string, document: Document, dialogOverlay: HTMLElement) {
         super(className);
 
+        this.document = document;
         this.dialogOverlay = dialogOverlay;
         this.dialog = this.getDialog(this.dialogOverlay);
         this.dialogCloseButton = this.getDialogCloseButton(this.dialog);
 
         this.dialogOverlayListener = () => { };
-        this.dialogCloseButtonListener = () => { };;
+        this.dialogCloseButtonListener = () => { };
+        this.escapeKeyboardListener = () => { };
 
         this.visibility = Visibility.Hidden;
 
@@ -69,10 +73,9 @@ export abstract class DialogContentBase extends Base implements IDialogContent {
 
         hiddenContents.removeChild(content);
 
-        // TODO: 
-        // if (hiddenContents.children.length === 0) {
-        //     container.removeChild(hiddenContents);
-        // }
+        if (hiddenContents.children.length === 0) {
+            container.removeChild(hiddenContents);
+        }
 
         return cloned;
     }
@@ -109,16 +112,26 @@ export abstract class DialogContentBase extends Base implements IDialogContent {
         this.hide();
     }
 
+    private handleEscape(event: KeyboardEvent): void {
+        if (event.key === "Escape") {
+            this.hide();
+        }
+    }
+
     private subscribe(): void {
         this.dialogOverlayListener = this.handleDialogOverlayClick.bind(this);
         this.dialogOverlay.addEventListener("click", this.dialogOverlayListener);
 
         this.dialogCloseButtonListener = this.handleDialogClose.bind(this);
         this.dialog.addEventListener("click", this.dialogCloseButtonListener);
+
+        this.escapeKeyboardListener = this.handleEscape.bind(this);
+        this.document.addEventListener("keydown", this.escapeKeyboardListener);
     }
 
     private unsubscribe(): void {
         this.dialogOverlay.removeEventListener("click", this.dialogOverlayListener);
         this.dialog.removeEventListener("click", this.dialogCloseButtonListener);
+        this.document.removeEventListener("keydown", this.escapeKeyboardListener);
     }
 }

@@ -4,8 +4,8 @@ import { IFeedbackContent } from "../types.js";
 export class FeedbackContent extends DialogContentBase implements IFeedbackContent {
     private feedbackContent: Element;
 
-    constructor(container: HTMLElement) {
-        super(FeedbackContent.name, container);
+    constructor(document: Document, container: HTMLElement) {
+        super(FeedbackContent.name, document, container);
 
         this.feedbackContent = this.getContent(container, "feedback-content");
     }

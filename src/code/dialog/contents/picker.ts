@@ -4,10 +4,10 @@ import { IThreadPickerContent } from "../types.js";
 export class ThreadPickerContent extends DialogContentBase implements IThreadPickerContent {
     private threadPickerContent: Element;
 
-    constructor(container: HTMLElement) {
-        super(ThreadPickerContent.name, container);
+    constructor(document: Document, dialogOverlay: HTMLElement) {
+        super(ThreadPickerContent.name, document, dialogOverlay);
 
-        this.threadPickerContent = this.getContent(container, "thread-picker-content");
+        this.threadPickerContent = this.getContent(dialogOverlay, "thread-picker-content");
     }
 
     protected override showContent(): void {

@@ -4,10 +4,10 @@ import { DialogContentBase } from "./base.js";
 export class HomeContent extends DialogContentBase implements IHomeContent {
     private homeContent: Element;
 
-    constructor(container: HTMLElement) {
-        super(HomeContent.name, container);
+    constructor(document: Document, dialogOverlay: HTMLElement) {
+        super(HomeContent.name, document, dialogOverlay);
 
-        this.homeContent = this.getContent(container, "home-content");
+        this.homeContent = this.getContent(dialogOverlay, "home-content");
     }
 
     protected override showContent(): void {

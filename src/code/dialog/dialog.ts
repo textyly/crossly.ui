@@ -17,10 +17,10 @@ export class Dialogs extends Base implements IDialogs {
 
         const dialogOverlay = this.getDialogOverlay(document);
 
-        this.homeContent = new HomeContent(dialogOverlay);
-        this.userContent = new UserContent(dialogOverlay);
-        this.threadPickerContent = new ThreadPickerContent(dialogOverlay);
-        this.feedbackContent = new FeedbackContent(dialogOverlay);
+        this.homeContent = new HomeContent(document, dialogOverlay);
+        this.userContent = new UserContent(document, dialogOverlay);
+        this.threadPickerContent = new ThreadPickerContent(document, dialogOverlay);
+        this.feedbackContent = new FeedbackContent(document, dialogOverlay);
     }
 
     public get home(): IHomeContent {
