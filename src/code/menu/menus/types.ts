@@ -6,13 +6,13 @@ export type Colors = Array<Color>;
 
 export interface IMenus extends IDisposable {
     get home(): IHomeMenu;
-    //get user(): IUserMenu;
+    get user(): IUserMenu;
     get undo(): IUndoMenu;
     get zoom(): IZoomMenu;
-    get palette(): IPaletteMenu;
+    get threadPalette(): IThreadPaletteMenu;
     get splitView(): ISplitViewMenu;
     get close(): ICloseMenu;
-    //get feedback(): IFeedbackMenu;
+    get feedback(): IFeedbackMenu;
 }
 
 export interface IHomeMenu extends IDisposable {
@@ -23,7 +23,7 @@ export interface IUserMenu extends IDisposable {
     onOpenUser(listener: VoidListener): VoidUnsubscribe;
 }
 
-export interface IPaletteMenu extends IDisposable {
+export interface IThreadPaletteMenu extends IDisposable {
     add(threads: Colors): void;
 
     onChangeThread(listener: ChangeThreadListener): VoidUnsubscribe;

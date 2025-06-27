@@ -21,16 +21,28 @@ export class MenuDialogHandler extends Base implements IMenuDialogHandler {
         this.subscribeMenu();
     }
 
+    private handleOpenHome(): void {
+        super.ensureAlive();
+
+        this.dialogs.home.show();
+    }
+
+    private handleOpenUser(): void {
+        super.ensureAlive();
+
+        this.dialogs.user.show();
+    }
+
     private handleOpenThreadPicker(): void {
         super.ensureAlive();
 
         this.dialogs.threadPicker.show();
     }
 
-    private handleOpenHome(): void {
+    private handleFeedback(): void {
         super.ensureAlive();
 
-        this.dialogs.home.show();
+        this.dialogs.feedback.show();
     }
 
     private subscribeDialog(): void {
@@ -38,10 +50,17 @@ export class MenuDialogHandler extends Base implements IMenuDialogHandler {
     }
 
     private subscribeMenu(): void {
-        const openThreadPickerUn = this.menu.palette.onOpenThreadPicker(this.handleOpenThreadPicker.bind(this));
-        super.registerUn(openThreadPickerUn);
 
         const openHomeUn = this.menu.home.onOpenHome(this.handleOpenHome.bind(this));
         super.registerUn(openHomeUn);
+
+        const openUserUn = this.menu.user.onOpenUser(this.handleOpenUser.bind(this));
+        super.registerUn(openUserUn);
+
+        const openThreadPickerUn = this.menu.threadPalette.onOpenThreadPicker(this.handleOpenThreadPicker.bind(this));
+        super.registerUn(openThreadPickerUn);
+
+        const feedbackUn = this.menu.feedback.onFeedback(this.handleFeedback.bind(this));
+        super.registerUn(feedbackUn);
     }
 }

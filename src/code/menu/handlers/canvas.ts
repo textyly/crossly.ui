@@ -82,7 +82,7 @@ export class MenuCanvasHandler extends Base implements IMenuCanvasHandler {
             .map((threadPath) => threadPath.color);
 
         if (colors.length > 0) {
-            const menu = this.menus.palette;
+            const menu = this.menus.threadPalette;
             menu.add(colors);
         }
     }
@@ -104,7 +104,7 @@ export class MenuCanvasHandler extends Base implements IMenuCanvasHandler {
     }
 
     private subscribeMenu(): void {
-        const paletteMenu = this.menus.palette;
+        const paletteMenu = this.menus.threadPalette;
         const changeThreadUn = paletteMenu.onChangeThread(this.handleMenuChangeThread.bind(this));
         super.registerUn(changeThreadUn);
 

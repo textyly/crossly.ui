@@ -3,34 +3,50 @@ import { Base } from "../general/base.js";
 import { UndoMenu } from "./menus/undo.js";
 import { ZoomMenu } from "./menus/zoom.js";
 import { HomeMenu } from "./menus/home.js";
+import { UserMenu } from "./menus/user.js";
 import { CloseMenu } from "./menus/close.js";
 import { PaletteMenu } from "./menus/palette.js";
 import { SplitViewMenu } from "./menus/split.js";
-import { IMenus, IUndoMenu, IZoomMenu, ICloseMenu, IPaletteMenu, ISplitViewMenu, IHomeMenu } from "./menus/types.js";
+import { FeedbackMenu } from "./menus/feedback.js";
+import {
+    IMenus,
+    IUndoMenu,
+    IZoomMenu,
+    IHomeMenu,
+    IUserMenu,
+    ICloseMenu,
+    IThreadPaletteMenu,
+    IFeedbackMenu,
+    ISplitViewMenu,
+} from "./menus/types.js";
 
 export class Menus extends Base implements IMenus {
     private homeMenu: IHomeMenu;
+    private userMenu: IUserMenu;
     private undoMenu: IUndoMenu;
     private zoomMenu: IZoomMenu;
-    private paletteMenu: IPaletteMenu;
+    private threadPaletteMenu: IThreadPaletteMenu;
     private splitViewMenu: ISplitViewMenu;
     private closeMenu: ICloseMenu;
+    private feedbackMenu: IFeedbackMenu;
 
     constructor(document: Document) {
         super(Menus.name);
 
         const topLeftMenu = this.getTopLeftMenu(document);
         this.homeMenu = new HomeMenu(topLeftMenu);
+        this.userMenu = new UserMenu(topLeftMenu);
 
         const leftCenterMenu = this.getLeftCenterMenu(document);
-        this.paletteMenu = new PaletteMenu(leftCenterMenu);
+        this.threadPaletteMenu = new PaletteMenu(leftCenterMenu);
 
         const topRightMenu = this.getTopRightMenu(document);
         this.undoMenu = new UndoMenu(topRightMenu);
         this.splitViewMenu = new SplitViewMenu(topRightMenu);
 
-        const bottomMenu = this.getBottomRightMenu(document);
-        this.zoomMenu = new ZoomMenu(bottomMenu);
+        const bottomRightMenu = this.getBottomRightMenu(document);
+        this.zoomMenu = new ZoomMenu(bottomRightMenu);
+        this.feedbackMenu = new FeedbackMenu(bottomRightMenu);
 
         const backSideTopRightMenu = this.getBackSideTopRightMenu(document);
         this.closeMenu = new CloseMenu(backSideTopRightMenu);
@@ -38,6 +54,10 @@ export class Menus extends Base implements IMenus {
 
     public get home(): IHomeMenu {
         return this.homeMenu;
+    }
+
+    public get user(): IUserMenu {
+        return this.userMenu;
     }
 
     public get undo(): IUndoMenu {
@@ -48,8 +68,8 @@ export class Menus extends Base implements IMenus {
         return this.zoomMenu;
     }
 
-    public get palette(): IPaletteMenu {
-        return this.paletteMenu;
+    public get threadPalette(): IThreadPaletteMenu {
+        return this.threadPaletteMenu;
     }
 
     public get splitView(): ISplitViewMenu {
@@ -60,12 +80,19 @@ export class Menus extends Base implements IMenus {
         return this.closeMenu;
     }
 
+    public get feedback(): IFeedbackMenu {
+        return this.feedbackMenu;
+    }
+
     public override dispose(): void {
+        this.home.dispose();
+        this.user.dispose();
         this.undo.dispose();
         this.zoom.dispose();
-        this.palette.dispose();
+        this.threadPalette.dispose();
         this.splitView.dispose();
         this.close.dispose();
+        this.feedback.dispose();
 
         super.dispose();
     }

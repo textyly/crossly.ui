@@ -3,9 +3,9 @@ import { Base } from "../../general/base.js";
 import { Messaging2 } from "../../messaging/impl.js";
 import { IMessaging2 } from "../../messaging/types.js";
 import { Listener, VoidEvent, VoidListener, VoidUnsubscribe } from "../../types.js";
-import { ChangeThreadEvent, ChangeThreadListener, Color, Colors, IPaletteMenu } from "./types.js";
+import { ChangeThreadEvent, ChangeThreadListener, Color, Colors, IThreadPaletteMenu } from "./types.js";
 
-export class PaletteMenu extends Base implements IPaletteMenu {
+export class PaletteMenu extends Base implements IThreadPaletteMenu {
     private readonly buttonClassName = "color-button";
 
     private readonly messaging: IMessaging2<ChangeThreadEvent, VoidEvent>;
