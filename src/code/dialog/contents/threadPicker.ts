@@ -1,15 +1,31 @@
 import { DialogContentBase } from "./base.js";
-import { IThreadPickerContent } from "../types.js";
+import { IThreadPickerContent, PickThreadEvent, PickThreadListener } from "../types.js";
+import { Listener, VoidListener, VoidUnsubscribe } from "../../types.js";
+import { IMessaging1 } from "../../messaging/types.js";
+import { Messaging1 } from "../../messaging/impl.js";
 
 export class ThreadPickerContent extends DialogContentBase implements IThreadPickerContent {
-    private content: Element;
-    private gradientGrid: Element;
-    private canvas: HTMLCanvasElement;
-    private canvasContext: CanvasRenderingContext2D;
-    private slider: any;
+    private messaging: IMessaging1<PickThreadEvent>;
+
+    private readonly content: Element;
+    private readonly gradientGrid: Element;
+    private readonly canvas: HTMLCanvasElement;
+    private readonly canvasContext: CanvasRenderingContext2D;
+    private readonly slider: HTMLInputElement;
+    private readonly swatches: Array<Element>;
+    private readonly selectedThread: HTMLInputElement;
+    private readonly addThreadButton: HTMLButtonElement;
+
+    private slideListener: VoidListener;
+    private canvasClickListener: Listener<PointerEvent>;
+    private addThreadButtonListener: VoidListener;
+    private readonly swatchListeners: Array<Listener<Event>>;
 
     constructor(document: Document, dialogOverlay: HTMLElement) {
         super(ThreadPickerContent.name, document, dialogOverlay);
+
+        this.messaging = new Messaging1();
+        this.swatches = [];
 
         this.content = this.getContent(dialogOverlay, "thread-picker-content");
         this.gradientGrid = this.content.querySelector("#thread-picker-gradient-grid")!;
@@ -17,9 +33,23 @@ export class ThreadPickerContent extends DialogContentBase implements IThreadPic
         this.canvas = this.content.querySelector("#thread-picker-palette-canvas")! as HTMLCanvasElement;
         this.canvasContext = this.canvas.getContext("2d")!;
         this.slider = this.content.querySelector("#hue-slider")!;
+        this.selectedThread = this.content.querySelector("#selected-thread")!;
+        this.addThreadButton = this.content.querySelector("#add-thread")!;
+
+        this.slideListener = () => { };
+        this.canvasClickListener = () => { };
+        this.addThreadButtonListener = () => { };
+        this.swatchListeners = [];
 
         this.generateGrid();
         this.generatePalette(this.slider.value);
+        this.pickColor(0, 0);
+
+        this.startListening();
+    }
+
+    public onPickThread(listener: PickThreadListener): VoidUnsubscribe {
+        return this.messaging.listenOnChannel1(listener);
     }
 
     protected override showContent(): void {
@@ -40,6 +70,10 @@ export class ThreadPickerContent extends DialogContentBase implements IThreadPic
             for (let row = 0; row < lightnessSteps; row++) {
                 const lightness = 90 - row * (70 / (lightnessSteps - 1));
                 const swatch = this.createSwatch(hue, 100, lightness);
+                this.swatches.push(swatch);
+                const swatchListener = this.handleClickSwatch.bind(this);
+                swatch.addEventListener("click", swatchListener);
+                this.swatchListeners.push(swatchListener);
                 this.gradientGrid.appendChild(swatch);
             }
         }
@@ -81,25 +115,69 @@ export class ThreadPickerContent extends DialogContentBase implements IThreadPic
 
     private createSwatch(h: number, s: number, l: number): HTMLDivElement {
         const hex = this.hslToHex(h, s, l);
-        const swatch = document.createElement('div');
-        swatch.className = 'thread-picker-swatch';
+        const swatch = document.createElement("div");
+        swatch.className = "thread-picker-swatch";
         swatch.style.backgroundColor = hex;
         swatch.title = hex;
-
-        // TODO:
-        // swatch.addEventListener('click', () => {
-        //     selectedColorText.textContent = hex;
-        //     preview.style.backgroundColor = hex;
-        // });
-
         return swatch;
     }
 
-    private pickColor(x: any, y: any): void {
+    private pickColor(x: number, y: number): void {
         const imageData = this.canvasContext.getImageData(x, y, 1, 1).data;
         const [r, g, b] = imageData;
-        const hex = `#${[r, g, b].map(c => c.toString(16).padStart(2, '0')).join('')}`;
-        // selectedColorText.textContent = hex;
-        // preview.style.backgroundColor = hex;
+        const hex = `#${[r, g, b].map(c => c.toString(16).padStart(2, "0")).join("")}`;
+        this.selectedThread.value = hex;
+    }
+
+    private handleChangeSlider(): void {
+        this.generatePalette(this.slider.value);
+    }
+
+    private handleClickCanvas(event: PointerEvent): void {
+        const rect = this.canvas.getBoundingClientRect();
+        const x = event.clientX - rect.left;
+        const y = event.clientY - rect.top;
+        this.pickColor(x, y);
+    }
+
+    private handleClickSwatch(event: Event): void {
+        const element = event.target as HTMLInputElement;
+        const color = element.title;
+        this.selectedThread.value = color;
+    }
+
+    private handleAddThread(): void {
+        const color = this.selectedThread.value;
+        this.invokePickThread(color);
+        super.hide();
+    }
+
+    private startListening(): void {
+        this.slideListener = this.handleChangeSlider.bind(this);
+        this.slider.addEventListener("input", this.slideListener);
+
+        this.canvasClickListener = this.handleClickCanvas.bind(this);
+        this.canvas.addEventListener("pointerdown", this.canvasClickListener);
+
+        this.addThreadButtonListener = this.handleAddThread.bind(this);
+        this.addThreadButton.addEventListener("click", this.addThreadButtonListener);
+    }
+
+    private stopListening(): void {
+        this.slider.removeEventListener("input", this.slideListener);
+        this.canvas.removeEventListener("pointerdown", this.canvasClickListener);
+        this.addThreadButton.removeEventListener("click", this.addThreadButtonListener);
+
+        for (let index = 0; index < this.swatches.length; index++) {
+            const swatch = this.swatches[index];
+            const swatchListener = this.swatchListeners[index];
+            swatch.removeEventListener("click", swatchListener);
+        }
+    }
+
+    private invokePickThread(color: string): void {
+        const thread = { name: color, color, width: 12 }; //TODO: !!!
+        const event = { thread };
+        this.messaging.sendToChannel1(event);
     }
 }

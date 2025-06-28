@@ -5,7 +5,7 @@ import { ZoomMenu } from "./menus/zoom.js";
 import { HomeMenu } from "./menus/home.js";
 import { UserMenu } from "./menus/user.js";
 import { CloseMenu } from "./menus/close.js";
-import { PaletteMenu } from "./menus/palette.js";
+import { ThreadPaletteMenu } from "./menus/palette.js";
 import { SplitViewMenu } from "./menus/split.js";
 import { FeedbackMenu } from "./menus/feedback.js";
 import {
@@ -38,7 +38,7 @@ export class Menus extends Base implements IMenus {
         this.userMenu = new UserMenu(topLeftMenu);
 
         const leftCenterMenu = this.getLeftCenterMenu(document);
-        this.threadPaletteMenu = new PaletteMenu(leftCenterMenu);
+        this.threadPaletteMenu = new ThreadPaletteMenu(leftCenterMenu);
 
         const topRightMenu = this.getTopRightMenu(document);
         this.undoMenu = new UndoMenu(topRightMenu);

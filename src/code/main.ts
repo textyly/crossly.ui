@@ -1,10 +1,10 @@
 import { Menus } from "./menu/menus.js";
 import { Dialogs } from "./dialog/dialog.js";
+import { MenuCanvasHandler } from "./handlers/menuCanvas.js";
+import { MenuDialogHandler } from "./handlers/menuDialog.js";
 import { RepositoryFactory } from "./repository/factory.js";
-import { MenuCanvasHandler } from "./menu/handlers/canvas.js";
 import { CrosslyCanvasAnimationFactory } from "./animation/factory.js";
 import { CrosslyCanvasFacadeFactory } from "./canvas/crossly/factory.js";
-import { MenuDialogHandler } from "./menu/handlers/dialog.js";
 
 const canvasFactory = new CrosslyCanvasFacadeFactory();
 const canvas = canvasFactory.create();

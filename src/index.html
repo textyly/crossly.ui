@@ -40,9 +40,9 @@
                     <div>
                         <img src="./icons/palette.svg" />
                     </div>
-                    <div id="color-buttons-container" class="color-button-group">
+                    <div id="thread-buttons-container" class="thread-button-group">
                         <!--color buttons will be added dynamically-->
-                        <button id="add-color" class="action-button">
+                        <button id="add-thread" class="action-button">
                             <img src="./icons/add.svg" />
                         </button>
                     </div>
@@ -107,8 +107,8 @@
                         <div class="thread-picker-palette">
                             <canvas id="thread-picker-palette-canvas"></canvas>
                             <input type="range" id="hue-slider" min="0" max="360" value="0" />
-                            <input class="action-button" />
-                            <button id="add-color" class="action-button">
+                            <input id="selected-thread" class="action-button" />
+                            <button id="add-thread" class="action-button">
                                 add thread
                             </button>
                         </div>

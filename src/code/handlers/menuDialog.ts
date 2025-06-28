@@ -1,7 +1,7 @@
-import { IMenus } from "../menus/types.js";
-import { Base } from "../../general/base.js";
-import { IDialogs } from "../../dialog/types.js";
-import { IMenuDialogHandler } from "../types.js";
+import { Base } from "../general/base.js";
+import { IDialogs, PickThreadEvent } from "../dialog/types.js";
+import { IMenus } from "../menu/menus/types.js";
+import { IMenuDialogHandler } from "./types.js";
 
 export class MenuDialogHandler extends Base implements IMenuDialogHandler {
     private readonly menu: IMenus;
@@ -19,6 +19,12 @@ export class MenuDialogHandler extends Base implements IMenuDialogHandler {
     private subscribe(): void {
         this.subscribeDialog();
         this.subscribeMenu();
+    }
+
+    private handlePickThread(event: PickThreadEvent): void {
+        super.ensureAlive();
+
+        this.menu.threadPalette.change(event.thread);
     }
 
     private handleOpenHome(): void {
@@ -46,7 +52,8 @@ export class MenuDialogHandler extends Base implements IMenuDialogHandler {
     }
 
     private subscribeDialog(): void {
-
+        const pickThreadUn = this.dialogs.threadPicker.onPickThread(this.handlePickThread.bind(this));
+        super.registerUn(pickThreadUn);
     }
 
     private subscribeMenu(): void {

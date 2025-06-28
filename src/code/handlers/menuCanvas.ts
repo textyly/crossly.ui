@@ -1,8 +1,8 @@
-import { Base } from "../../general/base.js";
-import { IMenuCanvasHandler } from "../types.js";
-import { ICrosslyCanvasFacade } from "../../canvas/types.js";
-import { ChangeThreadEvent, IMenus } from "../menus/types.js";
-import { ChangeStitchPatternEvent } from "../../canvas/virtual/types.js";
+import { Base } from "../general/base.js";
+import { IMenuCanvasHandler } from "./types.js";
+import { ICrosslyCanvasFacade } from "../canvas/types.js";
+import { ChangeStitchPatternEvent } from "../canvas/virtual/types.js";
+import { ChangeThreadEvent, IMenus } from "../menu/menus/types.js";
 
 export class MenuCanvasHandler extends Base implements IMenuCanvasHandler {
     private readonly menus: IMenus;
@@ -50,7 +50,7 @@ export class MenuCanvasHandler extends Base implements IMenuCanvasHandler {
     private handleMenuChangeThread(event: ChangeThreadEvent): void {
         super.ensureAlive();
 
-        this.canvas.useThread(event.name, event.color, event.width);
+        this.canvas.useThread(event.thread.name, event.thread.color, event.thread.width); // TODO:
     }
 
     private handleBackSideMenuClose(): void {
@@ -79,7 +79,13 @@ export class MenuCanvasHandler extends Base implements IMenuCanvasHandler {
 
         const colors = event.pattern
             .filter((threadPath) => threadPath.length > 0)
-            .map((threadPath) => threadPath.color);
+            .map((threadPath) => {
+                return {
+                    name: threadPath.name,
+                    color: threadPath.color,
+                    width: threadPath.width
+                };
+            });
 
         if (colors.length > 0) {
             const menu = this.menus.threadPalette;
