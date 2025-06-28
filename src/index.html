@@ -104,19 +104,16 @@
             <div id="thread-picker-content" class="dialog-content">
                 <div class="thread-picker-layout">
                     <div class="thread-picker-top-row">
-                        <div class="thread-picker-grid" id="thread-picker-gradient-grid">
-                            <!-- Swatches will be injected bellow -->
-                        </div>
                         <div class="thread-picker-palette">
                             <canvas id="thread-picker-palette-canvas"></canvas>
-                            <input type="range" id="hue-slider" min="0" max="360" value="0">
+                            <input type="range" id="hue-slider" min="0" max="360" value="0" />
+                            <input class="action-button" />
+                            <button id="add-color" class="action-button">
+                                add thread
+                            </button>
                         </div>
-                    </div>
-                    <div class="thread-picker-bottom-row">
-                        <div class="thread-picker-selected-output">
-                            <span>Selected Color:</span>
-                            <span id="selected-color">#000000</span>
-                            <div id="thread-picker-color-preview" style="background-color: #000000;"></div>
+                        <div class="thread-picker-grid" id="thread-picker-gradient-grid">
+                            <!-- Swatches will be injected bellow -->
                         </div>
                     </div>
                 </div>
