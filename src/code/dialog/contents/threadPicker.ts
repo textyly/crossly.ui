@@ -1,6 +1,7 @@
 import { DialogContentBase } from "./base.js";
 import { Messaging1 } from "../../messaging/impl.js";
 import { IMessaging1 } from "../../messaging/types.js";
+import html from "../../utilities.ts/html.js";
 import { Listener, VoidListener, VoidUnsubscribe } from "../../types.js";
 import { IThreadPickerContent, PickThreadEvent, PickThreadListener } from "../types.js";
 
@@ -28,13 +29,12 @@ export class ThreadPickerContent extends DialogContentBase implements IThreadPic
         this.swatches = [];
 
         this.content = this.getContent(dialogOverlay, "thread-picker-content");
-        this.gradientGrid = this.content.querySelector("#thread-picker-gradient-grid")!;
-
-        this.canvas = this.content.querySelector("#thread-picker-palette-canvas")! as HTMLCanvasElement;
+        this.canvas = html.getById(this.content, "thread-picker-palette-canvas");
         this.canvasContext = this.canvas.getContext("2d")!;
-        this.slider = this.content.querySelector("#hue-slider")!;
-        this.selectedThread = this.content.querySelector("#selected-thread")!;
-        this.addThreadButton = this.content.querySelector("#add-thread")!;
+        this.slider = html.getById(this.content, "hue-slider");
+        this.gradientGrid = html.getById(this.content, "thread-picker-gradient-grid");
+        this.selectedThread = html.getById(this.content, "selected-thread");
+        this.addThreadButton = html.getById(this.content, "add-thread");
 
         this.slideListener = () => { };
         this.canvasClickListener = () => { };

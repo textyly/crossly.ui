@@ -5,10 +5,10 @@ import { Visibility } from "../../canvas/types.js";
 import { Listener, VoidListener } from "../../types.js";
 
 export abstract class DialogContentBase extends Base implements IDialogContent {
-    protected document: Document;
-    protected dialogOverlay: HTMLElement;
-    protected dialog: HTMLElement;
-    protected dialogCloseButton: HTMLElement;
+    protected readonly document: Document;
+    protected readonly dialogOverlay: HTMLElement;
+    protected readonly dialog: HTMLElement;
+    protected readonly dialogCloseButton: HTMLElement;
 
     private dialogOverlayListener: Listener<Event>;
     private dialogCloseButtonListener: VoidListener;
@@ -63,6 +63,7 @@ export abstract class DialogContentBase extends Base implements IDialogContent {
     protected abstract hideContent(): void;
 
     protected getContent(container: Element, contentId: string): Element {
+
         const hiddenContents = container.querySelector("#hidden-dialog-contents");
         assert.defined(hiddenContents, "hiddenContents");
 
@@ -71,7 +72,6 @@ export abstract class DialogContentBase extends Base implements IDialogContent {
 
         const cloned = content.cloneNode(true) as HTMLElement;
         cloned.style.display = "flex";
-
         hiddenContents.removeChild(content);
 
         if (hiddenContents.children.length === 0) {
