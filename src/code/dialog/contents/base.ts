@@ -1,6 +1,6 @@
-import assert from "../../asserts/assert.js";
 import { Base } from "../../general/base.js";
 import { IDialogContent } from "../types.js";
+import html from "../../utilities.ts/html.js";
 import { Visibility } from "../../canvas/types.js";
 import { Listener, VoidListener } from "../../types.js";
 
@@ -21,8 +21,9 @@ export abstract class DialogContentBase extends Base implements IDialogContent {
 
         this.document = document;
         this.dialogOverlay = dialogOverlay;
-        this.dialog = this.getDialog(this.dialogOverlay);
-        this.dialogCloseButton = this.getDialogCloseButton(this.dialog);
+
+        this.dialog = html.getById(this.dialogOverlay, "modal-dialog");
+        this.dialogCloseButton = html.getById(this.dialog, "close-dialog");
 
         this.dialogOverlayListener = () => { };
         this.dialogCloseButtonListener = () => { };
@@ -63,15 +64,12 @@ export abstract class DialogContentBase extends Base implements IDialogContent {
     protected abstract hideContent(): void;
 
     protected getContent(container: Element, contentId: string): Element {
+        const hiddenContents = html.getById(container, "hidden-dialog-contents");
 
-        const hiddenContents = container.querySelector("#hidden-dialog-contents");
-        assert.defined(hiddenContents, "hiddenContents");
-
-        const content = container.querySelector(`#${contentId}`);
-        assert.defined(content, "content");
-
+        const content = html.getById(container, `${contentId}`);
         const cloned = content.cloneNode(true) as HTMLElement;
         cloned.style.display = "flex";
+
         hiddenContents.removeChild(content);
 
         if (hiddenContents.children.length === 0) {
@@ -89,18 +87,6 @@ export abstract class DialogContentBase extends Base implements IDialogContent {
     private hideDialog(): void {
         this.dialogOverlay.style.display = "none";
         this.dialog.style.display = "none";
-    }
-
-    private getDialog(container: HTMLElement): HTMLElement {
-        const dialogElement = container.querySelector("#modal-dialog") as HTMLElement;
-        assert.defined(dialogElement, "dialogElement");
-        return dialogElement;
-    }
-
-    private getDialogCloseButton(dialog: HTMLElement): HTMLElement {
-        const dialogCloseElement = dialog.querySelector("#close-dialog") as HTMLElement;
-        assert.defined(dialogCloseElement, "dialogCloseElement");
-        return dialogCloseElement;
     }
 
     private handleDialogOverlayClick(e: Event): void {
