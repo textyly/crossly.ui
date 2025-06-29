@@ -6,7 +6,6 @@ export class SplitViewMenu extends OneActionMenu implements ISplitViewMenu {
 
     constructor(container: Element) {
         super(SplitViewMenu.name, container, "toggle-split-view");
-
     }
 
     public onToggleSplitView(listener: VoidListener): VoidUnsubscribe {

@@ -1,5 +1,5 @@
-import assert from "../asserts/assert.js";
 import { Base } from "../general/base.js";
+import html from "../utilities.ts/html.js";
 import { UserContent } from "./contents/user.js";
 import { HomeContent } from "./contents/home.js";
 import { FeedbackContent } from "./contents/feedback.js";
@@ -15,7 +15,7 @@ export class Dialogs extends Base implements IDialogs {
     constructor(document: Document) {
         super(Dialogs.name);
 
-        const dialogOverlay = this.getDialogOverlay(document);
+        const dialogOverlay = html.getById<HTMLElement>(document, "modal-overlay");
 
         this.homeContent = new HomeContent(document, dialogOverlay);
         this.userContent = new UserContent(document, dialogOverlay);
@@ -37,11 +37,5 @@ export class Dialogs extends Base implements IDialogs {
 
     public get feedback(): IFeedbackContent {
         return this.feedbackContent;
-    }
-
-    private getDialogOverlay(document: Document): HTMLElement {
-        const dialogOverlayElement = document.querySelector('#modal-overlay') as HTMLElement;
-        assert.defined(dialogOverlayElement, "dialogOverlayElement");
-        return dialogOverlayElement;
     }
 }

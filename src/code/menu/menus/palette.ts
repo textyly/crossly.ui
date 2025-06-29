@@ -1,11 +1,14 @@
 import assert from "../../asserts/assert.js";
 import { Base } from "../../general/base.js";
+import html from "../../utilities.ts/html.js";
 import { Messaging2 } from "../../messaging/impl.js";
 import { IMessaging2 } from "../../messaging/types.js";
 import { Listener, VoidEvent, VoidListener, VoidUnsubscribe } from "../../types.js";
 import { ChangeThreadEvent, ChangeThreadListener, IThreadPaletteMenu, Thread, Threads } from "./types.js";
 
 export class ThreadPaletteMenu extends Base implements IThreadPaletteMenu {
+    private readonly paletteMenuId = "thread-buttons-container";
+    private readonly addThreadButtonId = "add-thread";
     private readonly buttonClassName = "thread-button";
 
     private readonly messaging: IMessaging2<ChangeThreadEvent, VoidEvent>;
@@ -25,12 +28,12 @@ export class ThreadPaletteMenu extends Base implements IThreadPaletteMenu {
         this.threadButtonsListeners = [];
         this.messaging = new Messaging2();
 
-        let defaultThreads = this.getDefaultThreads(); // TODO: retrieve from a service and normalize color
+        this.addButton = html.getById(container, this.addThreadButtonId);
 
+        let defaultThreads = this.getDefaultThreads(); // TODO: retrieve from a service and normalize color
         this.threadButtons = this.createThreadsButtons(defaultThreads);
         this.insertThreadButtons(container, this.threadButtons);
 
-        this.addButton = this.getAddButton(container);
         this.subscribeAddButton(this.addButton);
     }
 
@@ -75,9 +78,8 @@ export class ThreadPaletteMenu extends Base implements IThreadPaletteMenu {
     }
 
     private insertThreadButtons(container: Element, buttons: Array<Element>): void {
-        const paletteMenu = this.getPaletteMenu(container);
-        const addButton = this.getAddButton(container);
-        buttons.forEach((b) => paletteMenu.insertBefore(b, addButton));
+        const paletteMenu = html.getById(container, this.paletteMenuId);
+        buttons.forEach((button) => paletteMenu.insertBefore(button, this.addButton));
     }
 
     private createThreadsButtons(threads: Threads): Array<Element> {
@@ -99,18 +101,6 @@ export class ThreadPaletteMenu extends Base implements IThreadPaletteMenu {
         this.subscribeThreadButton(button);
 
         return button;
-    }
-
-    private getPaletteMenu(container: Element): Element {
-        const paletteElement = container.querySelector("#thread-buttons-container");
-        assert.defined(paletteElement, "paletteElement");
-        return paletteElement;
-    }
-
-    private getAddButton(container: Element): Element {
-        const addElement = container.querySelector("#add-thread");
-        assert.defined(addElement, "addElement");
-        return addElement;
     }
 
     private getUniqueThreads(threads: Threads): Threads {

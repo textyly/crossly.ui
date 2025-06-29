@@ -1,4 +1,4 @@
-import assert from "../../asserts/assert.js";
+import html from "../../utilities.ts/html.js";
 import { Base } from "../../general/base.js";
 import { VoidMessaging } from "../../messaging/impl.js";
 import { IVoidMessaging } from "../../messaging/types.js";
@@ -18,7 +18,7 @@ export abstract class OneActionMenu extends Base implements IDisposable {
         this.messaging = new VoidMessaging();
 
         this.actionId = actionId;
-        this.button = this.getButton(container);
+        this.button = html.getById(container, this.actionId);
         this.buttonListener = () => { };
 
         this.subscribe();
@@ -33,12 +33,6 @@ export abstract class OneActionMenu extends Base implements IDisposable {
         this.unsubscribe();
         this.messaging.dispose();
         super.dispose();
-    }
-
-    private getButton(container: Element): Element {
-        const actionElement = container.querySelector(`#${this.actionId}`);
-        assert.defined(actionElement, "actionElement");
-        return actionElement;
     }
 
     private subscribe(): void {

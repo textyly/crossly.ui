@@ -1,12 +1,15 @@
 import { IUndoMenu } from "./types.js";
 import { Base } from "../../general/base.js";
-import assert from "../../asserts/assert.js";
+import html from "../../utilities.ts/html.js";
 import { Messaging1 } from "../../messaging/impl.js";
 import { IMessaging1 } from "../../messaging/types.js";
 import { VoidEvent, VoidListener, VoidUnsubscribe } from "../../types.js";
 
 export class UndoMenu extends Base implements IUndoMenu {
     private messaging: IMessaging1<VoidEvent>;
+
+    private readonly undoId = "undo";
+    private readonly redoId = "redo";
 
     private readonly undoButton: Element;
     private readonly redoButton: Element;
@@ -19,8 +22,8 @@ export class UndoMenu extends Base implements IUndoMenu {
 
         this.messaging = new Messaging1();
 
-        this.undoButton = this.getUndoButton(container);
-        this.redoButton = this.getRedoButton(container);
+        this.undoButton = html.getById(container, this.undoId);
+        this.redoButton = html.getById(container, this.redoId);
 
         this.undoListener = () => { };
         this.redoListener = () => { };
@@ -41,18 +44,6 @@ export class UndoMenu extends Base implements IUndoMenu {
         this.unsubscribe();
         this.messaging.dispose();
         super.dispose();
-    }
-
-    private getUndoButton(container: Element): Element {
-        const undoElement = container.querySelector("#undo");
-        assert.defined(undoElement, "undoElement");
-        return undoElement;
-    }
-
-    private getRedoButton(container: Element): Element {
-        const redoElement = container.querySelector("#redo");
-        assert.defined(redoElement, "redoElement");
-        return redoElement;
     }
 
     private subscribe(): void {
