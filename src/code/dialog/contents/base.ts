@@ -33,7 +33,7 @@ export abstract class DialogContentBase extends Base implements IDialogContent {
         this.subscribe();
     }
 
-    private get isVisible(): boolean {
+    public get isVisible(): boolean {
         return this.visibility === Visibility.Visible;
     }
 
@@ -54,6 +54,7 @@ export abstract class DialogContentBase extends Base implements IDialogContent {
     }
 
     public override dispose(): void {
+        this.ensureAlive();
         this.unsubscribe();
         super.dispose();
     }

@@ -37,6 +37,7 @@ export class UndoMenu extends Base implements IUndoMenu {
     }
 
     public override dispose(): void {
+        super.ensureAlive();
         this.unsubscribe();
         this.messaging.dispose();
         super.dispose();

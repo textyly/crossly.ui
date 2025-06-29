@@ -85,6 +85,8 @@ export class Menus extends Base implements IMenus {
     }
 
     public override dispose(): void {
+        super.ensureAlive();
+        
         this.home.dispose();
         this.user.dispose();
         this.undo.dispose();

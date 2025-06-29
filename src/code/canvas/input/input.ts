@@ -62,11 +62,11 @@ export class InputCanvas extends InputCanvasBase {
     public override dispose(): void {
         super.ensureAlive();
 
-        super.dispose();
-
         this.unsubscribe();
         this.moveInput.dispose();
         this.touchInput.dispose();
+
+        super.dispose();
     }
 
     private handleZoomIn(event: ZoomInEvent): void {

@@ -1,8 +1,8 @@
 import { DialogContentBase } from "./base.js";
-import { IThreadPickerContent, PickThreadEvent, PickThreadListener } from "../types.js";
-import { Listener, VoidListener, VoidUnsubscribe } from "../../types.js";
-import { IMessaging1 } from "../../messaging/types.js";
 import { Messaging1 } from "../../messaging/impl.js";
+import { IMessaging1 } from "../../messaging/types.js";
+import { Listener, VoidListener, VoidUnsubscribe } from "../../types.js";
+import { IThreadPickerContent, PickThreadEvent, PickThreadListener } from "../types.js";
 
 export class ThreadPickerContent extends DialogContentBase implements IThreadPickerContent {
     private messaging: IMessaging1<PickThreadEvent>;
@@ -50,6 +50,12 @@ export class ThreadPickerContent extends DialogContentBase implements IThreadPic
 
     public onPickThread(listener: PickThreadListener): VoidUnsubscribe {
         return this.messaging.listenOnChannel1(listener);
+    }
+
+    public override dispose(): void {
+        this.ensureAlive();
+        this.stopListening();
+        super.dispose();
     }
 
     protected override showContent(): void {
@@ -105,11 +111,13 @@ export class ThreadPickerContent extends DialogContentBase implements IThreadPic
     private hslToHex(h: number, s: number, l: number): string {
         l /= 100;
         const a = s * Math.min(l, 1 - l) / 100;
+
         const f = (n: number) => {
             const k = (n + h / 30) % 12;
             const color = l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
             return Math.round(255 * color).toString(16).padStart(2, "0");
         };
+
         return `#${f(0)}${f(8)}${f(4)}`;
     }
 

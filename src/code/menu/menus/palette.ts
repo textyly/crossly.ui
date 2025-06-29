@@ -56,6 +56,7 @@ export class ThreadPaletteMenu extends Base implements IThreadPaletteMenu {
     }
 
     public override dispose(): void {
+        super.ensureAlive();
         this.unsubscribeThreadButtons();
         this.unsubscribeAddButton()
         super.dispose();

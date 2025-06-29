@@ -29,6 +29,7 @@ export abstract class OneActionMenu extends Base implements IDisposable {
     }
 
     public override dispose(): void {
+        super.ensureAlive();
         this.unsubscribe();
         this.messaging.dispose();
         super.dispose();

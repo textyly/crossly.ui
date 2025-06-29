@@ -54,6 +54,7 @@ export class ZoomMenu extends Base implements IZoomMenu {
     }
 
     public override dispose(): void {
+        super.ensureAlive();
         this.unsubscribe();
         this.messaging.dispose();
         super.dispose();
