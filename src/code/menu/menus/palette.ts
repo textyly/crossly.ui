@@ -29,7 +29,6 @@ export class ThreadPaletteMenu extends Base implements IThreadPaletteMenu {
 
         this.threadButtons = this.createThreadsButtons(defaultThreads);
         this.insertThreadButtons(container, this.threadButtons);
-        this.subscribeThreadButtons();
 
         this.addButton = this.getAddButton(container);
         this.subscribeAddButton(this.addButton);
@@ -70,7 +69,6 @@ export class ThreadPaletteMenu extends Base implements IThreadPaletteMenu {
             if (!buttonsColors.find((ac) => ac === normalizedColor)) {
                 const button = this.createThreadButton({ ...thread, color: normalizedColor });
                 this.insertThreadButtons(this.container, [button]);
-                this.subscribeThreadButton(button);
                 this.threadButtons.push(button);
             }
         });
@@ -97,6 +95,9 @@ export class ThreadPaletteMenu extends Base implements IThreadPaletteMenu {
         const button = document.createElement("button");
         button.classList.add(this.buttonClassName);
         button.style.backgroundColor = thread.color;
+
+        this.subscribeThreadButton(button);
+
         return button;
     }
 
@@ -163,10 +164,6 @@ export class ThreadPaletteMenu extends Base implements IThreadPaletteMenu {
 
     private handleOpenThreadPicker(): void {
         this.invokeOpenThreadPicker();
-    }
-
-    private subscribeThreadButtons(): void {
-        this.threadButtons.forEach((button) => this.subscribeThreadButton(button));
     }
 
     private subscribeThreadButton(button: Element): void {

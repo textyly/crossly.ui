@@ -8,10 +8,17 @@ import { IThreadPickerContent, PickThreadEvent, PickThreadListener } from "../ty
 export class ThreadPickerContent extends DialogContentBase implements IThreadPickerContent {
     private messaging: IMessaging1<PickThreadEvent>;
 
-    private readonly gradientGrid: Element;
+    private readonly canvasId = "thread-picker-palette-canvas";
+    private readonly sliderId = "hue-slider";
+    private readonly gridId = "thread-picker-gradient-grid";
+    private readonly selectedThreadId = "selected-thread";
+    private readonly addThreadButtonId = "add-thread";
+    private readonly swatchClassName = "thread-picker-swatch";
+
     private readonly canvas: HTMLCanvasElement;
     private readonly canvasContext: CanvasRenderingContext2D;
     private readonly slider: HTMLInputElement;
+    private readonly grid: Element;
     private readonly swatches: Array<Element>;
     private readonly selectedThread: HTMLInputElement;
     private readonly addThreadButton: HTMLButtonElement;
@@ -27,12 +34,12 @@ export class ThreadPickerContent extends DialogContentBase implements IThreadPic
         this.messaging = new Messaging1();
         this.swatches = [];
 
-        this.canvas = html.getById(this.dialogContent, "thread-picker-palette-canvas");
+        this.canvas = html.getById(this.dialogContent, this.canvasId);
         this.canvasContext = this.canvas.getContext("2d")!;
-        this.slider = html.getById(this.dialogContent, "hue-slider");
-        this.gradientGrid = html.getById(this.dialogContent, "thread-picker-gradient-grid");
-        this.selectedThread = html.getById(this.dialogContent, "selected-thread");
-        this.addThreadButton = html.getById(this.dialogContent, "add-thread");
+        this.slider = html.getById(this.dialogContent, this.sliderId);
+        this.grid = html.getById(this.dialogContent, this.gridId);
+        this.selectedThread = html.getById(this.dialogContent, this.selectedThreadId);
+        this.addThreadButton = html.getById(this.dialogContent, this.addThreadButtonId);
 
         this.slideListener = () => { };
         this.canvasClickListener = () => { };
@@ -65,7 +72,7 @@ export class ThreadPickerContent extends DialogContentBase implements IThreadPic
             for (let row = 0; row < lightnessSteps; row++) {
                 const lightness = 90 - row * (70 / (lightnessSteps - 1));
                 const swatch = this.createSwatch(hue, 100, lightness);
-                this.gradientGrid.appendChild(swatch);
+                this.grid.appendChild(swatch);
             }
         }
     }
@@ -110,7 +117,7 @@ export class ThreadPickerContent extends DialogContentBase implements IThreadPic
         const hex = this.hslToHex(h, s, l);
 
         const swatch = document.createElement("div");
-        swatch.className = "thread-picker-swatch";
+        swatch.className = this.swatchClassName;
         swatch.style.backgroundColor = hex;
         swatch.title = hex;
 
