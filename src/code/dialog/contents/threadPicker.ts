@@ -1,7 +1,7 @@
 import { DialogContentBase } from "./base.js";
+import html from "../../utilities.ts/html.js";
 import { Messaging1 } from "../../messaging/impl.js";
 import { IMessaging1 } from "../../messaging/types.js";
-import html from "../../utilities.ts/html.js";
 import { Listener, VoidListener, VoidUnsubscribe } from "../../types.js";
 import { IThreadPickerContent, PickThreadEvent, PickThreadListener } from "../types.js";
 
@@ -61,15 +61,10 @@ export class ThreadPickerContent extends DialogContentBase implements IThreadPic
         const lightnessSteps = 8;
 
         for (let col = 0; col < hueSteps; col++) {
-
             const hue = Math.round((360 / hueSteps) * col);
             for (let row = 0; row < lightnessSteps; row++) {
                 const lightness = 90 - row * (70 / (lightnessSteps - 1));
                 const swatch = this.createSwatch(hue, 100, lightness);
-                this.swatches.push(swatch);
-                const swatchListener = this.handleClickSwatch.bind(this);
-                swatch.addEventListener("click", swatchListener);
-                this.swatchListeners.push(swatchListener);
                 this.gradientGrid.appendChild(swatch);
             }
         }
@@ -113,10 +108,15 @@ export class ThreadPickerContent extends DialogContentBase implements IThreadPic
 
     private createSwatch(h: number, s: number, l: number): HTMLDivElement {
         const hex = this.hslToHex(h, s, l);
+
         const swatch = document.createElement("div");
         swatch.className = "thread-picker-swatch";
         swatch.style.backgroundColor = hex;
         swatch.title = hex;
+
+        this.swatches.push(swatch);
+        this.subscribeSwatch(swatch);
+
         return swatch;
     }
 
@@ -148,6 +148,12 @@ export class ThreadPickerContent extends DialogContentBase implements IThreadPic
         const color = this.selectedThread.value;
         this.invokePickThread(color);
         super.hide();
+    }
+
+    private subscribeSwatch(swatch: HTMLDivElement): void {
+        const swatchListener = this.handleClickSwatch.bind(this);
+        swatch.addEventListener("click", swatchListener);
+        this.swatchListeners.push(swatchListener);
     }
 
     private startListening(): void {

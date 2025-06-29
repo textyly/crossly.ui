@@ -61,22 +61,6 @@ export abstract class DialogContentBase extends Base implements IDialogContent {
         super.dispose();
     }
 
-    protected getContent(container: Element, contentId: string): HTMLElement {
-        const hiddenContents = html.getById(container, "hidden-dialog-contents");
-
-        const content = html.getById(container, `${contentId}`);
-        const cloned = content.cloneNode(true) as HTMLElement;
-        cloned.style.display = "flex";
-
-        hiddenContents.removeChild(content);
-
-        if (hiddenContents.children.length === 0) {
-            container.removeChild(hiddenContents);
-        }
-
-        return cloned;
-    }
-
     private showContent(): void {
         this.dialog.appendChild(this.dialogContent);
     }
@@ -93,6 +77,22 @@ export abstract class DialogContentBase extends Base implements IDialogContent {
     private hideDialog(): void {
         this.dialogOverlay.style.display = "none";
         this.dialog.style.display = "none";
+    }
+
+    private getContent(container: Element, contentId: string): HTMLElement {
+        const hiddenContents = html.getById(container, "hidden-dialog-contents");
+
+        const content = html.getById(container, `${contentId}`);
+        const cloned = content.cloneNode(true) as HTMLElement;
+        cloned.style.display = "flex";
+
+        hiddenContents.removeChild(content);
+
+        if (hiddenContents.children.length === 0) {
+            container.removeChild(hiddenContents);
+        }
+
+        return cloned;
     }
 
     private handleDialogOverlayClick(e: Event): void {
