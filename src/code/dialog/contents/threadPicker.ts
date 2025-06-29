@@ -8,7 +8,6 @@ import { IThreadPickerContent, PickThreadEvent, PickThreadListener } from "../ty
 export class ThreadPickerContent extends DialogContentBase implements IThreadPickerContent {
     private messaging: IMessaging1<PickThreadEvent>;
 
-    private readonly content: Element;
     private readonly gradientGrid: Element;
     private readonly canvas: HTMLCanvasElement;
     private readonly canvasContext: CanvasRenderingContext2D;
@@ -23,18 +22,17 @@ export class ThreadPickerContent extends DialogContentBase implements IThreadPic
     private readonly swatchListeners: Array<Listener<Event>>;
 
     constructor(document: Document, dialogOverlay: HTMLElement) {
-        super(ThreadPickerContent.name, document, dialogOverlay);
+        super(ThreadPickerContent.name, document, dialogOverlay, "thread-picker-content");
 
         this.messaging = new Messaging1();
         this.swatches = [];
 
-        this.content = this.getContent(dialogOverlay, "thread-picker-content");
-        this.canvas = html.getById(this.content, "thread-picker-palette-canvas");
+        this.canvas = html.getById(this.dialogContent, "thread-picker-palette-canvas");
         this.canvasContext = this.canvas.getContext("2d")!;
-        this.slider = html.getById(this.content, "hue-slider");
-        this.gradientGrid = html.getById(this.content, "thread-picker-gradient-grid");
-        this.selectedThread = html.getById(this.content, "selected-thread");
-        this.addThreadButton = html.getById(this.content, "add-thread");
+        this.slider = html.getById(this.dialogContent, "hue-slider");
+        this.gradientGrid = html.getById(this.dialogContent, "thread-picker-gradient-grid");
+        this.selectedThread = html.getById(this.dialogContent, "selected-thread");
+        this.addThreadButton = html.getById(this.dialogContent, "add-thread");
 
         this.slideListener = () => { };
         this.canvasClickListener = () => { };
@@ -56,14 +54,6 @@ export class ThreadPickerContent extends DialogContentBase implements IThreadPic
         this.ensureAlive();
         this.stopListening();
         super.dispose();
-    }
-
-    protected override showContent(): void {
-        this.dialog.appendChild(this.content);
-    }
-
-    protected override hideContent(): void {
-        this.dialog.removeChild(this.content);
     }
 
     private generateGrid(): void {

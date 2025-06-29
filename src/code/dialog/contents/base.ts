@@ -8,6 +8,7 @@ export abstract class DialogContentBase extends Base implements IDialogContent {
     protected readonly document: Document;
     protected readonly dialogOverlay: HTMLElement;
     protected readonly dialog: HTMLElement;
+    protected readonly dialogContent: HTMLElement;
     protected readonly dialogCloseButton: HTMLElement;
 
     private dialogOverlayListener: Listener<Event>;
@@ -16,13 +17,13 @@ export abstract class DialogContentBase extends Base implements IDialogContent {
 
     private visibility: Visibility;
 
-    constructor(className: string, document: Document, dialogOverlay: HTMLElement) {
+    constructor(className: string, document: Document, dialogOverlay: HTMLElement, dialogContentId: string) {
         super(className);
 
         this.document = document;
         this.dialogOverlay = dialogOverlay;
-
         this.dialog = html.getById(this.dialogOverlay, "modal-dialog");
+        this.dialogContent = this.getContent(this.dialogOverlay, dialogContentId);
         this.dialogCloseButton = html.getById(this.dialog, "close-dialog");
 
         this.dialogOverlayListener = () => { };
@@ -60,10 +61,7 @@ export abstract class DialogContentBase extends Base implements IDialogContent {
         super.dispose();
     }
 
-    protected abstract showContent(): void;
-    protected abstract hideContent(): void;
-
-    protected getContent(container: Element, contentId: string): Element {
+    protected getContent(container: Element, contentId: string): HTMLElement {
         const hiddenContents = html.getById(container, "hidden-dialog-contents");
 
         const content = html.getById(container, `${contentId}`);
@@ -77,6 +75,14 @@ export abstract class DialogContentBase extends Base implements IDialogContent {
         }
 
         return cloned;
+    }
+
+    private showContent(): void {
+        this.dialog.appendChild(this.dialogContent);
+    }
+
+    private hideContent(): void {
+        this.dialog.removeChild(this.dialogContent);
     }
 
     private showDialog(): void {
