@@ -4,11 +4,11 @@ import { CrosslyCanvasFacadeBuilder } from "./facadeBuilder.js";
 
 export class CrosslyCanvasFacadeFactory {
 
-    public create(): ICrosslyCanvasFacade {
+    public create(document: Document): ICrosslyCanvasFacade {
         const configFactory = new ConfigFactory();
         const config = configFactory.create();
 
-        const canvasBuilder = new CrosslyCanvasFacadeBuilder();
+        const canvasBuilder = new CrosslyCanvasFacadeBuilder(document);
         canvasBuilder.withConfig(config);
 
         const canvasFacade = canvasBuilder.build();

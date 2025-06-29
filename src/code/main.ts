@@ -7,7 +7,7 @@ import { CrosslyCanvasAnimationFactory } from "./animation/factory.js";
 import { CrosslyCanvasFacadeFactory } from "./canvas/crossly/factory.js";
 
 const canvasFactory = new CrosslyCanvasFacadeFactory();
-const canvas = canvasFactory.create();
+const canvas = canvasFactory.create(document);
 canvas.draw();
 
 // TODO: delete everything below !!! It is used for testing purpose only
