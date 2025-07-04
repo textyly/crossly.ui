@@ -63,7 +63,7 @@ export class StitchRasterDrawingCanvas extends RasterDrawingCanvas implements IS
                 const isSegmentVisible = visibilities[dotIdx - 1] || visibilities[dotIdx];
                 if (isSegmentVisible) {
 
-                    // filter out back or front stitches depending on the this.side
+                    // filter out back or front stitches depending on the side
                     const side = dotIdx % 2 !== 0 ? CanvasSide.Front : CanvasSide.Back;
                     if (side === this.side) {
 
