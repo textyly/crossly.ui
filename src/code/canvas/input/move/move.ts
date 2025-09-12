@@ -132,8 +132,8 @@ export class MoveInput extends MoveInputBase implements IMoveInput {
     }
 
     private getPosition(event: PointerEvent): Position {
-        const x = event.layerX;
-        const y = event.layerY;
+        const x = event.clientX;
+        const y = event.clientY;
         return { x, y };
     }
 

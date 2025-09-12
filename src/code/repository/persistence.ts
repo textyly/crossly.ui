@@ -130,13 +130,15 @@ export class Persistence implements IPersistence {
 	}
 
 	private async createCore(dataModel: DataModel): Promise<Response> {
-		const options = { ...this.createOptions, body: dataModel };
+		const body = dataModel as any;
+		const options = { ...this.createOptions, body };
 		const response = await fetch(this.endpoint, options);
 		return response;
 	}
 
 	private async replaceCore(uri: string, dataModel: DataModel): Promise<Response> {
-		const options = { ...this.replaceOptions, body: dataModel };
+		const body = dataModel as any;
+		const options = { ...this.replaceOptions, body };
 		const response = await fetch(uri, options);
 		return response;
 	}
