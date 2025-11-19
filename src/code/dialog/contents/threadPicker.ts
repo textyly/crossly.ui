@@ -77,14 +77,59 @@ export class ThreadPickerContent extends DialogContentBase implements IThreadPic
         }
     }
 
-    private generatePalette(hue: any): void {
-        const width = this.canvas.width;
-        const height = this.canvas.height;
+    private hexToHsl(hex: string): { h: number; s: number; l: number } {
+        // Remove # if present
+        hex = hex.replace(/^#/, "");
 
-        const baseColor = `hsl(${hue}, 100%, 50%)`;
+        // Parse hex values
+        const r: number = parseInt(hex.substring(0, 2), 16) / 255;
+        const g: number = parseInt(hex.substring(2, 4), 16) / 255;
+        const b: number = parseInt(hex.substring(4, 6), 16) / 255;
+
+        const max: number = Math.max(r, g, b);
+        const min: number = Math.min(r, g, b);
+        let h: number = 0;
+        let s: number = 0;
+        const l: number = (max + min) / 2;
+
+        if (max !== min) {
+            const d: number = max - min;
+            s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+
+            switch (max) {
+                case r:
+                    h = ((g - b) / d + (g < b ? 6 : 0)) / 6;
+                    break;
+                case g:
+                    h = ((b - r) / d + 2) / 6;
+                    break;
+                case b:
+                    h = ((r - g) / d + 4) / 6;
+                    break;
+            }
+        }
+
+        return { h: Math.round(h * 360), s: Math.round(s * 100), l: Math.round(l * 100) };
+    }
+
+    private generatePalette(color: string): void {
+        const width: number = this.canvas.width;
+        const height: number = this.canvas.height;
+
+        let hue: number;
+        // Check if color is a hex color (starts with #)
+        if (color.startsWith("#")) {
+            const hsl: { h: number; s: number; l: number } = this.hexToHsl(color);
+            hue = hsl.h;
+        } else {
+            // Assume it's a hue value
+            hue = parseInt(color, 10);
+        }
+
+        const baseColor: string = `hsl(${hue}, 100%, 50%)`;
 
         // Horizontal: saturation
-        const satGrad = this.canvasContext.createLinearGradient(0, 0, width, 0);
+        const satGrad: CanvasGradient = this.canvasContext.createLinearGradient(0, 0, width, 0);
         satGrad.addColorStop(0, "white");
         satGrad.addColorStop(1, baseColor);
 
@@ -92,7 +137,7 @@ export class ThreadPickerContent extends DialogContentBase implements IThreadPic
         this.canvasContext.fillRect(0, 0, width, height);
 
         // Vertical: lightness
-        const lightGrad = this.canvasContext.createLinearGradient(0, 0, 0, height);
+        const lightGrad: CanvasGradient = this.canvasContext.createLinearGradient(0, 0, 0, height);
         lightGrad.addColorStop(0, "rgba(0, 0, 0, 0)");
         lightGrad.addColorStop(1, "black");
 
@@ -149,6 +194,13 @@ export class ThreadPickerContent extends DialogContentBase implements IThreadPic
         const element = event.target as HTMLInputElement;
         const color = element.title;
         this.selectedThread.value = color;
+        
+        // Update the slider to match the swatch's hue
+        const hsl = this.hexToHsl(color);
+        this.slider.value = hsl.h.toString();
+        
+        // Regenerate the palette based on the swatch color
+        this.generatePalette(color);
     }
 
     private handleAddThread(): void {
