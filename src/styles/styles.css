@@ -136,7 +136,7 @@ body {
 
 .left-floating-menu:hover .thread-button-group {
   opacity: 1;
-  max-height: 1000px;
+  max-height: 62.5rem;
 }
 
 .thread-button {
@@ -168,7 +168,7 @@ body {
   height: 50vh;
   background-color: #f2f2f2;
   border-radius: 0.5rem;
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 0 1.25rem rgba(0, 0, 0, 0.5);
   padding: 1rem;
   position: relative;
   overflow: auto;
@@ -217,7 +217,27 @@ body {
 .thread-picker-palette {
   display: flex;
   flex-direction: column;
-  gap: 0.4rem;
+  gap: 0.8rem;
+}
+
+.thread-picker-controls {
+  display: flex;
+  gap: 0.625rem;
+  align-items: center;
+}
+
+.thread-picker-controls #hue-slider {
+  flex: 1;
+}
+
+.thread-picker-controls #thread-width {
+  min-width: 3.75rem;
+  background-color: white;
+  border: 1px solid #cfcfcf;
+  border-radius: 5px;
+  font-size: 0.95rem;
+  color: #5f5f5f;
+  padding: 0.125rem 0.25rem;
 }
 
 .thread-picker-palette input {

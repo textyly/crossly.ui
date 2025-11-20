@@ -10,6 +10,7 @@ export class ThreadPickerContent extends DialogContentBase implements IThreadPic
 
     private readonly canvasId = "thread-picker-palette-canvas";
     private readonly sliderId = "hue-slider";
+    private readonly threadWidthId = "thread-width";
     private readonly gridId = "thread-picker-gradient-grid";
     private readonly selectedThreadId = "selected-thread";
     private readonly addThreadButtonId = "add-thread";
@@ -18,6 +19,7 @@ export class ThreadPickerContent extends DialogContentBase implements IThreadPic
     private readonly canvas: HTMLCanvasElement;
     private readonly canvasContext: CanvasRenderingContext2D;
     private readonly slider: HTMLInputElement;
+    private readonly threadWidth: HTMLSelectElement;
     private readonly grid: Element;
     private readonly swatches: Array<Element>;
     private readonly selectedThread: HTMLInputElement;
@@ -37,6 +39,7 @@ export class ThreadPickerContent extends DialogContentBase implements IThreadPic
         this.canvas = html.getById(this.dialogContent, this.canvasId);
         this.canvasContext = this.canvas.getContext("2d")!;
         this.slider = html.getById(this.dialogContent, this.sliderId);
+        this.threadWidth = html.getById(this.dialogContent, this.threadWidthId);
         this.grid = html.getById(this.dialogContent, this.gridId);
         this.selectedThread = html.getById(this.dialogContent, this.selectedThreadId);
         this.addThreadButton = html.getById(this.dialogContent, this.addThreadButtonId);
@@ -204,8 +207,9 @@ export class ThreadPickerContent extends DialogContentBase implements IThreadPic
     }
 
     private handleAddThread(): void {
-        const color = this.selectedThread.value;
-        this.invokePickThread(color);
+        const color: string = this.selectedThread.value;
+        const width: number = parseInt(this.threadWidth.value, 12);
+        this.invokePickThread(color, width);
         super.hide();
     }
 
@@ -238,8 +242,8 @@ export class ThreadPickerContent extends DialogContentBase implements IThreadPic
         }
     }
 
-    private invokePickThread(color: string): void {
-        const thread = { name: color, color, width: 12 }; //TODO: !!!
+    private invokePickThread(color: string, width: number): void {
+        const thread = { name: color, color, width };
         const event = { thread };
         this.messaging.sendToChannel1(event);
     }

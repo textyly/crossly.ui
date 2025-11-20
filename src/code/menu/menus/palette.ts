@@ -131,7 +131,6 @@ export class ThreadPaletteMenu extends Base implements IThreadPaletteMenu {
     }
 
     private getDefaultThreads(): Threads {
-        // TODO: !!!
         const threads: Threads = [
             { name: "test1", color: "#111e6a", width: 12 },
             { name: "test2", color: "#a9cdd6", width: 12 },
