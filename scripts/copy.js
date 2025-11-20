@@ -7,6 +7,7 @@ try {
     withAssets();
     withStyles();
     withIcons();
+    withDebug();
 
     console.log("copying succeed.");
 } catch (err) {
@@ -31,4 +32,9 @@ function withStyles() {
 function withIcons() {
     console.log("copying styles to dist...");
     fs.copySync("./src/icons", "./dist/icons");
+}
+
+function withDebug() {
+    console.log("copying debug to dist...");
+    fs.copySync("./src/debug", "./dist/debug");
 }

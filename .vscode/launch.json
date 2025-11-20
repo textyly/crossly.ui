@@ -9,6 +9,13 @@
             "webRoot": "${workspaceFolder}",
             "preLaunchTask": "build",
             "sourceMaps": true,
+            "pathMapping": {
+                "/dist": "${workspaceFolder}/dist"
+            },
+            "trace": true,
+            "runtimeArgs": [
+                //"--auto-open-devtools-for-tabs"
+            ]
         },
         {
             "type": "node",

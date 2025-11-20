@@ -7,9 +7,10 @@
   "scripts": {
     "compile": "tsc --version && tsc",
     "copy": "node ./scripts/copy.js",
+    "watch:copy": "node ./scripts/watch-and-reload.js",
     "build": "npm i && npm run compile && npm run copy",
     "start:server": "http-server ./ -p 5000 -c-1",
-    "start": "npm run build && npm run start:server",
+    "start": "npm run build && concurrently \"npm run start:server\" \"npm run watch:copy\"",
     "compile:tests": "tsc --version && tsc -p tsconfig.test.json",
     "build:tests": "npm run build && npm run compile:tests",
     "test": "npm run build:tests && mocha 'dist-tests/tests/**/*.test.js'",
@@ -29,9 +30,11 @@
     "@types/chai": "^5.0.0",
     "@types/mocha": "^10.0.8",
     "chai": "^5.1.1",
+    "concurrently": "^9.2.1",
     "fs-extra": "^11.2.0",
     "http-server": "^14.1.1",
     "mocha": "^10.7.3",
-    "typescript": "^5.6.2"
+    "typescript": "^5.6.2",
+    "ws": "^8.18.0"
   }
 }
