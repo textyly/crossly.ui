@@ -2,12 +2,13 @@ import fs from "fs-extra";
 import path from "path";
 import { fileURLToPath } from "url";
 import { WebSocketServer } from "ws";
+import { exec } from "child_process";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const rootDir = path.resolve(__dirname, "..");
 
-console.log("Watching for HTML and CSS changes...");
+console.log("Watching for HTML, CSS, and TypeScript changes...");
 
 // Create WebSocket server for live reload
 const wss = new WebSocketServer({ port: 35729 });
@@ -27,6 +28,7 @@ copyFiles();
 
 // Watch for changes
 const srcDir = path.join(rootDir, "src");
+const codeDir = path.join(srcDir, "code");
 
 // Watch index.html
 fs.watch(path.join(srcDir, "index.html"), (eventType, filename) => {
@@ -52,6 +54,15 @@ fs.watch(path.join(srcDir, "icons"), { recursive: true }, (eventType, filename) 
         console.log(`${filename} changed, copying...`);
         copyIcons();
         notifyReload();
+    }
+});
+
+// Watch TypeScript code directory
+let compiling = false;
+fs.watch(codeDir, { recursive: true }, (eventType, filename) => {
+    if (filename && filename.endsWith(".ts") && !compiling) {
+        console.log(`${filename} changed, compiling TypeScript...`);
+        compileTypeScript();
     }
 });
 
@@ -109,6 +120,22 @@ function copyDebug() {
     } catch (err) {
         console.error("✗ Error copying debug:", err);
     }
+}
+
+function compileTypeScript() {
+    compiling = true;
+    exec("tsc", (error, stdout, stderr) => {
+        compiling = false;
+        if (error) {
+            console.error("TypeScript compilation error:", stderr);
+            return;
+        }
+        if (stdout) {
+            console.log(stdout);
+        }
+        console.log("TypeScript compiled");
+        notifyReload();
+    });
 }
 
 function notifyReload() {
