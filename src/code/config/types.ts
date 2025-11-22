@@ -45,7 +45,7 @@ export type StitchCanvasConfig = CanvasConfig & {
 };
 
 export type CueCanvasConfig = CanvasConfig & {
-    dots: Omit<DotsConfig, "hidden">;
+    dots: Omit<DotsConfig, "hidden" | "color">;
     threads: ThreadsConfig;
 };
 

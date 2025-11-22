@@ -20,7 +20,6 @@ export abstract class CueCanvas extends CueCanvasBase {
     protected _pattern: Array<CueThreadPath>;
     protected _redoPattern: Array<ICueThreadPath> | undefined;
 
-    private dotColor: string;
     private dotRadius: number;
     private readonly minDotRadius: number;
     private readonly dotRadiusZoomStep: number;
@@ -41,7 +40,6 @@ export abstract class CueCanvas extends CueCanvasBase {
         const dotConfig = config.dots;
         const threadConfig = config.threads;
 
-        this.dotColor = dotConfig.color;
         this.dotRadius = dotConfig.radius;
         this.minDotRadius = dotConfig.minRadius;
         this.dotRadiusZoomStep = dotConfig.radiusZoomStep;
@@ -367,7 +365,8 @@ export abstract class CueCanvas extends CueCanvasBase {
         const id = this.ids.next();
         const hoveredDot: CueDot = { id, ...dot };
 
-        const dotColor = this.dotColor;
+        const thread = this.getCurrentThread();
+        const dotColor = thread.color;
 
         let dotRadius = this.dotRadius + (this.zooms * this.dotRadiusZoomStep);
         dotRadius = Math.max(dotRadius, this.minDotRadius);
@@ -460,7 +459,6 @@ export abstract class CueCanvas extends CueCanvasBase {
         assert.greaterThanZero(dotConfig.radius, "dotRadius");
         assert.greaterThanZero(dotConfig.minRadius, "minDotRadius");
         assert.greaterThanZero(dotConfig.radiusZoomStep, "dotRadiusZoomStep");
-        assert.greaterThanZero(dotConfig.color.length, "dotColor.length");
 
         const threadConfig = config.threads;
         assert.greaterThanZero(threadConfig.width, "threadWidth");

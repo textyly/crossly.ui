@@ -83,7 +83,6 @@ export class ConfigFactory {
         const cueConfig = {
             columns, rows, dotsSpacing,
             dots: {
-                color: "#615858",
                 radius: 12,
                 minRadius: 1,
                 radiusZoomStep: 1
