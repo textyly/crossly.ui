@@ -18,7 +18,7 @@ export class Compressor implements ICompressor {
     }
 
     public async decompress(compressedDataModel: ReadableStream<Uint8Array>): Promise<CrosslyDataModel> {
-        const ds = new DecompressionStream("gzip");
+        const ds = new DecompressionStream("gzip") as any;
 
         const decompressedStream = compressedDataModel.pipeThrough(ds);
         const decompressedBlob = await new Response(decompressedStream).blob();

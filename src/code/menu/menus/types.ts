@@ -1,20 +1,32 @@
 import { IDisposable, Listener, VoidListener, VoidUnsubscribe } from "../../types.js";
 
-// TODO: change to thread type
-export type Color = string;
-export type Colors = Array<Color>;
+export type Threads = Array<Thread>;
 
-export interface IMenu extends IDisposable {
+export interface IMenus extends IDisposable {
+    get home(): IHomeMenu;
+    get user(): IUserMenu;
     get undo(): IUndoMenu;
     get zoom(): IZoomMenu;
-    get palette(): IPaletteMenu;
+    get threadPalette(): IThreadPaletteMenu;
     get splitView(): ISplitViewMenu;
     get close(): ICloseMenu;
+    get feedback(): IFeedbackMenu;
 }
 
-export interface IPaletteMenu extends IDisposable {
-    add(threads: Colors): void;
+export interface IHomeMenu extends IDisposable {
+    onOpenHome(listener: VoidListener): VoidUnsubscribe;
+}
+
+export interface IUserMenu extends IDisposable {
+    onOpenUser(listener: VoidListener): VoidUnsubscribe;
+}
+
+export interface IThreadPaletteMenu extends IDisposable {
+    add(threads: Threads): void;
+    change(thread: Thread): void;
+
     onChangeThread(listener: ChangeThreadListener): VoidUnsubscribe;
+    onOpenThreadPicker(listener: VoidListener): VoidUnsubscribe;
 }
 
 export interface IUndoMenu extends IDisposable {
@@ -38,6 +50,10 @@ export interface ICloseMenu extends IDisposable {
     onClose(listener: VoidListener): VoidUnsubscribe;
 }
 
-// TODO: create thread type
-export type ChangeThreadEvent = { name: string, color: Color, width: number };
+export interface IFeedbackMenu extends IDisposable {
+    onFeedback(listener: VoidListener): VoidUnsubscribe;
+}
+
+export type Thread = { name: string, color: string, width: number };
+export type ChangeThreadEvent = { thread: Thread };
 export type ChangeThreadListener = Listener<ChangeThreadEvent>; 

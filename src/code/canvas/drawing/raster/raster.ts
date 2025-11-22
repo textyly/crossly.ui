@@ -64,10 +64,10 @@ export abstract class RasterDrawingCanvas extends CanvasBase {
     private invokeBoundsChangeCore(bounds: Bounds): void {
         super.invokeBoundsChange(bounds);
 
-        const x = bounds.left;
-        const y = bounds.top;
-        const width = bounds.width;
-        const height = bounds.height;
+        const x = Math.round(bounds.left);
+        const y = Math.round(bounds.top);
+        const width = Math.round(bounds.width);
+        const height = Math.round(bounds.height);
 
         this.rasterCanvas.style.transform = `translate(${x}px, ${y}px)`;
 

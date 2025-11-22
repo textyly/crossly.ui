@@ -40,13 +40,9 @@
                     <div>
                         <img src="./icons/palette.svg" />
                     </div>
-                    <div id="color-buttons" class="color-button-group">
-                        <button class="color-button" data-color="1"></button>
-                        <button class="color-button" data-color="2"></button>
-                        <button class="color-button" data-color="3"></button>
-                        <button class="color-button" data-color="4"></button>
-                        <button class="color-button" data-color="5"></button>
-                        <button id="add-color" class="action-button">
+                    <div id="thread-buttons-container" class="thread-button-group">
+                        <!--color buttons will be added dynamically-->
+                        <button id="add-thread" class="action-button">
                             <img src="./icons/add.svg" />
                         </button>
                     </div>
@@ -88,7 +84,57 @@
             </div>
         </div>
     </div>
+    <div id="modal-overlay">
+        <div id="modal-dialog">
+            <div class="top-floating-menu right">
+                <button id="close-dialog" class="action-button">
+                    <img src="./icons/close.svg" />
+                </button>
+            </div>
+            <!-- Content will be injected below dynamically-->
+        </div>
+        <div id="hidden-dialog-contents" style="display: none;">
+            <!-- Contents will be cut to the modal dialog dynamically-->
+            <div id="home-content" class="dialog-content">
+                <h2>Home</h2>
+            </div>
+            <div id="user-content" class="dialog-content">
+                <h2>User</h2>
+            </div>
+            <div id="thread-picker-content" class="dialog-content">
+                <div class="thread-picker-layout">
+                    <div class="thread-picker-top-row">
+                        <div class="thread-picker-palette">
+                            <canvas id="thread-picker-palette-canvas"></canvas>
+                            <div class="thread-picker-controls">
+                                <input type="range" id="hue-slider" min="0" max="360" value="0" />
+                                <select id="thread-width">
+                                    <option value="4">4</option>
+                                    <option value="6">6</option>
+                                    <option value="8">8</option>
+                                    <option value="10">10</option>
+                                    <option value="12" selected>12</option>
+                                    <option value="14">14</option>
+                                </select>
+                            </div>
+                            <input id="selected-thread" class="action-button" />
+                            <button id="add-thread" class="action-button">
+                                Add Thread
+                            </button>
+                        </div>
+                        <div class="thread-picker-grid" id="thread-picker-gradient-grid">
+                            <!-- Swatches will be injected bellow dynamically-->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="feedback-content" class="dialog-content">
+                <h2>Feedback</h2>
+            </div>
+        </div>
+    </div>
     <script type="module" src="./code/main.js"></script>
+    <script src="./debug/live-reload.js"></script>
 </body>
 
 </html>

@@ -1,3 +1,4 @@
+import { BackSideView } from "./back.js";
 import assert from "../../asserts/assert.js";
 import { InputCanvas } from "../input/input.js";
 import { CrosslyCanvasFacade } from "./facade.js";
@@ -6,7 +7,6 @@ import { CanvasSide, ICrosslyCanvasFacade } from "../types.js";
 import { VectorDrawingCanvas } from "../drawing/vector/vector.js";
 import { FabricRasterDrawingCanvas } from "../drawing/raster/fabric.js";
 import { StitchRasterDrawingCanvas } from "../drawing/raster/stitch.js";
-import { BackSideView } from "./back.js";
 
 export class CrosslyCanvasBuilder {
     private config!: CrosslyCanvasConfig;

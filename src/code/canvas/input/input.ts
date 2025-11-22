@@ -62,11 +62,11 @@ export class InputCanvas extends InputCanvasBase {
     public override dispose(): void {
         super.ensureAlive();
 
-        super.dispose();
-
         this.unsubscribe();
         this.moveInput.dispose();
         this.touchInput.dispose();
+
+        super.dispose();
     }
 
     private handleZoomIn(event: ZoomInEvent): void {
@@ -213,8 +213,8 @@ export class InputCanvas extends InputCanvasBase {
     }
 
     private getPosition(event: MouseEvent): Position {
-        const x = event.layerX;
-        const y = event.layerY;
+        const x = event.clientX;
+        const y = event.clientY;
         return { x, y };
     }
 

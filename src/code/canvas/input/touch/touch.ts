@@ -46,8 +46,8 @@ export class TouchInput extends TouchInputBase implements ITouchInput {
     }
     public override dispose(): void {
         super.ensureAlive();
-        super.dispose();
         this.unsubscribe();
+        super.dispose();
     }
 
     private handleTouchStart(event: TouchEvent): void {

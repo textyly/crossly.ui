@@ -1,13 +1,26 @@
 import assert from "../../asserts/assert.js";
-import { CrosslyCanvasConfig } from "../../config/types.js";
+import html from "../../utilities.ts/html.js";
 import { ICrosslyCanvasFacade } from "../types.js";
 import { CrosslyCanvasBuilder } from "./canvasBuilder.js";
+import { CrosslyCanvasConfig } from "../../config/types.js";
 
 export class CrosslyCanvasFacadeBuilder {
+    private readonly document: Document;
     private readonly crosslyCanvasBuilder: CrosslyCanvasBuilder;
+
+    private readonly frontInputId = "front-input";
+    private readonly frontFabricId = "front-fabric";
+    private readonly frontStitchId = "front-stitch";
+    private readonly frontCueId = "front-cue";
+    private readonly backSideId = "back-side-container";
+    private readonly backFabricId = "back-fabric";
+    private readonly backStitchId = "back-stitch";
+    private readonly backCueId = "back-cue";
+
     private config!: CrosslyCanvasConfig;
 
-    constructor() {
+    constructor(document: Document) {
+        this.document = document;
         this.crosslyCanvasBuilder = new CrosslyCanvasBuilder();
     }
 
@@ -24,79 +37,31 @@ export class CrosslyCanvasFacadeBuilder {
     private buildCore(config: CrosslyCanvasConfig): ICrosslyCanvasFacade {
         this.crosslyCanvasBuilder.withConfig(config);
 
-        const frontInputHtmlElement = this.buildFrontInputHtmlElement();
+        const frontInputHtmlElement = html.getById<HTMLElement>(this.document, this.frontInputId);
         this.crosslyCanvasBuilder.withFrontInputCanvas(frontInputHtmlElement);
 
-        const frontFabricHtmlElement = this.buildFrontFabricHtmlElement();
+        const frontFabricHtmlElement = html.getById<HTMLCanvasElement>(this.document, this.frontFabricId);
         this.crosslyCanvasBuilder.withFrontFabricCanvas(frontFabricHtmlElement);
 
-        const frontStitchHtmlElement = this.buildFrontStitchHtmlElement();
+        const frontStitchHtmlElement = html.getById<HTMLCanvasElement>(this.document, this.frontStitchId);
         this.crosslyCanvasBuilder.withFrontStitchCanvas(frontStitchHtmlElement);
 
-        const frontCueHtmlElement = this.buildFrontCueHtmlElement();
+        const frontCueHtmlElement = html.getById<HTMLElement>(this.document, this.frontCueId);
         this.crosslyCanvasBuilder.withFrontCueCanvas(frontCueHtmlElement);
 
-        const backFabricHtmlElement = this.buildBackFabricHtmlElement();
+        const backFabricHtmlElement = html.getById<HTMLCanvasElement>(this.document, this.backFabricId);
         this.crosslyCanvasBuilder.withBackFabricCanvas(backFabricHtmlElement);
 
-        const backStitchHtmlElement = this.buildBackStitchHtmlElement();
+        const backStitchHtmlElement = html.getById<HTMLCanvasElement>(this.document, this.backStitchId);
         this.crosslyCanvasBuilder.withBackStitchCanvas(backStitchHtmlElement);
 
-        const backCueHtmlElement = this.buildBackCueHtmlElement();
+        const backCueHtmlElement = html.getById<HTMLElement>(this.document, this.backCueId);
         this.crosslyCanvasBuilder.withBackCueCanvas(backCueHtmlElement);
 
-        const backSideViewHtmlElement = this.buildBackSideView();
+        const backSideViewHtmlElement = html.getById<HTMLElement>(this.document, this.backSideId);
         this.crosslyCanvasBuilder.withBackSideView(backSideViewHtmlElement);
 
         const crosslyCanvasFacade = this.crosslyCanvasBuilder.build();
         return crosslyCanvasFacade;
-    }
-
-    private buildFrontInputHtmlElement(): HTMLElement {
-        const frontInputHtmlElement = document.querySelector("#front-input") as HTMLElement;
-        assert.defined(frontInputHtmlElement, "inputHtmlElement");
-        return frontInputHtmlElement;
-    }
-
-    private buildFrontFabricHtmlElement(): HTMLCanvasElement {
-        const frontFabricHtmlElement = document.querySelector("#front-fabric") as HTMLCanvasElement;
-        assert.defined(frontFabricHtmlElement, "frontFabricHtmlElement");
-        return frontFabricHtmlElement;
-    }
-
-    private buildFrontStitchHtmlElement(): HTMLCanvasElement {
-        const frontStitchHtmlElement = document.querySelector("#front-stitch") as HTMLCanvasElement;
-        assert.defined(frontStitchHtmlElement, "frontStitchHtmlElement");
-        return frontStitchHtmlElement;
-    }
-
-    private buildFrontCueHtmlElement(): HTMLElement {
-        const frontCueHtmlElement = document.querySelector("#front-cue") as HTMLElement;
-        assert.defined(frontCueHtmlElement, "frontCueHtmlElement");
-        return frontCueHtmlElement;
-    }
-
-    private buildBackFabricHtmlElement(): HTMLCanvasElement {
-        const backFabricHtmlElement = document.querySelector("#back-fabric") as HTMLCanvasElement;
-        assert.defined(backFabricHtmlElement, "backFabricHtmlElement");
-        return backFabricHtmlElement;
-    }
-
-    private buildBackStitchHtmlElement(): HTMLCanvasElement {
-        const backStitchHtmlElement = document.querySelector("#back-stitch") as HTMLCanvasElement;
-        assert.defined(backStitchHtmlElement, "backStitchHtmlElement");
-        return backStitchHtmlElement;
-    }
-
-    private buildBackCueHtmlElement(): HTMLElement {
-        const backCueHtmlElement = document.querySelector("#back-cue") as HTMLElement;
-        assert.defined(backCueHtmlElement, "backCueHtmlElement");
-        return backCueHtmlElement;
-    }
-
-    private buildBackSideView(): HTMLElement {
-        const backSideViewHtmlElement = document.querySelector("#back-side-container") as HTMLElement;
-        assert.defined(backSideViewHtmlElement, "backSideViewHtmlElement");
-        return backSideViewHtmlElement;
     }
 }

@@ -1,68 +1,94 @@
 import { Base } from "../general/base.js";
-import { IMenuHandler } from "./types.js";
+import { IMenuCanvasHandler } from "./types.js";
 import { ICrosslyCanvasFacade } from "../canvas/types.js";
 import { ChangeStitchPatternEvent } from "../canvas/virtual/types.js";
-import { ChangeThreadEvent, IMenu } from "./menus/types.js";
+import { ChangeThreadEvent, IMenus } from "../menu/menus/types.js";
 
-export class MenuHandler extends Base implements IMenuHandler {
-    private readonly menu: IMenu;
+export class MenuCanvasHandler extends Base implements IMenuCanvasHandler {
+    private readonly menus: IMenus;
     private readonly canvas: ICrosslyCanvasFacade;
 
-    constructor(menu: IMenu, canvas: ICrosslyCanvasFacade) {
-        super(MenuHandler.name);
+    constructor(menus: IMenus, canvas: ICrosslyCanvasFacade) {
+        super(MenuCanvasHandler.name);
 
-        this.menu = menu;
+        this.menus = menus;
         this.canvas = canvas;
 
         this.subscribe();
     }
 
     private handleMenuUndo(): void {
+        super.ensureAlive();
+
         this.canvas.undo();
     }
 
     private handleMenuRedo(): void {
+        super.ensureAlive();
+
         this.canvas.redo();
     }
 
     private handleMenuZoomIn(): void {
+        super.ensureAlive();
+
         this.canvas.zoomIn();
     }
 
     private handleMenuZoomOut(): void {
+        super.ensureAlive();
+
         this.canvas.zoomOut();
     }
 
     private handleMenuToggleSplitView(): void {
+        super.ensureAlive();
+
         this.canvas.toggleSplitView();
     }
 
     private handleMenuChangeThread(event: ChangeThreadEvent): void {
-        this.canvas.useThread(event.name, event.color, event.width);
+        super.ensureAlive();
+
+        this.canvas.useThread(event.thread.name, event.thread.color, event.thread.width); // TODO:
     }
 
     private handleBackSideMenuClose(): void {
+        super.ensureAlive();
+
         // close button is being clicked so back side view is visible, just toggle
         this.canvas.toggleSplitView();
     }
 
     private handleCanvasZoomIn(): void {
-        const menu = this.menu.zoom;
+        super.ensureAlive();
+
+        const menu = this.menus.zoom;
         menu.zoomIn();
     }
 
     private handleCanvasZoomOut(): void {
-        const menu = this.menu.zoom;
+        super.ensureAlive();
+
+        const menu = this.menus.zoom;
         menu.zoomOut();
     }
 
     private handleCanvasChangeStitchPattern(event: ChangeStitchPatternEvent): void {
+        super.ensureAlive();
+
         const colors = event.pattern
             .filter((threadPath) => threadPath.length > 0)
-            .map((threadPath) => threadPath.color);
+            .map((threadPath) => {
+                return {
+                    name: threadPath.name,
+                    color: threadPath.color,
+                    width: threadPath.width
+                };
+            });
 
         if (colors.length > 0) {
-            const menu = this.menu.palette;
+            const menu = this.menus.threadPalette;
             menu.add(colors);
         }
     }
@@ -84,29 +110,29 @@ export class MenuHandler extends Base implements IMenuHandler {
     }
 
     private subscribeMenu(): void {
-        const paletteMenu = this.menu.palette;
+        const paletteMenu = this.menus.threadPalette;
         const changeThreadUn = paletteMenu.onChangeThread(this.handleMenuChangeThread.bind(this));
         super.registerUn(changeThreadUn);
 
-        const undoMenu = this.menu.undo;
+        const undoMenu = this.menus.undo;
         const undoUn = undoMenu.onUndo(this.handleMenuUndo.bind(this));
         super.registerUn(undoUn);
 
         const redoUn = undoMenu.onRedo(this.handleMenuRedo.bind(this));
         super.registerUn(redoUn);
 
-        const zoomMenu = this.menu.zoom;
+        const zoomMenu = this.menus.zoom;
         const zoominUn = zoomMenu.onZoomIn(this.handleMenuZoomIn.bind(this));
         super.registerUn(zoominUn);
 
         const zoomoutUn = zoomMenu.onZoomOut(this.handleMenuZoomOut.bind(this));
         super.registerUn(zoomoutUn);
 
-        const splitViewMenu = this.menu.splitView;
+        const splitViewMenu = this.menus.splitView;
         const splitUn = splitViewMenu.onToggleSplitView(this.handleMenuToggleSplitView.bind(this));
         super.registerUn(splitUn);
 
-        const closeMenu = this.menu.close;
+        const closeMenu = this.menus.close;
         const closeUn = closeMenu.onClose(this.handleBackSideMenuClose.bind(this));
         super.registerUn(closeUn);
     }

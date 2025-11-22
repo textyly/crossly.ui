@@ -1,0 +1,41 @@
+import { Base } from "../general/base.js";
+import html from "../utilities.ts/html.js";
+import { UserContent } from "./contents/user.js";
+import { HomeContent } from "./contents/home.js";
+import { FeedbackContent } from "./contents/feedback.js";
+import { ThreadPickerContent } from "./contents/threadPicker.js";
+import { IDialogs, IFeedbackContent, IHomeContent, IThreadPickerContent, IUserContent } from "./types.js";
+
+export class Dialogs extends Base implements IDialogs {
+    private readonly homeContent: IHomeContent;
+    private readonly userContent: IUserContent;
+    private readonly threadPickerContent: IThreadPickerContent;
+    private readonly feedbackContent: IFeedbackContent;
+
+    constructor(document: Document) {
+        super(Dialogs.name);
+
+        const dialogOverlay = html.getById<HTMLElement>(document, "modal-overlay");
+
+        this.homeContent = new HomeContent(document, dialogOverlay);
+        this.userContent = new UserContent(document, dialogOverlay);
+        this.threadPickerContent = new ThreadPickerContent(document, dialogOverlay);
+        this.feedbackContent = new FeedbackContent(document, dialogOverlay);
+    }
+
+    public get home(): IHomeContent {
+        return this.homeContent;
+    }
+
+    public get user(): IUserContent {
+        return this.userContent;
+    }
+
+    public get threadPicker(): IThreadPickerContent {
+        return this.threadPickerContent;
+    }
+
+    public get feedback(): IFeedbackContent {
+        return this.feedbackContent;
+    }
+}
