@@ -38,6 +38,7 @@ export class ConfigFactory {
             spaceZoomStep: 2
         };
         return dotsSpacing;
+         
     }
 
     private createFabricCanvasConfig(columns: number, rows: number, dotsSpacing: DotsSpacingConfig): FabricCanvasConfig {
