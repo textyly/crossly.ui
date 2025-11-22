@@ -23,4 +23,6 @@
         "**/README*": true,
     },
     "typescript.preferences.importModuleSpecifierEnding": "js",
+    "editor.formatOnSave": true,
+    "files.trimTrailingWhitespace": true,
 }
