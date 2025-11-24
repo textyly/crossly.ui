@@ -33,7 +33,7 @@ export class ConfigFactory {
 
     private createDotsSpacingConfig(): DotsSpacingConfig {
         const dotsSpacing = {
-            space: 24,
+            space: 20,
             minSpace: 2,
             spaceZoomStep: 2
         };
@@ -71,7 +71,7 @@ export class ConfigFactory {
             threads: {
                 name: "DMC 321",
                 color: "#111e6a",
-                width: 12,
+                width: 10,
                 minWidth: 1,
                 widthZoomStep: 1
             }
