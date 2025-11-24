@@ -47,9 +47,9 @@ export class ConfigFactory {
             color: "#f2f2f2",
             dots: {
                 color: "#9fa19f",
-                radius: 1.4,
-                minRadius: 0.6,
-                radiusZoomStep: 0.1,
+                radius: 1.4, // px
+                minRadius: 0.6, // px
+                radiusZoomStep: 0.1, // px
                 hidden: {
                     enabled: true
                 }
@@ -71,9 +71,9 @@ export class ConfigFactory {
             threads: {
                 name: "DMC 321",
                 color: "#111e6a",
-                width: 10,
-                minWidth: 1,
-                widthZoomStep: 1
+                width: 10, // px
+                minWidth: 1, // px
+                widthZoomStep: 10 // %
             }
         };
         return stitchConfig;
@@ -83,16 +83,16 @@ export class ConfigFactory {
         const cueConfig = {
             columns, rows, dotsSpacing,
             dots: {
-                radius: 12,
-                minRadius: 1,
-                radiusZoomStep: 1
+                radius: 12, // px
+                minRadius: 1, // px
+                radiusZoomStep: 1 // px
             },
             threads: {
                 name: "DMC 321",
                 color: "#111e6a",
-                width: 12,
-                minWidth: 1,
-                widthZoomStep: 1
+                width: 10, // px
+                minWidth: 1, // px
+                widthZoomStep: 10 // %
             }
         };
         return cueConfig;
