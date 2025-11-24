@@ -33,7 +33,7 @@ export class ConfigFactory {
 
     private createDotsSpacingConfig(): DotsSpacingConfig {
         const dotsSpacing = {
-            space: 20,
+            space: 22,
             minSpace: 2,
             spaceZoomStep: 2
         };
@@ -47,9 +47,9 @@ export class ConfigFactory {
             color: "#f2f2f2",
             dots: {
                 color: "#9fa19f",
-                radius: 1.4, // px
+                radius: 1.6, // px
                 minRadius: 0.6, // px
-                radiusZoomStep: 0.1, // px
+                radiusZoomStep: 0.16, // px, TODO: must become %
                 hidden: {
                     enabled: true
                 }
@@ -57,9 +57,9 @@ export class ConfigFactory {
             threads: {
                 name: "Aida 14",
                 color: "#d2d4d2",
-                width: 1.4, // px
-                minWidth: 0.8, // px
-                widthZoomStep: 0.1 // px
+                width: 1.6, // px
+                minWidth: 0.6, // px
+                widthZoomStep: 0.16 // px , TODO: must become %
             }
         };
         return fabricConfig;
@@ -85,7 +85,7 @@ export class ConfigFactory {
             dots: {
                 radius: 12, // px
                 minRadius: 1, // px
-                radiusZoomStep: 1 // px
+                radiusZoomStep: 1 // px , TODO: must become % and sync with fabric
             },
             threads: {
                 name: "DMC 321",
