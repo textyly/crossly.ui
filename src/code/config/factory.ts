@@ -57,9 +57,9 @@ export class ConfigFactory {
             threads: {
                 name: "Aida 14",
                 color: "#d2d4d2",
-                width: 1.4,
-                minWidth: 0.8,
-                widthZoomStep: 0.1
+                width: 1.4, // px
+                minWidth: 0.8, // px
+                widthZoomStep: 0.1 // px
             }
         };
         return fabricConfig;
