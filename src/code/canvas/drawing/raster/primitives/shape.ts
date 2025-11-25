@@ -21,7 +21,10 @@ export class ShapeDrawing {
             }
             case Density.Medium: {
                 // medium perf and drawing
-                this.rectangle.draw(path, fromX, fromY, toX, toY, width);
+                this.polygon.draw(path, fromX, fromY, toX, toY, width);
+
+                // do not optimize for now, let's see whether it is needed (observe metrics)
+                // this.rectangle.draw(path, fromX, fromY, toX, toY, width);
                 break;
             }
             case Density.High: {

@@ -20,10 +20,6 @@ export abstract class CueCanvas extends CueCanvasBase {
     protected _pattern: Array<CueThreadPath>;
     protected _redoPattern: Array<ICueThreadPath> | undefined;
 
-    private dotRadius: number;
-    private readonly minDotRadius: number;
-    private readonly dotRadiusZoomStep: number;
-
     private readonly minThreadWidth: number;
     private readonly threadWidthZoomStep: number;
 
@@ -37,12 +33,7 @@ export abstract class CueCanvas extends CueCanvasBase {
 
         this.validateConfig(config);
 
-        const dotConfig = config.dots;
         const threadConfig = config.threads;
-
-        this.dotRadius = dotConfig.radius;
-        this.minDotRadius = dotConfig.minRadius;
-        this.dotRadiusZoomStep = dotConfig.radiusZoomStep;
 
         this._pattern = new Array<CueThreadPath>();
         this.createThread(threadConfig.color, threadConfig.width);
@@ -366,14 +357,14 @@ export abstract class CueCanvas extends CueCanvasBase {
         const hoveredDot: CueDot = { id, ...dot };
 
         const thread = this.getCurrentThread();
-        const dotColor = thread.color;
+        const threadColor = thread.color;
+        const threadWidth = thread.width + 4;
 
-        let dotRadius = this.dotRadius + (this.zooms * this.dotRadiusZoomStep);
-        dotRadius = Math.max(dotRadius, this.minDotRadius);
+        const dotRadius = this.calculateZoomedThreadWidth(threadWidth);
 
         this.currentSide === CanvasSide.Back
-            ? super.invokeDrawDashDot(hoveredDot, dotRadius, dotColor)
-            : super.invokeDrawDot(hoveredDot, dotRadius, dotColor);
+            ? super.invokeDrawDashDot(hoveredDot, dotRadius, threadColor)
+            : super.invokeDrawDot(hoveredDot, dotRadius, threadColor);
 
 
         this.hoveredDotIdx = { id, ...dotIndex };
@@ -435,7 +426,8 @@ export abstract class CueCanvas extends CueCanvasBase {
     }
 
     private calculateZoomedThreadWidth(threadWidth: number): number {
-        let calculated = threadWidth + (this.zooms * this.threadWidthZoomStep);
+        const zoomedAdditionalWidth = (this.threadWidthZoomStep / 100) * threadWidth;
+        let calculated = threadWidth + (this.zooms * zoomedAdditionalWidth);
         calculated = Math.max(calculated, this.minThreadWidth);
         return calculated;
     }
@@ -455,11 +447,6 @@ export abstract class CueCanvas extends CueCanvasBase {
     }
 
     private validateConfig(config: CueCanvasConfig): void {
-        const dotConfig = config.dots;
-        assert.greaterThanZero(dotConfig.radius, "dotRadius");
-        assert.greaterThanZero(dotConfig.minRadius, "minDotRadius");
-        assert.greaterThanZero(dotConfig.radiusZoomStep, "dotRadiusZoomStep");
-
         const threadConfig = config.threads;
         assert.greaterThanZero(threadConfig.width, "threadWidth");
         assert.greaterThanZero(threadConfig.minWidth, "minThreadWidth");

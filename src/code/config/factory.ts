@@ -33,7 +33,7 @@ export class ConfigFactory {
 
     private createDotsSpacingConfig(): DotsSpacingConfig {
         const dotsSpacing = {
-            space: 24,
+            space: 22,
             minSpace: 2,
             spaceZoomStep: 2
         };
@@ -47,9 +47,9 @@ export class ConfigFactory {
             color: "#f2f2f2",
             dots: {
                 color: "#9fa19f",
-                radius: 1.4,
-                minRadius: 0.6,
-                radiusZoomStep: 0.1,
+                radius: 1.6, // px
+                minRadius: 0.6, // px
+                radiusZoomStep: 0.16, // px, TODO: must become %
                 hidden: {
                     enabled: true
                 }
@@ -57,9 +57,9 @@ export class ConfigFactory {
             threads: {
                 name: "Aida 14",
                 color: "#d2d4d2",
-                width: 1.4,
-                minWidth: 0.8,
-                widthZoomStep: 0.1
+                width: 1.6, // px
+                minWidth: 0.6, // px
+                widthZoomStep: 0.16 // px , TODO: must become %
             }
         };
         return fabricConfig;
@@ -71,9 +71,9 @@ export class ConfigFactory {
             threads: {
                 name: "DMC 321",
                 color: "#111e6a",
-                width: 12,
-                minWidth: 1,
-                widthZoomStep: 1
+                width: 10, // px
+                minWidth: 1, // px
+                widthZoomStep: 10 // %
             }
         };
         return stitchConfig;
@@ -82,17 +82,12 @@ export class ConfigFactory {
     private createCueCanvasConfig(columns: number, rows: number, dotsSpacing: DotsSpacingConfig): CueCanvasConfig {
         const cueConfig = {
             columns, rows, dotsSpacing,
-            dots: {
-                radius: 12,
-                minRadius: 1,
-                radiusZoomStep: 1
-            },
             threads: {
                 name: "DMC 321",
                 color: "#111e6a",
-                width: 12,
-                minWidth: 1,
-                widthZoomStep: 1
+                width: 10, // px
+                minWidth: 1, // px
+                widthZoomStep: 10 // %
             }
         };
         return cueConfig;

@@ -313,7 +313,8 @@ export abstract class StitchCanvas extends StitchCanvasBase {
     }
 
     private calculateThreadZoomedWidth(threadWidth: number): number {
-        let calculated = threadWidth + (this.zooms * this.threadWidthZoomStep);
+        const zoomedAdditionalWidth = (this.threadWidthZoomStep / 100) * threadWidth;
+        let calculated = threadWidth + (this.zooms * zoomedAdditionalWidth);
         calculated = Math.max(calculated, this.minThreadWidth);
         return calculated;
     }

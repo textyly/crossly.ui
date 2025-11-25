@@ -30,7 +30,7 @@ export type CanvasConfig = {
 
 export type InputCanvasConfig = {
     ignoreMoveUntil: number;
-    ignoreZoomUntil: number; // only touch zoom related 
+    ignoreZoomUntil: number; // only touch zoom related
 };
 
 export type FabricCanvasConfig = CanvasConfig & {
@@ -45,7 +45,6 @@ export type StitchCanvasConfig = CanvasConfig & {
 };
 
 export type CueCanvasConfig = CanvasConfig & {
-    dots: Omit<DotsConfig, "hidden" | "color">;
     threads: ThreadsConfig;
 };
 
