@@ -97,6 +97,8 @@ export class ThreadPaletteMenu extends Base implements IThreadPaletteMenu {
         const button = document.createElement("button");
         button.classList.add(this.buttonClassName);
         button.style.backgroundColor = thread.color;
+        button.dataset.threadName = thread.name;
+        button.dataset.threadWidth = thread.width.toString();
 
         this.subscribeThreadButton(button);
 
@@ -131,23 +133,34 @@ export class ThreadPaletteMenu extends Base implements IThreadPaletteMenu {
     }
 
     private getDefaultThreads(): Threads {
+        const width = 10;
+
         const threads: Threads = [
-            { name: "test1", color: "#111e6a", width: 12 },
-            { name: "test2", color: "#a9cdd6", width: 12 },
-            { name: "test3", color: "#355f0d", width: 12 },
-            { name: "test4", color: "#cf0013", width: 12 },
-            { name: "test5", color: "#f5e500", width: 12 },
+            { name: "test1", color: "#111e6a", width },
+            { name: "test2", color: "#a9cdd6", width },
+            { name: "test3", color: "#355f0d", width },
+            { name: "test4", color: "#cf0013", width },
+            { name: "test5", color: "#f5e500", width },
         ];
 
         return threads;
     }
 
     private handleChangeColor(event: Event): void {
-        const element = event.currentTarget as Element;
+        const element = event.currentTarget as HTMLElement;
         assert.defined(element, "target");
 
-        const color = this.getElementColor(element);
-        const thread = { name: "???", color, width: 12 }; //TODO: see also how canvas consume it!!!
+        const threadName = element.dataset.threadName;
+        assert.defined(threadName, "name");
+
+        const threadColor = this.getElementColor(element);
+        assert.defined(threadColor, "color");
+
+        const threadWidth = element.dataset.threadWidth;
+        assert.defined(threadWidth, "threadWidth");
+        const parsedThreadWidth = parseInt(threadWidth);
+
+        const thread = { name: threadName, color: threadColor, width: parsedThreadWidth };
         this.invokeChangeThread(thread);
     }
 
