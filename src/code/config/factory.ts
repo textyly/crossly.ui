@@ -82,11 +82,6 @@ export class ConfigFactory {
     private createCueCanvasConfig(columns: number, rows: number, dotsSpacing: DotsSpacingConfig): CueCanvasConfig {
         const cueConfig = {
             columns, rows, dotsSpacing,
-            dots: {
-                radius: 12, // px
-                minRadius: 1, // px
-                radiusZoomStep: 1 // px , TODO: must become % and sync with fabric
-            },
             threads: {
                 name: "DMC 321",
                 color: "#111e6a",
