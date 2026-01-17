@@ -60,20 +60,6 @@ export class MenuCanvasHandler extends Base implements IMenuCanvasHandler {
         this.canvas.toggleSplitView();
     }
 
-    private handleCanvasZoomIn(): void {
-        super.ensureAlive();
-
-        const menu = this.menus.zoom;
-        menu.zoomIn();
-    }
-
-    private handleCanvasZoomOut(): void {
-        super.ensureAlive();
-
-        const menu = this.menus.zoom;
-        menu.zoomOut();
-    }
-
     private handleCanvasChangeStitchPattern(event: ChangeStitchPatternEvent): void {
         super.ensureAlive();
 
@@ -99,12 +85,6 @@ export class MenuCanvasHandler extends Base implements IMenuCanvasHandler {
     }
 
     private subscribeCanvas(): void {
-        const zoomInUn = this.canvas.onZoomIn(this.handleCanvasZoomIn.bind(this));
-        super.registerUn(zoomInUn);
-
-        const zoomOutUn = this.canvas.onZoomOut(this.handleCanvasZoomOut.bind(this));
-        super.registerUn(zoomOutUn);
-
         const loadPatternUn = this.canvas.onChangeStitchPattern(this.handleCanvasChangeStitchPattern.bind(this));
         super.registerUn(loadPatternUn);
     }

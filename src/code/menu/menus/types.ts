@@ -35,9 +35,6 @@ export interface IUndoMenu extends IDisposable {
 }
 
 export interface IZoomMenu extends IDisposable {
-    zoomIn(): void;
-    zoomOut(): void;
-
     onZoomIn(listener: VoidListener): VoidUnsubscribe;
     onZoomOut(listener: VoidListener): VoidUnsubscribe;
 }
@@ -56,4 +53,4 @@ export interface IFeedbackMenu extends IDisposable {
 
 export type Thread = { name: string, color: string, width: number };
 export type ChangeThreadEvent = { thread: Thread };
-export type ChangeThreadListener = Listener<ChangeThreadEvent>; 
+export type ChangeThreadListener = Listener<ChangeThreadEvent>;

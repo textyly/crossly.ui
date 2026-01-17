@@ -46,8 +46,8 @@ export class ConfigFactory {
             columns, rows, dotsSpacing,
             color: "#f2f2f2",
             dots: {
-                color: "#9fa19f",
-                radius: 1.6, // px
+                color: "#d1d1d1",
+                radius: 1.8, // px
                 minRadius: 0.6, // px
                 radiusZoomStep: 0.16, // px, TODO: must become %
                 hidden: {
@@ -56,7 +56,7 @@ export class ConfigFactory {
             },
             threads: {
                 name: "Aida 14",
-                color: "#d2d4d2",
+                color: "#e5e5e5",
                 width: 1.6, // px
                 minWidth: 0.6, // px
                 widthZoomStep: 0.16 // px , TODO: must become %
