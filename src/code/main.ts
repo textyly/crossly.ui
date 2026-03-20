@@ -5,6 +5,7 @@ import { MenuDialogHandler } from "./handlers/menuDialog.js";
 import { RepositoryFactory } from "./repository/factory.js";
 import { CrosslyCanvasAnimationFactory } from "./animation/factory.js";
 import { CrosslyCanvasFacadeFactory } from "./canvas/crossly/factory.js";
+import { Converter } from "./data-model/converter.js";
 
 const canvasFactory = new CrosslyCanvasFacadeFactory();
 const canvas = canvasFactory.create(document);
@@ -29,3 +30,6 @@ w.crosslyRepository = repository;
 
 const animationFactory = new CrosslyCanvasAnimationFactory();
 w.crosslyAnimationFactory = animationFactory;
+
+const converter = new Converter();
+w.crosslyConverter = converter;
