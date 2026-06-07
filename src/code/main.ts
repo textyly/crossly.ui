@@ -6,6 +6,7 @@ import { RepositoryFactory } from "./repository/factory.js";
 import { CrosslyCanvasAnimationFactory } from "./animation/factory.js";
 import { CrosslyCanvasFacadeFactory } from "./canvas/crossly/factory.js";
 import { Converter } from "./data-model/converter.js";
+import { BackendFactory } from "./backend/factory.js";
 
 const canvasFactory = new CrosslyCanvasFacadeFactory();
 const canvas = canvasFactory.create(document);
@@ -33,3 +34,18 @@ w.crosslyAnimationFactory = animationFactory;
 
 const converter = new Converter();
 w.crosslyConverter = converter;
+
+// Backend (new microservices approach): establish an anonymous guest session,
+// then load this client's preferences. Runs asynchronously so it never blocks
+// rendering, and fails soft if the backend isn't running.
+const backendFactory = new BackendFactory();
+const backend = backendFactory.create(window);
+w.crosslyBackend = backend;
+
+backend.auth.ensureSession()
+    .then(() => backend.preferences.get())
+    .then((preferences) => {
+        w.crosslyPreferences = preferences;
+        console.log("crossly: session ready", { clientId: backend.auth.getClientId(), preferences });
+    })
+    .catch((error) => console.error("crossly: backend init failed", error));
