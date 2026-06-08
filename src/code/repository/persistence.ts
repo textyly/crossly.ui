@@ -11,7 +11,8 @@ export class Persistence implements IPersistence {
 	private readonly replaceOptions: RequestInit;
 
 	constructor() {
-		this.baseEndpoint = "http://localhost:5026"; // TODO: inject via constructor!!!
+		// crossly.private.persistence.service (Express re-implementation of the .NET app).
+		this.baseEndpoint = "http://localhost:5003"; // TODO: inject via constructor!!!
 		this.endpoint = this.baseEndpoint + "/api/v1/patterns"; // TODO: inject via constructor!!!
 
 		this.createOptions = {

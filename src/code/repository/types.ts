@@ -1,11 +1,13 @@
 import { CrosslyDataModel } from "../data-model/types.js";
 import { CrosslyCanvasPattern } from "../canvas/types.js";
+import type { Link } from "@textyly/crossly-private-persistence-contracts";
 
 export type DataModel = Uint8Array;
 export type DataModelStream = ReadableStream<Uint8Array>;
 export type CrosslyCanvasPatternEx = CrosslyCanvasPattern & { name: string };
 
-export type Link = { getById: string; replace: string; rename: string; delete: string };
+// Link is the HATEOAS shape from the persistence service contract.
+export type { Link };
 export type Links = Array<Link>;
 
 export interface ICompressor {

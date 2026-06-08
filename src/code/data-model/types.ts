@@ -1,46 +1,27 @@
 import { CrosslyCanvasPattern } from "../canvas/types.js";
+import type {
+    ThreadDataModel,
+    ThreadPathDataModel,
+    CrosslyDataModel,
+} from "@textyly/crossly-private-persistence-contracts";
 
-export type CrosslyDataModel = {
-    version: string;
-    name: string;
-    fabric: FabricDataModel;
-    threads: ThreadsDataModel;
-    pattern: PatternDataModel;
-};
+// The pattern data model is shared with crossly.private.persistence.service via its
+// published contract. Re-exported here so the rest of the UI keeps importing the
+// data-model types from one place, but there is a single source of truth.
+export type {
+    DotsDataModel,
+    FabricThreadsDataModel,
+    FabricDataModel,
+    ThreadDataModel,
+    NeedlePathDataModel,
+    ThreadPathDataModel,
+    CrosslyDataModel,
+} from "@textyly/crossly-private-persistence-contracts";
 
-export type FabricDataModel = {
-    name: string;
-    columns: number;
-    rows: number;
-    color: string;
-    dots: {
-        color: string;
-    };
-    threads: {
-        color: string;
-    };
-};
-
+// UI-local convenience aliases (not part of the wire contract).
 export type ThreadsDataModel = Array<ThreadDataModel>;
-export type ThreadDataModel = {
-    name: string;
-    color: string;
-    width: number;
-};
-
-export type NeedlePathDataModel = {
-    indexesX: Array<number>;
-    indexesY: Array<number>;
-};
-
-export type ThreadIndexDataModel = number;
-
-export type ThreadPathDataModel = {
-    threadIndex: ThreadIndexDataModel;
-    needlePath: NeedlePathDataModel;
-};
-
 export type PatternDataModel = Array<ThreadPathDataModel>;
+export type ThreadIndexDataModel = number;
 
 export interface IValidator {
     get version(): string;
