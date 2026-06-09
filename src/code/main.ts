@@ -36,16 +36,21 @@ const converter = new Converter();
 w.crosslyConverter = converter;
 
 // Backend (new microservices approach): establish an anonymous guest session,
-// then load this client's preferences. Runs asynchronously so it never blocks
-// rendering, and fails soft if the backend isn't running.
+// then load this client's preferences and stored patterns. Runs asynchronously so
+// it never blocks rendering, and fails soft if the backend isn't running.
 const backendFactory = new BackendFactory();
 const backend = backendFactory.create(window);
 w.crosslyBackend = backend;
 
 backend.auth.ensureSession()
-    .then(() => backend.preferences.get())
-    .then((preferences) => {
+    .then(() => Promise.all([backend.preferences.get(), backend.patterns.getAll()]))
+    .then(([preferences, patterns]) => {
         w.crosslyPreferences = preferences;
-        console.log("crossly: session ready", { clientId: backend.auth.getClientId(), preferences });
+        w.crosslyPatterns = patterns;
+        console.log("crossly: session ready", {
+            clientId: backend.auth.getClientId(),
+            preferences,
+            patterns: patterns.length,
+        });
     })
     .catch((error) => console.error("crossly: backend init failed", error));
