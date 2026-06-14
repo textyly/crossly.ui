@@ -1,21 +1,20 @@
-import { AuthTokenProvider, HttpError, IHttpClient } from "./types.js";
+import { HttpError, IHttpClient } from "./types.js";
 
 /**
  * Default {@link IHttpClient} backed by the browser `fetch`.
  *
  * - Prefixes every path with the injected base URL.
- * - Attaches `Authorization: Bearer <token>` when a token provider yields one.
+ * - Sends every request with `credentials: "include"` so the httpOnly session
+ *   cookie is included (the BFF model — no bearer token in JS).
  * - Sends a `Uint8Array` body as raw bytes (application/octet-stream); any other
  *   defined body is JSON-encoded.
  * - Throws {@link HttpError} (with the status code) on any non-2xx response.
  */
 export class HttpClient implements IHttpClient {
     private readonly baseUrl: string;
-    private readonly getToken?: AuthTokenProvider;
 
-    constructor(baseUrl: string, getToken?: AuthTokenProvider) {
+    constructor(baseUrl: string) {
         this.baseUrl = baseUrl;
-        this.getToken = getToken;
     }
 
     public get<TResponse>(path: string): Promise<TResponse> {
@@ -39,7 +38,7 @@ export class HttpClient implements IHttpClient {
     }
 
     public async getStream(path: string): Promise<ReadableStream<Uint8Array>> {
-        const response = await fetch(this.baseUrl + path, { method: "GET", headers: this.buildHeaders() });
+        const response = await fetch(this.baseUrl + path, { method: "GET", credentials: "include" });
 
         if (!response.ok) {
             throw new HttpError(response.status, `GET ${path} failed with status ${response.status}`);
@@ -52,7 +51,7 @@ export class HttpClient implements IHttpClient {
     }
 
     private async request<TResponse>(method: string, path: string, body?: unknown): Promise<TResponse> {
-        const headers = this.buildHeaders();
+        const headers: Record<string, string> = {};
         let fetchBody: BodyInit | undefined;
 
         if (body instanceof Uint8Array) {
@@ -64,7 +63,12 @@ export class HttpClient implements IHttpClient {
             fetchBody = JSON.stringify(body);
         }
 
-        const response = await fetch(this.baseUrl + path, { method, headers, body: fetchBody });
+        const response = await fetch(this.baseUrl + path, {
+            method,
+            headers,
+            body: fetchBody,
+            credentials: "include",
+        });
 
         if (!response.ok) {
             throw new HttpError(response.status, `${method} ${path} failed with status ${response.status}`);
@@ -73,16 +77,5 @@ export class HttpClient implements IHttpClient {
         // Tolerate empty bodies (e.g. 204 No Content).
         const text = await response.text();
         return (text.length > 0 ? JSON.parse(text) : undefined) as TResponse;
-    }
-
-    private buildHeaders(): Record<string, string> {
-        const headers: Record<string, string> = {};
-
-        const token = this.getToken?.();
-        if (token) {
-            headers["Authorization"] = `Bearer ${token}`;
-        }
-
-        return headers;
     }
 }

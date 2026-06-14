@@ -12,8 +12,9 @@ const PATTERNS_PATH: string = "/api/v1/patterns";
 
 /**
  * Default {@link IPatternsClient}. Calls the persistence service through the
- * shared {@link IHttpClient} (which carries the bearer token), compressing
+ * shared {@link IHttpClient} (which sends the session cookie), compressing
  * outgoing models and decompressing incoming ones via the {@link ICompressor}.
+ * The service scopes every pattern to the caller's clientId from that cookie.
  */
 export class PatternsClient implements IPatternsClient {
     private readonly http: IHttpClient;

@@ -1,6 +1,3 @@
-/** Supplies the current access token (if any) for the Authorization header. */
-export type AuthTokenProvider = () => string | undefined;
-
 /** Error thrown for non-2xx HTTP responses, carrying the status code. */
 export class HttpError extends Error {
     public readonly status: number;
@@ -14,11 +11,13 @@ export class HttpError extends Error {
 
 /**
  * Minimal HTTP boundary shared by every backend service client. Centralizes
- * base-URL handling, bearer auth, JSON, and status/error mapping so individual
- * service clients (auth, preferences, patterns, …) don't re-implement fetch.
+ * base-URL handling, JSON, and status/error mapping so individual service clients
+ * (auth, preferences, patterns, …) don't re-implement fetch.
  *
- * JSON is the default; a `Uint8Array` body is sent as raw bytes, and `getStream`
- * returns the raw response stream (used for gzip-compressed pattern payloads).
+ * Every request is sent with credentials (`credentials: "include"`) so the
+ * httpOnly session cookie set by the auth service rides along — there is no
+ * bearer token in JS. JSON is the default; a `Uint8Array` body is sent as raw
+ * bytes, and `getStream` returns the raw response stream (gzip pattern payloads).
  */
 export interface IHttpClient {
     get<TResponse>(path: string): Promise<TResponse>;

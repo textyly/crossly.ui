@@ -1,67 +1,66 @@
-import type { GuestSessionResponse } from "@textyly/crossly-client-auth-contracts";
-import { IHttpClient } from "../http/types.js";
-import { IAuthClient, ITokenStorage } from "./types.js";
-
-/** localStorage keys for the persisted session. */
-export const STORAGE_KEYS = {
-    token: "crossly.auth.token",
-    clientId: "crossly.auth.clientId",
-} as const;
+import { HttpError, IHttpClient } from "../http/types.js";
+import { IAuthClient, SessionSummary } from "./types.js";
 
 /**
- * Default {@link IAuthClient}. Talks to crossly.client.auth.service and persists
- * the session via the injected {@link ITokenStorage}.
+ * Default {@link IAuthClient}. Talks to crossly.client.auth.service in the BFF
+ * cookie model: the session JWT rides in an httpOnly cookie the browser manages,
+ * so this client holds no token. It learns identity from `/auth/me` and caches it
+ * in memory.
  *
- * Phase 1 is anonymous-only: {@link ensureSession} refreshes an existing guest
- * session (rolling its 1-year expiry forward) or creates a new one. When real
- * login is added later it issues a token of the same shape, so this client only
- * needs new methods, not a rewrite.
+ * {@link ensureSession} adopts AND rolls forward (slides) an existing session —
+ * guest or logged-in — so an active user's expiry keeps moving and they don't get
+ * logged out; if there is none, it mints a guest. {@link login}/{@link logout}
+ * drive the OAuth redirect and sign-out; promote-in-place on the server means a
+ * guest's data carries into their account on first login with no change here.
  */
 export class AuthClient implements IAuthClient {
-    private readonly http: IHttpClient;
-    private readonly storage: ITokenStorage;
+    private clientId?: string;
+    private guest: boolean = true;
 
-    constructor(http: IHttpClient, storage: ITokenStorage) {
-        this.http = http;
-        this.storage = storage;
-    }
+    constructor(
+        private readonly http: IHttpClient,
+        private readonly authBaseUrl: string,
+        private readonly windowRef: Window,
+    ) {}
 
     public async ensureSession(): Promise<void> {
-        const existing = this.storage.get(STORAGE_KEYS.token);
-
-        if (existing) {
-            try {
-                await this.refresh();
-                return;
-            } catch {
-                // Stored token is invalid/expired (e.g. away > 1 year) -> start fresh.
+        // Roll the current session forward (sliding): /auth/refresh re-issues the
+        // cookie with a fresh expiry and returns the identity — for a guest or an
+        // authenticated user alike. A 401 means there's no valid session yet, so
+        // we fall through and mint a fresh guest.
+        try {
+            const session = await this.http.post<SessionSummary>("/auth/refresh");
+            this.clientId = session.clientId;
+            this.guest = session.guest;
+            return;
+        } catch (error) {
+            if (!(error instanceof HttpError) || error.status !== 401) {
+                throw error;
             }
         }
 
-        await this.createGuest();
-    }
-
-    public getToken(): string | undefined {
-        return this.storage.get(STORAGE_KEYS.token);
+        const guest = await this.http.post<SessionSummary>("/auth/guest");
+        this.clientId = guest.clientId;
+        this.guest = guest.guest;
     }
 
     public getClientId(): string | undefined {
-        return this.storage.get(STORAGE_KEYS.clientId);
+        return this.clientId;
     }
 
-    private async createGuest(): Promise<void> {
-        const session = await this.http.post<GuestSessionResponse>("/auth/guest");
-        this.store(session);
+    public isGuest(): boolean {
+        return this.guest;
     }
 
-    private async refresh(): Promise<void> {
-        // The HttpClient attaches the stored token as a bearer automatically.
-        const session = await this.http.post<GuestSessionResponse>("/auth/refresh");
-        this.store(session);
+    public login(): void {
+        // Top-level navigation: the auth service runs the OAuth round-trip and
+        // redirects back, setting the session cookie.
+        this.windowRef.location.assign(`${this.authBaseUrl}/auth/login`);
     }
 
-    private store(session: GuestSessionResponse): void {
-        this.storage.set(STORAGE_KEYS.token, session.token);
-        this.storage.set(STORAGE_KEYS.clientId, session.clientId);
+    public async logout(): Promise<void> {
+        await this.http.post<void>("/auth/logout");
+        this.clientId = undefined;
+        this.guest = true;
     }
 }
