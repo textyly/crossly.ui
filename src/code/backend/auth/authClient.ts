@@ -1,10 +1,11 @@
+import type { SessionResponse } from "@textyly/crossly-client-auth-contracts";
 import { HttpError, IHttpClient } from "../http/types.js";
-import { IAuthClient, SessionSummary } from "./types.js";
+import { IAuthClient } from "./types.js";
 
 /**
  * Default {@link IAuthClient}. Talks to crossly.client.auth.service in the BFF
  * cookie model: the session JWT rides in an httpOnly cookie the browser manages,
- * so this client holds no token. It learns identity from `/auth/me` and caches it
+ * so this client holds no token. It learns identity from `/api/v1/auth/me` and caches it
  * in memory.
  *
  * {@link ensureSession} adopts AND rolls forward (slides) an existing session —
@@ -24,12 +25,12 @@ export class AuthClient implements IAuthClient {
     ) {}
 
     public async ensureSession(): Promise<void> {
-        // Roll the current session forward (sliding): /auth/refresh re-issues the
+        // Roll the current session forward (sliding): /api/v1/auth/refresh re-issues the
         // cookie with a fresh expiry and returns the identity — for a guest or an
         // authenticated user alike. A 401 means there's no valid session yet, so
         // we fall through and mint a fresh guest.
         try {
-            const session = await this.http.post<SessionSummary>("/auth/refresh");
+            const session = await this.http.post<SessionResponse>("/api/v1/auth/refresh");
             this.clientId = session.clientId;
             this.guest = session.guest;
             return;
@@ -39,7 +40,7 @@ export class AuthClient implements IAuthClient {
             }
         }
 
-        const guest = await this.http.post<SessionSummary>("/auth/guest");
+        const guest = await this.http.post<SessionResponse>("/api/v1/auth/guest");
         this.clientId = guest.clientId;
         this.guest = guest.guest;
     }
@@ -55,11 +56,11 @@ export class AuthClient implements IAuthClient {
     public login(): void {
         // Top-level navigation: the auth service runs the OAuth round-trip and
         // redirects back, setting the session cookie.
-        this.windowRef.location.assign(`${this.authBaseUrl}/auth/login`);
+        this.windowRef.location.assign(`${this.authBaseUrl}/api/v1/auth/login`);
     }
 
     public async logout(): Promise<void> {
-        await this.http.post<void>("/auth/logout");
+        await this.http.post<void>("/api/v1/auth/logout");
         this.clientId = undefined;
         this.guest = true;
     }

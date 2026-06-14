@@ -47,7 +47,7 @@ export class PatternsClient implements IPatternsClient {
     }
 
     public rename(renamePath: string, newName: string): Promise<boolean> {
-        return this.toFound(() => this.http.patch<void>(renamePath, { newName }));
+        return this.toFound(() => this.http.patch<void>(renamePath, { name: newName }));
     }
 
     public delete(deletePath: string): Promise<boolean> {

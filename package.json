@@ -38,8 +38,8 @@
     "ws": "^8.18.0"
   },
   "dependencies": {
-    "@textyly/crossly-client-auth-contracts": "^0.0.1",
-    "@textyly/crossly-client-preferences-contracts": "^0.0.2",
-    "@textyly/crossly-private-persistence-contracts": "^0.0.1"
+    "@textyly/crossly-client-auth-contracts": "^0.0.2",
+    "@textyly/crossly-client-preferences-contracts": "^0.0.3",
+    "@textyly/crossly-private-persistence-contracts": "^0.0.2"
   }
 }
