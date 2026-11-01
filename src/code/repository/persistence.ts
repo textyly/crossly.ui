@@ -11,11 +11,13 @@ export class Persistence implements IPersistence {
 	private readonly replaceOptions: RequestInit;
 
 	constructor() {
-		this.baseEndpoint = "http://localhost:5026"; // TODO: inject via constructor!!!
+		// crossly.private.persistence.service (Express re-implementation of the .NET app).
+		this.baseEndpoint = "http://localhost:5003"; // TODO: inject via constructor!!!
 		this.endpoint = this.baseEndpoint + "/api/v1/patterns"; // TODO: inject via constructor!!!
 
 		this.createOptions = {
 			method: "POST",
+			credentials: 'include',
 			headers: {
 				'Content-Type': 'application/json',
 				'Content-Encoding': 'gzip'
@@ -23,11 +25,13 @@ export class Persistence implements IPersistence {
 		};
 
 		this.deleteOptions = {
-			method: "DELETE"
+			method: "DELETE",
+			credentials: 'include'
 		};
 
 		this.replaceOptions = {
 			method: "PUT",
+			credentials: 'include',
 			headers: {
 				'Content-Type': 'application/json',
 				'Content-Encoding': 'gzip'
@@ -36,6 +40,7 @@ export class Persistence implements IPersistence {
 
 		this.renameOptions = {
 			method: "PATCH",
+			credentials: 'include',
 			headers: {
 				'Content-Type': 'application/json'
 			}
@@ -44,7 +49,7 @@ export class Persistence implements IPersistence {
 
 	public async getAll(): Promise<Links> {
 		// get all ids
-		const response = await fetch(this.endpoint);
+		const response = await fetch(this.endpoint, { credentials: 'include' });
 		const result = await response.json();
 		const links = result.links as Links;
 
@@ -61,7 +66,7 @@ export class Persistence implements IPersistence {
 
 		// then get a data model stream
 		const endpoint = this.baseEndpoint + path;
-		const response = await fetch(endpoint);
+		const response = await fetch(endpoint, { credentials: 'include' });
 		const dataModelStream = response.body;
 
 		// check whether the dataModelStream is defined, if not throw an error intentionally

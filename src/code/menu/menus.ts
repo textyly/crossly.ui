@@ -1,6 +1,7 @@
 import { Base } from "../general/base.js";
 import { UndoMenu } from "./menus/undo.js";
 import { ZoomMenu } from "./menus/zoom.js";
+import { GridSizeMenu } from "./menus/gridSize.js";
 import { HomeMenu } from "./menus/home.js";
 import { UserMenu } from "./menus/user.js";
 import html from "../utilities.ts/html.js";
@@ -12,6 +13,7 @@ import {
     IMenus,
     IUndoMenu,
     IZoomMenu,
+    IGridSizeMenu,
     IHomeMenu,
     IUserMenu,
     ICloseMenu,
@@ -31,6 +33,7 @@ export class Menus extends Base implements IMenus {
     private readonly userMenu: IUserMenu;
     private readonly undoMenu: IUndoMenu;
     private readonly zoomMenu: IZoomMenu;
+    private readonly gridSizeMenu: IGridSizeMenu;
     private readonly threadPaletteMenu: IThreadPaletteMenu;
     private readonly splitViewMenu: ISplitViewMenu;
     private readonly closeMenu: ICloseMenu;
@@ -51,6 +54,7 @@ export class Menus extends Base implements IMenus {
         this.splitViewMenu = new SplitViewMenu(topRightMenu);
 
         const bottomRightMenu = html.getByClass(document, this.bottomRightMenuClassName);
+        this.gridSizeMenu = new GridSizeMenu(bottomRightMenu);
         this.zoomMenu = new ZoomMenu(bottomRightMenu);
         this.feedbackMenu = new FeedbackMenu(bottomRightMenu);
 
@@ -73,6 +77,10 @@ export class Menus extends Base implements IMenus {
 
     public get zoom(): IZoomMenu {
         return this.zoomMenu;
+    }
+
+    public get gridSize(): IGridSizeMenu {
+        return this.gridSizeMenu;
     }
 
     public get threadPalette(): IThreadPaletteMenu {
@@ -98,6 +106,7 @@ export class Menus extends Base implements IMenus {
         this.user.dispose();
         this.undo.dispose();
         this.zoom.dispose();
+        this.gridSize.dispose();
         this.threadPalette.dispose();
         this.splitView.dispose();
         this.close.dispose();

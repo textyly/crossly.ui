@@ -75,7 +75,7 @@ export abstract class FabricCanvas extends FabricCanvasBase {
 
         super.invokeDrawBackground(this._color);
 
-        const canRedrawThreads = (this.threadWidth >= this.threadMinWidth);
+        const canRedrawThreads = this.threadWidth >= this.threadMinWidth;
         if (canRedrawThreads) {
             this.redrawThreads(startIndexX, startIndexY, endIndexX, endIndexY);
         }

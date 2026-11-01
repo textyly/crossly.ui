@@ -10,13 +10,9 @@ export class ZoomMenu extends Base implements IZoomMenu {
 
     private readonly zoomInId = "zoom-in";
     private readonly zoomOutId = "zoom-out";
-    private readonly zoomLevelId = "zoom-level";
 
     private readonly zoominButton: Element;
     private readonly zoomoutButton: Element;
-
-    private currentZoomLevel: number;
-    private readonly zoomLevelLabel: Element;
 
     private zoominListener: (event: Event) => void;
     private zoomoutListener: (event: Event) => void;
@@ -25,10 +21,6 @@ export class ZoomMenu extends Base implements IZoomMenu {
         super(ZoomMenu.name);
 
         this.messaging = new Messaging1();
-
-        this.zoomLevelLabel = html.getById(container, this.zoomLevelId);
-        this.currentZoomLevel = 120;
-        this.updateZoomLevel(this.currentZoomLevel);
 
         this.zoominButton = html.getById(container, this.zoomInId);
         this.zoomoutButton = html.getById(container, this.zoomOutId);
@@ -47,25 +39,11 @@ export class ZoomMenu extends Base implements IZoomMenu {
         return this.messaging.listenOnChannel1(listener);
     }
 
-    public zoomIn(): void {
-        this.currentZoomLevel += 10;
-        this.updateZoomLevel(this.currentZoomLevel);
-    }
-
-    public zoomOut(): void {
-        this.currentZoomLevel -= 10;
-        this.updateZoomLevel(this.currentZoomLevel);
-    }
-
     public override dispose(): void {
         super.ensureAlive();
         this.unsubscribe();
         this.messaging.dispose();
         super.dispose();
-    }
-
-    private updateZoomLevel(value: number) {
-        this.zoomLevelLabel.innerHTML = `${value}%`;
     }
 
     private subscribe(): void {

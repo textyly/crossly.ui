@@ -5,27 +5,85 @@ import { MenuDialogHandler } from "./handlers/menuDialog.js";
 import { RepositoryFactory } from "./repository/factory.js";
 import { CrosslyCanvasAnimationFactory } from "./animation/factory.js";
 import { CrosslyCanvasFacadeFactory } from "./canvas/crossly/factory.js";
+import { Converter } from "./data-model/converter.js";
+import { BackendFactory } from "./backend/factory.js";
 
-const canvasFactory = new CrosslyCanvasFacadeFactory();
-const canvas = canvasFactory.create(document);
-canvas.draw();
 
 // TODO: delete everything below !!! It is used for testing purpose only
 const w = window as any;
-w.crosslyCanvas = canvas;
-w.crosslyCanvasFactory = canvasFactory;
 
-const menus = new Menus(document);
-const menuCanvasHandler = new MenuCanvasHandler(menus, canvas);
-w.menuCanvasHandler = menuCanvasHandler;
+// Backend (new microservices approach): establish an anonymous guest session,
+// then load this client's preferences and stored patterns. Runs asynchronously so
+// it never blocks rendering, and fails soft if the backend isn't running.
+const backendFactory = new BackendFactory();
+const backend = backendFactory.create(window);
+w.crosslyBackend = backend;
 
-const dialogs = new Dialogs(document);
-const menuDialogHandler = new MenuDialogHandler(menus, dialogs);
-w.menuDialogHandler = menuDialogHandler;
+backend.auth.ensureSession()
+    .then(() => Promise.all([backend.preferences.get(), backend.patterns.getAll()]))
+    .then(([preferences, patterns]) => {
+        w.crosslyPreferences = preferences;
+        w.crosslyPatterns = patterns;
+        console.log("crossly: session ready", {
+            clientId: backend.auth.getClientId(),
+            preferences,
+            patterns: patterns.length,
+        });
 
-const repositoryFactory = new RepositoryFactory();
-const repository = repositoryFactory.create();
-w.crosslyRepository = repository;
+        const canvasFactory = new CrosslyCanvasFacadeFactory();
+        const canvas = canvasFactory.create(document);
+        canvas.draw();
 
-const animationFactory = new CrosslyCanvasAnimationFactory();
-w.crosslyAnimationFactory = animationFactory;
+        w.crosslyCanvas = canvas;
+        w.crosslyCanvasFactory = canvasFactory;
+
+        const menus = new Menus(document);
+        const menuCanvasHandler = new MenuCanvasHandler(menus, canvas);
+        w.menuCanvasHandler = menuCanvasHandler;
+
+        const dialogs = new Dialogs(document);
+        const menuDialogHandler = new MenuDialogHandler(menus, dialogs);
+        w.menuDialogHandler = menuDialogHandler;
+
+        const repositoryFactory = new RepositoryFactory();
+        const repository = repositoryFactory.create();
+        w.crosslyRepository = repository;
+
+        const animationFactory = new CrosslyCanvasAnimationFactory();
+        w.crosslyAnimationFactory = animationFactory;
+
+        const converter = new Converter();
+        w.crosslyConverter = converter;
+
+        // Tracks the pattern currently loaded onto the canvas.
+        let currentLink: { replace: string } | null = null;
+        let currentName: string | null = null;
+
+        // crosslyLoad(index) — load pattern by index from the stored list onto the canvas.
+        w.crosslyLoad = async (index: number) => {
+            const links = await repository.getAll();
+            const link = links[index];
+            if (!link) {
+                console.error(`crossly: no pattern at index ${index} (${links.length} total)`);
+                return;
+            }
+            const pattern = await repository.getById(link.getById);
+            canvas.load(pattern);
+            currentLink = link;
+            currentName = pattern.name;
+            console.log(`crossly: loaded "${pattern.name}"`);
+        };
+
+        // crosslySave() — replace the currently loaded pattern in the backend with the canvas state.
+        w.crosslySave = async () => {
+            if (!currentLink || !currentName) {
+                console.error("crossly: nothing loaded — call crosslyLoad(index) first");
+                return false;
+            }
+            const patternEx = { ...canvas.pattern, name: currentName };
+            const ok = await repository.replace(currentLink.replace, patternEx);
+            console.log(`crossly: saved "${currentName}"`, ok);
+            return ok;
+        };
+    })
+    .catch((error) => console.error("crossly: backend init failed", error));

@@ -25,4 +25,5 @@
     "typescript.preferences.importModuleSpecifierEnding": "js",
     "editor.formatOnSave": true,
     "files.trimTrailingWhitespace": true,
+    "js/ts.tsdk.path": "node_modules\\typescript\\lib",
 }
