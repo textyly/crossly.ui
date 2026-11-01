@@ -18,6 +18,7 @@ concurrency:
 
 env:
   IMAGE: ghcr.io/textyly/crossly-ui
+  MANIFESTS: ghcr.io/textyly/crossly-ui-manifests
 
 jobs:
   test:
@@ -77,6 +78,16 @@ jobs:
           test "$(docker exec smoke id -u)" != 0
           docker rm -f smoke
 
+      - name: Check that the manifests render
+        run: kubectl kustomize deploy/k8s > /dev/null
+
+      - uses: fluxcd/flux2/action@3fa784edd773d56630bb9f62645e08f70c2cff0a # v2.10.0
+        with:
+          version: 2.10.0
+
+      - name: Check that the manifests package
+        run: flux build artifact --path deploy/k8s --output "$RUNNER_TEMP/manifests.tgz"
+
       - name: Log in to the container registry
         if: github.event_name == 'push'
         uses: docker/login-action@81c6f93d4bc991e510b342a00b419b3bb4efc5c6 # v4.7.0
@@ -100,6 +111,16 @@ jobs:
             org.opencontainers.image.licenses=Apache-2.0
           cache-from: type=gha
 
+      - name: Publish the manifests with the new image tag
+        if: github.event_name == 'push'
+        env:
+          TAG: ${{ steps.meta.outputs.tag }}
+        run: |
+          sed -i "s|newTag: .*|newTag: ${TAG}|" deploy/k8s/kustomization.yaml
+          grep -q "newTag: ${TAG}" deploy/k8s/kustomization.yaml
+          flux push artifact "oci://${MANIFESTS}:${TAG}" --path=deploy/k8s --source="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}" --revision="${GITHUB_REF_NAME}@sha1:${GITHUB_SHA}"
+          flux tag artifact "oci://${MANIFESTS}:${TAG}" --tag main
+
       - name: Summary
         if: github.event_name == 'push'
-        run: echo "Published \`${IMAGE}:${{ steps.meta.outputs.tag }}\`" >> "$GITHUB_STEP_SUMMARY"
+        run: echo "Published \`${IMAGE}:${{ steps.meta.outputs.tag }}\` and \`${MANIFESTS}:${{ steps.meta.outputs.tag }}\`" >> "$GITHUB_STEP_SUMMARY"
