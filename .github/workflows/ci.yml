@@ -1,0 +1,105 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main, develop]
+  push:
+    branches: [main]
+
+# Least privilege by default; the image job adds what it needs.
+permissions:
+  contents: read
+
+# A newer push to the same pull request replaces the older run. Runs on main are
+# never cancelled, so every merge produces its image.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+env:
+  IMAGE: ghcr.io/textyly/crossly-ui
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 26
+          cache: npm
+
+      - run: npm ci
+      - run: npm run compile
+      - run: npm run compile:tests
+      - run: npx mocha 'dist-tests/tests/**/*.test.js'
+
+  # Pull requests build the image and check that it works, without publishing.
+  # A merge to main also publishes it for amd64 and arm64.
+  image:
+    needs: test
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Work out the image tag
+        id: meta
+        run: echo "tag=main-${GITHUB_SHA::7}-$(date +%s)" >> "$GITHUB_OUTPUT"
+
+      - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
+
+      - name: Build the image for a smoke test
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
+        with:
+          context: .
+          load: true
+          tags: crossly-ui:smoke
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Smoke test the image
+        run: |
+          docker run -d --name smoke -p 8080:8080 crossly-ui:smoke
+          for _ in $(seq 1 20); do curl -fsS -o /dev/null http://localhost:8080/ && break; sleep 1; done
+          curl -fsS http://localhost:8080/ | grep -q "Crossly Pattern Editor"
+          curl -fsS -o /dev/null http://localhost:8080/code/main.js
+          test "$(curl -s -o /dev/null -w '%{http_code}' http://localhost:8080/debug/live-reload.js)" = 404
+          test "$(docker exec smoke id -u)" != 0
+          docker rm -f smoke
+
+      - name: Log in to the container registry
+        if: github.event_name == 'push'
+        uses: docker/login-action@81c6f93d4bc991e510b342a00b419b3bb4efc5c6 # v4.7.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build for amd64 and arm64 and push
+        if: github.event_name == 'push'
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
+        with:
+          context: .
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ env.IMAGE }}:${{ steps.meta.outputs.tag }}
+          labels: |
+            org.opencontainers.image.source=https://github.com/${{ github.repository }}
+            org.opencontainers.image.description=The Crossly pattern editor (static files served by nginx)
+            org.opencontainers.image.revision=${{ github.sha }}
+            org.opencontainers.image.licenses=Apache-2.0
+          cache-from: type=gha
+
+      - name: Summary
+        if: github.event_name == 'push'
+        run: echo "Published \`${IMAGE}:${{ steps.meta.outputs.tag }}\`" >> "$GITHUB_STEP_SUMMARY"
