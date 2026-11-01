@@ -116,13 +116,13 @@ export abstract class StitchCanvas extends StitchCanvasBase {
             this.useNewThread(threadPath.name, threadPath.color, threadPath.width);
 
             const thread = this.getCurrentThread();
-            for (let index = 0; index < threadPath.length; index++) {
-                const indexX = threadPath.indexesX[index];
-                const indexY = threadPath.indexesY[index];
-                thread.pushDotIndex(indexX, indexY);
 
+            const srcX = threadPath.indexesX;
+            const srcY = threadPath.indexesY;
+
+            for (let index = 0; index < threadPath.length; index++) {
+                thread.pushDotIndex(srcX[index], srcY[index]);
                 this.changeCanvasSide();
-                lastDotIdx = { dotX: indexX, dotY: indexY };
             }
         });
 

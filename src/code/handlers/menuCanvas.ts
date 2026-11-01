@@ -1,7 +1,7 @@
 import { Base } from "../general/base.js";
 import { IMenuCanvasHandler } from "./types.js";
 import { ICrosslyCanvasFacade } from "../canvas/types.js";
-import { ChangeStitchPatternEvent } from "../canvas/virtual/types.js";
+import { ChangeFabricEvent, ChangeStitchPatternEvent } from "../canvas/virtual/types.js";
 import { ChangeThreadEvent, IMenus } from "../menu/menus/types.js";
 
 export class MenuCanvasHandler extends Base implements IMenuCanvasHandler {
@@ -15,6 +15,10 @@ export class MenuCanvasHandler extends Base implements IMenuCanvasHandler {
         this.canvas = canvas;
 
         this.subscribe();
+
+        // Show the current fabric grid size right away; onChangeFabric keeps it in sync afterwards.
+        const fabric = this.canvas.pattern.fabric;
+        this.menus.gridSize.setSize(fabric.columns, fabric.rows);
     }
 
     private handleMenuUndo(): void {
@@ -60,6 +64,12 @@ export class MenuCanvasHandler extends Base implements IMenuCanvasHandler {
         this.canvas.toggleSplitView();
     }
 
+    private handleCanvasChangeFabric(event: ChangeFabricEvent): void {
+        super.ensureAlive();
+
+        this.menus.gridSize.setSize(event.pattern.columns, event.pattern.rows);
+    }
+
     private handleCanvasChangeStitchPattern(event: ChangeStitchPatternEvent): void {
         super.ensureAlive();
 
@@ -87,6 +97,9 @@ export class MenuCanvasHandler extends Base implements IMenuCanvasHandler {
     private subscribeCanvas(): void {
         const loadPatternUn = this.canvas.onChangeStitchPattern(this.handleCanvasChangeStitchPattern.bind(this));
         super.registerUn(loadPatternUn);
+
+        const changeFabricUn = this.canvas.onChangeFabric(this.handleCanvasChangeFabric.bind(this));
+        super.registerUn(changeFabricUn);
     }
 
     private subscribeMenu(): void {

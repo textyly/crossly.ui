@@ -54,5 +54,36 @@ backend.auth.ensureSession()
 
         const converter = new Converter();
         w.crosslyConverter = converter;
+
+        // Tracks the pattern currently loaded onto the canvas.
+        let currentLink: { replace: string } | null = null;
+        let currentName: string | null = null;
+
+        // crosslyLoad(index) — load pattern by index from the stored list onto the canvas.
+        w.crosslyLoad = async (index: number) => {
+            const links = await repository.getAll();
+            const link = links[index];
+            if (!link) {
+                console.error(`crossly: no pattern at index ${index} (${links.length} total)`);
+                return;
+            }
+            const pattern = await repository.getById(link.getById);
+            canvas.load(pattern);
+            currentLink = link;
+            currentName = pattern.name;
+            console.log(`crossly: loaded "${pattern.name}"`);
+        };
+
+        // crosslySave() — replace the currently loaded pattern in the backend with the canvas state.
+        w.crosslySave = async () => {
+            if (!currentLink || !currentName) {
+                console.error("crossly: nothing loaded — call crosslyLoad(index) first");
+                return false;
+            }
+            const patternEx = { ...canvas.pattern, name: currentName };
+            const ok = await repository.replace(currentLink.replace, patternEx);
+            console.log(`crossly: saved "${currentName}"`, ok);
+            return ok;
+        };
     })
     .catch((error) => console.error("crossly: backend init failed", error));

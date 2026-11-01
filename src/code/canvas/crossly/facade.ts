@@ -2,6 +2,7 @@ import { CrosslyCanvas } from "./crossly.js";
 import { IInputCanvas } from "../input/types.js";
 import { CrosslyCanvasConfig } from "../../config/types.js";
 import { CrosslyCanvasPattern, DotIndex, IBackSideView, ICrosslyCanvasFacade, Visibility } from "../types.js";
+import { generateFullCrossStitch } from "../utilities/patternGenerator.js";
 import { IFabricRasterDrawingCanvas, IStitchRasterDrawingCanvas, IVectorDrawingCanvas } from "../drawing/types.js";
 
 export class CrosslyCanvasFacade extends CrosslyCanvas implements ICrosslyCanvasFacade {
@@ -73,6 +74,20 @@ export class CrosslyCanvasFacade extends CrosslyCanvas implements ICrosslyCanvas
         this.cueCanvasFacade.useThread(name, color, width);
     }
 
+    public fill(name: string, color: string, width: number): void {
+        this.ensureAlive();
+
+        // Keep the current fabric; regenerate the stitch pattern to cover every
+        // square, then apply it the same way load() does (one redraw, one change).
+        const fabric = this.fabricCanvasFacade.pattern;
+        const pattern = generateFullCrossStitch(fabric.columns, fabric.rows, name, color, width);
+
+        this.stitchCanvasFacade.load(fabric.columns, fabric.rows, pattern);
+        //this.cueCanvasFacade.load(fabric.columns, fabric.rows, pattern);
+
+        this.draw();
+    }
+
     public undo(): void {
         this.ensureAlive();
         this.stitchCanvasFacade.undo();
@@ -112,4 +127,4 @@ export class CrosslyCanvasFacade extends CrosslyCanvas implements ICrosslyCanvas
             ? this.hideBackSideView()
             : this.showBackSideView();
     }
-} 
+}

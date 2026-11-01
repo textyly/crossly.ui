@@ -153,6 +153,15 @@ body {
   flex-direction: row;
 }
 
+#grid-size {
+  display: flex;
+  align-items: center;
+  font-size: 1.3rem;
+  font-weight: bold;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
 .thread-button-group {
   opacity: 0;
   max-height: 0;

@@ -49,6 +49,9 @@ export interface ICrosslyCanvasFacade extends ICrosslyCanvas {
     clickDot(dotIdx: DotIndex): void;
     useThread(name: string, color: string, width: number): void;
 
+    /** Replace the stitch pattern with a full cross-stitch in every fabric square. */
+    fill(name: string, color: string, width: number): void;
+
     undo(): void;
     redo(): void;
 

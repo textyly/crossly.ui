@@ -9,8 +9,8 @@ import {
 
 export class ConfigFactory {
     public create(): CrosslyCanvasConfig {
-        const columns = 1000;
-        const rows = 1000;
+        const columns = 1100;
+        const rows = 1100;
 
         const input = this.createInputConfig();
         const dotsSpacing = this.createDotsSpacingConfig();
