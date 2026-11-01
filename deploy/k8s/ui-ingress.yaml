@@ -1,0 +1,19 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: crossly
+  labels:
+    app.kubernetes.io/name: crossly
+    app.kubernetes.io/part-of: crossly
+spec:
+  rules:
+    - host: crossly.localhost
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: crossly-ui
+                port:
+                  name: http
