@@ -6,12 +6,9 @@ on:
   push:
     branches: [main]
 
-# Least privilege by default; the image job adds what it needs.
 permissions:
   contents: read
 
-# A newer push to the same pull request replaces the older run. Runs on main are
-# never cancelled, so every merge produces its image.
 concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
@@ -39,8 +36,6 @@ jobs:
       - run: npm run compile:tests
       - run: npx mocha 'dist-tests/tests/**/*.test.js'
 
-  # Pull requests build the image and check that it works, without publishing.
-  # A merge to main also publishes it for amd64 and arm64.
   image:
     needs: test
     runs-on: ubuntu-latest
